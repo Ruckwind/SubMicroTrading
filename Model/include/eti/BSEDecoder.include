@@ -1,0 +1,74 @@
+
+    private int _headerPad = 2; // receiving from exchange pad is 2
+    
+    @Override
+    public final int parseHeader( final byte[] msg, final int offset, final int bytesRead ) {
+
+        if ( _debug ) _dump.reset();
+
+        _applMsgID.reset();
+        _binaryMsg = msg;
+        _maxIdx = bytesRead + offset; // temp assign maxIdx to last data bytes in bufferMap
+        _offset = offset;
+        _builder.start( msg, offset, _maxIdx );
+        
+        if ( bytesRead < 8 ) {
+            ReusableString copy = TLC.instance().getString();
+            if ( bytesRead == 0 )  {
+                copy.setValue( "{empty}" );
+            } else{
+                copy.setValue( msg, offset, bytesRead );
+            }
+            throw new RuntimeDecodingException( "ETI Messsage too small, len=" + bytesRead, copy );
+        } else if ( msg.length < _maxIdx ){
+            throwDecodeException( "Buffer too small for specified bytesRead=" + bytesRead + ",offset=" + offset + ", bufLen=" + msg.length );
+        }
+        
+        _msgStatedLen = _builder.decodeInt();
+        
+        _msgType = _builder.decodeUShort();
+        
+        _builder.skip( _headerPad ); // pad(2)
+        
+        _maxIdx = _msgStatedLen + _offset;  // correctly assign maxIdx as last bytes of current message
+
+        if ( _maxIdx > _binaryMsg.length )  _maxIdx  = _binaryMsg.length;
+        
+        return _msgStatedLen;
+    }
+
+    @Override    
+    public void setExchangeEmulationOn() {
+        _headerPad = 10;                    // receiving AT exchange is 10
+    }
+
+    @Override
+    public com.rr.codec.emea.exchange.eti.ETIDecodeContext getLastContext( com.rr.codec.emea.exchange.eti.ETIDecodeContext context ) {
+        context.reset();
+        if ( _applMsgID.length() > 0 ) {
+            context.setLastApplMsgID( _applMsgID );
+            context.setLastPartitionID( _partitionID );
+        }
+        
+        return context;
+    }
+
+    private static final ExchangeCode _rec = ExchangeCode.XBOM;
+    private static final ReusableString _instId = new ReusableString();
+
+    private void enrich( NewOrderSingleImpl nos ) {
+        
+        ExchangeInstrument instr = null;
+        
+        if ( _securityId > 0 ) {
+            instr = _instrumentLocator.getExchInst( _instId.copy( _securityId ), SecurityIDSource.ExchangeSymbol, _rec );
+        }
+
+        if ( instr != null ) {
+            nos.setCurrency( instr.getCurrency() );
+            nos.getSymbolForUpdate().setValue( ((ExchangeInstrument)instr).getExchangeSymbol() );
+        }
+        
+        nos.setInstrument( instr );
+    }
+

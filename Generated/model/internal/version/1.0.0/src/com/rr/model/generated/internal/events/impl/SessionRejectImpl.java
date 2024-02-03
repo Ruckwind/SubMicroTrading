@@ -1,47 +1,40 @@
-/*******************************************************************************
- * Copyright (c) 2015 Low Latency Trading Limited  :  Author Richard Rose
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at	http://www.apache.org/licenses/LICENSE-2.0
- * Unless required by applicable law or agreed to in writing,  software distributed under the License 
- * is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and limitations under the License.
- *******************************************************************************/
 package com.rr.model.generated.internal.events.impl;
 
+/*
+Copyright 2015 Low Latency Trading Limited
+Author Richard Rose
+*/
+
 import com.rr.model.generated.internal.type.SessionRejectReason;
-import com.rr.core.lang.ViewString;
-import com.rr.core.lang.ReusableString;
-import com.rr.core.lang.Constants;
-import com.rr.core.model.MsgFlag;
-import com.rr.core.lang.ReusableType;
-import com.rr.core.lang.Reusable;
-import com.rr.core.model.Message;
-import com.rr.core.model.MessageHandler;
+import com.rr.core.utils.Utils;
+import com.rr.core.lang.*;
+import com.rr.core.model.*;
+import com.rr.core.annotations.*;
 import com.rr.model.internal.type.*;
 import com.rr.model.generated.internal.core.ModelReusableTypes;
 import com.rr.model.generated.internal.core.SizeType;
 import com.rr.model.generated.internal.core.EventIds;
 import com.rr.model.generated.internal.events.interfaces.*;
 
-@SuppressWarnings( "unused" )
+@SuppressWarnings( { "unused", "override"  })
 
-public final class SessionRejectImpl implements SessionHeader, SessionRejectWrite, Reusable<SessionRejectImpl> {
+public final class SessionRejectImpl implements SessionHeader, SessionRejectWrite, Copyable<SessionReject>, Reusable<SessionRejectImpl> {
 
    // Attrs
 
-    private          SessionRejectImpl _next = null;
-    private volatile Message        _nextMessage    = null;
-    private          MessageHandler _messageHandler = null;
+    private transient          SessionRejectImpl _next = null;
+    private transient volatile Event        _nextMessage    = null;
+    private transient          EventHandler _messageHandler = null;
     private int _refSeqNum = Constants.UNSET_INT;
     private int _refTagID = Constants.UNSET_INT;
     private final ReusableString _refMsgType = new ReusableString( SizeType.TAG_LEN.getSize() );
     private final ReusableString _text = new ReusableString( SizeType.TEXT_LENGTH.getSize() );
     private int _msgSeqNum = Constants.UNSET_INT;
-    private int _sendingTime = Constants.UNSET_INT;
+    @TimestampMS private long _eventTimestamp = Constants.UNSET_LONG;
 
     private SessionRejectReason _sessionRejectReason;
 
-    private byte           _flags          = 0;
+    private int           _flags          = 0;
 
    // Getters and Setters
     @Override public final int getRefSeqNum() { return _refSeqNum; }
@@ -66,8 +59,8 @@ public final class SessionRejectImpl implements SessionHeader, SessionRejectWrit
     @Override public final int getMsgSeqNum() { return _msgSeqNum; }
     @Override public final void setMsgSeqNum( int val ) { _msgSeqNum = val; }
 
-    @Override public final int getSendingTime() { return _sendingTime; }
-    @Override public final void setSendingTime( int val ) { _sendingTime = val; }
+    @Override public final long getEventTimestamp() { return _eventTimestamp; }
+    @Override public final void setEventTimestamp( long val ) { _eventTimestamp = val; }
 
 
     @Override public final boolean getPossDupFlag() { return isFlagSet( MsgFlag.PossDupFlag ); }
@@ -83,7 +76,7 @@ public final class SessionRejectImpl implements SessionHeader, SessionRejectWrit
         _sessionRejectReason = null;
         _text.reset();
         _msgSeqNum = Constants.UNSET_INT;
-        _sendingTime = Constants.UNSET_INT;
+        _eventTimestamp = Constants.UNSET_LONG;
         _flags = 0;
         _next = null;
         _nextMessage = null;
@@ -111,22 +104,22 @@ public final class SessionRejectImpl implements SessionHeader, SessionRejectWrit
     }
 
     @Override
-    public final Message getNextQueueEntry() {
+    public final Event getNextQueueEntry() {
         return _nextMessage;
     }
 
     @Override
-    public final void attachQueue( Message nxt ) {
+    public final void attachQueue( Event nxt ) {
         _nextMessage = nxt;
     }
 
     @Override
-    public final MessageHandler getMessageHandler() {
+    public final EventHandler getEventHandler() {
         return _messageHandler;
     }
 
     @Override
-    public final void setMessageHandler( MessageHandler handler ) {
+    public final void setEventHandler( EventHandler handler ) {
         _messageHandler = handler;
     }
 
@@ -134,7 +127,7 @@ public final class SessionRejectImpl implements SessionHeader, SessionRejectWrit
    // Helper methods
     @Override
     public void setFlag( MsgFlag flag, boolean isOn ) {
-        _flags = (byte) MsgFlag.setFlag( _flags, flag, isOn );
+        _flags = MsgFlag.setFlag( _flags, flag, isOn );
     }
 
     @Override
@@ -143,23 +136,77 @@ public final class SessionRejectImpl implements SessionHeader, SessionRejectWrit
     }
 
     @Override
-    public String toString() {
-        ReusableString buf = new ReusableString();
-        dump( buf );
-        return buf.toString();
+    public int getFlags() {
+        return _flags;
     }
 
     @Override
-    public final void dump( ReusableString out ) {
+    public String toString() {
+        ReusableString buf = TLC.instance().pop();
+        dump( buf );
+        String rs = buf.toString();
+        TLC.instance().pushback( buf );
+        return rs;
+    }
+
+    @Override
+    public final void dump( final ReusableString out ) {
         out.append( "SessionRejectImpl" ).append( ' ' );
-        out.append( ", refSeqNum=" ).append( getRefSeqNum() );
-        out.append( ", refTagID=" ).append( getRefTagID() );
-        out.append( ", refMsgType=" ).append( getRefMsgType() );
-        out.append( ", sessionRejectReason=" ).append( getSessionRejectReason() );
-        out.append( ", text=" ).append( getText() );
-        out.append( ", msgSeqNum=" ).append( getMsgSeqNum() );
+        if ( Constants.UNSET_INT != getRefSeqNum() && 0 != getRefSeqNum() )             out.append( ", refSeqNum=" ).append( getRefSeqNum() );
+        if ( Constants.UNSET_INT != getRefTagID() && 0 != getRefTagID() )             out.append( ", refTagID=" ).append( getRefTagID() );
+        if ( getRefMsgType().length() > 0 )             out.append( ", refMsgType=" ).append( getRefMsgType() );
+        if ( getSessionRejectReason() != null )             out.append( ", sessionRejectReason=" ).append( getSessionRejectReason() );
+        if ( getText().length() > 0 )             out.append( ", text=" ).append( getText() );
+        if ( Constants.UNSET_INT != getMsgSeqNum() && 0 != getMsgSeqNum() )             out.append( ", msgSeqNum=" ).append( getMsgSeqNum() );
         out.append( ", possDupFlag=" ).append( getPossDupFlag() );
-        out.append( ", sendingTime=" ).append( getSendingTime() );
+        if ( Constants.UNSET_LONG != getEventTimestamp() && 0 != getEventTimestamp() ) {
+            out.append( ", eventTimestamp=" );
+            TimeUtilsFactory.safeTimeUtils().unixTimeToLocalTimestamp( out, getEventTimestamp() );
+            out.append( " / " );
+            TimeUtilsFactory.safeTimeUtils().unixTimeToUTCTimestamp( out, getEventTimestamp() );
+            out.append( " ( " );
+            out.append( getEventTimestamp() ).append( " ) " );
+        }
+    }
+
+    @Override public final void snapTo( SessionReject dest ) {
+        ((SessionRejectImpl)dest).deepCopyFrom( this );
+    }
+
+    /** DEEP copy all members ... INCLUDING subEvents : WARNING CREATES NEW OBJECTS SO MONITOR FOR GC */
+    @Override public final void deepCopyFrom( SessionReject src ) {
+        setRefSeqNum( src.getRefSeqNum() );
+        setRefTagID( src.getRefTagID() );
+        getRefMsgTypeForUpdate().copy( src.getRefMsgType() );
+        setSessionRejectReason( src.getSessionRejectReason() );
+        getTextForUpdate().copy( src.getText() );
+        setMsgSeqNum( src.getMsgSeqNum() );
+        setPossDupFlag( src.getPossDupFlag() );
+        setEventTimestamp( src.getEventTimestamp() );
+    }
+
+    /** shallow copy all primitive members ... EXCLUDING subEvents */
+    @Override public final void shallowCopyFrom( SessionReject src ) {
+        setRefSeqNum( src.getRefSeqNum() );
+        setRefTagID( src.getRefTagID() );
+        getRefMsgTypeForUpdate().copy( src.getRefMsgType() );
+        setSessionRejectReason( src.getSessionRejectReason() );
+        getTextForUpdate().copy( src.getText() );
+        setMsgSeqNum( src.getMsgSeqNum() );
+        setPossDupFlag( src.getPossDupFlag() );
+        setEventTimestamp( src.getEventTimestamp() );
+    }
+
+    /** shallow copy all primitive members ... EXCLUDING subEvents */
+    @Override public final void shallowMergeFrom( SessionReject src ) {
+        if ( Constants.UNSET_INT != src.getRefSeqNum() ) setRefSeqNum( src.getRefSeqNum() );
+        if ( Constants.UNSET_INT != src.getRefTagID() ) setRefTagID( src.getRefTagID() );
+        if ( src.getRefMsgType().length() > 0 ) getRefMsgTypeForUpdate().copy( src.getRefMsgType() );
+        setSessionRejectReason( src.getSessionRejectReason() );
+        if ( src.getText().length() > 0 ) getTextForUpdate().copy( src.getText() );
+        if ( Constants.UNSET_INT != src.getMsgSeqNum() ) setMsgSeqNum( src.getMsgSeqNum() );
+        setPossDupFlag( src.getPossDupFlag() );
+        if ( Constants.UNSET_LONG != src.getEventTimestamp() ) setEventTimestamp( src.getEventTimestamp() );
     }
 
 }

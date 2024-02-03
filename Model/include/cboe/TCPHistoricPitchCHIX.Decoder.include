@@ -1,0 +1,79 @@
+    private long _timestampMS;
+    private ExchangeCode _securityExchange = ExchangeCode.UNKNOWN;
+    private SecurityIDSource _securityIdSrc = SecurityIDSource.ExchangeSymbol;
+
+    public void setSecurityIdSrc( final SecurityIDSource securityIdSrc ) {
+        _securityIdSrc = securityIdSrc;
+    }
+
+    public void setSecurityExchange( final ExchangeCode securityExchange ) {
+        _securityExchange = securityExchange;
+    }
+
+    @Override
+    public final int parseHeader( final byte[] msg, final int offset, final int bytesRead ) {
+
+        if ( _debug ) _dump.reset();
+
+        _binaryMsg = msg;
+        _maxIdx = bytesRead + offset; // temp assign maxIdx to last data bytes in bufferMap
+        _offset = offset;
+        _builder.start( msg, offset, _maxIdx );
+
+        if ( bytesRead < 10 ) {
+            ReusableString copy = TLC.instance().getString();
+            if ( bytesRead == 0 )  {
+                copy.setValue( "{empty}" );
+            } else{
+                copy.setValue( msg, offset, bytesRead );
+            }
+            throw new RuntimeDecodingException( "Millenium Messsage too small, len=" + bytesRead, copy );
+        } else if ( msg.length < _maxIdx ){
+            throwDecodeException( "Buffer too small for specified bytesRead=" + bytesRead + ",offset=" + offset + ", bufLen=" + msg.length );
+        }
+
+        if ( Character.isDigit( msg[offset+8] ) ) {
+            _timestampMS = _builder.decodeTimestampLocal() / 1000;
+
+            _msgType = _builder.decodeByte();
+
+            if ( _msgType == 'a' ) _msgType = 'H';
+
+        } else{
+            _timestampMS = _builder.decodeTimeLocal();
+
+            _msgType = _builder.decodeByte();
+        }
+
+        return bytesRead;
+    }
+
+    private long genTimestamp( final long microseconds ) {
+        return _tzCalculator.localMSFromMidnightToInternalTimeToday( _timestampMS );
+    }
+
+    private void procExecId( PitchBookOrderExecutedImpl msg ) {
+        byte execIdTye = _builder.getBuffer()[ _builder.getCurrentIndex() + 3 ];
+
+        msg.setExecId( _builder.decodeBase36Number( 12 ) );
+
+        if ( _builder.getCurrentIndex() < _builder.getMaxIdx() ) {
+            if ( _debug ) _dump.append( "\nField: " ).append( "mktMech" ).append( " : " );
+            msg.setMktMech( MMTMarketMechanism.getVal( _builder.decodeByte() ) );
+
+            if ( _builder.getCurrentIndex() < _builder.getMaxIdx() ) {
+                if ( _debug ) _dump.append( "\nField: " ).append( "tradingMode" ).append( " : " );
+                msg.setTradingMode( MMTTradingMode.getVal( _builder.decodeByte() ) );
+            } else {
+                msg.setTradingMode( MMTTradingMode.Unknown );
+            }
+        } else {
+            if ( execIdTye == '0' || execIdTye == '1' ) {
+                msg.setMktMech( MMTMarketMechanism.CentralLimitOrderBook );
+            } else {
+                msg.setMktMech( MMTMarketMechanism.DarkOrderBook );
+            }
+            msg.setTradingMode( MMTTradingMode.Unknown );
+        }
+    }
+

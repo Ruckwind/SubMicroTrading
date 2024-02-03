@@ -1,0 +1,63 @@
+
+    private       int _curMsgRootBlockLen;
+    private       int _schemaId;
+    private       int _curMsgSchemaVersion;
+
+    private final ReusableString        _destFixMsg         = new ReusableString();
+    private       int                   _subMsgId;
+    private       int                   _packetSeqNum;
+
+    @Override public void decodeStartPacket( byte[] msg, int offset, int maxIdx, SBEPacketHeader h ) {
+        _builder.start( msg, offset, maxIdx );
+
+        h._packetSeqNum  =  _packetSeqNum  = _builder.decodeUInt();
+        h._sendTimeNanos = _builder.decodeULong();
+        _subMsgId = 0;
+    }
+
+    @Override public final int parseHeader( final byte[] msg, final int offset, final int bytesRead ) {
+       
+        _binaryMsg = msg;
+        _maxIdx = bytesRead + offset; // temp assign maxIdx to last data bytes in bufferMap
+        _offset = offset;
+        _builder.start( msg, offset, _maxIdx );
+        
+        if ( bytesRead < 8 ) {
+            ReusableString copy = TLC.instance().getString();
+            if ( bytesRead == 0 )  {
+                copy.setValue( "{empty}" );
+            } else{
+                copy.setValue( msg, offset, bytesRead );
+            }
+            throw new RuntimeDecodingException( "SBE Messsage too small, len=" + bytesRead, copy );
+        } else if ( msg.length < _maxIdx ){
+            throwDecodeException( "Buffer too small for specified bytesRead=" + bytesRead + ",offset=" + offset + ", bufLen=" + msg.length );
+        }
+        
+        _msgStatedLen        = _builder.decodeUShort();
+        _curMsgRootBlockLen  = _builder.decodeUShort();
+        _msgType             = _builder.decodeUShort(); // actually the templateId
+        _schemaId            = _builder.decodeUShort(); 
+        _curMsgSchemaVersion = _builder.decodeUShort(); 
+        
+        _maxIdx = _msgStatedLen + _offset;  // correctly assign maxIdx as last bytes of current message
+
+        if ( _maxIdx > _binaryMsg.length )  _maxIdx  = _binaryMsg.length;
+        
+        ++_subMsgId;
+        
+        return _msgStatedLen;
+    }
+
+
+    @Override public void logLastMsg() {
+        _destFixMsg.reset();
+        _destFixMsg.append( "IN  [" ).append( _packetSeqNum ).append( "] [idx#" ).append( _subMsgId ).append( "] [t#" ).append( _schemaId ).append( "] ");
+        _destFixMsg.appendHEX( _builder.getBuffer(), _builder.getOffset(), _builder.getMaxIdx() );
+
+        _log.info( _destFixMsg );
+    }
+
+    @Override public int getCurrentOffset() {
+        return _builder.getCurrentIndex();
+    }

@@ -1,0 +1,99 @@
+
+$ tcpreplay --listnics
+Available network interfaces:
+Alias   Name    Description
+%0      \Device\NPF_{5B4E6144-C734-4047-AB8C-48A6BFAC81E0}
+        MS LoopBack Driver
+%1      \Device\NPF_{94649F6E-31E4-48B1-8D1B-E5A8EB54A8BA}
+        Microsoft
+
+# note the %1 is not the loopback adapter .... IF ALL FAILS TRY UNINSTALL THEN INSTALL FROM DEVICE MANAGER
+tcpreplay --intf1=%1 --oneatatime cme.ab.channel7-3Apr2012.8.30am.pcap
+
+# tcpreplay --intf1=%1 --topspeed cme.ab.channel7-3Apr2012.8.30am.pcap
+
+
+Using : 224.000.026.001:10001
+
+channel 7 
+
+cat  CME*.log | sed -e "s/^.*\[t#//" -e "s/] .*$//" | sort | uniq -c
+
+count   templateId
+
+1919785 83
+
+  93590 103
+   6524 84
+   1485 109
+
+     20 101
+     45 97
+     30 99
+
+=========================================
+Number of message occurances
+
+$ cat CME* | grep "35=" | sed -e "s/^.*35=/35=/" -e "s/|.*$//" | sort | uniq -c
+     20 35=0
+     30 35=f
+2021429 35=X
+
+
+=========================================
+Number of MDEntries
+
+$ cat CME* | grep "35=" | sed -e "s/^.*|268=//" -e "s/|.*$//" | sort | uniq -c
+1508515 1
+ 385355 2
+  53537 3
+  20917 4
+  10889 5
+   6931 6
+   4853 7
+   3597 8
+   2825 9
+   2188 10
+   1861 11
+   1546 12
+   1393 13
+   1203 14
+   1118 15
+   1160 16
+   1131 17
+   1683 18
+   7220 19
+    519 20
+    ......
+      1 45
+
+=========================================
+Product distribution
+
+$ cat CME* | grep "|35=X|" | tr '|' '\n' | grep "^48=" | sort | uniq -c
+  39569 48=10113
+    204 48=11561
+    671 48=23970
+2995469 48=27069
+    231 48=30077
+    119 48=30381
+  70957 48=3366
+    172 48=670382
+      9 48=8987
+     36 48=9080
+      6 48=9115
+      9 48=9145
+      9 48=9220
+      9 48=9587
+      9 48=9602
+
+
+=========================================
+CME Trading Session
+
+$ cat CME* | grep "|35=X|" | tr '|' '\n' | grep "^336=" | sort | uniq -c
+    663 336=0
+      3 336=1
+2754853 336=2
+
+     

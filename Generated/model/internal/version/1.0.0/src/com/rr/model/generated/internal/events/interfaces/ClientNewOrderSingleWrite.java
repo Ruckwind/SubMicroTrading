@@ -1,88 +1,119 @@
-/*******************************************************************************
- * Copyright (c) 2015 Low Latency Trading Limited  :  Author Richard Rose
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at	http://www.apache.org/licenses/LICENSE-2.0
- * Unless required by applicable law or agreed to in writing,  software distributed under the License 
- * is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and limitations under the License.
- *******************************************************************************/
 package com.rr.model.generated.internal.events.interfaces;
 
+/*
+Copyright 2015 Low Latency Trading Limited
+Author Richard Rose
+*/
+
+import com.rr.model.generated.internal.type.RefPriceType;
 import com.rr.model.generated.internal.type.ExecInst;
 import com.rr.model.generated.internal.type.HandlInst;
 import com.rr.model.generated.internal.type.OrderCapacity;
 import com.rr.model.generated.internal.type.OrdType;
-import com.rr.core.model.SecurityType;
-import com.rr.core.model.SecurityIDSource;
 import com.rr.model.generated.internal.type.TimeInForce;
 import com.rr.model.generated.internal.type.BookingType;
-import com.rr.core.model.Instrument;
-import com.rr.core.model.ClientProfile;
-import com.rr.core.model.Currency;
+import com.rr.model.generated.internal.type.TargetStrategy;
 import com.rr.model.generated.internal.type.Side;
-import com.rr.core.lang.AssignableString;
+import com.rr.model.generated.internal.type.OrdDestType;
+import com.rr.core.utils.Utils;
+import com.rr.core.lang.*;
+import com.rr.core.model.*;
+import com.rr.core.annotations.*;
+
+@SuppressWarnings( { "unused", "override"  })
 
 public interface ClientNewOrderSingleWrite extends OrderRequest, NewOrderSingle {
 
    // Getters and Setters
-    public AssignableString getClOrdIdForUpdate();
+    AssignableString getClOrdIdForUpdate();
 
-    public AssignableString getAccountForUpdate();
+    AssignableString getAccountForUpdate();
 
-    public AssignableString getTextForUpdate();
+    AssignableString getTextForUpdate();
 
-    public AssignableString getExDestForUpdate();
+    void setPrice( double val );
 
-    public AssignableString getSecurityExchangeForUpdate();
+    void setOrderQty( double val );
 
-    public void setPrice( double val );
+    void setRefPriceType( RefPriceType val );
 
-    public void setOrderQty( int val );
+    void setTickOffset( int val );
 
-    public void setExecInst( ExecInst val );
+    void setExecInst( ExecInst val );
 
-    public void setHandlInst( HandlInst val );
+    void setHandlInst( HandlInst val );
 
-    public void setOrderCapacity( OrderCapacity val );
+    void setOrderCapacity( OrderCapacity val );
 
-    public void setOrdType( OrdType val );
+    void setOrdType( OrdType val );
 
-    public void setSecurityType( SecurityType val );
+    void setSecurityType( SecurityType val );
 
-    public void setSecurityIDSource( SecurityIDSource val );
+    void setTimeInForce( TimeInForce val );
 
-    public void setTimeInForce( TimeInForce val );
+    void setBookingType( BookingType val );
 
-    public void setBookingType( BookingType val );
+    void setTargetStrategy( TargetStrategy val );
 
-    public void setOrderReceived( long val );
+    AssignableString getStratParamsForUpdate();
 
-    public void setOrderSent( long val );
+    void setEffectiveTime( long val );
 
-    public void setInstrument( Instrument val );
+    void setExpireTime( long val );
 
-    public void setClient( ClientProfile val );
+    void setOrderReceived( long val );
 
-    public AssignableString getOrigClOrdIdForUpdate();
+    @Override void setOrderSent( long val );
 
-    public AssignableString getSecurityIdForUpdate();
+    void setInstrument( Instrument val );
 
-    public AssignableString getSymbolForUpdate();
+    void setClient( ClientProfile val );
 
-    public void setCurrency( Currency val );
+    AssignableString getOrigClOrdIdForUpdate();
 
-    public void setTransactTime( int val );
+    AssignableString getSecurityIdForUpdate();
 
-    public void setSendingTime( int val );
+    AssignableString getSymbolForUpdate();
 
-    public void setSide( Side val );
+    void setMaturityMonthYear( int val );
 
-    public AssignableString getSrcLinkIdForUpdate();
+    void setCurrency( Currency val );
 
-    public AssignableString getOnBehalfOfIdForUpdate();
+    void setSecurityIDSource( SecurityIDSource val );
 
-    public void setMsgSeqNum( int val );
+    void setTransactTime( long val );
 
-    public void setPossDupFlag( boolean val );
+    void setSide( Side val );
+
+    void setCurPos( double val );
+
+    void setCurRefPx( double val );
+
+    void setTargetDest( OrdDestType val );
+
+    AssignableString getExDestForUpdate();
+
+    void setSecurityExchange( ExchangeCode val );
+
+    void setBroker( PartyID val );
+
+    void setClearer( PartyID val );
+
+    AssignableString getParentClOrdIdForUpdate();
+
+    AssignableString getStratIdForUpdate();
+
+    AssignableString getOrigStratIdForUpdate();
+
+    void setSenderCompId( byte[] buf, int offset, int len );
+    ReusableString getSenderCompIdForUpdate();
+
+    AssignableString getOnBehalfOfIdForUpdate();
+
+    @Override void setMsgSeqNum( int val );
+
+    void setPossDupFlag( boolean val );
+
+    void setEventTimestamp( long val );
 
 }

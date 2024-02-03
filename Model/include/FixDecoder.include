@@ -1,0 +1,39 @@
+@INCLUDE BaseFixDecoder.include
+
+    private ExchangeInstrument lookupInst( final BaseOrderRequest nos, boolean throwOnMissing ) {
+        final Currency         clientCcy = nos.getCurrency();
+        final SecurityIDSource src       = nos.getSecurityIDSource();
+
+        ExchangeInstrument instr = null;
+        if ( src == null ) {
+            ExchangeCode code = nos.getSecurityExchange();
+            if ( code == null ) code = ExchangeCode.getVal( nos.getExDest() );
+            instr = _instrumentLocator.getExchInst( nos.getSymbol(), null, nos.getSecurityExchange() );
+
+        } else if ( src == SecurityIDSource.ISIN ) {
+            instr = _instrumentLocator.getExchInstByIsin( nos.getSecurityId(), nos.getSecurityExchange(), nos.getCurrency() );
+        } else {
+            int maturity = nos.getMaturityMonthYear();
+
+            if ( Utils.hasNonZeroVal( maturity ) && nos.getSecurityIDSource() == SecurityIDSource.BloombergTicker ) {
+                ExchangeCode code = nos.getSecurityExchange();
+                if ( code == null ) code = ExchangeCode.getVal( nos.getExDest() );
+
+                FutureExchangeSymbol s = FutureExchangeSymbol.getFromBloombergTicker( nos.getSecurityId(), code );
+
+                if ( s != FutureExchangeSymbol.UNKNOWN ) {
+                    instr = _instrumentLocator.getFutureInstrumentBySym( s, maturity, nos.getSecurityExchange() );
+                }
+            }
+
+            if ( instr == null ) {
+                instr = _instrumentLocator.getExchInst( nos.getSecurityId(), src, nos.getSecurityExchange() );
+            }
+        }
+
+        if ( instr == null && throwOnMissing ) {
+            throwDecodeException( "Instrument not found" );
+        }
+
+        return instr;
+    }

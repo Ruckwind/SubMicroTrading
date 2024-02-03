@@ -1,0 +1,7 @@
+@SECTION PART1 START
+<DefaultSize id="P2A" val="5"/>
+@SECTION PART1 END
+
+@SECTION PART2 START
+<DefaultSize id="P2B" val="5"/>
+@SECTION PART2 END

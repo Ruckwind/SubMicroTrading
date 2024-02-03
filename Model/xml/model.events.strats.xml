@@ -1,0 +1,137 @@
+<!--suppress ALL -->
+
+<Data>
+
+    @SECTION STRATS_EVENTS START
+
+    <!--
+        ALGO STATE
+    -->
+
+    <Event id="AppRun" extends="SessionHeader" src="both">
+        <Attribute typeId="string[USERNAME]" name="userName" tag="9046" mandatory="Y" outbound="seperate"/>
+        <Attribute typeId="UTCTimestamp" name="liveStartTimestamp" tag="9040" mandatory="Y" outbound="seperate"/>
+        <Attribute typeId="UTCTimestamp" name="liveEndTimestamp" tag="9051" mandatory="Y" outbound="seperate"/>
+        <Attribute typeId="RunStatus" name="status" tag="9041" mandatory="Y" outbound="seperate"/>
+
+        <Attribute typeId="double" name="unrealisedTotalPnL" tag="9022" mandatory="Y" outbound="seperate" defaultVal="0"/>
+        <Attribute typeId="double" name="realisedTotalPnL" tag="9039" mandatory="Y" outbound="seperate" defaultVal="0"/>
+        <Attribute typeId="int" name="numTrades" tag="9047" mandatory="Y" outbound="seperate" defaultVal="0"/>
+
+        <Attribute typeId="long" name="id" tag="9050" mandatory="Y" outbound="seperate" defaultVal="0"/>
+        <Attribute typeId="int" name="numStrategies" tag="9048" mandatory="Y" outbound="seperate"/>
+    </Event>
+
+    <SubEvent id="StratInstrument" src="both">
+        <Attribute typeId="Instrument" name="instrument" tag="9007" mandatory="Y" outbound="seperate"/>
+        <Attribute typeId="long" name="id" tag="9050" mandatory="Y" outbound="seperate" defaultVal="0"/>
+    </SubEvent>
+
+    <Event id="StrategyRun" extends="SessionHeader" src="both">
+        <Attribute typeId="string[USERNAME]" name="userName" tag="9046" mandatory="Y" outbound="seperate"/>
+        <Attribute typeId="UTCTimestamp" name="liveStartTimestamp" tag="9040" mandatory="Y" outbound="seperate"/>
+        <Attribute typeId="string[ALGO_ID_LEN]" name="idOfExportComponent" tag="9001" mandatory="Y" outbound="seperate"/>
+
+        <Attribute typeId="RunStatus" name="status" tag="9041" mandatory="Y" outbound="seperate"/>
+        <Attribute typeId="string[ALGO_ID_LEN]" name="algoId" tag="9042" mandatory="Y" outbound="seperate"/>
+        <Attribute typeId="string[TIMEZONE_LEN]" name="stratTimeZone" tag="9053" mandatory="Y" outbound="seperate"/>
+        <Attribute typeId="UTCTimestamp" name="btStartTimestamp" tag="9043" mandatory="Y" outbound="seperate"/>
+        <Attribute typeId="UTCTimestamp" name="btEndTimestamp" tag="9044" mandatory="Y" outbound="seperate"/>
+
+        <Attribute typeId="double" name="unrealisedTotalPnL" tag="9022" mandatory="Y" outbound="seperate" defaultVal="0"/>
+        <Attribute typeId="double" name="realisedTotalPnL" tag="9039" mandatory="Y" outbound="seperate" defaultVal="0"/>
+        <Attribute typeId="int" name="numTrades" tag="9047" mandatory="Y" outbound="seperate" defaultVal="0"/>
+
+        <Attribute typeId="string[STRAT_DEF_ID_LEN]" name="strategyDefinition" tag="9045" mandatory="Y" outbound="seperate"/>
+
+        <Attribute typeId="long" name="id" tag="9050" mandatory="Y" outbound="seperate" defaultVal="0"/>
+        <Attribute typeId="int" name="noInstEntries" tag="9006" mandatory="Y" outbound="seperate"/>
+
+        <Attribute typeId="StratInstrument" name="instruments" mandatory="Y" outbound="seperate" min="1" max="1000" counter="noInstEntries"/>
+    </Event>
+
+    <SubEvent id="StratInstrumentState" extraInterfaces="com.rr.core.model.PointInTime" src="both">
+
+        <Hook code="    @Override public long getEventTimestamp() { return getStratTimestamp(); };"/>
+
+        <Attribute typeId="UTCTimestamp" name="stratTimestamp" tag="9049" mandatory="Y" outbound="seperate"/>
+        <Attribute typeId="Instrument" name="instrument" tag="9007" mandatory="Y" outbound="seperate"/>
+        <Attribute typeId="double" name="position" tag="9024" mandatory="Y" outbound="seperate" defaultVal="0" desc="units of instrument currently held"/>
+
+        <Attribute typeId="double" name="unrealisedTotalPnL" tag="9022" mandatory="Y" outbound="seperate" defaultVal="0"/>
+        <Attribute typeId="double" name="fromLongRealisedTotalPnL" tag="9013" mandatory="Y" outbound="seperate" defaultVal="0"/>
+        <Attribute typeId="double" name="fromShortRealisedTotalPnL" tag="9019" mandatory="Y" outbound="seperate" defaultVal="0"/>
+
+        <Attribute typeId="double" name="unrealisedTotalPnLMin" tag="9058" mandatory="Y" outbound="seperate"/>
+        <Attribute typeId="double" name="fromLongRealisedTotalPnLMin" tag="9059" mandatory="Y" outbound="seperate"/>
+        <Attribute typeId="double" name="fromShortRealisedTotalPnLMin" tag="9060" mandatory="Y" outbound="seperate"/>
+
+        <Attribute typeId="double" name="unrealisedTotalPnLMax" tag="9061" mandatory="Y" outbound="seperate" defaultVal="0"/>
+        <Attribute typeId="double" name="fromLongRealisedTotalPnLMax" tag="9062" mandatory="Y" outbound="seperate" defaultVal="0"/>
+        <Attribute typeId="double" name="fromShortRealisedTotalPnLMax" tag="9063" mandatory="Y" outbound="seperate" defaultVal="0"/>
+
+        <Attribute typeId="boolean" name="isActiveTracker" tag="9057" mandatory="N" outbound="seperate" defaultVal="true"/>
+
+        <Attribute typeId="long" name="id" tag="9050" mandatory="Y" outbound="seperate" defaultVal="0"/>
+
+        <Attribute typeId="double" name="fromLongRealisedTotalLongValue" tag="9009" mandatory="Y" outbound="seperate" defaultVal="0"/>
+        <Attribute typeId="double" name="fromLongRealisedTotalShortValue" tag="9010" mandatory="Y" outbound="seperate" defaultVal="0"/>
+
+        <Attribute typeId="double" name="fromShortRealisedTotalLongValue" tag="9015" mandatory="Y" outbound="seperate" defaultVal="0"/>
+        <Attribute typeId="double" name="fromShortRealisedTotalShortValue" tag="9016" mandatory="Y" outbound="seperate" defaultVal="0"/>
+
+        <Attribute typeId="double" name="unrealisedTotalValue" tag="9020" mandatory="Y" outbound="seperate" defaultVal="0"/>
+
+        <Attribute typeId="double" name="lastPrice" tag="9023" mandatory="Y" outbound="seperate" defaultVal="0"/>
+        <Attribute typeId="double" name="totalTradeQty" tag="9025" mandatory="Y" outbound="seperate" defaultVal="0"/>
+        <Attribute typeId="double" name="totalTradeVal" tag="9026" mandatory="Y" outbound="seperate" defaultVal="0"/>
+        <Attribute typeId="double" name="pointValue" tag="9028" mandatory="Y" outbound="seperate" defaultVal="1"/>
+
+        <Attribute typeId="int" name="totalLongOrders" tag="9029" mandatory="Y" outbound="seperate" defaultVal="0"/>
+        <Attribute typeId="int" name="totalShortOrders" tag="9030" mandatory="Y" outbound="seperate" defaultVal="0"/>
+
+        <Attribute typeId="double" name="bidPx" tag="9033" mandatory="Y" outbound="seperate"/>
+        <Attribute typeId="double" name="askPx" tag="9034" mandatory="Y" outbound="seperate"/>
+
+        <Attribute typeId="double" name="totLongOpenQty" tag="9037" mandatory="Y" outbound="seperate" defaultVal="0"/>
+        <Attribute typeId="double" name="totShortOpenQty" tag="9038" mandatory="Y" outbound="seperate" defaultVal="0"/>
+        <Attribute typeId="int" name="numTrades" tag="9047" mandatory="Y" outbound="seperate" defaultVal="0"/>
+
+        <Attribute typeId="double" name="splitAccrualQty" mandatory="N" outbound="seperate" defaultVal="0" desc="used for pending split qty"/>
+        <Attribute typeId="double" name="splitAccrualVal" mandatory="N" outbound="seperate" defaultVal="0" desc="used for pending split"/>
+
+        <Attribute typeId="double" name="divAccrualVal" mandatory="N" outbound="seperate" defaultVal="0" desc="used for pending cash dividend"/>
+
+        <Attribute typeId="int" name="publishSeqNum" tag="9052" mandatory="Y" outbound="seperate" defaultVal="0"/>
+        <Attribute typeId="int" name="sicFlags" tag="9068" mandatory="Y" outbound="seperate" defaultVal="0"/>
+    </SubEvent>
+
+    <Event id="StrategyState" extends="SessionHeader" src="both">
+        <Attribute typeId="string[USERNAME]" name="userName" tag="9046" mandatory="Y" outbound="seperate"/>
+        <Attribute typeId="UTCTimestamp" name="liveStartTimestamp" tag="9040" mandatory="Y" outbound="seperate"/>
+        <Attribute typeId="string[ALGO_ID_LEN]" name="idOfExportComponent" tag="9001" mandatory="N" outbound="seperate"/>
+
+        <Attribute typeId="RunStatus" name="status" tag="9041" mandatory="Y" outbound="seperate"/>
+
+        <Attribute typeId="UTCTimestamp" name="stratTimestamp" tag="9049" mandatory="Y" outbound="seperate"/>
+
+        <Attribute typeId="double" name="unrealisedTotalPnL" tag="9022" mandatory="Y" outbound="seperate" defaultVal="0"/>
+        <Attribute typeId="double" name="realisedTotalPnL" tag="9039" mandatory="Y" outbound="seperate" defaultVal="0"/>
+
+        <Attribute typeId="long" name="id" tag="9050" mandatory="Y" outbound="seperate" defaultVal="0"/>
+
+        <Attribute typeId="boolean" name="isDeltaMode" tag="9056" mandatory="N" outbound="seperate"/>
+        <Attribute typeId="int" name="stratStateMsgsInGrp" tag="9054" mandatory="N" outbound="seperate"
+                   desc="number of StategyState messages in current snapshot"/>
+        <Attribute typeId="int" name="curStratStateMsgInGrp" tag="9055" mandatory="N" outbound="seperate"
+                   desc="index of this StategyState message in current snapshot"/>
+
+        <Attribute typeId="int" name="noInstEntries" tag="9006" mandatory="Y" outbound="seperate"/>
+
+        <Attribute typeId="StratInstrumentState" name="instState" mandatory="Y" outbound="seperate" min="1" max="99" counter="noInstEntries"/>
+    </Event>
+
+
+    @SECTION STRATS_EVENTS END
+
+</Data>

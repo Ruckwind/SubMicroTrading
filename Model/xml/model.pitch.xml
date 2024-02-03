@@ -1,0 +1,148 @@
+<!--suppress ALL -->
+
+@SECTION PITCH_CONSTANTS START
+    <!-- TCP PITCH constants -->
+
+    <DefaultSize id="CBOE_EUTP_SYMBOL"         val="8"/>
+
+@SECTION PITCH_CONSTANTS END
+
+
+@SECTION PITCH_TYPES START
+
+    <Type id="PitchOrderTypeIndicator">
+        <Description>Off book quote frp, Systematic Internaliser reported on TRF feed </Description>
+        <Entry name="SystematicInternaliser"  value="S"/>
+        <Entry name="Other"                   value="Z"/>
+    </Type>
+
+    <Type id="StatsPriceType">
+        <Description>Statistics Price Type</Description>
+        <Entry name="Closing"           value="C"/>
+        <Entry name="High"              value="H"/>
+        <Entry name="Low"               value="L"/>
+        <Entry name="Opening"           value="O"/>
+        <Entry name="PreviousClosing"   value="P"/>
+    </Type>
+
+    <Type id="AuctionType">
+        <Description>Auction Type</Description>
+        <Entry name="Opening"    value="O"/>
+        <Entry name="Closing"    value="C"/>
+        <Entry name="Halt"       value="H"/>
+        <Entry name="Volatility" value="V"/>
+        <Entry name="Periodic"   value="P"/>
+    </Type>
+
+    <Type id="PriceCollarTolerance">
+        <Description>Indicates whether the price on this update is outside the exchange price collar</Description>
+        <Entry name="Outside"       value="O"/>
+        <Entry name="Inside"        value="I"/>
+        <Entry name="NotSpecified"  value="-"/>
+    </Type>
+
+    <Type id="AuctionCollarIncludesPrimaryQuotes">
+        <Description>Indicates whether the BBO used to collar this update includes the Primary Market quotes</Description>
+        <Entry name="Includes"      value="P"/>
+        <Entry name="Excludes"      value="N"/>
+        <Entry name="NotSpecified"  value="-"/>
+    </Type>
+
+@SECTION PITCH_TYPES END
+
+
+@SECTION PITCH_EVENTS START
+            <Base id="BaseCboePitch" src="both">
+                <!-- msgSeqNum and possBupFlag are required to allow Millenium events to be treated as Message -->
+                <Attribute typeId="int"                           name="msgSeqNum"         mandatory="N"  outbound="seperate"/>
+                <Attribute typeId="boolean"                       name="possDupFlag"       mandatory="N"  outbound="seperate"/>
+                <Attribute typeId="UTCTimestamp"                  name="eventTimestamp"    mandatory="N"  outbound="seperate"/>
+            </Base>
+
+            <Event id="PitchSymbolClear" extends="BaseCboePitch" src="both">
+                <Attribute typeId="viewstring[CBOE_EUTP_SYMBOL]"  name="securityId"         mandatory="Y"     outbound="seperate"/>
+                <Attribute typeId="SecurityIDSource"              name="securityIdSrc"              mandatory="Y"     outbound="seperate"/>
+                <Attribute typeId="ExchangeCode"                  name="securityExchange"   mandatory="N"     outbound="seperate"/>
+            </Event>
+
+            <Event id="PitchBookAddOrder" extends="BaseCboePitch" src="both">
+                <Attribute typeId="long"                          name="orderId"            mandatory="Y"     outbound="seperate"/>
+                <Attribute typeId="Side"                          name="side"               mandatory="Y"     outbound="seperate"/>
+                <Attribute typeId="int"                           name="orderQty"           mandatory="Y"     outbound="seperate"/>
+                <Attribute typeId="viewstring[CBOE_EUTP_SYMBOL]"  name="securityId"         mandatory="Y"     outbound="seperate"/>
+                <Attribute typeId="SecurityIDSource"              name="securityIdSrc"      mandatory="Y"     outbound="seperate"/>
+                <Attribute typeId="ExchangeCode"                  name="securityExchange"   mandatory="N"     outbound="seperate"/>
+                <Attribute typeId="double"                        name="price"              mandatory="Y"     outbound="seperate"/>
+                <Attribute typeId="PitchOrderTypeIndicator"       name="typeIndic"          mandatory="N"     outbound="seperate"/>
+            </Event>
+
+            <Event id="PitchBookOrderExecuted" extends="BaseCboePitch" src="both">
+                <Attribute typeId="long"                          name="orderId"      mandatory="Y"     outbound="seperate"/>
+                <Attribute typeId="int"                           name="lastQty"      mandatory="Y"     outbound="seperate"/>
+                <Attribute typeId="long"                          name="execId"       mandatory="Y"     outbound="seperate"/>
+
+                <Attribute typeId="MMTMarketMechanism"            name="mktMech"      mandatory="Y"     outbound="seperate"/>
+                <Attribute typeId="MMTTradingMode"                name="tradingMode"  mandatory="Y"     outbound="seperate"/>
+                <Attribute typeId="MMTDividend"                   name="dividend"     mandatory="N"     outbound="seperate"/>
+                <Attribute typeId="MMTAlgorithmicTrade"           name="algoTrade"    mandatory="Y"     outbound="seperate"/>
+                <Attribute typeId="MMTTransactionCategory"        name="tranCat"      mandatory="N"     outbound="seperate"/>
+                <Attribute typeId="MMTReferencePriceIndicator"    name="refPriceInd"  mandatory="N"     outbound="seperate"/>
+            </Event>
+
+            <Event id="PitchOffBookTrade" extends="BaseCboePitch" src="both">
+                <Attribute typeId="long"                          name="orderId"      mandatory="Y"     outbound="seperate"/>
+                <Attribute typeId="Side"                          name="side"         mandatory="Y"     outbound="seperate"/>
+                <Attribute typeId="viewstring[CBOE_EUTP_SYMBOL]"  name="securityId"         mandatory="Y"     outbound="seperate"/>
+                <Attribute typeId="SecurityIDSource"              name="securityIdSrc"              mandatory="Y"     outbound="seperate"/>
+                <Attribute typeId="ExchangeCode"                  name="securityExchange"   mandatory="N"     outbound="seperate"/>
+                <Attribute typeId="int"                           name="lastQty"      mandatory="Y"     outbound="seperate"/>
+                <Attribute typeId="double"                        name="lastPx"       mandatory="Y"     outbound="seperate"/>
+                <Attribute typeId="long"                          name="execId"       mandatory="Y"     outbound="seperate"/>
+
+                <Attribute typeId="MMTMarketMechanism"            name="mktMech"      mandatory="Y"     outbound="seperate"/>
+                <Attribute typeId="MMTTradingMode"                name="tradingMode"  mandatory="Y"     outbound="seperate"/>
+                <Attribute typeId="MMTTransactionCategory"        name="tranCat"      mandatory="N"     outbound="seperate"/>
+                <Attribute typeId="MMTReferencePriceIndicator"    name="refPriceInd"  mandatory="N"     outbound="seperate"/>
+                <Attribute typeId="MMTAlgorithmicTrade"           name="algoTrade"    mandatory="Y"     outbound="seperate"/>
+            </Event>
+
+            <Event id="PitchBookCancelOrder" extends="BaseCboePitch" src="both">
+                <Attribute typeId="long"                          name="orderId"      mandatory="Y"     outbound="seperate"/>
+                <Attribute typeId="int"                           name="cancelQty"    mandatory="Y"     outbound="seperate"/>
+            </Event>
+
+            <Event id="PitchPriceStatistic" extends="BaseCboePitch" src="both">
+                <Attribute typeId="viewstring[CBOE_EUTP_SYMBOL]"  name="securityId"         mandatory="Y"     outbound="seperate"/>
+                <Attribute typeId="SecurityIDSource"              name="securityIdSrc"              mandatory="Y"     outbound="seperate"/>
+                <Attribute typeId="ExchangeCode"                  name="securityExchange"   mandatory="N"     outbound="seperate"/>
+                <Attribute typeId="double"                        name="price"        mandatory="Y"     outbound="seperate"/>
+                <Attribute typeId="StatsPriceType"                name="statType"     mandatory="Y"     outbound="seperate"/>
+            </Event>
+
+            <Event id="AuctionUpdate" extends="BaseCboePitch" src="both">
+                <Attribute typeId="viewstring[CBOE_EUTP_SYMBOL]"  name="securityId"         mandatory="Y"     outbound="seperate"/>
+                <Attribute typeId="SecurityIDSource"              name="securityIdSrc"              mandatory="Y"     outbound="seperate"/>
+                <Attribute typeId="ExchangeCode"                  name="securityExchange"   mandatory="N"     outbound="seperate"/>
+                <Attribute typeId="AuctionType"                         name="auctionType"        mandatory="Y"     outbound="seperate"/>
+                <Attribute typeId="double"                              name="refPrice"           mandatory="Y"     outbound="seperate"/>
+                <Attribute typeId="double"                              name="indicativePrice"    mandatory="Y"     outbound="seperate"/>
+                <Attribute typeId="int"                                 name="indicativeShares"   mandatory="Y"     outbound="seperate"/>
+                <Attribute typeId="PriceCollarTolerance"                name="priceCollarTol"     mandatory="Y"     outbound="seperate"/>
+                <Attribute typeId="AuctionCollarIncludesPrimaryQuotes"  name="incPrimary"         mandatory="Y"     outbound="seperate"/>
+            </Event>
+
+            <Event id="AuctionSummary" extends="BaseCboePitch" src="both">
+                <Attribute typeId="viewstring[CBOE_EUTP_SYMBOL]"  name="securityId"         mandatory="Y"     outbound="seperate"/>
+                <Attribute typeId="SecurityIDSource"              name="securityIdSrc"              mandatory="Y"     outbound="seperate"/>
+                <Attribute typeId="ExchangeCode"                  name="securityExchange"   mandatory="N"     outbound="seperate"/>
+                <Attribute typeId="AuctionType"                         name="auctionType"        mandatory="Y"     outbound="seperate"/>
+                <Attribute typeId="double"                              name="price"              mandatory="Y"     outbound="seperate"/>
+                <Attribute typeId="int"                                 name="qty"                mandatory="Y"     outbound="seperate"/>
+                <Attribute typeId="PriceCollarTolerance"                name="priceCollarTol"     mandatory="Y"     outbound="seperate"/>
+                <Attribute typeId="AuctionCollarIncludesPrimaryQuotes"  name="incPrimary"         mandatory="Y"     outbound="seperate"/>
+            </Event>
+
+
+@SECTION PITCH_EVENTS END
+
+

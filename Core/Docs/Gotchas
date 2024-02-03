@@ -1,0 +1,33 @@
+
+GOTCHA 1)  careful shifting
+
+        long _curPageNoKeyMask;
+        int _curPageNo = 1;
+        _curPageNoKeyMask   = _curPageNo << 32L;
+
+because curPageNo is an INT the result is 1 not 4GB !!  Need this :-
+
+        _curPageNoKeyMask   = (long)_curPageNo << 32L;
+
+The same holds true for multiplication, if _instanceSeed is int then mult by factor can overflow and give -ve number
+        _counter = _instanceSeed * factor + msecsSinceStartOFDay;
+
+        
+2) Fields vars are initialised, local vars are NOT
+
+3) careful shifting right use >>> to insert 0  in far left (unless casting down to byte where the new leftmost bits are not required)
+
+4) dont run java from shell script without nohup & as when the shell exits while the java program is in shutdown hooks and terminates prematurely
+
+5) keep methods small, large methods confuse the compiler and can be RECOMPILED many times
+        
+6) local binding didnt work with IPV6 ... run with -Djava.net.preferIPv4Stack=true
+
+7) beware complex lines can be recompiled
+
+        order.setClientProfile( (OMClientProfile) msg.getClient() );
+        _orderMap.put( _reusableStringFactory.get().copy( msg.getClOrdId() ), order );
+
+8) avoid static factory pools !
+
+9) be aware of the lifecycle of keys in maps, eg dont put a clOrdId from an event which may be recycled !        

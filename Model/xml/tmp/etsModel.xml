@@ -1,0 +1,3112 @@
+<?xml version="1.0"?>
+<Model xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="file:///c:/Working/dev/NewProj/Model/xml/model.xsd">
+
+    <InternalModel version="1.0.0" dir="../generated/model/internal/version" rootPackage="com.rr.model.generated.internal">
+
+        <!-- internal model values based on fix 4.4 -->
+
+        <Sizes> <!-- will be placed into an OM size enum file -->
+
+            <DefaultSize id="ACCOUNT_LENGTH" val="5"/>
+            <DefaultSize id="CLIENTID_LENGTH" val="5"/>
+            <DefaultSize id="CLORDID_LENGTH" val="20"/>
+            <DefaultSize id="SRC_LINKID_LENGTH" val="20"/>
+            <DefaultSize id="CURRENCY_LENGTH" val="3"/>
+            <DefaultSize id="ORDERID_LENGTH" val="10"/>
+            <DefaultSize id="EXDESTINATION_LENGTH" val="3"/>
+            <DefaultSize id="EXECID_LENGTH" val="10"/>
+            <DefaultSize id="MARKETORDERREF_LENGTH" val="10"/>
+            <DefaultSize id="SECURITYID_LENGTH" val="12"/>
+            <DefaultSize id="ONBEHALFOFID_LENGTH" val="10"/>
+            <DefaultSize id="EXECBROKER_LENGTH" val="10"/>
+            <DefaultSize id="SYMBOL_LENGTH" val="12"/>
+            <DefaultSize id="COMPID_LENGTH" val="10"/>
+            <DefaultSize id="SENDERLOCID_LENGTH" val="8"/>
+            <DefaultSize id="TEXT_LENGTH" val="4"/>
+            <DefaultSize id="TRADE_TEXT_LENGTH" val="4"/>
+            <DefaultSize id="BENCHMARK_LENGTH" val="16"/>
+            <DefaultSize id="USERNAME" val="10"/>
+            <DefaultSize id="PASSWORD" val="10"/>
+            <DefaultSize id="LASTMKT_LENGTH" val="4"/>
+            <DefaultSize id="SECURITYEXCH_LENGTH" val="4"/>
+            <DefaultSize id="SUBPARTYGRPID_LENGTH" val="10"/>
+            <DefaultSize id="MATURITYMONTHYEAR_LENGTH" val="6"/>
+            <DefaultSize id="MATURITYDAY_LENGTH" val="2"/>
+            <DefaultSize id="VIEW_NOS_BUFFER" val="400"/>
+            <DefaultSize id="MIN_ENCODE_BUFFER" val="128"/>
+            <DefaultSize id="TESTRECID_LENGTH" val="16"/>
+            <DefaultSize id="USERNAME_LENGTH" val="15"/>
+            <DefaultSize id="TAG_LEN" val="4"/>
+
+            <!-- UTP constants -->
+
+            <DefaultSize id="UTP_TEXT_LENGTH" val="11"/>
+            <DefaultSize id="UTP_REJECT_TEXT_LENGTH" val="40"/>
+            <DefaultSize id="UTP_MIC_LEN" val="4"/>
+            <DefaultSize id="UTP_CCY_LEN" val="3"/>
+            <DefaultSize id="UTP_SYMBOL_LEN" val="12"/>
+            <DefaultSize id="UTP_COMP_ID_LEN" val="11"/>
+            <DefaultSize id="UTP_GIVE_UP_FIRM_LEN" val="8"/>
+            <DefaultSize id="UTP_ACCOUNT_LEN" val="12"/>
+            <DefaultSize id="UTP_NOS_FREE_TEXT1_LEN" val="18"/>
+            <DefaultSize id="UTP_INST_CLASS_LEN" val="2"/>
+            <DefaultSize id="UTP_INST_CLASS_STATUS_LEN" val="4"/>
+            <DefaultSize id="UTP_TRADING_SESSION_ID_LEN" val="4"/>
+
+            <!-- Millenium constants -->
+
+            <DefaultSize id="MILL_USER_NAME_LENGTH" val="25"/>
+            <DefaultSize id="MILL_PASSWORD_LENGTH" val="25"/>
+            <DefaultSize id="MILL_PASSWORD_EXPIRY_LENGTH" val="30"/>
+            <DefaultSize id="MILL_REASON_LENGTH" val="20"/>
+            <DefaultSize id="MILL_REJECT_REASON_LENGTH" val="30"/>
+            <DefaultSize id="MILL_CLORDID_LENGTH" val="20"/>
+            <DefaultSize id="MILL_ORDERID_LENGTH" val="12"/>
+            <DefaultSize id="MILL_ACCOUNT_LENGTH" val="10"/>
+            <DefaultSize id="MILL_EXECID_LENGTH" val="12"/>
+            <DefaultSize id="MILL_CPARTY_LENGTH" val="11"/>
+
+
+            <!-- ETS constants -->
+
+            <DefaultSize id="ISIN_LENGTH" val="12"/>
+
+            <DefaultSize id="ETS_MEMBER_ID_LENGTH" val="5"/>
+            <DefaultSize id="ETS_USER_APP_ID_LENGTH" val="16"/>
+            <DefaultSize id="ETS_CONFIG_ID_LENGTH" val="30"/>
+            <DefaultSize id="ETS_GATEWAY_IP_LENGTH" val="39"/>
+            <DefaultSize id="ETS_PASSWORD_LENGTH" val="8"/>
+            <DefaultSize id="ETS_USERNAME_LENGTH" val="11"/>
+            <DefaultSize id="ETS_PROD_TYPE_NAME_LENGTH" val="15"/>
+            <DefaultSize id="ETS_PROD_LENGTH" val="4"/>
+            <DefaultSize id="ETS_PROD_NAME_LENGTH" val="30"/>
+
+
+        </Sizes>
+
+
+        <Instruction>RestrictMultiValueFieldsToSingleValue</Instruction>
+
+        <Types>
+            <Type id="Currency" isHandCoded="true" maxValueLen="3" package="com.rr.core.model">
+                <Description>Identifies currency used for price. Absence of this field is interpreted as the default for the security. It is recommended that
+                    systems provide the currency value whenever possible.
+                </Description>
+            </Type>
+
+            <Type id="ExecType" isHandCoded="true" package="com.rr.model.internal.type">
+                <Description>Describes the specific Execution Report (8) (i.e. Pending Cancel) while OrdStatus (39) will always identify the current order
+                    status (i.e. Partially Filled)
+                </Description>
+            </Type>
+
+            <Type id="Instrument" isHandCoded="true" package="com.rr.core.model">
+                <Description></Description>
+            </Type>
+
+            <Type id="Book" isHandCoded="true" package="com.rr.core.model">
+                <Description></Description>
+            </Type>
+
+            <Type id="ClientProfile" isHandCoded="true" package="com.rr.core.model">
+                <Description></Description>
+            </Type>
+
+            <Type id="SecurityIDSource" isHandCoded="true" package="com.rr.core.model">
+                <Description>Identifies class or source of the SecurityID (48) value. Required if SecurityID (48) is specified</Description>
+                <!-- formerly named: IDSource prior to FIX 4.3 ... handcrafted as required in core -->
+            </Type>
+
+            <Type id="ProductType" isHandCoded="true" package="com.rr.core.model">
+                <Description></Description>
+            </Type>
+
+            <Type id="SecurityType" isHandCoded="true" package="com.rr.core.model">
+                <Description>Indicates type of security. See also the Product (460) and CFICode (461) fields. It is recommended that CFICode (461) be used
+                    instead of SecurityType (167) for non-Fixed Income instruments
+                </Description>
+            </Type>
+
+            <Type id="ExecTransType">
+                <Description>Fix 4.3 and prev : Identifies transaction type</Description>
+                <Entry name="New" value="0"/>
+                <Entry name="Cancel" value="1"/>
+                <Entry name="Correct" value="2"/>
+                <Entry name="Status" value="3"/>
+            </Type>
+
+            <Type id="BookingType">
+                <Description>Method for booking out this order. Used when notifying a broker that an order to be settled by that broker is to be booked out as
+                    an OTC derivative (e.g. CFD or similar)
+                </Description>
+                <Entry name="Regular" value="0"/>
+                <Entry name="CFD" value="1"/>
+                <Entry name="TotalReturnSwap" value="2"/>
+            </Type>
+
+            <Type id="CxlRejReason">
+                <Description>Code to identify reason for cancel rejection</Description>
+                <Entry name="UnknownOrder" value="1"/>
+                <Entry name="BrokerOption" value="2"/>
+                <Entry name="AlreadyPending" value="3"/>
+                <Entry name="UnableProcMassCancel" value="4"/>
+                <Entry name="OrigOrdModeTimeMismatch" value="5"/>
+                <Entry name="DuplicateClOrdId" value="6"/>
+                <Entry name="Other" value="99"/>
+            </Type>
+
+            <Type id="CxlRejResponseTo">
+                <Description>Identifies the type of request that a Order Cancel Reject (9) is in response to</Description>
+                <Entry name="CancelRequest" value="1"/>
+                <Entry name="CancelReplace" value="2"/>
+            </Type>
+
+            <Type id="EncryptMethod">
+                <Description>Method of encryption</Description>
+                <Entry name="PKCS" value="1"/>
+                <Entry name="DES" value="2"/>
+                <Entry name="PKCS_DES" value="3"/>
+                <Entry name="PGP_DES" value="4"/>
+                <Entry name="PGP_DES_MD5" value="5"/>
+                <Entry name="PEM_DES_MD5" value="6"/>
+            </Type>
+
+            <Type id="ExecInst" multiValue="1">
+                <Description>Instructions for order handling on exchange trading floor. If more than one instruction is applicable to an order, this field can
+                    contain multiple instructions separated by space
+                </Description>
+                <Entry name="NotHeld" value="1"/>
+                <Entry name="Work" value="2"/>
+                <Entry name="GoAlong" value="3"/>
+                <Entry name="OverTheDay" value="4"/>
+                <Entry name="Held" value="5"/>
+                <Entry name="PaticipateNotInitiate" value="6"/>
+                <Entry name="StrictScale" value="7"/>
+                <Entry name="TryToScale" value="8"/>
+                <Entry name="StayOnBidSide" value="9"/>
+                <Entry name="StayOnOfferSide" value="0"/>
+                <Entry name="NoCross" value="A"/>
+                <Entry name="OkToCross" value="B"/>
+                <Entry name="CallFirst" value="C"/>
+                <Entry name="PercentageOfVolume" value="D"/>
+                <Entry name="DoNotIncrease" value="E"/>
+                <Entry name="DoNotReduce" value="F"/>
+                <Entry name="AllOrNone" value="G"/>
+                <Entry name="ReinstateOnSysFail" value="H"/>
+                <Entry name="InstitutesOnly" value="I"/>
+                <Entry name="ReinstateOnTradHalt" value="J"/>
+                <Entry name="CancelOnTradeHalt" value="K"/>
+                <Entry name="LastPeg" value="L"/>
+                <Entry name="MidPricePeg" value="M"/>
+                <Entry name="NonNegotiable" value="N"/>
+                <Entry name="OpeningPeg" value="O"/>
+                <Entry name="MarketPeg" value="P"/>
+                <Entry name="CancelOnSysFail" value="Q"/>
+                <Entry name="PrimaryPeg" value="R"/>
+                <Entry name="Suspend" value="S"/>
+                <Entry name="CustDispInst" value="U"/>
+                <Entry name="Netting" value="V"/>
+                <Entry name="PegToVWAP" value="W"/>
+                <Entry name="TradeAlong" value="X"/>
+                <Entry name="TryToStop" value="Y"/>
+                <Entry name="CancelIfNotBest" value="Z"/>
+                <Entry name="TrailingStopPeg" value="a"/>
+                <Entry name="StrictLimit" value="b"/>
+                <Entry name="IgnorePriceValidCheck" value="c"/>
+                <Entry name="PegToLimitPrice" value="d"/>
+                <Entry name="WorkToTgtStrat" value="e"/>
+            </Type>
+
+            <Type id="HandlInst">
+                <Description>Instructions for order handling on Broker trading floor</Description>
+                <Entry name="AutoExecPrivate" value="1"/>
+                <Entry name="AutoExecPublic" value="2"/>
+                <Entry name="ManualBestExec" value="3"/>
+            </Type>
+
+
+            <Type id="OrdRejReason">
+                <Description>Code to identify reason for order rejection</Description>
+                <Entry name="UnknownSymbol" value="1"/>
+                <Entry name="ExchangeClosed" value="2"/>
+                <Entry name="OrderExceedsLimit" value="3"/>
+                <Entry name="TooLateToEnter" value="4"/>
+                <Entry name="UnknownOrder" value="5"/>
+                <Entry name="DuplicateOrder" value="6"/>
+                <Entry name="DupOfVerbalOrder" value="7"/>
+                <Entry name="StaleOrder" value="8"/>
+                <Entry name="TradeAlongReq" value="9"/>
+                <Entry name="InvalidInvestorId" value="10"/>
+                <Entry name="UnsupOrdCharacteristic" value="11"/>
+                <Entry name="SurveillenceOption" value="12"/>
+                <Entry name="IncorrectQuantity" value="13"/>
+                <Entry name="IncorrectAllocQty" value="14"/>
+                <Entry name="UnknownAccounts" value="15"/>
+                <Entry name="Other" value="99"/>
+            </Type>
+
+            <Type id="OrdStatus">
+                <Description>Identifies current status of order
+                    <br/>
+                    In an execution report the OrdStatus is used to convey the current state of the order. If an order simultaneously exists in more than one
+                    order state, the value
+                    with highest precedence is the value that is reported in the OrdStatus field. The order statuses are as follows (in highest to lowest
+                    precedence):
+
+                    11 - Pending Cancel
+                    10 - Pending Replace
+                    9 - Done for Day (Order not, or partially, filled; no further executions forthcoming for the trading day)
+                    8 - Calculated (Order has been completed for the day (either filled or done for day).
+                    7 - Filled (Order completely filled, no remaining quantity)
+                    6 - Stopped (Order has been stopped at the exchange. Used when guranteeing or protecting a price and quantity)
+                    5 - Suspended (Order has been placed in suspended state at the request of the client.)
+                    4 - Canceled (Canceled order with or without executions)
+                    4 - Expired (Order has been canceled in broker's system due to time in force instructions.)
+                    3 - Partially Filled (Outstanding order with executions and remaining quantity)
+                    2 - New (Outstanding order with no executions)
+                    2 - Rejected (Order has been rejected by sell-side (broker, exchange, ECN).
+                    NOTE: An order can be rejected subsequent to order acknowledgment,
+                    i.e. an order can pass from New to Rejected status.
+                    2 - Pending New (Order has been received by sell-side's (broker, exchange, ECN) system
+                    but not yet accepted for execution. An execution message
+                    with this status will only be sent in response to a Status Request message.)
+                    1 - Accepted for bidding (Order has been received and is being evaluated for pricing.
+                    It is anticipated that this status will only be used with the
+                    "Disclosed" BidType List Order Trading model.)
+                </Description>
+
+                <Default>
+                    <Attribute name="isPending" typeId="boolean" value="false"/>
+                    <Attribute name="isTerminal" typeId="boolean" value="false"/>
+                </Default>
+
+                <Entry name="New" value="0"/>
+                <Entry name="PartiallyFilled" value="1"/>
+                <Entry name="Filled" value="2">
+                    <Attribute name="isTerminal" typeId="boolean" value="true"/>
+                </Entry>
+                <Entry name="DoneForDay" value="3">
+                    <Attribute name="isTerminal" typeId="boolean" value="true"/>
+                </Entry>
+                <Entry name="Canceled" value="4">
+                    <Attribute name="isTerminal" typeId="boolean" value="true"/>
+                </Entry>
+                <Entry name="Replaced" value="5"/>
+                <Entry name="PendingCancel" value="6">
+                    <Attribute name="isPending" typeId="boolean" value="true"/>
+                </Entry>
+                <Entry name="Stopped" value="7">
+                    <Attribute name="isTerminal" typeId="boolean" value="true"/>
+                </Entry>
+                <Entry name="Rejected" value="8">
+                    <Attribute name="isTerminal" typeId="boolean" value="true"/>
+                </Entry>
+                <Entry name="Suspended" value="9"/>
+                <Entry name="PendingNew" value="A">
+                    <Attribute name="isPending" typeId="boolean" value="true"/>
+                </Entry>
+                <Entry name="Calculated" value="B"/>
+                <Entry name="Expired" value="C">
+                    <Attribute name="isTerminal" typeId="boolean" value="true"/>
+                </Entry>
+                <Entry name="Restated" value="D"/>
+                <Entry name="PendingReplace" value="E">
+                    <Attribute name="isPending" typeId="boolean" value="true"/>
+                </Entry>
+                <Entry name="UnseenOrder" value="F"/> <!-- CUSTOM denotes exec for unknown order -->
+
+            </Type>
+
+            <Type id="OrderCapacity">
+                <Description>Designates the capacity of the firm placing the order</Description>
+                <!-- as of FIX 4.3, this field replaced Rule80A (tag 47) - used in conjunction with OrderRestrictions (529) field -->
+                <Entry name="Proprietary" value="G"/>
+                <Entry name="Individual" value="I"/>
+                <Entry name="Principal" value="P"/>
+                <Entry name="RisklessPrincipal" value="R"/>
+                <Entry name="AgentForOtherMember" value="W"/>
+            </Type>
+
+            <Type id="OrderRestrictions" multiValue="1">
+                <Description>Restrictions associated with an order. If more than one restriction is applicable to an order, this field can contain multiple
+                    instructions separated by space
+                </Description>
+                <Entry name="ProgramTrade" value="1"/>
+                <Entry name="IndexArbitrage" value="2"/>
+                <Entry name="NonIndexArbitrage" value="3"/>
+                <Entry name="CompetingMarketMaker" value="4"/>
+                <Entry name="SpecialistInSecurity" value="5"/>
+                <Entry name="SpecialistInUnderlyingSec" value="6"/>
+                <Entry name="ForeignEntity" value="7"/>
+                <Entry name="ExtMarketParticipant" value="8"/>
+                <Entry name="ExtInterConnectMktLink" value="9"/>
+                <Entry name="RisklessArbitrage" value="A"/>
+            </Type>
+
+            <Type id="OrdType">
+                <Description></Description>
+                <Entry name="Market" value="1"/>
+                <Entry name="Limit" value="2"/>
+                <Entry name="Stop" value="3"/>
+                <Entry name="StopLimit" value="4"/>
+                <Entry name="WithOrWithout" value="6"/>
+                <Entry name="LimitOrBetter" value="7"/>
+                <Entry name="LimitWithOrWithout" value="8"/>
+                <Entry name="OnBasis" value="9"/>
+                <Entry name="PrevQuoted" value="D"/>
+                <Entry name="PrevIndicated" value="E"/>
+                <Entry name="ForexSwap" value="G"/>
+                <Entry name="Funari" value="I"/> <!-- Limit Day Order with unexecuted portion handled as Market On Close. e.g. Japan -->
+                <Entry name="MarketIfTouched" value="J"/>
+                <Entry name="MktWithLeftOverAsLimit" value="K"/>
+                <Entry name="PrevFundValPoint" value="L"/>
+                <Entry name="NextFundValPoint" value="M"/>
+                <Entry name="Pegged" value="P"/>
+            </Type>
+
+            <Type id="PartyIDSource">
+                <Description>Identifies class or source of the PartyID (448) value. Required if PartyID (448) is specified. Note: applicable values depend upon
+                    PartyRole (452) specified
+                </Description>
+                <!-- See "Appendix 6-G - Use of <Parties> Component Block" of FIX Specification -->
+                <Entry name="BIC" value="B"/>
+                <Entry name="MktParticipantId" value="C"/> <!-- eg NASD mnemonic -->
+                <Entry name="CustomCode" value="D"/>
+                <Entry name="ISOCountryCode" value="E"/>
+                <Entry name="SettlementEntityLoc" value="F"/>
+                <Entry name="MIC" value="G"/>
+                <Entry name="CSD" value="H"/>
+                <Entry name="KoreanInvestorId" value="1"/>
+                <Entry name="TaiQFII" value="2"/>
+                <Entry name="TaiTradingAccount" value="3"/>
+                <Entry name="MalayCentralDepNum" value="4"/>
+                <Entry name="ChineseBShare" value="5"/>
+                <Entry name="UKNationalInsNum" value="6"/>
+                <Entry name="USSocialSecNum" value="7"/>
+                <Entry name="USEmpIdNum" value="8"/>
+                <Entry name="AustralianBizNum" value="9"/>
+                <Entry name="AustralianTaxNum" value="A"/>
+                <Entry name="DirectedBrokerCore"
+                       value="I"/> <!-- Directed broker three character acronym as defined in ISITC 'ETC Best Practice' guidelines document -->
+            </Type>
+
+            <Type id="PositionEffect">
+                <Description>Indicates whether the resulting position after a trade should be an opening position or closing position. Used for omnibus
+                    accounting - where accounts are held on a gross basis instead of being netted together
+                </Description>
+                <!-- formerly named: OpenClose prior to FIX 4.3 -->
+                <Entry name="Open" value="O"/>
+                <Entry name="Close" value="C"/>
+                <Entry name="Rolled" value="R"/>
+                <Entry name="FIFO" value="F"/>
+            </Type>
+
+            <!-- HAD TO MOVE TO CORE AS USED BY INSTRUMENT
+                <Type id="SecurityType">
+                    <Description>Indicates type of security. See also the Product (460) and CFICode (461) fields. It is recommended that CFICode (461) be used instead of SecurityType (167) for non-Fixed Income instruments</Description>
+
+                    <Default>
+                        <Attribute name="prodType" typeId="ProductType" value="Other"/>
+                    </Default>
+
+                    <Entry name="Option" value="FUT">
+                        <Attribute name="prodType" typeId="ProductType" value="Option"/>
+                    </Entry>
+                    <Entry name="Future" value="OPT">
+                        <Attribute name="prodType" typeId="ProductType" value="Future"/>
+                    </Entry>
+                    <Entry name="Equity" value="EQUITY">
+                        <Attribute name="prodType" typeId="ProductType" value="Equity"/>
+                    </Entry>
+
+                    <Entry name="Cash" value="CASH"/>
+
+                    FOLLOWING ENTRIES NOT CURRENTLY USED
+
+                    <Entry name="FederalGov" 				value="TREASURY"/>
+                    <Entry name="StateProvince" 			value="PROVINCE"/>
+                    <Entry name="FederalAgency" 			value="AGENCY"/>
+                    <Entry name="MortgagePassThru" 			value="MORTGAGE"/>
+                    <Entry name="ComercialPaper" 			value="CP"/>
+                    <Entry name="Corporate" 				value="CORP"/>
+                    <Entry name="SupraNationalAgency" 		value="SUPRA"/>
+                    <Entry name="EUSupraNatCoupons" 		value="EUSUPRA"/>
+                    <Entry name="FedAgencyCoupon" 			value="FAC"/>
+                    <Entry name="FedAgencyDiscountNote" 	value="FADN"/>
+                    <Entry name="PrivExportFunding" 		value="PEF"/>
+                    <Entry name="CorporateBond" 			value="CORP"/>
+                    <Entry name="DualCcy" 					value="DUAL"/>
+                    <Entry name="EuroCorpBond" 				value="EUCORP"/>
+                    <Entry name="IndexedLinked" 			value="XLINKD"/>
+                    <Entry name="StructNotes" 				value="STRUCT"/>
+                    <Entry name="YankCorpBond" 				value="YANK"/>
+                    <Entry name="ForeignExContract" 		value="FOR"/>
+                    <Entry name="CommonStock" 				value="CS"/>
+                    <Entry name="PreferredStock" 			value="PS"/>
+                    <Entry name="BradyBond" 				value="BRANDY"/>
+                    <Entry name="EuroSovereigns" 			value="EUSOV"/>
+                    <Entry name="USTreasuryBond" 			value="TBOND"/>
+                    <Entry name="InterestStip" 				value="TINT"/>
+                    <Entry name="TreasuryInflatProt" 		value="TIPS"/>
+                    <Entry name="PrincipalStripCallable" 	value="TCAL"/>
+                    <Entry name="PrincipleStripNonCall" 	value="TPRN"/>
+                    <Entry name="USTreasNote_DEPRECATED" 	value="UST"/>
+                    <Entry name="USTreasBill_DEPRECATED" 	value="USTB"/>
+                    <Entry name="USTreasNote" 				value="TNOTE"/>
+                    <Entry name="USTreasBill" 				value="TBILL"/>
+                    <Entry name="Repurchase" 				value="REPO"/>
+                    <Entry name="Forward" 					value="FORWARD"/>
+                    <Entry name="BuySellback" 				value="BUYSELL"/>
+                    <Entry name="SecuritiesLoan" 			value="SECLOAN"/>
+                    <Entry name="SecuritiesPledge" 			value="SECPLEDGE"/>
+                    <Entry name="TermLoan" 					value="TERM"/>
+                    <Entry name="RevolverLoad" 				value="RVLV"/>
+                    <Entry name="TermLoan" 					value="RVLVTRM"/>
+                    <Entry name="BridgeLoan" 				value="BRIDGE"/>
+                    <Entry name="LetterOfCredit" 			value="LOFC"/>
+                    <Entry name="SwingLineFacility" 		value="SWING"/>
+                    <Entry name="DebtorInPoss" 				value="DINP"/>
+                    <Entry name="Defaulted" 				value="DEFLTED"/>
+                    <Entry name="Withdrawn" 				value="WITHDRN"/>
+                    <Entry name="Replaced" 					value="REPLACD"/>
+                    <Entry name="Matured" 					value="MATURED"/>
+                    <Entry name="AmendedAndRestated" 		value="AMENDED"/>
+                    <Entry name="Retired" 					value="RETIRED"/>
+                    <Entry name="BankersAcceptance" 		value="BA"/>
+                    <Entry name="BankeNotes" 				value="BN"/>
+                    <Entry name="BillOfExchanges" 			value="BOX"/>
+                    <Entry name="CertOfDeposits" 			value="CD"/>
+                    <Entry name="CallLoans" 				value="CL"/>
+                    <Entry name="CommercialPaper" 			value="CP"/>
+                    <Entry name="DepositNote" 				value="DN"/>
+                    <Entry name="EuroCertDeposit" 			value="EUCD"/>
+                    <Entry name="EuroCommercialPaper" 		value="EUCP"/>
+                    <Entry name="LiquidityNote" 			value="LQN"/>
+                    <Entry name="MedTermNote" 				value="MTN"/>
+                    <Entry name="Overnight" 				value="ONITE"/>
+                    <Entry name="PromissoryNote" 			value="PN"/>
+                    <Entry name="PlazosFijos" 				value="PZFJ"/>
+                    <Entry name="ShortTermLoanNote" 		value="STN"/>
+                    <Entry name="TimeDeposit" 				value="TD"/>
+                    <Entry name="ExtendedCommNote" 			value="XCN"/>
+                    <Entry name="YankeeCertDeposit" 		value="YCD"/>
+                    <Entry name="AssetBackedSecurity" 		value="ABS"/>
+                    <Entry name="CorpMortgageBackSec" 		value="CMBS"/>
+                    <Entry name="CollateralMortObligation" 	value="CMO"/>
+                    <Entry name="IOETTEMortgage" 			value="IET"/>
+                    <Entry name="MortgageBackedSec" 		value="MBS"/>
+                    <Entry name="MortgageInterestOnly" 		value="MIO"/>
+                    <Entry name="MortgagePrincipalOnly" 	value="MPO"/>
+                    <Entry name="MortgagePrivatePlacement" 	value="MPP"/>
+                    <Entry name="MiscPassThru" 				value="MPT"/>
+                    <Entry name="Pfandbriefe" 				value="PFAND"/>
+                    <Entry name="ToBeAnnounced" 			value="TBA"/>
+                    <Entry name="OtherAnticipationNotes" 	value="AN"/>
+                    <Entry name="CertOfObligation" 			value="COFO"/>
+                    <Entry name="CertOfParticipation" 		value="COFP"/>
+                    <Entry name="GeneralObligationBonds" 	value="GO"/>
+                    <Entry name="MandatoryTender" 			value="MT"/>
+                    <Entry name="RevenueAnticipationNote" 	value="RAN"/>
+                    <Entry name="RevenueBonds" 				value="REV"/>
+                    <Entry name="SpecialAssessment" 		value="SPCLA"/>
+                    <Entry name="SpecialObligation" 		value="SPCLO"/>
+                    <Entry name="SpecialTax" 				value="SPCLT"/>
+                    <Entry name="TaxAnticipationNote" 		value="TAN"/>
+                    <Entry name="TaxAllocation" 			value="TAXA"/>
+                    <Entry name="TaxExempt" 				value="TECP"/>
+                    <Entry name="TaxAndRevAnticipNote" 		value="TRAN"/>
+                    <Entry name="VarRateDemandNote" 		value="VRDN"/>
+                    <Entry name="Warrant" 					value="WAR"/>
+                    <Entry name="Mutual Fund" 				value="MF"/>
+                    <Entry name="MultiLeg" 					value="MLEG"/>
+                    <Entry name="NoSecurityType" 			value="NONE"/>
+                </Type>
+            -->
+
+            <Type id="Side">
+                <Description>Side of order</Description>
+
+                <Default>
+                    <Attribute name="isBuySide" typeId="boolean" value="false"/>
+                </Default>
+
+                <Entry name="Buy" value="1">
+                    <Attribute name="isBuySide" typeId="boolean" value="true"/>
+                </Entry>
+                <Entry name="Sell" value="2"/>
+                <Entry name="BuyMinus" value="3">
+                    <Attribute name="isBuySide" typeId="boolean" value="true"/>
+                </Entry>
+                <Entry name="SellPlus" value="4"/>
+                <Entry name="SellShort" value="5"/>
+                <Entry name="SellShortExempt" value="6"/>
+
+                <!-- 
+					<Entry name="Undisc" value="7"/>
+					<Entry name="Cross" value="8"/>
+					<Entry name="CrossShort" value="9"/>
+					<Entry name="CrossShortExempt" value="A"/>
+					<Entry name="AsDefined" value="B"/>
+					<Entry name="Opposite" value="C"/>
+					<Entry name="Subscribe" value="D"/>
+					<Entry name="Redeem" value="E"/>
+					<Entry name="Lend" value="F"/>
+					<Entry name="Borrow" value="G"/>
+			    -->
+            </Type>
+
+            <Type id="TimeInForce">
+                <Description>Specifies how long the order remains in effect. Absence of this field is interpreted as DAY. NOTE not applicable to CIV Orders
+                </Description>
+                <Entry name="Day" value="0"/>
+                <Entry name="GoodTillCancel" value="1"/>
+                <Entry name="AtTheOpening" value="2"/>
+                <Entry name="ImmediateOrCancel" value="3"/>
+                <Entry name="FillOrKill" value="4"/>
+                <Entry name="GoodTillCrossing" value="5"/>
+                <Entry name="GoodTillDate" value="6"/>
+                <Entry name="AtTheClose" value="7"/>
+            </Type>
+
+            <Type id="LiquidityInd">
+                <Description>Indicator to identify whether this fill was a result of a liquidity provider providing or liquidity taker taking the liquidity.
+                    Applicable only for OrdStatus (39) of Partial or Filled
+                </Description>
+                <Entry name="AddedLiquidity" value="1"/>
+                <Entry name="RemovedLiquidity" value="2"/>
+                <Entry name="LiquidityRoutedOut" value="3"/>
+                <Entry name="Auction" value="4"/>
+            </Type>
+
+            <Type id="ExecRestatementReason">
+                <Description>Code to identify reason for an Execution Report (8) message sent with ExecType (150) =Restated or used when communicating an
+                    unsolicited cancel.
+                </Description>
+                <Entry name="GTCorporateAction" value="0"/>
+                <Entry name="GTRenewalOrRestatement " value="1"/>
+                <Entry name="VerbalChange" value="2"/>
+                <Entry name="RepricingOfOrder" value="3"/>
+                <Entry name="BrokerOption" value="4"/>
+                <Entry name="PartialDeclineOfOrderQty" value="5"/>
+                <Entry name="CancelOnTradingHalt" value="6"/>
+                <Entry name="CancelOnSystemFailure" value="7"/>
+                <Entry name="MarketOption" value="8"/>
+                <Entry name="CanceledNotBest" value="9"/>
+                <Entry name="WarehouseRecap" value="10"/>
+                <Entry name="Other" value="99"/>
+            </Type>
+
+            <Type id="EncryptMethod">
+                <Description>Method of encryption</Description>
+                <Entry name="NoneOrOther" value="0"/>
+                <Entry name="PKCSProprietary" value="1"/>
+                <Entry name="DesEcbMode" value="2"/>
+                <Entry name="PkcsDes" value="3"/>
+                <Entry name="PgpDes" value="4"/>
+                <Entry name="PgpDesMd5" value="5"/>
+                <Entry name="PemDesMd5" value="6"/>
+            </Type>
+
+            <Type id="SessionRejectReason">
+                <Description>Code to identify reason for a session-level Reject (3) message.</Description>
+                <Entry name="InvalidTagNumber" value="0"/>
+                <Entry name="RequiredTagMissing" value="1"/>
+                <Entry name="TagNotForMsgType" value="2"/>
+                <Entry name="UndefinedTag" value="3"/>
+                <Entry name="TagNoValue" value="4"/>
+                <Entry name="ValueIncorrect" value="5"/>
+                <Entry name="IncorrectFormat" value="6"/>
+                <Entry name="DecryptProblem" value="7"/>
+                <Entry name="SignatureProblem" value="8"/>
+                <Entry name="CompIDProblem" value="9"/>
+                <Entry name="SendTimeAccuracy" value="10"/>
+                <Entry name="InvalidMsgType" value="11"/>
+                <Entry name="XMLValidError" value="12"/>
+                <Entry name="TagTooManyTimes" value="13"/>
+                <Entry name="TagOutOfOrder" value="14"/>
+                <Entry name="RepGroupOutOfOrder" value="15"/>
+                <Entry name="BadNumInGrp" value="16"/>
+                <Entry name="SOHInData" value="17"/>
+                <Entry name="Other" value="99"/>
+            </Type>
+
+            <!-- UTP Types -->
+
+            <Type id="UTPRejCode">
+                <Description>UTP Code to identify reason for a logon Reject</Description>
+                <Entry name="Success" value="0"/>
+                <Entry name="SystemUnavailable" value="1"/>
+                <Entry name="InvalidSequenceNumber" value="2"/>
+                <Entry name="ClientSessionAlreadyExists" value="3"/>
+                <Entry name="ClientSessionDisabled" value="4"/>
+                <Entry name="ConnectionTypeMismatch" value="5"/>
+            </Type>
+
+            <!-- MILLENIUM Types -->
+
+            <Type id="MilleniumMissedMsgReqAckType">
+                <Description>Code to identify reply to missed message request</Description>
+                <Entry name="Successful" value="0"/>
+                <Entry name="RecoveryRequestLimitReached" value="1"/>
+                <Entry name="InvalidAppID" value="2"/>
+            </Type>
+
+            <Type id="MilleniumMissedMsgReportType">
+                <Description>Code to identify status of resend requests</Description>
+                <Entry name="DownloadComplete" value="0"/>
+                <Entry name="Incomplete" value="1"/>
+            </Type>
+
+            <!-- ETS Types -->
+
+            <Type id="ETSProductType">
+                <Entry name="TYPE1" value="valu1"/>
+            </Type>
+
+            <Type id="ETSTradingSysCode">
+                <Description>indicates the trading system of the product in which it can be traded</Description>
+                <Entry name="Eurex" value="E"/>
+                <Entry name="GlobalTrading" value="G"/>
+            </Type>
+
+            <Type id="ETSMatchTypeCode">
+                <Description>indicates the matching algorithm used on the Eurex system</Description>
+                <Entry name="ProRataMatching" value="P"/>
+                <Entry name="PriceTimeMatching" value="T"/>
+            </Type>
+
+            <Type id="ETSOptiGatewayLocId">
+                <Description>The performance optimal gateway location for trading the respective product</Description>
+                <Entry name="OptimalGatewayLocation0" value="0"/>
+                <Entry name="OptimalGatewayLocation1" value="1"/>
+            </Type>
+
+            <Type id="ETSTradeOriginType">
+                <Description>The trade origin field is used to filter the On-Exchange and/or Wholesale Trades.</Description>
+                <Entry name="OnExchangeTradeOnly" value="E"/>
+                <Entry name="WholesaleTradesOnly" value="W"/>
+            </Type>
+
+
+        </Types>
+
+        <!-- if no attribute name supplied then typeId used to generate name -->
+        <!--  attribute name used as a default for mapping to/from fix -->
+
+
+        <!--  if ViewString is used their must be reusableString attribute named buf in event -->
+
+        <!--  Attribute has optional attr outbound=[delegate|seperate]
+
+              if any attr have delegate market side event then create Update interface
+              marketside then doesnt implement Write interface only the Update interface
+
+              "seperate" -> attr in inbound and outbound events may be different
+
+              type : char | boolean | int | short | double | float | date | viewstring | reusablestring\[nnn\] | UTCTimestamp | InternalTypeId
+        -->
+
+        <Events>
+            <Base id="CommonClientHeader" src="client">
+                <!-- from Header -->
+                <!-- senderCompId (49), senderSubId(50), targetCompId(56), targetSubId(57) -->
+
+                <Attribute typeId="viewstring[COMPID_LENGTH]" tag="115" name="onBehalfOfId" mandatory="N" outbound="delegate"/>
+                <Attribute typeId="int" tag="34" name="msgSeqNum" mandatory="Y" outbound="seperate"/>
+                <Attribute typeId="boolean" tag="43" name="possDupFlag" mandatory="Y" outbound="seperate"/>
+            </Base>
+
+            <Base id="CommonExchangeHeader" src="exchange">
+                <!-- from Header -->
+                <!-- senderCompId (49), senderSubId(50), targetCompId(56), targetSubId(57) -->
+
+                <Attribute typeId="viewstring[COMPID_LENGTH]" tag="115" name="onBehalfOfId" mandatory="N" outbound="delegate"/>
+                <Attribute typeId="int" tag="34" name="msgSeqNum" mandatory="Y" outbound="seperate"/>
+                <Attribute typeId="boolean" tag="43" name="possDupFlag" mandatory="Y" outbound="seperate"/>
+                <Attribute typeId="UTCTimestamp" tag="52" name="sendingTime" outbound="seperate"/>
+            </Base>
+
+            <Base id="BaseOrderRequest" src="client" extends="CommonClientHeader">
+                <!--  common to all messages -->
+                <Attribute typeId="Instrument" name="instrument" mandatory="Y" outbound="delegate"/>
+                <Attribute typeId="ClientProfile" name="client" mandatory="Y" outbound="delegate"/>
+                <Attribute typeId="viewstring[CLORDID_LENGTH]" tag="11" name="clOrdId" mandatory="Y" outbound="delegate"/>
+                <Attribute typeId="viewstring[CLORDID_LENGTH]" tag="41" name="origClOrdId" mandatory="Y" outbound="delegate"/>
+                <Attribute typeId="viewstring[SECURITYID_LENGTH]" tag="48" name="securityId" mandatory="Y" outbound="delegate"/>
+                <Attribute typeId="viewstring[SYMBOL_LENGTH]" tag="55" name="symbol" mandatory="Y" outbound="delegate"/>
+                <Attribute typeId="Currency" tag="15" name="currency" mandatory="N" outbound="seperate"/>
+                <Attribute typeId="SecurityIDSource" tag="22" mandatory="Y" outbound="delegate"/>
+                <Attribute typeId="UTCTimestamp" tag="60" name="transactTime" mandatory="Y" outbound="delegate"/>
+                <Attribute typeId="Side" tag="54" mandatory="Y" outbound="delegate"/>
+                <!--
+                    parentClOrdId is used to link child to parent order
+                    in fix 44 its secClOrdId (526), in fix 4.2 its held in text (58)
+                    in ENX held in NOS FreeText1, 
+                    in LSE stored as context in outbound persistence file (no space in millenium NOS rec) 
+                -->
+                <Attribute typeId="viewstring[CLORDID_LENGTH]" name="parentClOrdId" mandatory="N" outbound="seperate"
+                           desc="links this order to a parent order"/>
+            </Base>
+
+            <Base id="OrderRequest" src="client" extends="BaseOrderRequest">
+
+                <!-- need origClOrdId so can act as base for ClientAmend -->
+                <Attribute typeId="viewstring[ACCOUNT_LENGTH]" tag="1" name="account" mandatory="N" outbound="delegate"/>
+                <Attribute typeId="viewstring[TEXT_LENGTH]" tag="58" name="text" mandatory="N" outbound="delegate"/>
+                <Attribute typeId="viewstring[EXDESTINATION_LENGTH]" tag="100" name="exDest" mandatory="N" outbound="delegate"/>
+                <Attribute typeId="viewstring[SECURITYEXCH_LENGTH]" tag="207" name="securityExchange" mandatory="N" outbound="delegate"/>
+
+                <Attribute typeId="double" tag="44" name="price" mandatory="Y" outbound="seperate"/>
+                <Attribute typeId="int" tag="38" name="orderQty" mandatory="Y" outbound="seperate"/>
+
+                <Attribute typeId="ExecInst" tag="18" outbound="delegate"/>
+                <Attribute typeId="HandlInst" tag="21" outbound="delegate"/>
+                <Attribute typeId="OrderCapacity" tag="528" outbound="seperate"/>
+                <Attribute typeId="OrdType" tag="40" mandatory="Y" outbound="delegate"/>
+                <Attribute typeId="SecurityType" tag="167" outbound="delegate"/>
+                <Attribute typeId="SecurityIDSource" tag="22" outbound="delegate"/>
+                <Attribute typeId="TimeInForce" tag="59" outbound="delegate"/>
+                <Attribute typeId="BookingType" tag="775" outbound="delegate"/>
+
+                <Attribute typeId="UTCTimestamp" tag="52" name="sendingTime" outbound="seperate"/>
+                <Attribute typeId="long" name="orderReceived" mandatory="Y" outbound="delegate"/>
+                <Attribute typeId="long" name="orderSent" mandatory="Y" outbound="delegateGetAndSet"/>
+            </Base>
+
+            <Event id="NewOrderSingle" extends="OrderRequest" src="client">
+                <!-- note ALL NoS fields must be in SharedOrderFields -->
+                <Attribute typeId="viewstring[CLORDID_LENGTH]" tag="11" name="clOrdId" mandatory="Y" outbound="seperate"/>
+            </Event>
+
+            <Event id="CancelReplaceRequest" extends="OrderRequest" src="client">
+                <Attribute typeId="string[CLORDID_LENGTH]" tag="11" name="clOrdId" mandatory="Y" outbound="seperate"/>
+                <Attribute typeId="string[CLORDID_LENGTH]" tag="41" name="origClOrdId" mandatory="Y" outbound="seperate"/>
+                <Attribute typeId="viewstring[EXDESTINATION_LENGTH]" tag="100" name="exDest" mandatory="N" outbound="delegate"/>
+                <Attribute typeId="viewstring[SECURITYEXCH_LENGTH]" tag="207" name="securityExchange" mandatory="N" outbound="delegate"/>
+                <Attribute typeId="string[ORDERID_LENGTH]" tag="37" name="orderId" mandatory="Y" outbound="seperate"/>
+            </Event>
+
+            <!--
+                the src for the cancel request is the request of the origClOrdId of the client
+                certain keys like parentClOrdId need to be overwritten
+            -->
+            <Event id="CancelRequest" extends="BaseOrderRequest" src="client">
+                <Attribute typeId="string[CLORDID_LENGTH]" tag="11" name="clOrdId" mandatory="Y" outbound="seperate"/>
+                <Attribute typeId="string[CLORDID_LENGTH]" tag="41" name="origClOrdId" mandatory="Y" outbound="seperate"/>
+                <Attribute typeId="string[ORDERID_LENGTH]" tag="37" name="orderId" mandatory="Y" outbound="seperate"/>
+                <Attribute typeId="string[CLORDID_LENGTH]" name="parentClOrdId" mandatory="N" outbound="seperate"/>
+            </Event>
+
+            <Event id="ForceCancel" src="client">
+                <Attribute typeId="string[CLORDID_LENGTH]" tag="11" name="clOrdId" mandatory="Y" outbound="seperate"/>
+                <Attribute typeId="string[CLORDID_LENGTH]" tag="41" name="origClOrdId" mandatory="Y" outbound="seperate"/>
+                <Attribute typeId="string[ORDERID_LENGTH]" tag="37" name="orderId" mandatory="Y" outbound="seperate"/>
+                <Attribute typeId="Side" tag="54" outbound="seperate"/>
+                <Attribute typeId="int" tag="34" name="msgSeqNum" mandatory="Y" outbound="seperate"/>
+                <Attribute typeId="boolean" tag="43" name="possDupFlag" mandatory="Y" outbound="seperate"/>
+            </Event>
+
+            <!-- some exchanges cant generate specific rejects for cancel, new, amend ... in this case use VagueOrderReject -->
+            <Event id="VagueOrderReject" extends="CommonExchangeHeader" src="exchange">
+                <Attribute typeId="string[ORDERID_LENGTH]" tag="37" name="orderId" mandatory="N" outbound="seperate"/>
+                <Attribute typeId="string[CLORDID_LENGTH]" tag="11" name="clOrdId" mandatory="Y" outbound="seperate"/>
+                <Attribute typeId="string[TEXT_LENGTH]" tag="58" name="text" mandatory="N" outbound="seperate"/>
+                <Attribute typeId="boolean" name="isTerminal" mandatory="N" outbound="seperate"/>
+            </Event>
+
+            <Event id="CancelReject" extends="CommonExchangeHeader" src="exchange">
+                <Attribute typeId="string[ORDERID_LENGTH]" tag="37" name="orderId" mandatory="Y" outbound="seperate"/>
+                <Attribute typeId="string[CLORDID_LENGTH]" tag="11" name="clOrdId" mandatory="Y" outbound="seperate"/>
+                <Attribute typeId="string[CLORDID_LENGTH]" tag="41" name="origClOrdId" mandatory="Y" outbound="seperate"/>
+                <Attribute typeId="CxlRejReason" tag="102" mandatory="N" outbound="seperate"/>
+                <Attribute typeId="CxlRejResponseTo" tag="434" mandatory="Y" outbound="seperate"/>
+                <Attribute typeId="OrdStatus" tag="39" mandatory="Y" outbound="seperate"/>
+                <Attribute typeId="string[TEXT_LENGTH]" tag="58" name="text" mandatory="N" outbound="seperate"/>
+            </Event>
+
+            <Base id="CommonExecRpt" extends="CommonExchangeHeader" src="exchange">
+                <!-- to synt a mkt caancel for unknown order need clOrdId and Side -->
+
+                <Attribute typeId="string[EXECID_LENGTH]" tag="17" name="execId" mandatory="Y" outbound="seperate"/>
+                <Attribute typeId="string[CLORDID_LENGTH]" tag="11" name="clOrdId" mandatory="N" outbound="clientDelegateMktSeperate"/>
+                <Attribute typeId="viewstring[SECURITYID_LENGTH]" tag="48" name="securityId" mandatory="Y" outbound="clientDelegateIgnoreMktSide"/>
+                <Attribute typeId="viewstring[SYMBOL_LENGTH]" tag="55" name="symbol" mandatory="Y" outbound="clientDelegateIgnoreMktSide"/>
+                <Attribute typeId="Currency" tag="15" name="currency" mandatory="N" outbound="clientDelegateIgnoreMktSide"/>
+                <Attribute typeId="SecurityIDSource" tag="22" mandatory="Y" outbound="clientDelegateIgnoreMktSide"/>
+
+                <Attribute typeId="string[ORDERID_LENGTH]" tag="37" name="orderId" mandatory="Y" outbound="seperate"/>
+                <Attribute typeId="ExecType" tag="150" mandatory="Y" outbound="seperate"/>
+                <Attribute typeId="OrdStatus" tag="39" mandatory="Y" outbound="seperate"/>
+                <Attribute typeId="int" tag="151" name="leavesQty" mandatory="Y" outbound="seperate"/>
+                <Attribute typeId="int" tag="14" name="cumQty" mandatory="Y" outbound="seperate"/>
+                <Attribute typeId="double" tag="6" name="avgPx" mandatory="Y" outbound="seperate"/>
+                <Attribute typeId="int" tag="38" name="orderQty" mandatory="Y" outbound="clientDelegateIgnoreMktSide"/>
+                <Attribute typeId="double" tag="44" name="price" mandatory="Y" outbound="clientDelegateIgnoreMktSide"/>
+                <Attribute typeId="Side" tag="54" mandatory="Y" outbound="clientDelegateMktSeperate"/>
+                <Attribute typeId="OrderCapacity" name="mktCapacity" outbound="seperate"/>
+            </Base>
+
+            <Event id="NewOrderAck" extends="CommonExecRpt" src="exchange">
+                <Attribute typeId="long" name="ackReceived" mandatory="Y" outbound="seperate"/>
+                <Attribute typeId="long" name="orderReceived" mandatory="Y" outbound="clientDelegateIgnoreMktSide"/>
+                <Attribute typeId="long" name="orderSent" mandatory="Y" outbound="clientDelegateIgnoreMktSide"/>
+            </Event>
+
+            <Base id="TradeBase" extends="CommonExecRpt" src="exchange">
+                <Attribute typeId="int" tag="32" name="lastQty" mandatory="Y" outbound="seperate"/>
+                <Attribute typeId="double" tag="31" name="lastPx" mandatory="Y" outbound="seperate"/>
+                <Attribute typeId="string[LASTMKT_LENGTH]" tag="30" name="lastMkt" mandatory="N" outbound="seperate"/>
+
+                <Attribute typeId="LiquidityInd" tag="851" name="liquidityInd" mandatory="Y" outbound="seperate"/>
+                <Attribute typeId="string[TRADE_TEXT_LENGTH]" tag="58" name="text" mandatory="N" outbound="seperate"/>
+            </Base>
+
+            <Event id="TradeNew" extends="TradeBase" src="exchange">
+            </Event>
+
+            <Event id="Rejected" extends="CommonExecRpt" src="exchange">
+                <Attribute typeId="string[CLORDID_LENGTH]" tag="41" name="origClOrdId" mandatory="Y" outbound="seperate"/>
+                <Attribute typeId="OrdRejReason" tag="103" name="ordRejReason" outbound="seperate"/>
+                <Attribute typeId="string[TEXT_LENGTH]" tag="58" name="text" mandatory="N" outbound="seperate"/>
+            </Event>
+
+            <Event id="Cancelled" extends="CommonExecRpt" src="exchange">
+                <Attribute typeId="string[CLORDID_LENGTH]" tag="11" name="clOrdId" mandatory="Y" outbound="seperate"/>
+                <Attribute typeId="string[CLORDID_LENGTH]" tag="41" name="origClOrdId" mandatory="Y" outbound="seperate"/>
+            </Event>
+
+            <Event id="Replaced" extends="CommonExecRpt" src="exchange">
+                <Attribute typeId="string[CLORDID_LENGTH]" tag="41" name="origClOrdId" mandatory="Y" outbound="seperate"/>
+            </Event>
+
+            <!-- types for other messages
+                <Attribute typeId="OrderRestrictions"             tag="529"                                     outbound="delegate"/>
+                <Attribute typeId="PartyIDSource"                 tag="447"                                     outbound="delegate"/>
+                <Attribute typeId="OrdRejReason" 		          tag="103"/>
+                <Attribute typeId="EncryptMethod"                 tag="98"                                      outbound="delegate"/>
+                <Attribute typeId="PositionEffect"                tag="77"                                      outbound="delegate"/>
+            -->
+
+            <Event id="DoneForDay" extends="CommonExecRpt" src="exchange">
+            </Event>
+
+            <Event id="Stopped" extends="CommonExecRpt" src="exchange">
+                <Attribute typeId="int" tag="32" name="lastQty" mandatory="Y" outbound="seperate"/>
+                <Attribute typeId="double" tag="31" name="lastPx" mandatory="Y" outbound="seperate"/>
+            </Event>
+
+            <Event id="Expired" extends="CommonExecRpt" src="exchange">
+            </Event>
+
+            <Event id="Suspended" extends="CommonExecRpt" src="exchange">
+            </Event>
+
+            <Event id="Restated" extends="CommonExecRpt" src="exchange">
+
+                <Attribute typeId="ExecRestatementReason" tag="378"/>
+            </Event>
+
+            <Event id="TradeCorrect" extends="TradeBase" src="exchange">
+                <Attribute typeId="string[EXECID_LENGTH]" tag="19" name="execRefID" mandatory="Y" outbound="seperate"/>
+                <Attribute typeId="int" name="origQty" outbound="seperate"/>
+                <Attribute typeId="double" name="origPx" outbound="seperate"/>
+            </Event>
+
+            <Event id="TradeCancel" extends="TradeBase" src="exchange">
+                <Attribute typeId="string[EXECID_LENGTH]" tag="19" name="execRefID" mandatory="Y" outbound="seperate"/>
+            </Event>
+
+            <Event id="OrderStatus" extends="CommonExecRpt" src="exchange">
+            </Event>
+
+            <Base id="Alert" extends="CommonExchangeHeader" src="exchange">
+                <Attribute typeId="viewstring[CLORDID_LENGTH]" tag="11" name="clOrdId" mandatory="N" outbound="clientDelegateIgnoreMktSide"/>
+                <Attribute typeId="viewstring[SECURITYID_LENGTH]" tag="48" name="securityId" mandatory="Y" outbound="clientDelegateIgnoreMktSide"/>
+                <Attribute typeId="viewstring[SYMBOL_LENGTH]" tag="55" name="symbol" mandatory="Y" outbound="clientDelegateIgnoreMktSide"/>
+                <Attribute typeId="Currency" tag="15" name="currency" mandatory="N" outbound="clientDelegateIgnoreMktSide"/>
+                <Attribute typeId="SecurityIDSource" tag="22" mandatory="Y" outbound="clientDelegateIgnoreMktSide"/>
+                <Attribute typeId="string[TEXT_LENGTH]" tag="58" name="text" mandatory="N" outbound="seperate"/>
+
+                <Attribute typeId="int" tag="38" name="orderQty" mandatory="Y" outbound="clientDelegateIgnoreMktSide"/>
+                <Attribute typeId="double" tag="44" name="price" mandatory="Y" outbound="clientDelegateIgnoreMktSide"/>
+                <Attribute typeId="Side" tag="54" mandatory="Y" outbound="clientDelegateIgnoreMktSide"/>
+                <Attribute typeId="Currency" tag="58" name="currency" mandatory="N" outbound="clientDelegateIgnoreMktSide"/>
+            </Base>
+
+            <Event id="AlertLimitBreach" extends="Alert" src="exchange">
+            </Event>
+
+            <Event id="AlertTradeMissingOrders" extends="Alert" src="exchange">
+                <Attribute typeId="string[ORDERID_LENGTH]" tag="37" name="orderId" mandatory="Y" outbound="seperate"/>
+                <Attribute typeId="ExecType" tag="150" mandatory="Y" outbound="seperate"/>
+                <Attribute typeId="OrdStatus" tag="39" mandatory="Y" outbound="seperate"/>
+                <Attribute typeId="int" tag="32" name="lastQty" mandatory="Y" outbound="seperate"/>
+                <Attribute typeId="double" tag="31" name="lastPx" mandatory="Y" outbound="seperate"/>
+                <Attribute typeId="string[LASTMKT_LENGTH]" tag="30" name="lastMkt" mandatory="N" outbound="seperate"/>
+            </Event>
+
+            <!--
+                SESSION LEVEL MESSAGES 
+             -->
+
+            <Base id="SessionHeader" src="both">
+                <Attribute typeId="int" tag="34" name="msgSeqNum" mandatory="Y" outbound="seperate"/>
+                <Attribute typeId="boolean" tag="43" name="possDupFlag" mandatory="Y" outbound="seperate"/>
+            </Base>
+
+            <Event id="Heartbeat" extends="SessionHeader" src="both">
+                <Attribute typeId="string[TESTRECID_LENGTH]" tag="112" name="testReqID" mandatory="N" outbound="seperate"/>
+            </Event>
+
+            <Event id="TestRequest" extends="SessionHeader" src="both">
+                <Attribute typeId="string[TESTRECID_LENGTH]" tag="112" name="testReqID" mandatory="N" outbound="seperate"/>
+            </Event>
+
+            <Event id="Logon" extends="SessionHeader" src="both">
+                <Attribute typeId="string[COMPID_LENGTH]" tag="49" name="senderCompId" mandatory="Y" outbound="seperate"/>
+                <Attribute typeId="string[COMPID_LENGTH]" tag="50" name="senderSubId" mandatory="N" outbound="seperate"/>
+                <Attribute typeId="string[COMPID_LENGTH]" tag="56" name="targetCompId" mandatory="Y" outbound="seperate"/>
+                <Attribute typeId="string[COMPID_LENGTH]" tag="57" name="targetSubId" mandatory="N" outbound="seperate"/>
+                <Attribute typeId="string[COMPID_LENGTH]" tag="115" name="onBehalfOfId" mandatory="N" outbound="seperate"/>
+
+                <Attribute typeId="EncryptMethod" tag="98"/>
+                <Attribute typeId="int" tag="108" name="heartBtInt" outbound="seperate"/>
+                <Attribute typeId="int" tag="95" name="rawDataLen" outbound="seperate"/>
+                <Attribute typeId="string[USERNAME_LENGTH]" tag="96" name="rawData" outbound="seperate"/>
+                <Attribute typeId="boolean" tag="141" name="resetSeqNumFlag" outbound="seperate"/>
+                <!--  from fix4.4 -->
+                <Attribute typeId="int" tag="789" name="nextExpectedMsgSeqNum" outbound="seperate"/>
+
+            </Event>
+
+            <Event id="Logout" extends="SessionHeader" src="both">
+                <Attribute typeId="string[COMPID_LENGTH]" tag="49" name="senderCompId" mandatory="Y" outbound="seperate"/>
+                <Attribute typeId="string[COMPID_LENGTH]" tag="50" name="senderSubId" mandatory="N" outbound="seperate"/>
+                <Attribute typeId="string[COMPID_LENGTH]" tag="56" name="targetCompId" mandatory="Y" outbound="seperate"/>
+                <Attribute typeId="string[COMPID_LENGTH]" tag="57" name="targetSubId" mandatory="N" outbound="seperate"/>
+                <Attribute typeId="string[COMPID_LENGTH]" tag="115" name="onBehalfOfId" mandatory="N" outbound="seperate"/>
+
+                <Attribute typeId="string[TEXT_LENGTH]" tag="58" name="text" mandatory="N" outbound="seperate"/>
+            </Event>
+
+            <Event id="SessionReject" extends="SessionHeader" src="both">
+                <Attribute typeId="int" tag="45" name="refSeqNum" outbound="seperate"/>
+                <Attribute typeId="int" tag="371" name="refTagID" outbound="seperate"/>
+                <Attribute typeId="string[TAG_LEN]" tag="372" name="refMsgType" outbound="seperate"/>
+                <Attribute typeId="SessionRejectReason" tag="373" outbound="seperate"/>
+                <Attribute typeId="string[TEXT_LENGTH]" tag="58" name="text" mandatory="N" outbound="seperate"/>
+            </Event>
+
+            <Event id="ResendRequest" extends="SessionHeader" src="both">
+                <Attribute typeId="int" tag="7" name="beginSeqNo" mandatory="Y" outbound="seperate"/>
+                <Attribute typeId="int" tag="16" name="endSeqNo" mandatory="Y" outbound="seperate"/>
+            </Event>
+
+            <Event id="ClientResyncSentMsgs" src="both">  <!--  internal message to resend missing msgs to client -->
+                <Attribute typeId="int" tag="34" name="msgSeqNum" mandatory="Y" outbound="seperate"/>
+                <Attribute typeId="boolean" tag="43" name="possDupFlag" mandatory="Y" outbound="seperate"/>
+                <Attribute typeId="int" tag="7" name="beginSeqNo" mandatory="Y" outbound="seperate"/>
+                <Attribute typeId="int" tag="16" name="endSeqNo" mandatory="Y" outbound="seperate"/>
+            </Event>
+
+            <Event id="SequenceReset" extends="SessionHeader" src="both">
+                <Attribute typeId="boolean" tag="123" name="gapFillFlag" outbound="seperate"/>
+                <Attribute typeId="int" tag="36" name="newSeqNo" outbound="seperate"/>
+            </Event>
+
+            <!-- UTP EVENTS : TODO refactor into separate region based event file -->
+
+            <Base id="BaseUTP" src="both">
+                <!-- msgSeqNum and possBupFlag are required to allow UTP events to be treated as Message -->
+                <Attribute typeId="int" name="msgSeqNum" mandatory="N" outbound="seperate"/>
+                <Attribute typeId="boolean" name="possDupFlag" mandatory="N" outbound="seperate"/>
+            </Base>
+
+            <Event id="UTPLogon" extends="BaseUTP" src="both">
+                <Attribute typeId="int" name="lastMsgSeqNum" mandatory="Y" outbound="seperate"/>
+                <Attribute typeId="string[UTP_TEXT_LENGTH]" name="userName" mandatory="Y" outbound="seperate"/>
+            </Event>
+
+            <Event id="UTPLogonReject" extends="BaseUTP" src="both">
+                <Attribute typeId="int" name="lastMsgSeqNumRcvd" mandatory="Y" outbound="seperate"/>
+                <Attribute typeId="int" name="lastMsgSeqNumSent" mandatory="Y" outbound="seperate"/>
+                <Attribute typeId="UTPRejCode" name="rejectCode" mandatory="Y" outbound="seperate"/>
+                <Attribute typeId="string[UTP_REJECT_TEXT_LENGTH]" name="rejectText" mandatory="Y" outbound="seperate"/>
+            </Event>
+
+            <Event id="UTPTradingSessionStatus" extends="BaseUTP" src="both">
+                <Attribute typeId="UTCTimestamp" name="mktPhaseChgTime" mandatory="Y" outbound="seperate"/>
+                <Attribute typeId="string[UTP_INST_CLASS_LEN]" name="instClassId" mandatory="Y" outbound="seperate"/>
+                <Attribute typeId="string[UTP_INST_CLASS_STATUS_LEN]" name="instClassStatus" mandatory="Y" outbound="seperate"/>
+                <Attribute typeId="boolean" name="orderEntryAllowed" mandatory="Y" outbound="seperate"/>
+                <Attribute typeId="string[UTP_TRADING_SESSION_ID_LEN]" name="tradingSessionId" mandatory="Y" outbound="seperate"/>
+            </Event>
+
+            <!-- ETS EVENTS : TODO refactor into separate region based event file -->
+
+            <Base id="BaseETS" src="both">
+                <!-- msgSeqNum and possBupFlag are required to allow ETS events to be treated as Message -->
+                <Attribute typeId="int" name="msgSeqNum" mandatory="N" outbound="seperate"/>
+                <Attribute typeId="boolean" name="possDupFlag" mandatory="N" outbound="seperate"/>
+            </Base>
+
+            <Base id="TMRequest" src="client" extends="BaseETS">
+            </Base>
+
+            <Base id="TMNotification" src="exchange" extends="BaseETS">
+            </Base>
+
+            <Event id="ETSSessionLogon" extends="TMRequest">
+                <Attribute typeId="int" name="heartbeatIntvl" mandatory="Y" outbound="seperate"/>
+                <Attribute typeId="string[ETS_MEMBER_ID_LENGTH]" name="memberId" mandatory="Y" outbound="seperate"/>
+                <Attribute typeId="boolean" name="nonPersOrderDelFlag" mandatory="N" outbound="seperate"/>
+                <Attribute typeId="boolean" name="persOrderDelFlag" mandatory="N" outbound="seperate"/>
+                <Attribute typeId="boolean" name="quoteDelFlag" mandatory="N" outbound="seperate"/>
+                <Attribute typeId="boolean" name="skipHeartbeatCheckFlag" mandatory="N" outbound="seperate"/>
+                <Attribute typeId="boolean" name="unsubSesEventFlag" mandatory="N" outbound="seperate"/>
+                <Attribute typeId="string[ETS_USER_APP_ID_LENGTH]" name="userApplId" mandatory="Y" outbound="seperate"/>
+            </Event>
+
+            <Event id="ETSSessionLogonNotification" extends="TMNotification">
+                <Attribute typeId="int" name="heartbeatIntvl" mandatory="Y" outbound="seperate"/>
+                <Attribute typeId="int" name="throttleLimit" mandatory="Y" outbound="seperate"/>
+                <!--
+                    The Disconnect Limit field indicates the number of TM Requests the client application is
+                    allowed to send within one second without getting disconnected                
+                -->
+                <Attribute typeId="int" name="disconnectLimit" mandatory="Y" outbound="seperate"/>
+                <Attribute typeId="int" name="lastReqSeqNo" mandatory="Y" outbound="seperate"/>
+                <Attribute typeId="int" name="lastEventSeqNo" mandatory="Y" outbound="seperate"/>
+                <Attribute typeId="date" name="currentBusinessDay" mandatory="Y" outbound="seperate"/>
+                <Attribute typeId="int" name="refDataSig" mandatory="Y" outbound="seperate"/>
+                <Attribute typeId="long" name="connId" mandatory="Y" outbound="seperate"/>
+                <Attribute typeId="string[ETS_CONFIG_ID_LENGTH]" name="configId" mandatory="Y" outbound="seperate"/>
+
+                <RepeatingGroup id="GatewayIpGrp" min="1" max="4">
+                    <Attribute typeId="string[ETS_GATEWAY_IP_LENGTH]" name="gatewayIp" mandatory="Y" outbound="seperate"/>
+                    <Attribute typeId="char" name="gatewayLocId" mandatory="Y" outbound="seperate"/>
+                </RepeatingGroup>
+
+            </Event>
+
+            <Event id="ETSSessionLogoutRequest" extends="TMRequest">
+                <Attribute typeId="boolean" name="nonPersOrderDelFlag" mandatory="N" outbound="seperate"/>
+                <Attribute typeId="boolean" name="quoteDelFlag" mandatory="N" outbound="seperate"/>
+            </Event>
+
+            <Event id="ETSSessionLogoutNotification" extends="TMNotification">
+                <Attribute typeId="short" name="maxNoOfReqPerIntvl" mandatory="N" outbound="seperate"/>
+            </Event>
+
+            <Event id="ETSTraderLogonRequest" extends="TMRequest">
+                <Attribute typeId="string[ETS_USERNAME_LENGTH]" name="userName" mandatory="Y" outbound="seperate"/>
+                <Attribute typeId="string[ETS_PASSWORD_LENGTH]" name="password" mandatory="Y" outbound="seperate"/>
+                <Attribute typeId="int" name="userLoginId" mandatory="Y" outbound="seperate"/>
+            </Event>
+
+            <Event id="ETSTraderLogonNotification" extends="TMNotification">
+                <Attribute typeId="int" name="userLoginId" mandatory="Y" outbound="seperate"/>
+            </Event>
+
+            <Event id="ETSTraderLogoutRequest" extends="TMRequest">
+            </Event>
+
+            <Event id="ETSTraderLogoutNotification" extends="TMNotification">
+            </Event>
+
+            <Event id="ETSInquireProductsRequest" extends="TMRequest">
+                <Attribute typeId="SecurityType" name="productLine" mandatory="Y" outbound="seperate"/>
+                <Attribute typeId="ETSProductType" name="productType" mandatory="N" outbound="seperate"/>
+                <Attribute typeId="string[ETS_PROD_LENGTH]" name="product" mandatory="N" outbound="seperate"/>
+            </Event>
+
+            <Event id="ETSProductDataNotification" extends="TMNotification">
+                <Attribute typeId="string[ETS_PROD_LENGTH]" name="product" mandatory="Y" outbound="seperate"/>
+                <Attribute typeId="short" name="productId" mandatory="Y" outbound="seperate"/>
+                <Attribute typeId="string[ETS_PROD_NAME_LENGTH]" name="productName" mandatory="Y" outbound="seperate"/>
+                <Attribute typeId="SecurityType" name="productLine" mandatory="Y" outbound="seperate"/>
+                <Attribute typeId="ETSProductType" name="productType" mandatory="Y" outbound="seperate"/>
+                <Attribute typeId="string[ETS_PROD_TYPE_NAME_LENGTH]" name="prodTypeName" mandatory="Y" outbound="seperate"/>
+                <Attribute typeId="string[ISIN_LENGTH]" name="isinCode" mandatory="Y" outbound="seperate"/>
+                <Attribute typeId="Currency" name="currency" mandatory="Y" outbound="seperate"/>
+                <Attribute typeId="ETSTradingSysCode" name="trdngSystemCode" mandatory="Y" outbound="seperate"/>
+                <Attribute typeId="ETSMatchTypeCode" name="matchTypeCode" mandatory="Y" outbound="seperate"/>
+                <Attribute typeId="ETSOptiGatewayLocId" name="optiGatewayLocId" mandatory="Y" outbound="seperate"/>
+                <Attribute typeId="double" name="tickSize" mandatory="Y" outbound="seperate"/>
+                <Attribute typeId="double" name="tickValue" mandatory="Y" outbound="seperate"/>
+                <Attribute typeId="short" name="priceDecimalPlaces" mandatory="Y" outbound="seperate"/>
+                <Attribute typeId="double" name="maxPrice" mandatory="Y" outbound="seperate"/>
+                <!--  priceStepGrp [upperLimitPrice|priceStep]*8 == placeholder until repeating groups added -->
+                <Attribute typeId="string[ETS_PROD_LENGTH]" name="undrId" mandatory="N" outbound="seperate"/>
+                <Attribute typeId="string[ISIN_LENGTH]" name="undrIsinCode" mandatory="N" outbound="seperate"/>
+                <Attribute typeId="short" name="exerPriceDecimalPlaces" mandatory="N" outbound="seperate"/>
+
+                <!-- page 210 excludes various optional fields detailed here -->
+
+                <Attribute typeId="string[ETS_PROD_TYPE_NAME_LENGTH]" name="prodTypeName" mandatory="N" outbound="seperate"/>
+            </Event>
+
+            <Event id="ETSInquireTradeRequest" extends="TMRequest">
+                <Attribute typeId="ETSInstrGrp" name="instrGrp" mandatory="Y" outbound="seperate"/>
+                <Attribute typeId="ETSTradeOriginType" name="tradeOriginType" mandatory="N" outbound="seperate"/>
+                <Attribute typeId="int" name="tradeEventSeqNoMin" mandatory="Y" outbound="seperate"/>
+                <Attribute typeId="int" name="tradeEventSeqNoMax" mandatory="Y" outbound="seperate"/>
+            </Event>
+
+
+            <!-- MILLENIUM EVENTS : TODO refactor into separate region based event file -->
+
+            <Base id="BaseMillenium" src="both">
+                <!-- msgSeqNum and possBupFlag are required to allow Millenium events to be treated as Message -->
+                <Attribute typeId="int" name="msgSeqNum" mandatory="N" outbound="seperate"/>
+                <Attribute typeId="boolean" name="possDupFlag" mandatory="N" outbound="seperate"/>
+            </Base>
+
+            <Event id="MilleniumLogon" extends="BaseMillenium" src="both">
+                <Attribute typeId="int" name="lastMsgSeqNum" mandatory="Y" outbound="seperate"/>
+                <Attribute typeId="string[MILL_USER_NAME_LENGTH]" name="userName" mandatory="Y" outbound="seperate"/>
+                <Attribute typeId="string[MILL_PASSWORD_LENGTH]" name="password" mandatory="Y" outbound="seperate"/>
+                <Attribute typeId="string[MILL_PASSWORD_LENGTH]" name="newPassword" mandatory="Y" outbound="seperate"/>
+            </Event>
+
+            <Event id="MilleniumLogonReply" extends="BaseMillenium" src="both">
+                <Attribute typeId="int" name="rejectCode" mandatory="Y" outbound="seperate"/>
+                <Attribute typeId="string[MILL_PASSWORD_EXPIRY_LENGTH]" name="pwdExpiryDayCount" mandatory="Y" outbound="seperate"/>
+            </Event>
+
+            <Event id="MilleniumLogout" extends="BaseMillenium" src="both">
+                <Attribute typeId="string[MILL_REASON_LENGTH]" name="reason" mandatory="Y" outbound="seperate"/>
+            </Event>
+
+            <Event id="MilleniumMissedMessageRequest" extends="BaseMillenium" src="both">
+                <Attribute typeId="char" name="appId" mandatory="Y" outbound="seperate"/>
+                <Attribute typeId="int" name="lastMsgSeqNum" mandatory="Y" outbound="seperate"/>
+            </Event>
+
+            <Event id="MilleniumMissedMsgRequestAck" extends="BaseMillenium" src="both">
+                <Attribute typeId="MilleniumMissedMsgReqAckType" name="missedMsgReqAckType" mandatory="Y" outbound="seperate"/>
+            </Event>
+
+            <Event id="MilleniumMissedMsgReport" extends="BaseMillenium" src="both">
+                <Attribute typeId="MilleniumMissedMsgReportType" name="missedMsgReportType" mandatory="Y" outbound="seperate"/>
+            </Event>
+
+            <Base id="BaseITCH" src="both">
+                <!-- msgSeqNum and possBupFlag are required to allow Millenium events to be treated as Message -->
+                <Attribute typeId="int" name="msgSeqNum" mandatory="N" outbound="seperate"/>
+                <Attribute typeId="boolean" name="possDupFlag" mandatory="N" outbound="seperate"/>
+            </Base>
+
+            <Event id="BookAddOrder" extends="BaseITCH" src="both">
+                <Attribute typeId="int" name="nanosecond" mandatory="Y" outbound="seperate"/>
+                <Attribute typeId="long" name="orderId" mandatory="Y" outbound="seperate"/>
+                <Attribute typeId="Side" name="side" mandatory="Y" outbound="seperate"/>
+                <Attribute typeId="int" name="orderQty" mandatory="Y" outbound="seperate"/>
+                <Attribute typeId="Book" name="book" mandatory="Y" outbound="seperate"/>
+                <Attribute typeId="double" name="price" mandatory="Y" outbound="seperate"/>
+            </Event>
+
+            <Event id="BookDeleteOrder" extends="BaseITCH" src="both">
+                <Attribute typeId="int" name="nanosecond" mandatory="Y" outbound="seperate"/>
+                <Attribute typeId="long" name="orderId" mandatory="Y" outbound="seperate"/>
+            </Event>
+
+            <Event id="BookModifyOrder" extends="BaseITCH" src="both">
+                <Attribute typeId="int" name="nanosecond" mandatory="Y" outbound="seperate"/>
+                <Attribute typeId="long" name="orderId" mandatory="Y" outbound="seperate"/>
+                <Attribute typeId="int" name="orderQty" mandatory="Y" outbound="seperate"/>
+                <Attribute typeId="double" name="price" mandatory="Y" outbound="seperate"/>
+            </Event>
+
+            <Event id="BookClear" extends="BaseITCH" src="both">
+                <Attribute typeId="int" name="nanosecond" mandatory="Y" outbound="seperate"/>
+                <Attribute typeId="long" name="orderId" mandatory="Y" outbound="seperate"/>
+                <Attribute typeId="Book" name="book" mandatory="Y" outbound="seperate"/>
+            </Event>
+
+        </Events>
+    </InternalModel>
+
+    <!--
+         Fix Model (depends on Internal Model Schema)
+
+            Model : [InternalModelVersion] [FixModel]+
+
+            FixModel : [Id] [FixVersion] [modelVersionNumber] [FixHelper] [Dictionary] [FixMessage]*
+            Dictionary = [Tag]* [SimpleFormatters]* [ComplexFormatters]*
+            FixMessage = [Id] [FixMessageElements]*
+            FixMessageElement = [Tag] (Priority) | [RepeatingGroup]
+            RepeatingGroup = [GroupStart][CountTag][Tag]*[GroupEnd]
+            Tag : [Id] [Name]
+     -->
+
+    <FixModels version="1.0.0" dir="../generated/model/fix/version" rootPackage="com.rr.model.generated.fix">
+
+        <FixVersion>
+            <Entry name="4.0" value="4.0"/>
+            <Entry name="4.2" value="4.2"/>
+            <Entry name="4.4" value="4.4"/>
+            <Entry name="5.0" value="5.0"/>
+        </FixVersion>
+
+        <FixModel id="4.4" modelVersionNumber="1.0">
+            <Attribute name="FixVersion" value="4.4"/>
+            <Attribute name="FixHelper" value="com.rr.fix.codec.helper.FixCodecHelper44"/>
+
+            <Dictionary>
+                <!-- certain tags are special and have specific optimised codec code eg fixVersion.msgType -->
+                <!--  type should be fixed facing not internal type mapping -->
+
+                <Tag id="1" name="Account" type="string"/>
+                <Tag id="6" name="AvgPx" type="price"/>
+                <Tag id="7" name="BeginSeqNo" type="number"/>
+                <Tag id="8" name="BeginString" type="fixVersion"/>
+                <Tag id="9" name="BodyLength" type="length"/>
+                <Tag id="10" name="CheckSum" type="string"/>
+                <Tag id="11" name="ClOrdId" type="string"/>
+                <Tag id="14" name="CumQty" type="quantity"/>
+                <Tag id="15" name="Currency" type="currency"/>
+                <Tag id="16" name="EndSeqNo" type="number"/>
+                <Tag id="17" name="ExecID" type="string"/>
+                <Tag id="19" name="ExecRefID" type="string"/>
+                <Tag id="18" name="ExecInst" type="ch"/>
+                <Tag id="21" name="HandlInst" type="ch"/>
+                <Tag id="22" name="SecurityIDSource" type="ch"/> <!-- dont support private security idents -->
+                <Tag id="30" name="LastMkt" type="string"/>
+                <Tag id="31" name="LastPx" type="price"/>
+                <Tag id="32" name="LastQty" type="quantity"/>
+                <Tag id="34" name="MsgSeqNum" type="seqnum"/>
+                <Tag id="35" name="MsgType" type="msgType"/>
+                <Tag id="36" name="NewSeqNo" type="seqnum"/>
+                <Tag id="37" name="OrderId" type="string"/>
+                <Tag id="38" name="OrderQty" type="quantity"/>
+                <Tag id="39" name="OrdStatus" type="ch"/>
+                <Tag id="40" name="OrdType" type="ch"/>
+                <Tag id="41" name="OrigClOrdId" type="string"/>
+                <Tag id="43" name="PossDupFlag" type="bool"/>
+                <Tag id="44" name="Price" type="price"/>
+                <Tag id="45" name="RefSeqNum" type="seqnum"/>
+                <Tag id="48" name="SecurityID" type="string"/>
+                <Tag id="49" name="SenderCompID" type="string"/>
+                <Tag id="50" name="SenderSubID" type="string"/>
+                <Tag id="52" name="SendingTime" type="UTCTimestamp"/>
+                <Tag id="54" name="Side" type="ch"/>
+                <Tag id="55" name="Symbol" type="string"/>
+                <Tag id="56" name="TargetCompID" type="string"/>
+                <Tag id="57" name="TargetSubID" type="string"/>
+                <Tag id="58" name="Text" type="string"/>
+                <Tag id="59" name="TimeInForce" type="ch"/>
+                <Tag id="60" name="TransactTime" type="UTCTimestamp"/>
+                <Tag id="77" name="PositionEffect" type="ch"/>
+                <Tag id="89" name="Signature" type="data"/>
+                <Tag id="93" name="SignatureLength" type="length"/>
+                <Tag id="95" name="RawDataLen" type="length"/>
+                <Tag id="96" name="RawData" type="string"/>
+                <Tag id="97" name="PossResend" type="bool"/>
+                <Tag id="98" name="EncryptMethod" type="ch"/>
+                <Tag id="100" name="ExDest" type="string"/>
+                <Tag id="102" name="CxlRejReason" type="ch"/>
+                <Tag id="103" name="OrdRejReason" type="ch"/>
+                <Tag id="108" name="heartBtInt" type="length"/>
+                <Tag id="112" name="testReqID" type="string"/>
+                <Tag id="115" name="OnBehalfOfCompID" type="string"/>
+                <Tag id="116" name="OnBehalfOfSubID" type="string"/>
+                <Tag id="120" name="SettlCurrency" type="currency"/>
+                <Tag id="123" name="GapFillFlag" type="bool"/>
+                <Tag id="128" name="DeliverToCompID" type="string"/>
+                <Tag id="129" name="DeliverToSubID" type="string"/>
+                <Tag id="141" name="ResetSeqNumFlag" type="bool"/>
+                <Tag id="142" name="SenderLocationID" type="string"/>
+                <Tag id="143" name="TargetLocationID" type="string"/>
+                <Tag id="144" name="OnBehalfOfLocationID" type="string"/>
+                <Tag id="145" name="DeliverToLocationID" type="string"/>
+                <Tag id="150" name="ExecType" type="ch"/>
+                <Tag id="151" name="LeavesQty" type="quantity"/>
+                <Tag id="167" name="SecurityType" type="ch"/>
+                <Tag id="207" name="SecurityExchange" type="exchange"/>
+                <Tag id="211" name="PegOffsetValue" type="price"/>
+                <Tag id="371" name="RefTagID" type="number"/>
+                <Tag id="372" name="RefMsgType" type="string"/>
+                <Tag id="373" name="SessionRejectReason" type="string"/>
+                <Tag id="378" name="ExecRestatementReason" type="ch"/>
+                <Tag id="434" name="CxlRejResponseTo" type="ch"/>
+                <Tag id="447" name="PartyIDSource" type="ch"/>
+                <Tag id="526" name="parentClOrdId"
+                     type="ch"/>  <!-- SecondaryClOrdId is used as the linkage id between parent and child orders .. required for recovery -->
+                <Tag id="528" name="OrderCapacity" type="ch"/>
+                <Tag id="529" name="OrderRestrictions" type="ch"/>
+                <Tag id="775" name="BookingType" type="ch"/>
+                <Tag id="789" name="NextExpectedMsgSeqNum" type="seqnum"/>
+                <Tag id="851" name="LiquidityInd" type="ch"/>
+
+                <Tag id="11611" name="AckStats" type="AckStats" src="SMT"/>
+
+            </Dictionary>
+
+            <StrandardHeader>
+                <Tag id="8" mand="Y"/>
+                <Tag id="9" mand="Y"/>
+                <Tag id="35" mand="Y"/>
+                <Tag id="49" mand="Y"/>
+                <Tag id="56" mand="Y"/>
+                <Tag id="115"/>
+                <Tag id="128"/>
+                <Tag id="34" mand="Y"/>
+                <Tag id="50"/>
+                <Tag id="57"/>
+                <Tag id="116"/>
+                <Tag id="129"/>
+                <Tag id="43" mand="Y"/>
+                <Tag id="52" mand="N"/> <!--  on decode we want to ignore for execs & cancels -->
+            </StrandardHeader>
+
+            <StandardTrailer>
+                <Tag id="10" mand="Y"/>
+            </StandardTrailer>
+
+            <FixMessage id="NewOrderSingle" msgType="D">
+                <Tag id="11" mand="Y"/>
+                <Tag id="59"/>
+                <Tag id="22"/>
+                <Tag id="48"/>
+                <Tag id="38"/>
+                <Tag id="44"/>
+                <Tag id="15" mand="N"/>
+                <Tag id="40" mand="Y"/>
+                <Tag id="54" mand="Y"/>
+                <Tag id="55" mand="Y"/>
+                <Tag id="21"/>
+                <Tag id="60" mand="Y"/>
+                <Tag id="100"/>
+                <Tag id="1"/>
+                <Tag id="526"/>
+                <Tag id="528"/>
+                <Tag id="58"/>
+                <Tag id="207"/>
+                <Tag id="775"/>
+            </FixMessage>
+
+            <FixMessage id="CancelReplaceRequest" msgType="G">
+                <Tag id="11" mand="Y"/>
+                <Tag id="41" mand="Y"/>
+                <Tag id="59"/>
+                <Tag id="22"/>
+                <Tag id="48"/>
+                <Tag id="38"/>
+                <Tag id="44"/>
+                <Tag id="15" mand="Y"/>
+                <Tag id="40" mand="Y"/>
+                <Tag id="54" mand="Y"/>
+                <Tag id="55" mand="Y"/>
+                <Tag id="21"/>
+                <Tag id="60" mand="Y"/>
+                <Tag id="100"/>
+                <Tag id="1"/>
+                <Tag id="526"/>
+                <Tag id="528"/>
+                <Tag id="58"/>
+                <Tag id="207"/>
+                <Tag id="775"/>
+            </FixMessage>
+
+            <FixMessage id="CancelRequest" msgType="F">
+                <Tag id="11" mand="Y"/>
+                <Tag id="41" mand="Y"/>
+                <Tag id="22"/>
+                <Tag id="48"/>
+                <Tag id="15" mand="N"/>
+                <Tag id="38"/>
+                <Tag id="55" mand="Y"/>
+                <Tag id="60" mand="Y"/>
+                <Tag id="100"/>
+                <Tag id="207"/>
+                <Tag id="526"/>
+            </FixMessage>
+
+            <FixMessage id="CancelReject" msgType="9">
+                <Tag id="37" mand="Y"/>
+                <Tag id="11" mand="Y"/>
+                <Tag id="41" mand="Y"/>
+                <Tag id="39" mand="Y"/>
+                <Tag id="102" mand="N"/>
+                <Tag id="434" mand="Y"/>
+                <Tag id="58"/>
+            </FixMessage>
+
+            <FixMessage id="BaseExecRpt">
+                <Tag id="11" mand="Y"/> <!-- not mand in fix spec but expected by clients -->
+                <Tag id="17"/>
+                <Tag id="37" mand="Y"/>
+                <Tag id="39" mand="Y"/>
+                <Tag id="150" mand="Y"/>
+                <Tag id="38"/>
+                <Tag id="44"/>
+                <Tag id="54" mand="Y"/>
+                <Tag id="55"/>
+                <Tag id="15"/>
+                <Tag id="1"/>
+                <Tag id="40"/>
+                <Tag id="59"/>
+                <Tag id="22"/>
+                <Tag id="48"/>
+                <Tag id="60"/>
+                <Tag id="6"/>
+                <Tag id="14"/>
+                <Tag id="151"/>
+            </FixMessage>
+
+            <FixMessage id="NewOrderAck" extends="BaseExecRpt" msgType="8" execType="New">
+                <Tag id="11611"/>
+            </FixMessage>
+
+            <FixMessage id="BaseTrade" extends="BaseExecRpt">
+                <Tag id="32"/>
+                <Tag id="31"/>
+                <Tag id="30"/>
+                <Tag id="120"/>
+                <Tag id="851"/>
+            </FixMessage>
+
+            <FixMessage id="Trade" extends="BaseTrade" msgType="8" execType="Trade">
+            </FixMessage>
+
+            <FixMessage id="TradeCorrect" extends="BaseTrade" msgType="8" execType="TradeCorrect">
+                <Tag id="19"/>
+            </FixMessage>
+
+            <FixMessage id="TradeCancel" extends="BaseTrade" msgType="8" execType="TradeCancel">
+                <Tag id="19"/>
+            </FixMessage>
+
+            <FixMessage id="Rejected" extends="BaseExecRpt" msgType="8" execType="Rejected">
+                <Tag id="58"/>
+            </FixMessage>
+
+            <FixMessage id="Cancelled" extends="BaseExecRpt" msgType="8" execType="Canceled">
+                <Tag id="41"/>
+            </FixMessage>
+            <FixMessage id="Replaced" extends="BaseExecRpt" msgType="8" execType="Replaced">
+                <Tag id="41"/>
+            </FixMessage>
+            <FixMessage id="DoneForDay" extends="BaseExecRpt" msgType="8" execType="DoneForDay"/>
+            <FixMessage id="Stopped" extends="BaseExecRpt" msgType="8" execType="Stopped"/>
+            <FixMessage id="Suspended" extends="BaseExecRpt" msgType="8" execType="Suspended"/>
+            <FixMessage id="Expired" extends="BaseExecRpt" msgType="8" execType="Expired"/>
+            <FixMessage id="OrderStatus" extends="BaseExecRpt" msgType="8" execType="OrderStatus"/>
+
+            <FixMessage id="Restated" msgType="8" execType="Restated">
+                <Tag id="378"/>
+            </FixMessage>
+
+            <FixMessage id="Calculated" msgType="8" execType="Calculated"/>
+            <FixMessage id="PendingCancel" msgType="8" execType="PendingCancel">
+                <Tag id="41"/>
+            </FixMessage>
+            <FixMessage id="PendingNew" msgType="8" execType="PendingNew"/>
+            <FixMessage id="PendingReplace" msgType="8" execType="PendingReplace">
+                <Tag id="41"/>
+            </FixMessage>
+
+            <FixMessage id="Heartbeat" msgType="0">
+                <Tag id="112"/>
+            </FixMessage>
+
+            <FixMessage id="Logon" msgType="A">
+                <Tag id="98"/>
+                <Tag id="108"/>
+                <Tag id="95"/>
+                <Tag id="96"/>
+                <Tag id="141"/>
+                <Tag id="789"/>
+            </FixMessage>
+
+            <FixMessage id="Logout" msgType="5">
+                <Tag id="58"/>
+            </FixMessage>
+
+            <FixMessage id="SessionReject" msgType="3">
+                <Tag id="45"/>
+                <Tag id="371"/>
+                <Tag id="372"/>
+                <Tag id="373"/>
+                <Tag id="58"/>
+            </FixMessage>
+
+            <FixMessage id="ResendRequest" msgType="2">
+                <Tag id="7"/>
+                <Tag id="16"/>
+            </FixMessage>
+
+            <FixMessage id="SequenceReset" msgType="4">
+                <Tag id="123"/>
+                <Tag id="36"/>
+            </FixMessage>
+
+            <FixMessage id="TestRequest" msgType="1">
+                <Tag id="112"/>
+            </FixMessage>
+
+        </FixModel>
+
+        <!--  Fix 4.2
+
+                note tag 20 is in exec rpt ExecTransType
+                note tag 47 is rule80A / OrderCapacity in NOS (528 in 4.4) & Amend
+        -->
+
+        <FixModel id="4.2" modelVersionNumber="1.0" extends="4.4">
+            <Attribute name="FixVersion" value="4.2"/>
+            <Attribute name="FixHelper" value="com.rr.fix.codec.helper.FixCodecHelper42"/>
+
+            <Dictionary>
+                <Tag id="20" name="ExecTransType" type="ch"/>
+                <Tag id="47" name="Rule80A" type="ch"/>
+                <Tag id="58" name="parentClOrdId" type="ch"/>  <!-- SecondaryClOrdId not supported by fix4.2 so use TEXT tag .. required for recovery -->
+
+                <Tag id="526" type="ch"/>  <!-- not supported in 4.2, blank out from inherited 4.4 dict -->
+            </Dictionary>
+
+            <FixMessage id="NewOrderSingle" msgType="D">
+                <Tag id="11" mand="Y"/>
+                <Tag id="59"/>
+                <Tag id="22"/>
+                <Tag id="48"/>
+                <Tag id="38"/>
+                <Tag id="44"/>
+                <Tag id="15" mand="N"/>
+                <Tag id="40" mand="Y"/>
+                <Tag id="54" mand="Y"/>
+                <Tag id="55" mand="Y"/>
+                <Tag id="21"/>
+                <Tag id="60" mand="Y"/>
+                <Tag id="100"/>
+                <Tag id="1"/>
+                <Tag id="47"/>
+                <Tag id="58"/>
+                <Tag id="207"/>
+                <Tag id="775"/>
+            </FixMessage>
+
+            <FixMessage id="CancelReplaceRequest" msgType="G">
+                <Tag id="11" mand="Y"/>
+                <Tag id="41" mand="Y"/>
+                <Tag id="59"/>
+                <Tag id="22"/>
+                <Tag id="48"/>
+                <Tag id="38"/>
+                <Tag id="44"/>
+                <Tag id="15" mand="Y"/>
+                <Tag id="40" mand="Y"/>
+                <Tag id="54" mand="Y"/>
+                <Tag id="55" mand="Y"/>
+                <Tag id="21"/>
+                <Tag id="60" mand="Y"/>
+                <Tag id="100"/>
+                <Tag id="1"/>
+                <Tag id="47"/>
+                <Tag id="58"/>
+                <Tag id="207"/>
+                <Tag id="775"/>
+            </FixMessage>
+
+            <FixMessage id="CancelRequest" msgType="F">
+                <Tag id="11" mand="Y"/>
+                <Tag id="41" mand="Y"/>
+                <Tag id="22"/>
+                <Tag id="48"/>
+                <Tag id="15" mand="N"/>
+                <Tag id="38"/>
+                <Tag id="55" mand="Y"/>
+                <Tag id="60" mand="Y"/>
+                <Tag id="100"/>
+                <Tag id="207"/>
+                <Tag id="58"/>
+            </FixMessage>
+
+            <FixMessage id="BaseExecRpt">
+                <Tag id="11" mand="Y"/> <!-- not mand in fix spec but expected by clients -->
+                <Tag id="17"/>
+                <Tag id="20" mand="Y"/>
+                <Tag id="37" mand="Y"/>
+                <Tag id="39" mand="Y"/>
+                <Tag id="150" mand="Y"/>
+                <Tag id="38"/>
+                <Tag id="44"/>
+                <Tag id="32"/>
+                <Tag id="31"/>
+                <Tag id="54" mand="Y"/>
+                <Tag id="55"/>
+                <Tag id="15"/>
+                <Tag id="1"/>
+                <Tag id="40"/>
+                <Tag id="59"/>
+                <Tag id="22"/>
+                <Tag id="48"/>
+                <Tag id="60"/>
+                <Tag id="6"/>
+                <Tag id="14"/>
+                <Tag id="151"/>
+            </FixMessage>
+
+            <FixMessage id="PartialFill" extends="BaseTrade" msgType="8" execType="PartialFill"/>
+            <FixMessage id="Fill" extends="BaseTrade" msgType="8" execType="Fill"/>
+        </FixModel>
+    </FixModels>
+
+    <BinaryModels version="1.0.0" dir="../generated/model/binary/version" rootPackage="com.rr.model.generated">
+        <Model id="UTPEuronextCash" modelVersionNumber="1.0">
+            <Attribute name="BinaryVersion" value="2"/> <!-- protocol version is 2 for ENX, extendedClOrdId -->
+
+            <Dictionary>
+                <!-- certain tags are special and have specific optimised codec code eg fixVersion.msgType -->
+                <!--  type should be external facing not internal type mapping -->
+                <!--  for name try and use the internal event field name so it can be auto matched to the event -->
+                <!-- valid types zstr(fixed len str)|str(with len as max)|ch|price|nByte|nShort|nInt|nLong|
+                                 timestampLocal|timestampUTC|timeLocal|timeUTC -->
+
+
+                <Field id="msgType" type="nByte" comment="message type"/>
+                <Field id="protocolVersion" type="nByte" comment="CCG binary protocol version"/>
+                <Field id="msgLen" type="nShort" comment="total message length"/>
+                <Field id="etx" type="nByte" comment="end of message marker"/>
+
+                <!-- Logon only -->
+                <Field id="lastMsgSeqNum" type="nInt" comment="last message sequence number"/>
+                <Field id="userName" type="zstr" len="UTP_TEXT_LENGTH"/>
+
+                <!-- LogonReject only -->
+                <Field id="lastMsgSeqNumRcvd" type="nInt" comment="last received message sequence number"/>
+                <Field id="lastMsgSeqNumSent" type="nInt" comment="last sent message sequence number"/>
+                <Field id="rejectCode" type="nShort" comment="logon reject code"/>
+                <Field id="rejectText" type="zstr" len="UTP_REJECT_TEXT_LENGTH" comment="logon reject text"/>
+
+                <!-- Order Request Fields -->
+                <Field id="msgSeqNum" type="nInt"/>
+                <Field id="clOrdId" type="nLong"/>
+                <Field id="origClOrdId" type="nLong"/>
+                <Field id="orderQty" type="nInt"/>
+                <Field id="price" type="price"/>
+                <Field id="priceScale" type="nByte"/>
+                <Field id="currency" type="fstr" len="UTP_CCY_LEN"/>
+                <Field id="mic" type="fstr" len="UTP_MIC_LEN"/>
+                <Field id="symbol" type="zstr" len="UTP_SYMBOL_LEN"/>
+                <Field id="onBehalfOfCompId" type="zstr" len="UTP_COMP_ID_LEN"/>
+                <Field id="side" type="nByte"/>
+                <Field id="ordType" type="nByte"/>
+                <Field id="timeInForce" type="nByte"/>
+                <Field id="orderCapacity" type="nByte"/>
+                <Field id="account" type="zstr" len="UTP_ACCOUNT_LEN"/>
+                <Field id="confirmFlag" type="nByte"/>
+                <Field id="giveUpFirm" type="zstr" len="UTP_GIVE_UP_FIRM_LEN"/>
+                <Field id="parentClOrdId" type="zstr" len="UTP_NOS_FREE_TEXT1_LEN"/>
+
+
+                <!-- Order Reply Fields -->
+                <Field id="orderId" type="nLong"/>
+                <Field id="transactTime" type="nowUTC"/>
+                <Field id="deliverToCompId" type="zstr" len="UTP_COMP_ID_LEN"/>
+                <Field id="execId" type="nLong"/>                       <!-- UTPExID  -->
+                <Field id="lastQty" type="nInt"/>
+                <Field id="lastPx" type="price"/>
+                <Field id="liquidityInd" type="nByte"/>
+
+                <!-- reject & bust -->
+                <Field id="collarRejPx" type="price"/>
+                <Field id="errorCode" type="nShort"/>
+                <Field id="collarRejType" type="nByte"/>
+                <Field id="collarRejPxScale" type="nByte"/>
+                <Field id="tradeChangeType" type="nByte"/>
+
+                <!-- trading status -->
+                <Field id="mktPhaseChgTime" type="timeUTC"/>
+                <Field id="instClassId" type="fstr" len="UTP_INST_CLASS_LEN"/>
+                <Field id="instClassStatus" type="fstr" len="UTP_INST_CLASS_STATUS_LEN"/>
+                <Field id="orderEntryAllowed" type="bool"/>
+                <Field id="tradingSessionId" type="fstr" len="UTP_TRADING_SESSION_ID_LEN"/>
+
+            </Dictionary>
+
+            <!-- NOTE mandatory field indicates the field MUST be present in the internal event ! -->
+
+            <StrandardHeader>
+                <!-- these special header fields are deemed not mandatory in the sense that they dont need to be populated by events -->
+                <Field id="msgType" mand="N"/>
+                <Field id="protocolVersion" mand="N"/>
+                <Field id="msgLen" mand="N"/>
+            </StrandardHeader>
+
+            <StandardTrailer>
+                <Field id="etx" mand="N"/>
+            </StandardTrailer>
+
+            <!-- any id starting with filler will form a fixed width field of specified len, multiple fillers per msg allowed but must have unique ids -->
+            <Message id="Logon" msgType="A">
+                <Field id="lastMsgSeqNum" mand="Y"/>
+                <Field id="userName" mand="Y"/>
+                <Field id="filler" len="4"/>
+            </Message>
+
+            <Message id="LogonReject" msgType="l">
+                <Field id="lastMsgSeqNumRcvd" mand="Y"/>
+                <Field id="lastMsgSeqNumSent" mand="Y"/>
+                <Field id="rejectCode" mand="Y"/>
+                <Field id="rejectText" mand="Y"/>
+                <Field id="filler" len="1"/>
+            </Message>
+
+            <Message id="TestRequest" msgType="1">
+                <Field id="filler" len="3"/>
+            </Message>
+
+            <Message id="Heartbeat" msgType="0">
+                <Field id="filler" len="3"/>
+            </Message>
+
+            <Message id="NewOrder" msgType="D">
+                <Field id="msgSeqNum" mand="Y"/>
+                <Field id="clOrdId" mand="Y"/>
+                <Field id="orderQty" mand="Y"/>
+                <Field id="price" mand="N"/>
+                <Field id="filler1" len="24"/> <!-- maxfloor(4) + disOffset(4) + stopPx(4) + pegDif(4) + dispRange(4) + minQty(4) -->
+                <Field id="priceScale" mand="N"/>
+                <Field id="symbol" mand="Y"/>
+                <Field id="onBehalfOfCompId" mand="N"/>
+                <Field id="filler2" len="1"/> <!-- execInst(1) -->
+                <Field id="side" mand="Y"/>
+                <Field id="ordType" mand="Y"/>
+                <Field id="timeInForce" mand="N"/>
+                <Field id="orderCapacity" mand="N"/>
+                <Field id="filler3" len="4"/> <!-- tradSessId(4) -->
+                <Field id="account" mand="N"/>
+                <Field id="filler4" len="12"/> <!-- discInst(1)+disPriceScale(1)+stopPxScale(1)+pegDiffScale(1)+expTimeFlag(1)+expTime(6)+techOrdType(1) -->
+                <Field id="confirmFlag" mand="N"/>
+                <Field id="mic" mand="N"/>
+                <Field id="currency" mand="N"/>
+                <Field id="giveUpFirm" mand="N"/>
+                <Field id="filler5" len="8"/> <!-- clientID -->
+                <Field id="parentClOrdId" mand="N"/>
+                <Field id="filler6" len="52"/> <!-- all remaining fields -->
+            </Message>
+
+            <Message id="OrderAck" msgType="a">
+                <Field id="msgSeqNum" mand="Y"/>
+                <Field id="clOrdId" mand="Y"/>
+                <Field id="orderId" mand="Y"/>
+                <Field id="transactTime" mand="N"/>
+                <Field id="filler" len="31"/>
+            </Message>
+
+            <Message id="OrderCancelRequest" msgType="F">
+                <Field id="msgSeqNum" mand="Y"/>
+                <Field id="clOrdId" mand="Y"/>
+                <Field id="origClOrdId" mand="Y"/>
+                <Field id="orderId" mand="Y"/>
+                <Field id="onBehalfOfCompId" mand="N"/>
+                <Field id="symbol" mand="Y"/>
+                <Field id="side" mand="Y"/>
+                <Field id="filler1" len="23"/>   <!-- techOrdType(1)+classId(2)+mic(4)+ccy(3)+canLocId(11)+OrdCap(1)+filler(1) -->
+            </Message>
+
+            <Message id="CancelReqAck" msgType="6">
+                <Field id="msgSeqNum" mand="N"/>
+                <Field id="clOrdId" mand="N"/>
+                <Field id="orderId" mand="N"/>
+                <Field id="transactTime" mand="N"/>
+                <Field id="filler" len="31"/>
+            </Message>
+
+            <Message id="OrderKilled" msgType="4">
+                <Field id="msgSeqNum" mand="Y"/>
+                <Field id="clOrdId" mand="Y"/>
+                <Field id="orderId" mand="Y"/>
+                <Field id="transactTime" mand="N"/>
+                <Field id="filler" len="31"/>
+            </Message>
+
+            <Message id="OrderReplaceRequest" msgType="G">
+                <Field id="msgSeqNum" mand="Y"/>
+                <Field id="clOrdId" mand="Y"/>
+                <Field id="origClOrdId" mand="Y"/>
+                <Field id="orderId" mand="Y"/>
+                <Field id="orderQty" mand="Y"/>
+                <Field id="price" mand="N"/>
+                <Field id="filler1" len="24"/> <!-- maxfloor(4) + disOffset(4) + stopPx(4) + pegDif(4) + dispRange(4) + filler(4) -->
+                <Field id="priceScale" mand="N"/>
+                <Field id="onBehalfOfCompId" mand="N"/>
+                <Field id="symbol" mand="Y"/>
+                <Field id="filler2" len="1"/> <!-- execInst(1) -->
+                <Field id="side" mand="Y"/>
+                <Field id="ordType" mand="Y"/>
+                <Field id="timeInForce" mand="N"/>
+                <Field id="orderCapacity" mand="N"/>
+                <Field id="filler3" len="4"/> <!-- tradSessId(4) -->
+                <Field id="account" mand="N"/>
+                <Field id="filler4" len="5"/> <!-- discInst(1)+disPriceScale(1)+stopPxScale(1)+pegDiffScale(1)+techOrdType(1) -->
+                <Field id="confirmFlag" mand="N"/>
+                <Field id="filler5" len="14"/> <!-- mic(4)+ccy(3)+expireTimeFlag(1)+expireTime(6) -->
+                <Field id="giveUpFirm" mand="N"/>
+                <Field id="filler6" len="8"/> <!-- clientID -->
+                <Field id="parentClOrdId" mand="N"/>
+                <Field id="filler7" len="4"/> <!-- all remaining fields -->
+            </Message>
+
+            <Message id="ReplaceReqAck" msgType="E">
+                <Field id="msgSeqNum" mand="N"/>
+                <Field id="clOrdId" mand="N"/>
+                <Field id="orderId" mand="N"/>
+                <Field id="transactTime" mand="N"/>
+                <Field id="filler" len="31"/>   <!-- mic(4)+ccy(3)+filler(1) -->
+            </Message>
+
+            <Message id="OrderReplaced" msgType="5">
+                <Field id="msgSeqNum" mand="Y"/>
+                <Field id="clOrdId" mand="Y"/>
+                <Field id="orderId" mand="Y"/>
+                <Field id="transactTime" mand="N"/>
+                <Field id="filler" len="31"/>   <!-- mic(4)+ccy(3)+filler(1) -->
+            </Message>
+
+            <Message id="CancelReplaceReject" msgType="8">
+                <Field id="msgSeqNum" mand="Y"/>
+                <Field id="clOrdId" mand="Y"/>
+                <Field id="origClOrdId" mand="Y"/>
+                <Field id="transactTime" mand="N"/>
+                <Field id="collarRejPx" mand="N"/>
+                <Field id="errorCode" mand="N"/>
+                <Field id="rejectText" mand="Y"/>
+                <Field id="collarRejType" mand="N"/>
+                <Field id="collarRejPxScale" mand="N"/>
+                <Field id="filler" len="33"/>
+            </Message>
+
+            <Message id="OrderFill" msgType="2">
+                <Field id="msgSeqNum" mand="Y"/>
+                <Field id="clOrdId" mand="Y"/>
+                <Field id="orderId" mand="Y"/>
+                <Field id="execId" mand="Y"/>
+                <Field id="transactTime" mand="N"/>
+                <Field id="lastQty" mand="Y"/>
+                <Field id="lastPx" mand="Y"/>
+                <Field id="filler1" len="11"/>  <!-- IMSCompID(11) -->
+                <Field id="priceScale" mand="N"/>
+                <Field id="liquidityInd" mand="Y"/>
+                <Field id="side" mand="Y"/>
+                <Field id="filler2" len="33"/>
+            </Message>
+
+            <Message id="BustCorrect" msgType="C">
+                <Field id="msgSeqNum" mand="Y"/>
+                <Field id="clOrdId" mand="Y"/>
+                <Field id="execId" mand="Y"/>
+                <Field id="transactTime" mand="N"/>
+                <Field id="lastQty" mand="Y"/>
+                <Field id="lastPx" mand="Y"/>
+                <Field id="priceScale" mand="N"/>
+                <Field id="tradeChangeType" mand="N"/>
+                <Field id="filler2" len="33"/>
+            </Message>
+
+            <Message id="TradingSessionStatus" msgType="h">
+                <Field id="msgSeqNum" mand="Y"/>
+                <Field id="mktPhaseChgTime" mand="N"/>
+                <Field id="instClassId" mand="N"/>
+                <Field id="instClassStatus" mand="N"/>
+                <Field id="orderEntryAllowed" mand="N"/>
+                <Field id="tradingSessionId" mand="N"/>
+            </Message>
+
+        </Model>
+
+        <Model id="ETSEurex" modelVersionNumber="1.0">
+            <Attribute name="BinaryVersion" value="1"/> <!-- protocol version is 1 for Eurex -->
+            <Attribute name="MessageTypeAscii" value="N"/>
+
+            <Dictionary>
+                <!-- certain tags are special and have specific optimised codec code eg fixVersion.msgType -->
+                <!--  type should be external facing not internal type mapping -->
+                <!--  for name try and use the internal event field name so it can be auto matched to the event -->
+                <!-- valid types zstr(fixed len str)|str(with len as max)|ch|price|nByte|nShort|nInt|nLong|bool|
+                                 timestampLocal|timestampUTC|timeLocal|timeUTC -->
+
+                <!-- Header only -->
+                <Field id="tmMsgType" type="nShort" code="5064"/>
+                <Field id="protocolVersion" type="nShort"/>
+
+                <!-- TMReq Header -->
+                <Field id="MID" type="nShort" code="1059"/>
+                <Field id="sessionId" type="nShort" code="1099"/>
+                <Field id="pagingBookmark" type="str" code="1070"/>
+                <Field id="requestSeqNum" type="nInt" code="1089"/>
+
+                <!-- logical structures / containers -->
+                <Field id="requestHeaderGrp" type="nInt" code="5036"/>
+                <Field id="applReqData" type="nInt" code="5062"/>
+
+                <!-- record encoding ids, each binary message requires entry -->
+                <Field id="sessionLogonRequest" type="nInt" code="5017"/>
+
+
+                <!-- Transport Message : Logon only -->
+                <Field id="heartbeatIntvl" type="nInt" code="1038"/>
+                <Field id="memberId" type="str" code="1057" len="ETS_MEMBER_ID_LENGTH"/>
+                <Field id="nonPersOrderDelFlag" type="bool" code="1060"/>
+                <Field id="persOrderDelFlag" type="bool" code="1061"/>
+                <Field id="quoteDelFlag" type="bool" code="1083"/>
+                <Field id="skipHeartbeatCheckFlag" type="bool" code="1094"/>
+                <Field id="unsubSesEventFlag" type="bool" code="1205"/>
+                <Field id="userApplId" type="str" code="1157" len="ETS_USER_APP_ID_LENGTH"/>
+
+
+                <!-- Order Request Fields -->
+                <Field id="msgSeqNum" type="nInt"/>
+                <Field id="clOrdId" type="nLong"/>
+                <Field id="origClOrdId" type="nLong"/>
+                <Field id="orderQty" type="nInt"/>
+                <Field id="price" type="price"/>
+                <Field id="priceScale" type="nByte"/>
+                <Field id="currency" type="fstr" len="UTP_CCY_LEN"/>
+                <Field id="mic" type="fstr" len="UTP_MIC_LEN"/>
+                <Field id="symbol" type="zstr" len="UTP_SYMBOL_LEN"/>
+                <Field id="onBehalfOfCompId" type="zstr" len="UTP_COMP_ID_LEN"/>
+                <Field id="side" type="nByte"/>
+                <Field id="ordType" type="nByte"/>
+                <Field id="timeInForce" type="nByte"/>
+                <Field id="orderCapacity" type="nByte"/>
+                <Field id="account" type="zstr" len="UTP_ACCOUNT_LEN"/>
+                <Field id="confirmFlag" type="nByte"/>
+                <Field id="giveUpFirm" type="zstr" len="UTP_GIVE_UP_FIRM_LEN"/>
+                <Field id="parentClOrdId" type="zstr" len="UTP_NOS_FREE_TEXT1_LEN"/>
+
+
+                <!-- Order Reply Fields -->
+                <Field id="orderId" type="nLong"/>
+                <Field id="transactTime" type="nowUTC"/>
+                <Field id="deliverToCompId" type="zstr" len="UTP_COMP_ID_LEN"/>
+                <Field id="execId" type="nLong"/>                       <!-- UTPExID  -->
+                <Field id="lastQty" type="nInt"/>
+                <Field id="lastPx" type="price"/>
+                <Field id="liquidityInd" type="nByte"/>
+
+                <!-- reject & bust -->
+                <Field id="collarRejPx" type="price"/>
+                <Field id="errorCode" type="nShort"/>
+                <Field id="collarRejType" type="nByte"/>
+                <Field id="collarRejPxScale" type="nByte"/>
+                <Field id="tradeChangeType" type="nByte"/>
+
+                <!-- trading status -->
+                <Field id="mktPhaseChgTime" type="timeUTC"/>
+                <Field id="instClassId" type="fstr" len="UTP_INST_CLASS_LEN"/>
+                <Field id="instClassStatus" type="fstr" len="UTP_INST_CLASS_STATUS_LEN"/>
+                <Field id="orderEntryAllowed" type="bool"/>
+                <Field id="tradingSessionId" type="fstr" len="UTP_TRADING_SESSION_ID_LEN"/>
+
+            </Dictionary>
+
+            <!-- NOTE mandatory field indicates the field MUST be present in the internal event ! -->
+
+            <StrandardHeader>
+            </StrandardHeader>
+
+            <StandardTrailer>
+            </StandardTrailer>
+
+            <Message id="ETSSessionLogonRequest" msgType="5">
+                <Field id="heartbeatIntvl" mand="Y"/>
+                <Field id="memberId" mand="Y"/>
+                <Field id="nonPersOrderDelFlag" mand="N"/>
+                <Field id="persOrderDelFlag" mand="N"/>
+                <Field id="quoteDelFlag" mand="N"/>
+                <Field id="skipHeartbeatCheckFlag" mand="N"/>
+                <Field id="unsubSesEventFlag" mand="N"/>
+                <Field id="userApplId" mand="Y"/>
+            </Message>
+
+            <Message id="ETSSessionLogonNotification" msgType="6">
+                <Field id="heartbeatIntvl" mand="Y"/>
+                <Field id="throttleLimit" mand="Y"/>
+                <Field id="disconnectLimit" mand="Y"/>
+                <Field id="lastReqSeqNo" mand="Y"/>
+                <Field id="lastEventSeqNo" mand="Y"/>
+                <Field id="currentBusinessDay" mand="Y"/>
+                <Field id="refDataSign" mand="Y"/>
+                <Field id="connId" mand="Y"/>
+                <Field id="configId" mand="Y"/>
+
+                <RepeatingGroup id="GatewayIpGrp" min="1" max="4">
+                    <Field id="gatewayIp" mand="Y"/>
+                    <Field id="gatewayLocId" mand="Y"/>
+                </RepeatingGroup>
+            </Message>
+
+
+            <Message id="LogonReject" msgType="0">
+                <Field id="lastMsgSeqNumRcvd" mand="Y"/>
+                <Field id="lastMsgSeqNumSent" mand="Y"/>
+                <Field id="rejectCode" mand="Y"/>
+                <Field id="rejectText" mand="Y"/>
+                <Field id="filler" len="1"/>
+            </Message>
+
+            <Message id="TestRequest" msgType="0">
+                <Field id="filler" len="3"/>
+            </Message>
+
+            <Message id="Heartbeat" msgType="0">
+                <Field id="filler" len="3"/>
+            </Message>
+
+            <Message id="NewOrder" msgType="0">
+                <Field id="msgSeqNum" mand="Y"/>
+                <Field id="clOrdId" mand="Y"/>
+                <Field id="orderQty" mand="Y"/>
+                <Field id="price" mand="N"/>
+                <Field id="filler1" len="24"/> <!-- maxfloor(4) + disOffset(4) + stopPx(4) + pegDif(4) + dispRange(4) + minQty(4) -->
+                <Field id="priceScale" mand="N"/>
+                <Field id="symbol" mand="Y"/>
+                <Field id="onBehalfOfCompId" mand="N"/>
+                <Field id="filler2" len="1"/> <!-- execInst(1) -->
+                <Field id="side" mand="Y"/>
+                <Field id="ordType" mand="Y"/>
+                <Field id="timeInForce" mand="N"/>
+                <Field id="orderCapacity" mand="N"/>
+                <Field id="filler3" len="4"/> <!-- tradSessId(4) -->
+                <Field id="account" mand="N"/>
+                <Field id="filler4" len="12"/> <!-- discInst(1)+disPriceScale(1)+stopPxScale(1)+pegDiffScale(1)+expTimeFlag(1)+expTime(6)+techOrdType(1) -->
+                <Field id="confirmFlag" mand="N"/>
+                <Field id="mic" mand="N"/>
+                <Field id="currency" mand="N"/>
+                <Field id="giveUpFirm" mand="N"/>
+                <Field id="filler5" len="8"/> <!-- clientID -->
+                <Field id="parentClOrdId" mand="N"/>
+                <Field id="filler6" len="52"/> <!-- all remaining fields -->
+            </Message>
+
+            <Message id="OrderAck" msgType="0">
+                <Field id="msgSeqNum" mand="Y"/>
+                <Field id="clOrdId" mand="Y"/>
+                <Field id="orderId" mand="Y"/>
+                <Field id="transactTime" mand="N"/>
+                <Field id="filler" len="31"/>
+            </Message>
+
+            <Message id="OrderCancelRequest" msgType="0">
+                <Field id="msgSeqNum" mand="Y"/>
+                <Field id="clOrdId" mand="Y"/>
+                <Field id="origClOrdId" mand="Y"/>
+                <Field id="orderId" mand="Y"/>
+                <Field id="onBehalfOfCompId" mand="N"/>
+                <Field id="symbol" mand="Y"/>
+                <Field id="side" mand="Y"/>
+                <Field id="filler1" len="23"/>   <!-- techOrdType(1)+classId(2)+mic(4)+ccy(3)+canLocId(11)+OrdCap(1)+filler(1) -->
+            </Message>
+
+            <Message id="CancelReqAck" msgType="0">
+                <Field id="msgSeqNum" mand="N"/>
+                <Field id="clOrdId" mand="N"/>
+                <Field id="orderId" mand="N"/>
+                <Field id="transactTime" mand="N"/>
+                <Field id="filler" len="31"/>
+            </Message>
+
+            <Message id="OrderKilled" msgType="0">
+                <Field id="msgSeqNum" mand="Y"/>
+                <Field id="clOrdId" mand="Y"/>
+                <Field id="orderId" mand="Y"/>
+                <Field id="transactTime" mand="N"/>
+                <Field id="filler" len="31"/>
+            </Message>
+
+            <Message id="OrderReplaceRequest" msgType="0">
+                <Field id="msgSeqNum" mand="Y"/>
+                <Field id="clOrdId" mand="Y"/>
+                <Field id="origClOrdId" mand="Y"/>
+                <Field id="orderId" mand="Y"/>
+                <Field id="orderQty" mand="Y"/>
+                <Field id="price" mand="N"/>
+                <Field id="filler1" len="24"/> <!-- maxfloor(4) + disOffset(4) + stopPx(4) + pegDif(4) + dispRange(4) + filler(4) -->
+                <Field id="priceScale" mand="N"/>
+                <Field id="onBehalfOfCompId" mand="N"/>
+                <Field id="symbol" mand="Y"/>
+                <Field id="filler2" len="1"/> <!-- execInst(1) -->
+                <Field id="side" mand="Y"/>
+                <Field id="ordType" mand="Y"/>
+                <Field id="timeInForce" mand="N"/>
+                <Field id="orderCapacity" mand="N"/>
+                <Field id="filler3" len="4"/> <!-- tradSessId(4) -->
+                <Field id="account" mand="N"/>
+                <Field id="filler4" len="5"/> <!-- discInst(1)+disPriceScale(1)+stopPxScale(1)+pegDiffScale(1)+techOrdType(1) -->
+                <Field id="confirmFlag" mand="N"/>
+                <Field id="filler5" len="14"/> <!-- mic(4)+ccy(3)+expireTimeFlag(1)+expireTime(6) -->
+                <Field id="giveUpFirm" mand="N"/>
+                <Field id="filler6" len="8"/> <!-- clientID -->
+                <Field id="parentClOrdId" mand="N"/>
+                <Field id="filler7" len="4"/> <!-- all remaining fields -->
+            </Message>
+
+            <Message id="ReplaceReqAck" msgType="0">
+                <Field id="msgSeqNum" mand="N"/>
+                <Field id="clOrdId" mand="N"/>
+                <Field id="orderId" mand="N"/>
+                <Field id="transactTime" mand="N"/>
+                <Field id="filler" len="31"/>   <!-- mic(4)+ccy(3)+filler(1) -->
+            </Message>
+
+            <Message id="OrderReplaced" msgType="0">
+                <Field id="msgSeqNum" mand="Y"/>
+                <Field id="clOrdId" mand="Y"/>
+                <Field id="orderId" mand="Y"/>
+                <Field id="transactTime" mand="N"/>
+                <Field id="filler" len="31"/>   <!-- mic(4)+ccy(3)+filler(1) -->
+            </Message>
+
+            <Message id="CancelReplaceReject" msgType="0">
+                <Field id="msgSeqNum" mand="Y"/>
+                <Field id="clOrdId" mand="Y"/>
+                <Field id="origClOrdId" mand="Y"/>
+                <Field id="transactTime" mand="N"/>
+                <Field id="collarRejPx" mand="N"/>
+                <Field id="errorCode" mand="N"/>
+                <Field id="rejectText" mand="Y"/>
+                <Field id="collarRejType" mand="N"/>
+                <Field id="collarRejPxScale" mand="N"/>
+                <Field id="filler" len="33"/>
+            </Message>
+
+            <Message id="OrderFill" msgType="0">
+                <Field id="msgSeqNum" mand="Y"/>
+                <Field id="clOrdId" mand="Y"/>
+                <Field id="orderId" mand="Y"/>
+                <Field id="execId" mand="Y"/>
+                <Field id="transactTime" mand="N"/>
+                <Field id="lastQty" mand="Y"/>
+                <Field id="lastPx" mand="Y"/>
+                <Field id="filler1" len="11"/>  <!-- IMSCompID(11) -->
+                <Field id="priceScale" mand="N"/>
+                <Field id="liquidityInd" mand="Y"/>
+                <Field id="side" mand="Y"/>
+                <Field id="filler2" len="33"/>
+            </Message>
+
+            <Message id="BustCorrect" msgType="0">
+                <Field id="msgSeqNum" mand="Y"/>
+                <Field id="clOrdId" mand="Y"/>
+                <Field id="execId" mand="Y"/>
+                <Field id="transactTime" mand="N"/>
+                <Field id="lastQty" mand="Y"/>
+                <Field id="lastPx" mand="Y"/>
+                <Field id="priceScale" mand="N"/>
+                <Field id="tradeChangeType" mand="N"/>
+                <Field id="filler2" len="33"/>
+            </Message>
+
+            <Message id="TradingSessionStatus" msgType="0">
+                <Field id="msgSeqNum" mand="Y"/>
+                <Field id="mktPhaseChgTime" mand="N"/>
+                <Field id="instClassId" mand="N"/>
+                <Field id="instClassStatus" mand="N"/>
+                <Field id="orderEntryAllowed" mand="N"/>
+                <Field id="tradingSessionId" mand="N"/>
+            </Message>
+
+        </Model>
+
+        <Model id="MilleniumLSE" modelVersionNumber="1.0">
+            <Attribute name="BinaryVersion" value="2"/> <!-- protocol version is 2 -->
+
+            <Dictionary>
+                <!-- certain tags are special and have specific optimised codec code eg fixVersion.msgType -->
+                <!--  type should be external facing not internal type mapping -->
+                <!--  for name try and use the internal event field name so it can be auto matched to the event -->
+
+                <!-- valid types zstr(fixed len str)|str(with len as max)|ch|price|nByte|nShort|nInt|nLong|
+                                 timestampLocal|timestampUTC|timeLocal|timeUTC -->
+
+
+                <Field id="msgStart" type="nByte" comment="message start, binary protocol version"/>
+                <Field id="msgLen" type="nShort" comment="total message length"/>
+                <Field id="msgType" type="nByte" comment="message type"/>
+                <Field id="userName" type="zstr" len="MILL_USER_NAME_LENGTH"/>
+                <Field id="password" type="zstr" len="MILL_PASSWORD_LENGTH"/>
+                <Field id="newPassword" type="zstr" len="MILL_PASSWORD_LENGTH"/>
+                <Field id="msgVersion" type="nByte" comment="always set to 1"/>
+                <Field id="rejectCode" type="nInt"/>
+                <Field id="pwdExpiryDayCount" type="zstr" len="MILL_PASSWORD_EXPIRY_LENGTH"/>
+                <Field id="reason" type="zstr" len="MILL_REASON_LENGTH"/>
+                <Field id="appId" type="nByte"/>
+                <Field id="lastMsgSeqNum" type="nInt"/>
+                <Field id="missedMsgReqAckType" type="nByte"/>
+                <Field id="missedMsgReportType" type="nByte"/>
+                <Field id="rejectReason" type="zstr" len="MILL_REJECT_REASON_LENGTH"/>
+                <Field id="rejectMsgType" type="nByte"/>
+
+                <!-- order fields -->
+
+                <Field id="clOrdId" type="zstr" len="MILL_CLORDID_LENGTH"/>
+                <Field id="account" type="zstr" len="MILL_ACCOUNT_LENGTH"/>
+                <Field id="clearingAccount" type="nByte"/>
+                <Field id="instrumentId" type="nInt"/>
+                <Field id="mesQualifier" type="nByte"/>
+                <Field id="ordType" type="nByte"/>
+                <Field id="timeInForce" type="nByte"/>
+                <Field id="expireDateTime" type="nInt"/>
+                <Field id="side" type="nByte"/>
+                <Field id="orderQty" type="nInt"/>
+                <Field id="displayQty" type="nInt"/>
+                <Field id="price" type="price"/>
+                <Field id="orderCapacity" type="nByte"/>    <!-- clearing acccount type -->
+                <Field id="autoCancel" type="nByte"/>
+                <Field id="ordSubType" type="nByte"/>
+                <Field id="anonymity" type="nByte"/>
+                <Field id="stopPrice" type="price"/>
+                <Field id="origClOrdId" type="zstr" len="MILL_CLORDID_LENGTH"/>
+                <Field id="orderId" type="zstr" len="MILL_ORDERID_LENGTH"/>
+
+                <!-- response messages -->
+
+                <Field id="msgSeqNum" type="nInt"/>
+                <Field id="execId" type="zstr" len="MILL_EXECID_LENGTH"/>
+                <Field id="execType" type="nByte"/>
+                <Field id="execRefID" type="zstr" len="MILL_EXECID_LENGTH"/>
+                <Field id="ordStatus" type="nByte"/>
+                <Field id="lastPx" type="price"/>
+                <Field id="lastQty" type="nInt"/>
+                <Field id="leavesQty" type="nInt"/>
+                <Field id="container" type="nByte"/>
+                <Field id="counterparty" type="zstr" len="MILL_CPARTY_LENGTH"/>
+                <Field id="liquidityInd" type="nByte"/>
+                <Field id="tradeMatchId" type="nLong"/>
+                <Field id="sendingTime" type="timestampUTC"/>
+
+            </Dictionary>
+
+            <!-- NOTE mandatory field indicates the field MUST be present in the internal event ! -->
+
+            <StrandardHeader>
+                <!-- these special header fields are deemed not mandatory in the sense that they dont need to be populated by events -->
+                <Field id="msgStart" mand="N"/>
+                <Field id="msgLen" mand="N"/>
+                <Field id="msgType" mand="N"/>
+            </StrandardHeader>
+
+            <StandardTrailer>
+            </StandardTrailer>
+
+            <!-- SESSION and ADMIN MESSAGES -->
+            <!-- any id starting with filler will form a fixed width field of specified len, multiple fillers per msg allowed but must have unique ids -->
+            <Message id="Logon" msgType="A">
+                <Field id="userName" mand="Y"/>
+                <Field id="password" mand="Y"/>
+                <Field id="newPassword" mand="Y"/>
+                <Field id="msgVersion" mand="N"/>
+            </Message>
+
+            <Message id="LogonReply" msgType="B">
+                <Field id="rejectCode" mand="Y"/>
+                <Field id="pwdExpiryDayCount" mand="Y"/>
+            </Message>
+
+            <Message id="Logout" msgType="5">
+                <Field id="reason" mand="Y"/>
+            </Message>
+
+            <Message id="Heartbeat" msgType="0">
+            </Message>
+
+            <Message id="MissedMessageRequest" msgType="M">
+                <Field id="appId" mand="Y"/>
+                <Field id="lastMsgSeqNum" mand="Y"/>
+            </Message>
+
+            <Message id="MissedMsgRequestAck" msgType="N">
+                <Field id="missedMsgReqAckType" mand="Y"/>
+            </Message>
+
+            <Message id="MissedMsgReport" msgType="P">
+                <Field id="missedMsgReportType" mand="Y"/>
+            </Message>
+
+            <Message id="Reject" msgType="3">
+                <Field id="rejectCode" mand="N"/>
+                <Field id="rejectReason" mand="Y"/>
+                <Field id="rejectMsgType" mand="Y"/>
+                <Field id="clOrdId" mand="N"/>
+            </Message>
+
+            <Message id="NewOrder" msgType="D">
+                <Field id="clOrdId" mand="Y"/>
+                <Field id="filler1" len="11"/>    <!-- traderID -->
+                <Field id="account" mand="N"/>
+                <Field id="clearingAccount" mand="N"/>
+                <Field id="instrumentId" mand="N"/>    <!-- derived from instrument in codec mapping -->
+                <Field id="mesQualifier" mand="N"/>
+                <Field id="filler2" len="1"/>
+                <Field id="ordType" mand="Y"/>
+                <Field id="timeInForce" mand="N"/>
+                <Field id="expireDateTime" mand="N"/>
+                <Field id="side" mand="Y"/>
+                <Field id="orderQty" mand="Y"/>
+                <Field id="displayQty" mand="N"/>
+                <Field id="price" mand="N"/>
+                <Field id="orderCapacity" mand="N"/>    <!-- clearing acccount type -->
+                <Field id="autoCancel" mand="N"/>
+                <Field id="ordSubType" mand="N"/>
+                <Field id="anonymity" mand="N"/>
+                <Field id="stopPrice" mand="N"/>
+                <Field id="filler3" len="10"/>
+            </Message>
+
+            <Message id="OrderReplaceRequest" msgType="G">
+                <Field id="clOrdId" mand="Y"/>
+                <Field id="origClOrdId" mand="Y"/>
+                <Field id="orderId" mand="Y"/>
+                <Field id="instrumentId" mand="N"/>
+                <Field id="filler1" len="2"/>
+                <Field id="expireDateTime" mand="N"/>
+                <Field id="orderQty" mand="Y"/>
+                <Field id="displayQty" mand="N"/>
+                <Field id="price" mand="N"/>
+                <Field id="account" mand="N"/>
+                <Field id="timeInForce" mand="N"/>
+                <Field id="side" mand="Y"/>
+                <Field id="stopPrice" mand="N"/>
+                <Field id="filler2" len="10"/>
+            </Message>
+
+            <Message id="OrderCancelRequest" msgType="F">
+                <Field id="clOrdId" mand="Y"/>
+                <Field id="origClOrdId" mand="Y"/>
+                <Field id="orderId" mand="Y"/>
+                <Field id="instrumentId" mand="N"/>
+                <Field id="filler1" len="2"/>
+                <Field id="side" mand="Y"/>
+                <Field id="filler2" len="10"/>
+            </Message>
+
+            <Message id="ExecutionReport" msgType="8">
+                <Field id="appId" mand="N"/>
+                <Field id="msgSeqNum" mand="Y"/>
+                <Field id="execId" mand="Y"/>
+                <Field id="clOrdId" mand="Y"/>
+                <Field id="orderId" mand="Y"/>
+                <Field id="execType" mand="Y"/>
+                <Field id="execRefID" mand="N"/>
+                <Field id="ordStatus" mand="N"/>
+                <Field id="rejectCode" mand="N"/>
+                <Field id="lastPx" mand="N"/>
+                <Field id="lastQty" mand="N"/>
+                <Field id="leavesQty" mand="N"/>
+                <Field id="container" mand="N"/>
+                <Field id="displayQty" mand="N"/>
+                <Field id="instrumentId" mand="N"/>
+                <Field id="filler1" len="2"/>
+                <Field id="side" mand="N"/>
+                <Field id="filler2" len="8"/>
+                <Field id="counterparty" mand="N"/>
+                <Field id="liquidityInd" mand="N"/>
+                <Field id="tradeMatchId" mand="N"/>
+                <Field id="sendingTime" mand="Y"/>
+                <Field id="filler3" len="10"/>
+            </Message>
+
+            <Message id="CancelReject" msgType="9">
+                <Field id="appId" mand="N"/>
+                <Field id="msgSeqNum" mand="Y"/>
+                <Field id="clOrdId" mand="Y"/>
+                <Field id="orderId" mand="Y"/>
+                <Field id="rejectCode" mand="N"/>
+                <Field id="sendingTime" mand="N"/>
+                <Field id="filler" len="8"/>
+            </Message>
+
+            <Message id="BusinessReject" msgType="j">
+                <Field id="appId" mand="N"/>
+                <Field id="msgSeqNum" mand="Y"/>
+                <Field id="rejectCode" mand="N"/>
+                <Field id="clOrdId" mand="N"/>
+                <Field id="orderId" mand="N"/>
+                <Field id="sendingTime" mand="N"/>
+                <Field id="filler" len="10"/>
+            </Message>
+
+        </Model>
+
+        <Model id="ItchLSE" modelVersionNumber="1.0">
+            <Attribute name="BinaryVersion" value="2"/> <!-- protocol version is 2 -->
+
+            <Dictionary>
+                <!-- certain tags are special and have specific optimised codec code eg fixVersion.msgType -->
+                <!--  type should be external facing not internal type mapping -->
+                <!--  for name try and use the internal event field name so it can be auto matched to the event -->
+
+                <!-- valid types zstr(fixed len str)|str(with len as max)|ch|price|nByte|nShort|nInt|nLong|
+                                 timestampLocal|timestampUTC|timeLocal|timeUTC -->
+
+                <Field id="msgLen" type="nShort" comment="total message length"/>
+                <Field id="msgCount" type="nByte" comment="number of messages in packet"/>
+                <Field id="mktDataGrp" type="nByte" comment="market data group"/>
+                <Field id="msgSeqNum" type="nInt"/>
+
+                <Field id="subLen" type="nByte" comment="sub message length"/>
+                <Field id="msgType" type="nByte" comment="message type"/>
+
+                <Field id="nanosecond" type="nInt"/>
+                <Field id="orderId" type="nLong"/>
+                <Field id="side" type="nByte"/>
+                <Field id="orderQty" type="nInt"/>
+                <Field id="instrumentId" type="nInt"/>
+                <Field id="price" type="price"/>
+                <Field id="flags" type="nByte"/>
+
+            </Dictionary>
+
+            <!-- NOTE mandatory field indicates the field MUST be present in the internal event ! -->
+
+            <PackedHeader countField="msgCount">
+                <!-- these special header fields are deemed not mandatory in the sense that they dont need to be populated by events -->
+                <Field id="msgLen" mand="N"/>
+                <Field id="msgCount" mand="N"/>
+                <Field id="mktDataGrp" mand="N"/>
+                <Field id="msgSeqNum" mand="N"/>
+            </PackedHeader>
+
+            <StrandardHeader>
+                <Field id="subLen" mand="N"/>
+                <Field id="msgType" mand="N"/>
+            </StrandardHeader>
+
+            <StandardTrailer>
+            </StandardTrailer>
+
+            <Message id="ITCHBookAddOrder" msgType="A">
+                <Field id="nanosecond" mand="Y"/>
+                <Field id="orderId" mand="Y"/>
+                <Field id="side" mand="Y"/>
+                <Field id="orderQty" mand="Y"/>
+                <Field id="instrumentId" mand="N"/>    <!-- derived from instrument in codec mapping -->
+                <Field id="filler1" len="2"/>
+                <Field id="price" mand="Y"/>
+                <Field id="filler2" len="1"/>
+            </Message>
+
+            <Message id="ITCHBookDeleteOrder" msgType="D">
+                <Field id="nanosecond" mand="Y"/>
+                <Field id="orderId" mand="Y"/>
+                <Field id="filler1" len="1"/>
+            </Message>
+
+            <Message id="ITCHBookModifyOrder" msgType="U">
+                <Field id="nanosecond" mand="Y"/>
+                <Field id="orderId" mand="Y"/>
+                <Field id="orderQty" mand="Y"/>
+                <Field id="price" mand="Y"/>
+                <Field id="filler2" len="1"/>
+            </Message>
+
+            <Message id="ITCHBookClear" msgType="y">
+                <Field id="nanosecond" mand="Y"/>
+                <Field id="instrumentId" mand="N"/>    <!-- derived from instrument in codec mapping -->
+                <Field id="filler1" len="3"/>
+            </Message>
+
+        </Model>
+
+    </BinaryModels>
+
+    <!--
+
+            MessageMapping: [FixMessageId] [EventId] [Mapping]* ( [PostMapUserFunct] )
+            Mapping: [TagId] [AttributeId] (MapInstruction) { [AttrUserFunct] | [ValueMap] }
+            ValueMap : [FixValue][TypeEntryName]
+    -->
+
+    <Codecs version="1.0.0" dir="../generated/model/codec-base/version" rootPackage="com.rr.model.generated.fix">
+        <Codec id="Standard44" fix="4.4" decodeInclude="StandardDecoder44.include" encodeInclude="StandardEncoder44.include">
+
+            <!-- following entries map complex types to fix tags -->
+
+            <ComplexType typeId="BookingType" tag="775"/>
+            <ComplexType typeId="CxlRejReason" tag="102"/>
+            <ComplexType typeId="CxlRejResponseTo" tag="434"/>
+            <ComplexType typeId="EncryptMethod" tag="98"/>
+            <ComplexType typeId="ExecInst" tag="18"/>
+            <ComplexType typeId="ExecRestatementReason" tag="378"/>
+            <ComplexType typeId="ExecType" tag="150"/>
+            <ComplexType typeId="HandlInst" tag="21"/>
+            <ComplexType typeId="LiquidityInd" tag="851"/>
+            <ComplexType typeId="OrderCapacity" tag="528"/>
+            <ComplexType typeId="OrderRestrictions" tag="529"/>
+            <ComplexType typeId="OrdRejReason" tag="103"/>
+            <ComplexType typeId="OrdStatus" tag="39"/>
+            <ComplexType typeId="OrdType" tag="40"/>
+            <ComplexType typeId="PartyIDSource" tag="447"/>
+            <ComplexType typeId="PositionEffect" tag="77"/>
+            <ComplexType typeId="SecurityType" tag="167"/>
+            <ComplexType typeId="SecurityIDSource" tag="22"/>
+            <ComplexType typeId="SessionRejectReason" tag="373"/>
+            <ComplexType typeId="Side" tag="54"/>
+            <ComplexType typeId="TimeInForce" tag="59"/>
+
+            <MessageMap id="FullCompIDCheck" fixMessageId="FullCompIDCheck" ignore="true">
+                <!-- senderCompId (49), senderSubId(50), targetCompId(56), targetSubId(57) -->
+                <Map fixTag="49">
+                    <Hook type="decode" code="decodeSenderCompID()"/>
+                    <Hook type="encode" code="_encoder.encodeString( FixDictionary44.SenderCompID, _senderCompId ); // tag49"/>
+                </Map>
+                <Map fixTag="56">
+                    <Hook type="decode" code="decodeTargetCompID()"/>
+                    <Hook type="encode" code="_encoder.encodeString( FixDictionary44.TargetCompID, _targetCompId ); // tag56"/>
+                </Map>
+                <Map fixTag="50">
+                    <Hook type="decode" code="decodeSenderSubID()"/>
+                    <Hook type="encode" code="_encoder.encodeString( FixDictionary44.SenderSubID, _senderSubId ); // tag50"/>
+                </Map>
+                <Map fixTag="57">
+                    <Hook type="decode" code="decodeTargetSubID()"/>
+                    <Hook type="encode" code="_encoder.encodeString( FixDictionary44.TargetSubID, _targetSubId ); // tag57"/>
+                </Map>
+            </MessageMap>
+            <MessageMap id="LightCompIDCheck" fixMessageId="LightCompIDCheck" ignore="true">
+                <!-- senderCompId (49), senderSubId(50), targetCompId(56), targetSubId(57) -->
+                <Map fixTag="49">
+                    <Hook type="decode" code="getValLength()"/>
+                    <Hook type="encode" code="_encoder.encodeString( FixDictionary44.SenderCompID, _senderCompId ); // tag49"/>
+                </Map>
+                <Map fixTag="56">
+                    <Hook type="decode" code="getValLength()"/>
+                    <Hook type="encode" code="_encoder.encodeString( FixDictionary44.TargetCompID, _targetCompId ); // tag56"/>
+                </Map>
+                <Map fixTag="50">
+                    <Hook type="decode" code="getValLength()"/>
+                    <Hook type="encode" code="_encoder.encodeString( FixDictionary44.SenderSubID, _senderSubId ); // tag50"/>
+                </Map>
+                <Map fixTag="57">
+                    <Hook type="decode" code="getValLength()"/>
+                    <Hook type="encode" code="_encoder.encodeString( FixDictionary44.TargetSubID, _targetSubId ); // tag57"/>
+                </Map>
+            </MessageMap>
+            <MessageMap id="BaseRequest" fixMessageId="BaseRequest" ignore="true" extends="FullCompIDCheck"/>
+            <MessageMap id="NOS" eventId="NewOrderSingle" fixMessageId="NewOrderSingle" extends="BaseRequest">
+                <!-- any tags present on decoding from RejectIfPresent will cause message to be rejected -->
+                <RejectIfPresent fixTag="211"/>
+                <RejectIfPresent fixTag="111"/>
+
+                <!-- as all attributes of NewOrderSingle event match the fix dictionary no more mappings required -->
+                <Map eventAttr="clOrdId" fixTag="11" maxOccurs="1" retainSrc="false">
+                    <Hook type="preEncode" code=""/>
+                    <Hook type="postEncode" code=""/>
+                </Map>
+
+                <!--  Hook type  preEncode / postEncode / preDecode / postDecode / encode / decode -->
+                <Hook type="preDecode" code="if ( _nanoStats ) msg.setOrderReceived( getReceived() )"/>
+                <Hook type="postDecode" code="enrich( msg )"/>
+                <Hook type="preEncode" code=""/>
+
+            </MessageMap>
+            <MessageMap id="CancelReplaceRequest" eventId="CancelReplaceRequest" fixMessageId="CancelReplaceRequest" extends="BaseRequest">
+                <Hook type="postDecode" code="enrich( msg )"/>
+            </MessageMap>
+            <MessageMap id="CancelRequest" eventId="CancelRequest" fixMessageId="CancelRequest" extends="BaseRequest">
+                <Hook type="postDecode" code="enrich( msg )"/>
+            </MessageMap>
+            <MessageMap id="CancelReject" eventId="CancelReject" fixMessageId="CancelReject" extends="FullCompIDCheck"/>
+            <MessageMap id="BaseExecRpt" fixMessageId="BaseExecRpt" ignore="true">
+                <!-- senderCompId (49), senderSubId(50), targetCompId(56), targetSubId(57) -->
+                <Map fixTag="49">
+                    <Hook type="decode" code="execCheckSenderCompID()"/>
+                    <Hook type="encode" code="_encoder.encodeString( FixDictionary44.SenderCompID, _senderCompId ); // tag49"/>
+                </Map>
+                <Map fixTag="56">
+                    <Hook type="decode" code="execCheckTargetCompID()"/>
+                    <Hook type="encode" code="_encoder.encodeString( FixDictionary44.TargetCompID, _targetCompId ); // tag56"/>
+                </Map>
+                <Map fixTag="50">
+                    <Hook type="decode" code="execCheckSenderSubID()"/>
+                    <Hook type="encode" code="_encoder.encodeString( FixDictionary44.SenderSubID, _senderSubId ); // tag50"/>
+                </Map>
+                <Map fixTag="57">
+                    <Hook type="decode" code="execCheckTargetSubID()"/>
+                    <Hook type="encode" code="_encoder.encodeString( FixDictionary44.TargetSubID, _targetSubId ); // tag57"/>
+                </Map>
+            </MessageMap>
+
+            <MessageMap id="ACK" eventId="NewOrderAck" fixMessageId="NewOrderAck" extends="BaseExecRpt">
+                <Hook type="preDecode" code="if ( _nanoStats ) msg.setAckReceived( _received )"/>
+                <!--  DONT ENCODE ANYMORE - NOW JUST LOGGED -->
+                <!--  <Hook type="postEncode" code="if ( _nanoStats ) _encoder.encodeAckStats( msg.getOrderReceived(), msg.getOrderSent(), msg.getAckReceived(), Utils.nanoTime() )"/> -->
+            </MessageMap>
+
+            <MessageMap id="TradeNew" eventId="TradeNew" fixMessageId="Trade" extends="BaseExecRpt"/>
+            <MessageMap id="Rejected" eventId="Rejected" fixMessageId="Rejected" extends="BaseExecRpt"/>
+            <MessageMap id="Cancelled" eventId="Cancelled" fixMessageId="Cancelled" extends="BaseExecRpt"/>
+            <MessageMap id="Replaced" eventId="Replaced" fixMessageId="Replaced" extends="BaseExecRpt"/>
+            <MessageMap id="DoneForDay" eventId="DoneForDay" fixMessageId="DoneForDay" extends="BaseExecRpt"/>
+            <MessageMap id="Stopped" eventId="Stopped" fixMessageId="Stopped" extends="BaseExecRpt"/>
+            <MessageMap id="Expired" eventId="Expired" fixMessageId="Expired" extends="BaseExecRpt"/>
+            <MessageMap id="Suspended" eventId="Suspended" fixMessageId="Suspended" extends="BaseExecRpt"/>
+            <MessageMap id="Restated" eventId="Restated" fixMessageId="Restated" extends="BaseExecRpt"/>
+            <MessageMap id="TradeCorrect" eventId="TradeCorrect" fixMessageId="TradeCorrect" extends="BaseExecRpt"/>
+            <MessageMap id="TradeCancel" eventId="TradeCancel" fixMessageId="TradeCancel" extends="BaseExecRpt"/>
+            <MessageMap id="OrderStatus" eventId="OrderStatus" fixMessageId="OrderStatus" extends="BaseExecRpt"/>
+
+            <MessageMap id="PendingCancel" ignore="true" fixMessageId="PendingCancel" extends="BaseExecRpt"/>
+            <MessageMap id="PendingNew" ignore="true" fixMessageId="PendingNew" extends="BaseExecRpt"/>
+            <MessageMap id="PendingReplace" ignore="true" fixMessageId="PendingReplace" extends="BaseExecRpt"/>
+            <MessageMap id="Calculated" ignore="true" fixMessageId="Calculated" extends="BaseExecRpt"/>
+
+            <MessageMap id="Heartbeat" eventId="Heartbeat" fixMessageId="Heartbeat" extends="LightCompIDCheck"/>
+            <MessageMap id="Logon" eventId="Logon" fixMessageId="Logon">
+                <!-- senderCompId (49), senderSubId(50), targetCompId(56), targetSubId(57) -->
+            </MessageMap>
+            <MessageMap id="Logout" eventId="Logout" fixMessageId="Logout">
+                <!-- senderCompId (49), senderSubId(50), targetCompId(56), targetSubId(57) -->
+            </MessageMap>
+            <MessageMap id="SessionReject" eventId="SessionReject" fixMessageId="SessionReject" extends="LightCompIDCheck"/>
+            <MessageMap id="ResendRequest" eventId="ResendRequest" fixMessageId="ResendRequest" extends="LightCompIDCheck"/>
+            <MessageMap id="SequenceReset" eventId="SequenceReset" fixMessageId="SequenceReset" extends="LightCompIDCheck"/>
+            <MessageMap id="TestRequest" eventId="TestRequest" fixMessageId="TestRequest" extends="LightCompIDCheck"/>
+        </Codec>
+
+        <Codec id="Standard42" fix="4.2" decodeInclude="StandardDecoder42.include" encodeInclude="StandardEncoder42.include" extends="Standard44">
+
+            <ComplexType typeId="ExecTransType" tag="20"/>
+
+            <MessageMap id="BaseRequest" fixMessageId="BaseRequest" ignore="true" extends="FullCompIDCheck">
+                <Map fixTag="47">
+                    <Hook type="decode" code="msg.setOrderCapacity( decodeRule47A( _fixMsg[_idx++] ) )"/>
+                    <Hook type="encode" code="_encoder.encodeByte( FixDictionary42.Rule80A, encodeRule47A( msg.getOrderCapacity() ) )"/>
+                </Map>
+            </MessageMap>
+
+            <MessageMap id="FullCompIDCheck" fixMessageId="FullCompIDCheck" ignore="true">
+                <!-- senderCompId (49), senderSubId(50), targetCompId(56), targetSubId(57) -->
+                <Map fixTag="49">
+                    <Hook type="decode" code="decodeSenderCompID()"/>
+                    <Hook type="encode" code="_encoder.encodeString( FixDictionary42.SenderCompID, _senderCompId ); // tag49"/>
+                </Map>
+                <Map fixTag="56">
+                    <Hook type="decode" code="decodeTargetCompID()"/>
+                    <Hook type="encode" code="_encoder.encodeString( FixDictionary42.TargetCompID, _targetCompId ); // tag56"/>
+                </Map>
+                <Map fixTag="50">
+                    <Hook type="decode" code="decodeSenderSubID()"/>
+                    <Hook type="encode" code="_encoder.encodeString( FixDictionary42.SenderSubID, _senderSubId ); // tag50"/>
+                </Map>
+                <Map fixTag="57">
+                    <Hook type="decode" code="decodeTargetSubID()"/>
+                    <Hook type="encode" code="_encoder.encodeString( FixDictionary42.TargetSubID, _targetSubId ); // tag57"/>
+                </Map>
+            </MessageMap>
+            <MessageMap id="LightCompIDCheck" fixMessageId="LightCompIDCheck" ignore="true">
+                <!-- senderCompId (49), senderSubId(50), targetCompId(56), targetSubId(57) -->
+                <Map fixTag="49">
+                    <Hook type="decode" code="getValLength()"/>
+                    <Hook type="encode" code="_encoder.encodeString( FixDictionary42.SenderCompID, _senderCompId ); // tag49"/>
+                </Map>
+                <Map fixTag="56">
+                    <Hook type="decode" code="getValLength()"/>
+                    <Hook type="encode" code="_encoder.encodeString( FixDictionary42.TargetCompID, _targetCompId ); // tag56"/>
+                </Map>
+                <Map fixTag="50">
+                    <Hook type="decode" code="getValLength()"/>
+                    <Hook type="encode" code="_encoder.encodeString( FixDictionary42.SenderSubID, _senderSubId ); // tag50"/>
+                </Map>
+                <Map fixTag="57">
+                    <Hook type="decode" code="getValLength()"/>
+                    <Hook type="encode" code="_encoder.encodeString( FixDictionary42.TargetSubID, _targetSubId ); // tag57"/>
+                </Map>
+            </MessageMap>
+            <MessageMap id="BaseExecRpt" fixMessageId="BaseExecRpt" ignore="true">
+                <Map fixTag="20">
+                    <Hook type="decode" code="// ignore 20"/>
+                    <Hook type="encode" code="_encoder.encodeByte( FixDictionary42.ExecTransType, (byte)'0' )"/>
+                </Map>
+                <Map fixTag="32">
+                    <Hook type="decode" code="// ignore 32"/>
+                    <Hook type="encode" code="_encoder.encodeByte( FixDictionary42.LastQty, (byte)'0' )"/>
+                </Map>
+                <Map fixTag="31">
+                    <Hook type="decode" code="// ignore 31"/>
+                    <Hook type="encode" code="_encoder.encodeByte( FixDictionary42.LastPx, (byte)'0' )"/>
+                </Map>
+                <Map fixTag="47">
+                    <Hook type="decode" code="// ignore 47"/>
+                    <Hook type="encode" code="_encoder.encodeByte( FixDictionary42.Rule80A, encodeRule47A( msg.getOrderCapacity() ) )"/>
+                </Map>
+                <!-- senderCompId (49), senderSubId(50), targetCompId(56), targetSubId(57) -->
+                <Map fixTag="49">
+                    <Hook type="decode" code="execCheckSenderCompID()"/>
+                    <Hook type="encode" code="_encoder.encodeString( FixDictionary42.SenderCompID, _senderCompId ); // tag49"/>
+                </Map>
+                <Map fixTag="56">
+                    <Hook type="decode" code="execCheckTargetCompID()"/>
+                    <Hook type="encode" code="_encoder.encodeString( FixDictionary42.TargetCompID, _targetCompId ); // tag56"/>
+                </Map>
+                <Map fixTag="50">
+                    <Hook type="decode" code="execCheckSenderSubID()"/>
+                    <Hook type="encode" code="_encoder.encodeString( FixDictionary42.SenderSubID, _senderSubId ); // tag50"/>
+                </Map>
+                <Map fixTag="57">
+                    <Hook type="decode" code="execCheckTargetSubID()"/>
+                    <Hook type="encode" code="_encoder.encodeString( FixDictionary42.TargetSubID, _targetSubId ); // tag57"/>
+                </Map>
+            </MessageMap>
+            <MessageMap id="Replaced" eventId="Replaced" fixMessageId="Replaced" extends="BaseExecRpt">
+                <Map fixTag="32"/>
+                <Map fixTag="31"/>
+                <Map fixTag="39">
+                    <Hook type="encode" code="encodeReplacedOrdStatus( msg )"/>
+                </Map>
+            </MessageMap>
+            <MessageMap id="PartialFill" eventId="TradeNew" fixMessageId="PartialFill" extends="BaseExecRpt">
+                <Map fixTag="32"/>
+                <Map fixTag="31"/>
+                <Map fixTag="150">
+                    <Hook type="encode" code="_encoder.encodeByte( (byte)'1' )"/>
+                </Map>
+            </MessageMap>
+            <MessageMap id="Fill" eventId="TradeNew" fixMessageId="Fill" extends="BaseExecRpt">
+                <Map fixTag="32"/>
+                <Map fixTag="31"/>
+                <Map fixTag="150">
+                    <Hook type="encode" code="_encoder.encodeByte( (byte)'2' )"/>
+                </Map>
+            </MessageMap>
+            <MessageMap id="TradeNew" eventId="TradeNew" fixMessageId="Trade" extends="BaseExecRpt">
+                <Map fixTag="32"/>
+                <Map fixTag="31"/>
+                <Map fixTag="150">
+                    <Hook type="encode"
+                          code="_encoder.encodeByte( FixDictionary42.ExecType, msg.getOrderQty() - msg.getCumQty() > 0 ? (byte)'1' : (byte)'2' )"/>
+                </Map>
+            </MessageMap>
+            <MessageMap id="TradeCorrect" eventId="TradeCorrect" fixMessageId="TradeCorrect" extends="BaseExecRpt">
+                <Map fixTag="20">
+                    <Hook type="decode" code="// ignore 20"/>
+                    <Hook type="encode" code="_encoder.encodeByte( FixDictionary42.ExecTransType, (byte)'2' )"/>
+                </Map>
+                <Map fixTag="32"/>
+                <Map fixTag="31"/>
+                <Map fixTag="150">
+                    <Hook type="encode"
+                          code="_encoder.encodeByte( FixDictionary42.ExecType, msg.getOrderQty() - msg.getCumQty() > 0 ? (byte)'1' : (byte)'2' )"/>
+                </Map>
+            </MessageMap>
+            <MessageMap id="TradeCancel" eventId="TradeCancel" fixMessageId="TradeCancel" extends="BaseExecRpt">
+                <Map fixTag="20">
+                    <Hook type="decode" code="// ignore 20"/>
+                    <Hook type="encode" code="_encoder.encodeByte( FixDictionary42.ExecTransType, (byte)'1' )"/>
+                </Map>
+                <Map fixTag="150">
+                    <Hook type="encode"
+                          code="_encoder.encodeByte( FixDictionary42.ExecType, msg.getOrderQty() - msg.getCumQty() > 0 ? (byte)'1' : (byte)'2' )"/>
+                </Map>
+            </MessageMap>
+            <MessageMap id="OrderStatus" eventId="OrderStatus" fixMessageId="OrderStatus" extends="BaseExecRpt">
+                <Map fixTag="20">
+                    <Hook type="decode" code="// ignore 20"/>
+                    <Hook type="encode" code="_encoder.encodeByte( FixDictionary42.ExecTransType, (byte)'3' )"/>
+                </Map>
+            </MessageMap>
+        </Codec>
+    </Codecs>
+
+    <ExchangeCodecs version="1.0.0" dir="../generated/model/codec-exchange/version" rootPackage="com.rr.model.generated.fix">
+        <Codec id="CHIX" fix="4.2" type="Exchange" extends="Standard42"/>
+    </ExchangeCodecs>
+
+    <ClientCodecs version="1.0.0" dir="../generated/model/codec-client/version" rootPackage="com.rr.model.generated.fix">
+        <Codec id="ClientX_44" fix="4.4" type="Client" extends="Standard44"/>
+    </ClientCodecs>
+
+    <BinaryCodecs version="1.0.0" dir="../generated/model/codec-binary/version" rootPackage="com.rr.model.generated">
+        <BinaryCodec id="UTPEuronextCash"
+                     model="UTPEuronextCash"
+                     decodeInclude="./utp/ENXDecoder.include"
+                     encodeInclude="./utp/ENXEncoder.include"
+                     decodeGenerator="com.rr.model.generator.emea.utp.UTPDecoderGenerator"
+                     encodeGenerator="com.rr.model.generator.emea.utp.UTPEncoderGenerator">
+
+            <!-- precendence in TypeTransform is important, decoding from an external val to internal val with mult matches will 
+                 match LAST entry -->
+
+            <TypeTransform typeId="OrdType" transform="map" nonMatchedEncode="reject" nonMatchedDecode="reject">
+                <!-- currently only limit orders supported on ENX -->
+                <Map internal="2" external="2" comment="Limit" decodePriority="Y"/>
+                <Map internal="7" external="2" comment="LimitOrBetter"/>
+            </TypeTransform>
+
+            <TypeTransform typeId="Side" transform="map" nonMatchedEncode="reject" nonMatchedDecode="reject">
+                <Map internal="1" external="1" comment="Buy"/>
+                <Map internal="2" external="2" comment="Sell"/>
+            </TypeTransform>
+
+            <TypeTransform typeId="TimeInForce" transform="map" nonMatchedEncode="reject" nonMatchedDecode="reject">
+                <Map internal="0" external="0" comment="Day"/>
+                <Map internal="3" external="3" comment="IOC"/>
+                <Map internal="4" external="4" comment="FOK"/>
+                <Map internal="7" external="7" comment="Closing Auction"/>
+            </TypeTransform>
+
+            <TypeTransform typeId="OrderCapacity" transform="map" nonMatchedEncode="2" nonMatchedDecode="P">
+                <Map internal="G" external="6" comment="Proprietary/LiquidityProvider"/>
+                <Map internal="I" external="1" comment="Individual/Client"/>
+                <Map internal="P" external="2" comment="Principal/House"/>
+                <Map internal="R" external="8" comment="Riskless Principle"/>
+                <Map internal="W" external="7" comment="AgentForOtherMember/RelatedParty"/>
+            </TypeTransform>
+
+            <TypeTransform typeId="LiquidityInd" transform="map" nonMatchedEncode="reject" nonMatchedDecode="reject">
+                <Map internal="1" external="A" comment="AddedLiquidity"/>
+                <Map internal="2" external="R" comment="RemovedLiquidity"/>
+                <Map internal="3" external="X" comment="RoutedOut"/>
+                <Map internal="1" external="O" comment="Opening Trade / Trade Created by MO"/>
+            </TypeTransform>
+
+            <MessageMap id="Logon" eventId="UTPLogon" messageId="Logon"/>
+            <MessageMap id="LogonReject" eventId="UTPLogonReject" messageId="LogonReject"/>
+            <MessageMap id="TradingSessionStatus" eventId="UTPTradingSessionStatus" messageId="TradingSessionStatus"/>
+            <MessageMap id="TestRequest" eventId="TestRequest" messageId="TestRequest"/>
+            <MessageMap id="Heartbeat" eventId="Heartbeat" messageId="Heartbeat"/>
+
+            <MessageMap id="NewOrder" eventId="NewOrderSingle" messageId="NewOrder">
+                <Map field="confirmFlag">
+                    <Hook type="encode" code="_encoder.encodeByte( (byte)'1' )"/>
+                </Map>
+                <Map field="priceScale">
+                    <Hook type="encode" code="encodePriceScale( msg.getPrice() )"/>
+                </Map>
+                <Map field="symbol">
+                    <Hook type="encode" code="encodeSymbol( msg.getInstrument() )"/>
+                </Map>
+                <Map field="onBehalfOfCompId">
+                    <Hook type="encode" code="encodeOnBehalfOfCompId()"/>
+                </Map>
+            </MessageMap>
+
+            <MessageMap id="OrderAck" eventId="NewOrderAck" messageId="OrderAck">
+                <Hook type="preDecode" code="if ( _nanoStats ) msg.setAckReceived( _received )"/>
+            </MessageMap>
+
+            <MessageMap id="OrderCancelRequest" eventId="CancelRequest" messageId="OrderCancelRequest"/>
+            <MessageMap id="CancelReqAck" messageId="CancelReqAck" ignore="true"/>
+            <MessageMap id="OrderKilled" eventId="Cancelled" messageId="OrderKilled"/>
+
+            <MessageMap id="OrderReplaceRequest" eventId="CancelReplaceRequest" messageId="OrderReplaceRequest">
+                <Map field="confirmFlag">
+                    <Hook type="encode" code="_encoder.encodeByte( (byte)'1' )"/>
+                </Map>
+                <Map field="priceScale">
+                    <Hook type="encode" code="encodePriceScale( msg.getPrice() )"/>
+                </Map>
+                <Map field="symbol">
+                    <Hook type="encode" code="encodeSymbol( msg.getInstrument() )"/>
+                </Map>
+                <Map field="onBehalfOfCompId">
+                    <Hook type="encode" code="encodeOnBehalfOfCompId()"/>
+                </Map>
+            </MessageMap>
+
+            <MessageMap id="ReplaceReqAck" messageId="ReplaceReqAck" ignore="true"/>
+            <MessageMap id="OrderReplaced" eventId="Replaced" messageId="OrderReplaced"/>
+
+            <MessageMap id="CancelReplaceReject" eventId="Rejected" messageId="CancelReplaceReject">
+                <Map field="rejectText" eventAttr="text"/>
+            </MessageMap>
+
+            <MessageMap id="OrderFill" eventId="TradeNew" messageId="OrderFill">
+                <Map field="lastPx">
+                    <Hook type="decode" code="_lastPx = _builder.decodeInt()"/>
+                </Map>
+                <Map field="priceScale">
+                    <Hook type="postdecode" code="msg.setLastPx( scale( _lastPx, _priceScale ) )"/>
+                </Map>
+            </MessageMap>
+
+            <MessageMap id="Bust" eventId="TradeCancel" messageId="BustCorrect" key1="tradeChangeType" val1="1">
+                <Map field="lastPx">
+                    <Hook type="decode" code="_lastPx = _builder.decodeInt()"/>
+                </Map>
+                <Map field="priceScale">
+                    <Hook type="postdecode" code="msg.setLastPx( scale( _lastPx, _priceScale ) )"/>
+                </Map>
+            </MessageMap>
+
+            <MessageMap id="Correct" eventId="TradeCorrect" messageId="BustCorrect" key1="tradeChangeType" val1="2">
+                <Map field="lastPx">
+                    <Hook type="decode" code="_lastPx = _builder.decodeInt()"/>
+                </Map>
+                <Map field="priceScale">
+                    <Hook type="postdecode" code="msg.setLastPx( scale( _lastPx, _priceScale ) )"/>
+                </Map>
+            </MessageMap>
+
+        </BinaryCodec>
+
+        <BinaryCodec id="MilleniumLSE"
+                     model="MilleniumLSE"
+                     decodeInclude="./millenium/LSEDecoder.include"
+                     encodeInclude="./millenium/LSEEncoder.include"
+                     decodeGenerator="com.rr.model.generator.emea.millenium.MilleniumDecoderGenerator"
+                     encodeGenerator="com.rr.model.generator.emea.millenium.MilleniumEncoderGenerator">
+
+            <!-- precendence in TypeTransform is important, decoding from an external val to internal val with mult matches will 
+                 match LAST entry -->
+
+            <TypeTransform typeId="OrderCapacity" transform="map" nonMatchedEncode="2" nonMatchedDecode="P">
+                <Map internal="R" external="1" comment="Riskless Principle"/>
+                <Map internal="P" external="2" comment="Principal/House"/>
+                <Map internal="W" external="3" comment="AgentForOtherMember/RelatedParty"/>
+            </TypeTransform>
+
+            <TypeTransform typeId="LiquidityInd" transform="map" nonMatchedEncode="reject" nonMatchedDecode="reject">
+                <Map internal="1" external="A" comment="AddedLiquidity"/>
+                <Map internal="2" external="R" comment="RemovedLiquidity"/>
+                <Map internal="4" external="C" comment="Opening Trade or Trade Created by MO"/>
+            </TypeTransform>
+
+            <MessageMap id="Logon" eventId="MilleniumLogon" messageId="Logon">
+                <Map field="msgVersion">
+                    <Hook type="encode" code="_encoder.encodeByte( (byte)'1' )"/>
+                </Map>
+            </MessageMap>
+
+            <MessageMap id="LogonReply" eventId="MilleniumLogonReply" messageId="LogonReply"/>
+            <MessageMap id="Logout" eventId="MilleniumLogout" messageId="Logout"/>
+
+            <MessageMap id="MissedMessageRequest" eventId="MilleniumMissedMessageRequest" messageId="MissedMessageRequest"/>
+            <MessageMap id="MissedMsgRequestAck" eventId="MilleniumMissedMsgRequestAck" messageId="MissedMsgRequestAck"/>
+            <MessageMap id="MissedMsgReport" eventId="MilleniumMissedMsgReport" messageId="MissedMsgReport"/>
+
+            <MessageMap id="Heartbeat" eventId="Heartbeat" messageId="Heartbeat"/>
+
+            <MessageMap id="NewOrder" eventId="NewOrderSingle" messageId="NewOrder">
+                <Map field="clearingAccount">
+                    <Hook type="encode" code="_encoder.encodeByte( (msg.getOrderCapacity() == OrderCapacity.AgentForOtherMember) ? (byte)1 : (byte)3 )"/>
+                </Map>
+                <Map field="mesQualifier">
+                    <Hook type="encode" code="_encoder.encodeByte( (byte)0 )"/>
+                </Map>
+                <Map field="instrumentId">
+                    <Hook type="encode" code="encodeSymbol( msg.getInstrument() )"/>
+                </Map>
+                <Map field="displayQty">
+                    <Hook type="encode" code="_encoder.encodeInt( -1 )"/>
+                </Map>
+                <Map field="autoCancel">
+                    <Hook type="encode" code="_encoder.encodeByte( (byte)1 )"/>
+                </Map>
+                <Map field="ordSubType">
+                    <Hook type="encode" code="_encoder.encodeByte( (byte)0 )"/>
+                </Map>
+                <Map field="anonymity">
+                    <Hook type="encode" code="_encoder.encodeByte( (byte)0 )"/>
+                </Map>
+                <Map field="stopPrice">
+                    <Hook type="encode" code="_encoder.encodeFiller( 8 )"/>
+                </Map>
+                <Hook type="postDecode" code="enrich( msg )"/>
+            </MessageMap>
+
+            <MessageMap id="OrderCancelRequest" eventId="CancelRequest" messageId="OrderCancelRequest"/>
+            <MessageMap id="CancelReject" eventId="CancelReject" messageId="CancelReject">
+                <Map field="appId">
+                    <Hook type="encode" code="_encoder.encodeByte( (byte)0 )"/>
+                </Map>
+            </MessageMap>
+
+            <MessageMap id="Reject" eventId="SessionReject" messageId="Reject">
+                <Map eventAttr="refMsgType" field="rejectMsgType"/>
+                <Map eventAttr="text" field="rejectReason"/> <!-- use function to append clOrdId and rejectCode -->
+            </MessageMap>
+
+            <MessageMap id="BusinessReject" eventId="VagueOrderReject" messageId="BusinessReject">
+                <Map eventAttr="text" field="rejectCode"/>
+                <Map field="appId">
+                    <Hook type="encode" code="_encoder.encodeByte( (byte)0 )"/>
+                </Map>
+            </MessageMap>
+
+            <MessageMap id="OrderReplaceRequest" eventId="CancelReplaceRequest" messageId="OrderReplaceRequest">
+                <Map field="clearingAccount">
+                    <Hook type="encode" code="_encoder.encodeByte( (msg.getOrderCapacity() == OrderCapacity.AgentForOtherMember) ? (byte)1 : (byte)3 )"/>
+                </Map>
+                <Map field="mesQualifier">
+                    <Hook type="encode" code="_encoder.encodeByte( (byte)0 )"/>
+                </Map>
+                <Map field="instrumentId">
+                    <Hook type="encode" code="encodeSymbol( msg.getInstrument() )"/>
+                </Map>
+                <Map field="displayQty">
+                    <Hook type="encode" code="_encoder.encodeInt( -1 )"/>
+                </Map>
+                <Map field="autoCancel">
+                    <Hook type="encode" code="_encoder.encodeByte( (byte)1 )"/>
+                </Map>
+                <Map field="ordSubType">
+                    <Hook type="encode" code="_encoder.encodeByte( (byte)0 )"/>
+                </Map>
+                <Map field="anonymity">
+                    <Hook type="encode" code="_encoder.encodeByte( (byte)0 )"/>
+                </Map>
+                <Map field="stopPrice">
+                    <Hook type="encode" code="_encoder.encodeFiller( 8 )"/>
+                </Map>
+            </MessageMap>
+
+            <MessageMap id="BaseExec" messageId="" ignore="true">
+                <!-- exchange sim always encodes appId of 0 -->
+                <Map field="appId">
+                    <Hook type="encode" code="_encoder.encodeByte( (byte)0 )"/>
+                </Map>
+            </MessageMap>
+
+            <MessageMap id="OrderAck" eventId="NewOrderAck" messageId="ExecutionReport" key1="execType" val1="0" extends="BaseExec">
+                <Hook type="preDecode" code="if ( _nanoStats ) msg.setAckReceived( _received )"/>
+            </MessageMap>
+
+            <MessageMap id="OrderCancelled" eventId="Cancelled" messageId="ExecutionReport" key1="execType" val1="4" extends="BaseExec"/>
+            <MessageMap id="OrderReplaced" eventId="Replaced" messageId="ExecutionReport" key1="execType" val1="5" extends="BaseExec"/>
+            <MessageMap id="OrderRejected" eventId="Rejected" messageId="ExecutionReport" key1="execType" val1="8" extends="BaseExec"/>
+            <MessageMap id="OrderExpired" eventId="Expired" messageId="ExecutionReport" key1="execType" val1="C" extends="BaseExec"/>
+            <MessageMap id="OrderRestated" eventId="Restated" messageId="ExecutionReport" key1="execType" val1="D" extends="BaseExec"/>
+            <MessageMap id="Trade" eventId="TradeNew" messageId="ExecutionReport" key1="execType" val1="F" extends="BaseExec"/>
+            <MessageMap id="TradeCorrect" eventId="TradeCorrect" messageId="ExecutionReport" key1="execType" val1="G" extends="BaseExec"/>
+            <MessageMap id="TradeCancel" eventId="TradeCancel" messageId="ExecutionReport" key1="execType" val1="H" extends="BaseExec"/>
+            <MessageMap id="Suspended" eventId="Suspended" messageId="ExecutionReport" key1="execType" val1="9" extends="BaseExec"/>
+
+        </BinaryCodec>
+
+        <BinaryCodec id="ItchLSE"
+                     model="ItchLSE"
+                     decodeInclude="./millenium/ITCHLSEDecoder.include"
+                     encodeInclude="./millenium/ITCHLSEEncoder.include"
+                     decodeGenerator="com.rr.model.generator.emea.millenium.ITCHDecoderGenerator"
+                     encodeGenerator="com.rr.model.generator.emea.millenium.ITCHEncoderGenerator">
+
+            <MessageMap id="ITCHBookAddOrder" eventId="BookAddOrder" messageId="ITCHBookAddOrder">
+                <Map field="instrumentId">
+                    <Hook type="encode" code="encodeSymbol( msg.getBook().getInstrument() )"/>
+                </Map>
+            </MessageMap>
+
+        </BinaryCodec>
+
+        <BinaryCodec id="ETSEurex"
+                     model="ETSEurex"
+                     decodeInclude="./ets/EUREXDecoder.include"
+                     encodeInclude="./ets/EUREXEncoder.include"
+                     decodeGenerator="com.rr.model.generator.emea.ets.ETSDecoderGenerator"
+                     encodeGenerator="com.rr.model.generator.emea.ets.ETSEncoderGenerator">
+
+            <MessageMap id="SessionLogon" eventId="ETSSessionLogon" messageId="SessionLogonRequest"/>
+
+        </BinaryCodec>
+
+    </BinaryCodecs>
+
+    <CodecFactories version="1.0.0" dir="../generated/model/codec-factory/version" rootPackage="com.rr.model.generated.fix"/>
+
+</Model>
+
+	

@@ -1,59 +1,52 @@
-/*******************************************************************************
- * Copyright (c) 2015 Low Latency Trading Limited  :  Author Richard Rose
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at	http://www.apache.org/licenses/LICENSE-2.0
- * Unless required by applicable law or agreed to in writing,  software distributed under the License 
- * is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and limitations under the License.
- *******************************************************************************/
 package com.rr.model.generated.internal.events.impl;
+
+/*
+Copyright 2015 Low Latency Trading Limited
+Author Richard Rose
+*/
 
 import com.rr.model.generated.internal.type.LiquidityInd;
 import com.rr.model.generated.internal.type.MultiLegReportingType;
-import com.rr.core.model.Currency;
-import com.rr.core.model.SecurityIDSource;
 import com.rr.model.internal.type.ExecType;
 import com.rr.model.generated.internal.type.OrdStatus;
 import com.rr.model.generated.internal.type.Side;
 import com.rr.model.generated.internal.type.OrderCapacity;
-import com.rr.core.lang.ViewString;
-import com.rr.core.lang.ReusableString;
-import com.rr.core.lang.AssignableString;
-import com.rr.core.lang.ViewString;
-import com.rr.core.lang.Constants;
-import com.rr.core.model.MsgFlag;
-import com.rr.core.lang.ReusableType;
-import com.rr.core.lang.Reusable;
-import com.rr.core.model.Message;
-import com.rr.core.model.MessageHandler;
+import com.rr.core.utils.Utils;
+import com.rr.core.lang.*;
+import com.rr.core.model.*;
+import com.rr.core.annotations.*;
 import com.rr.model.internal.type.*;
 import com.rr.model.generated.internal.core.ModelReusableTypes;
 import com.rr.model.generated.internal.core.SizeType;
 import com.rr.model.generated.internal.core.EventIds;
 import com.rr.model.generated.internal.events.interfaces.*;
 
-@SuppressWarnings( "unused" )
+@SuppressWarnings( { "unused", "override"  })
 
 public final class ClientTradeCancelImpl implements TradeBase, ClientTradeCancelUpdate, Reusable<ClientTradeCancelImpl> {
 
    // Attrs
 
-    private          ClientTradeCancelImpl _next = null;
-    private volatile Message        _nextMessage    = null;
-    private          MessageHandler _messageHandler = null;
+    private transient          ClientTradeCancelImpl _next = null;
+    private transient volatile Event        _nextMessage    = null;
+    private transient          EventHandler _messageHandler = null;
     private final ReusableString _execRefID = new ReusableString( SizeType.EXECID_LENGTH.getSize() );
-    private int _lastQty = Constants.UNSET_INT;
+    private double _lastQty = Constants.UNSET_DOUBLE;
     private double _lastPx = Constants.UNSET_DOUBLE;
     private final ReusableString _lastMkt = new ReusableString( SizeType.LASTMKT_LENGTH.getSize() );
-    private final ReusableString _text = new ReusableString( SizeType.TRADE_TEXT_LENGTH.getSize() );
     private final ReusableString _securityDesc = new ReusableString( SizeType.INST_SEC_DESC_LENGTH.getSize() );
     private final ReusableString _execId = new ReusableString( SizeType.EXECID_LENGTH.getSize() );
     private final ReusableString _orderId = new ReusableString( SizeType.ORDERID_LENGTH.getSize() );
-    private int _leavesQty = Constants.UNSET_INT;
-    private int _cumQty = Constants.UNSET_INT;
+    @TimestampMS private long _transactTime = Constants.UNSET_LONG;
+    private double _leavesQty = Constants.UNSET_DOUBLE;
+    private double _cumQty = Constants.UNSET_DOUBLE;
     private double _avgPx = Constants.UNSET_DOUBLE;
+    private final ReusableString _text = new ReusableString( SizeType.TRADE_TEXT_LENGTH.getSize() );
+    private final ReusableString _parentClOrdId = new ReusableString( SizeType.CLORDID_LENGTH.getSize() );
+    private final ReusableString _stratId = new ReusableString( SizeType.STRAT_DEF_ID_LEN.getSize() );
+    private final ReusableString _origStratId = new ReusableString( SizeType.STRAT_DEF_ID_LEN.getSize() );
     private int _msgSeqNum = Constants.UNSET_INT;
-    private int _sendingTime = Constants.UNSET_INT;
+    @TimestampMS private long _eventTimestamp = Constants.UNSET_LONG;
 
     private LiquidityInd _liquidityInd;
     private MultiLegReportingType _multiLegReportingType;
@@ -62,7 +55,7 @@ public final class ClientTradeCancelImpl implements TradeBase, ClientTradeCancel
     private OrderCapacity _mktCapacity;
 
     private OrderRequest  _srcEvent;
-    private byte           _flags          = 0;
+    private int           _flags          = 0;
 
    // Getters and Setters
     @Override public final ViewString getExecRefID() { return _execRefID; }
@@ -70,8 +63,8 @@ public final class ClientTradeCancelImpl implements TradeBase, ClientTradeCancel
     @Override public final void setExecRefID( byte[] buf, int offset, int len ) { _execRefID.setValue( buf, offset, len ); }
     @Override public final ReusableString getExecRefIDForUpdate() { return _execRefID; }
 
-    @Override public final int getLastQty() { return _lastQty; }
-    @Override public final void setLastQty( int val ) { _lastQty = val; }
+    @Override public final double getLastQty() { return _lastQty; }
+    @Override public final void setLastQty( double val ) { _lastQty = val; }
 
     @Override public final double getLastPx() { return _lastPx; }
     @Override public final void setLastPx( double val ) { _lastPx = val; }
@@ -86,11 +79,6 @@ public final class ClientTradeCancelImpl implements TradeBase, ClientTradeCancel
 
     @Override public final void setLastMkt( byte[] buf, int offset, int len ) { _lastMkt.setValue( buf, offset, len ); }
     @Override public final ReusableString getLastMktForUpdate() { return _lastMkt; }
-
-    @Override public final ViewString getText() { return _text; }
-
-    @Override public final void setText( byte[] buf, int offset, int len ) { _text.setValue( buf, offset, len ); }
-    @Override public final ReusableString getTextForUpdate() { return _text; }
 
     @Override public final ViewString getSecurityDesc() { return _securityDesc; }
 
@@ -126,23 +114,46 @@ public final class ClientTradeCancelImpl implements TradeBase, ClientTradeCancel
     @Override public final OrdStatus getOrdStatus() { return _ordStatus; }
     @Override public final void setOrdStatus( OrdStatus val ) { _ordStatus = val; }
 
-    @Override public final int getLeavesQty() { return _leavesQty; }
-    @Override public final void setLeavesQty( int val ) { _leavesQty = val; }
+    @Override public final long getTransactTime() { return _transactTime; }
+    @Override public final void setTransactTime( long val ) { _transactTime = val; }
 
-    @Override public final int getCumQty() { return _cumQty; }
-    @Override public final void setCumQty( int val ) { _cumQty = val; }
+    @Override public final double getLeavesQty() { return _leavesQty; }
+    @Override public final void setLeavesQty( double val ) { _leavesQty = val; }
+
+    @Override public final double getCumQty() { return _cumQty; }
+    @Override public final void setCumQty( double val ) { _cumQty = val; }
 
     @Override public final double getAvgPx() { return _avgPx; }
     @Override public final void setAvgPx( double val ) { _avgPx = val; }
 
-    @Override public final int getOrderQty() { return _srcEvent.getOrderQty(); }
+    @Override public final double getOrderQty() { return _srcEvent.getOrderQty(); }
 
     @Override public final double getPrice() { return _srcEvent.getPrice(); }
 
     @Override public final Side getSide() { return _srcEvent.getSide(); }
 
+    @Override public final ViewString getText() { return _text; }
+
+    @Override public final void setText( byte[] buf, int offset, int len ) { _text.setValue( buf, offset, len ); }
+    @Override public final ReusableString getTextForUpdate() { return _text; }
+
     @Override public final OrderCapacity getMktCapacity() { return _mktCapacity; }
     @Override public final void setMktCapacity( OrderCapacity val ) { _mktCapacity = val; }
+
+    @Override public final ViewString getParentClOrdId() { return _parentClOrdId; }
+
+    @Override public final void setParentClOrdId( byte[] buf, int offset, int len ) { _parentClOrdId.setValue( buf, offset, len ); }
+    @Override public final ReusableString getParentClOrdIdForUpdate() { return _parentClOrdId; }
+
+    @Override public final ViewString getStratId() { return _stratId; }
+
+    @Override public final void setStratId( byte[] buf, int offset, int len ) { _stratId.setValue( buf, offset, len ); }
+    @Override public final ReusableString getStratIdForUpdate() { return _stratId; }
+
+    @Override public final ViewString getOrigStratId() { return _origStratId; }
+
+    @Override public final void setOrigStratId( byte[] buf, int offset, int len ) { _origStratId.setValue( buf, offset, len ); }
+    @Override public final ReusableString getOrigStratIdForUpdate() { return _origStratId; }
 
     @Override public final ViewString getOnBehalfOfId() { return _srcEvent.getOnBehalfOfId(); }
 
@@ -150,8 +161,8 @@ public final class ClientTradeCancelImpl implements TradeBase, ClientTradeCancel
     @Override public final int getMsgSeqNum() { return _msgSeqNum; }
     @Override public final void setMsgSeqNum( int val ) { _msgSeqNum = val; }
 
-    @Override public final int getSendingTime() { return _sendingTime; }
-    @Override public final void setSendingTime( int val ) { _sendingTime = val; }
+    @Override public final long getEventTimestamp() { return _eventTimestamp; }
+    @Override public final void setEventTimestamp( long val ) { _eventTimestamp = val; }
 
 
     @Override public final boolean getPossDupFlag() { return isFlagSet( MsgFlag.PossDupFlag ); }
@@ -166,23 +177,27 @@ public final class ClientTradeCancelImpl implements TradeBase, ClientTradeCancel
     @Override
     public final void reset() {
         _execRefID.reset();
-        _lastQty = Constants.UNSET_INT;
+        _lastQty = Constants.UNSET_DOUBLE;
         _lastPx = Constants.UNSET_DOUBLE;
         _liquidityInd = null;
         _multiLegReportingType = null;
         _lastMkt.reset();
-        _text.reset();
         _securityDesc.reset();
         _execId.reset();
         _orderId.reset();
         _execType = null;
         _ordStatus = null;
-        _leavesQty = Constants.UNSET_INT;
-        _cumQty = Constants.UNSET_INT;
+        _transactTime = Constants.UNSET_LONG;
+        _leavesQty = Constants.UNSET_DOUBLE;
+        _cumQty = Constants.UNSET_DOUBLE;
         _avgPx = Constants.UNSET_DOUBLE;
+        _text.reset();
         _mktCapacity = null;
+        _parentClOrdId.reset();
+        _stratId.reset();
+        _origStratId.reset();
         _msgSeqNum = Constants.UNSET_INT;
-        _sendingTime = Constants.UNSET_INT;
+        _eventTimestamp = Constants.UNSET_LONG;
         _srcEvent = null;
         _flags = 0;
         _next = null;
@@ -211,22 +226,22 @@ public final class ClientTradeCancelImpl implements TradeBase, ClientTradeCancel
     }
 
     @Override
-    public final Message getNextQueueEntry() {
+    public final Event getNextQueueEntry() {
         return _nextMessage;
     }
 
     @Override
-    public final void attachQueue( Message nxt ) {
+    public final void attachQueue( Event nxt ) {
         _nextMessage = nxt;
     }
 
     @Override
-    public final MessageHandler getMessageHandler() {
+    public final EventHandler getEventHandler() {
         return _messageHandler;
     }
 
     @Override
-    public final void setMessageHandler( MessageHandler handler ) {
+    public final void setEventHandler( EventHandler handler ) {
         _messageHandler = handler;
     }
 
@@ -234,7 +249,7 @@ public final class ClientTradeCancelImpl implements TradeBase, ClientTradeCancel
    // Helper methods
     @Override
     public void setFlag( MsgFlag flag, boolean isOn ) {
-        _flags = (byte) MsgFlag.setFlag( _flags, flag, isOn );
+        _flags = MsgFlag.setFlag( _flags, flag, isOn );
     }
 
     @Override
@@ -243,46 +258,71 @@ public final class ClientTradeCancelImpl implements TradeBase, ClientTradeCancel
     }
 
     @Override
-    public String toString() {
-        ReusableString buf = new ReusableString();
-        dump( buf );
-        return buf.toString();
+    public int getFlags() {
+        return _flags;
     }
 
     @Override
-    public final void dump( ReusableString out ) {
+    public String toString() {
+        ReusableString buf = TLC.instance().pop();
+        dump( buf );
+        String rs = buf.toString();
+        TLC.instance().pushback( buf );
+        return rs;
+    }
+
+    @Override
+    public final void dump( final ReusableString out ) {
         out.append( "ClientTradeCancelImpl" ).append( ' ' );
-        out.append( ", execRefID=" ).append( getExecRefID() );
-        out.append( ", lastQty=" ).append( getLastQty() );
-        out.append( ", lastPx=" ).append( getLastPx() );
-        out.append( ", liquidityInd=" ).append( getLiquidityInd() );
-        out.append( ", multiLegReportingType=" ).append( getMultiLegReportingType() );
-        out.append( ", lastMkt=" ).append( getLastMkt() );
-        out.append( ", text=" ).append( getText() );
-        out.append( ", securityDesc=" ).append( getSecurityDesc() );
-        out.append( ", execId=" ).append( getExecId() );
-        out.append( ", clOrdId=" ).append( getClOrdId() );
-        out.append( ", securityId=" ).append( getSecurityId() );
-        out.append( ", symbol=" ).append( getSymbol() );
-        out.append( ", currency=" );
-        if ( getCurrency() != null ) getCurrency().id( out );
-        out.append( ", securityIDSource=" );
-        if ( getSecurityIDSource() != null ) getSecurityIDSource().id( out );
-        out.append( ", orderId=" ).append( getOrderId() );
-        out.append( ", execType=" );
-        if ( getExecType() != null ) getExecType().id( out );
-        out.append( ", ordStatus=" ).append( getOrdStatus() );
-        out.append( ", leavesQty=" ).append( getLeavesQty() );
-        out.append( ", cumQty=" ).append( getCumQty() );
-        out.append( ", avgPx=" ).append( getAvgPx() );
-        out.append( ", orderQty=" ).append( getOrderQty() );
-        out.append( ", price=" ).append( getPrice() );
-        out.append( ", side=" ).append( getSide() );
-        out.append( ", mktCapacity=" ).append( getMktCapacity() );
-        out.append( ", onBehalfOfId=" ).append( getOnBehalfOfId() );
-        out.append( ", msgSeqNum=" ).append( getMsgSeqNum() );
+        if ( getExecRefID().length() > 0 )             out.append( ", execRefID=" ).append( getExecRefID() );
+        if ( Utils.hasVal( getLastQty() ) ) out.append( ", lastQty=" ).append( getLastQty() );
+        if ( Utils.hasVal( getLastPx() ) ) out.append( ", lastPx=" ).append( getLastPx() );
+        if ( getLiquidityInd() != null )             out.append( ", liquidityInd=" ).append( getLiquidityInd() );
+        if ( getMultiLegReportingType() != null )             out.append( ", multiLegReportingType=" ).append( getMultiLegReportingType() );
+        if ( getLastMkt().length() > 0 )             out.append( ", lastMkt=" ).append( getLastMkt() );
+        if ( getSecurityDesc().length() > 0 )             out.append( ", securityDesc=" ).append( getSecurityDesc() );
+        if ( getExecId().length() > 0 )             out.append( ", execId=" ).append( getExecId() );
+        if ( getClOrdId().length() > 0 )             out.append( ", clOrdId=" ).append( getClOrdId() );
+            out.append( ", securityId=" ).append( getSecurityId() );
+            out.append( ", symbol=" ).append( getSymbol() );
+        if ( getCurrency() != null )             out.append( ", currency=" );
+        if ( getCurrency() != null ) out.append( getCurrency().id() );
+        if ( getSecurityIDSource() != null )             out.append( ", securityIDSource=" );
+        if ( getSecurityIDSource() != null ) out.append( getSecurityIDSource().id() );
+        if ( getOrderId().length() > 0 )             out.append( ", orderId=" ).append( getOrderId() );
+        if ( getExecType() != null )             out.append( ", execType=" );
+        if ( getExecType() != null ) out.append( getExecType().id() );
+        if ( getOrdStatus() != null )             out.append( ", ordStatus=" ).append( getOrdStatus() );
+        if ( Constants.UNSET_LONG != getTransactTime() && 0 != getTransactTime() ) {
+            out.append( ", transactTime=" );
+            TimeUtilsFactory.safeTimeUtils().unixTimeToLocalTimestamp( out, getTransactTime() );
+            out.append( " / " );
+            TimeUtilsFactory.safeTimeUtils().unixTimeToUTCTimestamp( out, getTransactTime() );
+            out.append( " ( " );
+            out.append( getTransactTime() ).append( " ) " );
+        }
+        if ( Utils.hasVal( getLeavesQty() ) ) out.append( ", leavesQty=" ).append( getLeavesQty() );
+        if ( Utils.hasVal( getCumQty() ) ) out.append( ", cumQty=" ).append( getCumQty() );
+        if ( Utils.hasVal( getAvgPx() ) ) out.append( ", avgPx=" ).append( getAvgPx() );
+        if ( Utils.hasVal( getOrderQty() ) ) out.append( ", orderQty=" ).append( getOrderQty() );
+        if ( Utils.hasVal( getPrice() ) ) out.append( ", price=" ).append( getPrice() );
+        if ( getSide() != null )             out.append( ", side=" ).append( getSide() );
+        if ( getText().length() > 0 )             out.append( ", text=" ).append( getText() );
+        if ( getMktCapacity() != null )             out.append( ", mktCapacity=" ).append( getMktCapacity() );
+        if ( getParentClOrdId().length() > 0 )             out.append( ", parentClOrdId=" ).append( getParentClOrdId() );
+        if ( getStratId().length() > 0 )             out.append( ", stratId=" ).append( getStratId() );
+        if ( getOrigStratId().length() > 0 )             out.append( ", origStratId=" ).append( getOrigStratId() );
+            out.append( ", onBehalfOfId=" ).append( getOnBehalfOfId() );
+        if ( Constants.UNSET_INT != getMsgSeqNum() && 0 != getMsgSeqNum() )             out.append( ", msgSeqNum=" ).append( getMsgSeqNum() );
         out.append( ", possDupFlag=" ).append( getPossDupFlag() );
-        out.append( ", sendingTime=" ).append( getSendingTime() );
+        if ( Constants.UNSET_LONG != getEventTimestamp() && 0 != getEventTimestamp() ) {
+            out.append( ", eventTimestamp=" );
+            TimeUtilsFactory.safeTimeUtils().unixTimeToLocalTimestamp( out, getEventTimestamp() );
+            out.append( " / " );
+            TimeUtilsFactory.safeTimeUtils().unixTimeToUTCTimestamp( out, getEventTimestamp() );
+            out.append( " ( " );
+            out.append( getEventTimestamp() ).append( " ) " );
+        }
     }
 
 }

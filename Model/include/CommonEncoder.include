@@ -1,0 +1,92 @@
+    /**
+     * PostPend  Common Encoder File
+     *
+     * expected to contain methods used in hooks from model
+     */
+     
+    @Override
+    public void setNanoStats( boolean nanoTiming ) {
+        _nanoStats = nanoTiming;
+    }
+
+    private       boolean         _nanoStats    =  true;
+         
+    private       int             _idx          = 1;
+    
+    private final ClientCancelRejectFactory _canRejFactory   = SuperpoolManager.instance().getFactory( ClientCancelRejectFactory.class, ClientCancelRejectImpl.class );
+    private final ClientRejectedFactory     _rejectedFactory = SuperpoolManager.instance().getFactory( ClientRejectedFactory.class,     ClientRejectedImpl.class ); 
+
+    public static final ZString ENCODE_REJ              = new ViewString( "ERJ" );
+    public static final ZString NONE                    = new ViewString( "NON" );
+
+    @Override
+    public Event unableToSend( Event msg, ZString errMsg ) {
+        switch( msg.getReusableType().getSubId() ) {
+        case EventIds.ID_NEWORDERSINGLE:
+            return rejectNewOrderSingle( (NewOrderSingle) msg, errMsg );
+        case EventIds.ID_NEWORDERACK:
+            break;
+        case EventIds.ID_TRADENEW:
+            break;
+        case EventIds.ID_CANCELREPLACEREQUEST:
+            return rejectCancelReplaceRequest( (CancelReplaceRequest) msg, errMsg );
+        case EventIds.ID_CANCELREQUEST:
+            return rejectCancelRequest( (CancelRequest) msg, errMsg );
+        }
+        
+        return null;
+    }
+
+    private Event rejectNewOrderSingle( NewOrderSingle nos, ZString errMsg ) {
+        final ClientRejectedImpl reject = _rejectedFactory.get();
+
+        reject.setSrcEvent( nos );
+        reject.getExecIdForUpdate().copy( ENCODE_REJ ).append( nos.getClOrdId() ).append( ++_idx );
+        reject.getOrderIdForUpdate().setValue( NONE );
+        reject.setOrdRejReason( OrdRejReason.Other );
+        reject.getTextForUpdate().setValue( errMsg );
+        reject.setOrdStatus( OrdStatus.Rejected );
+        reject.setExecType( ExecType.Rejected );
+
+        reject.setCumQty( 0 );
+        reject.setAvgPx( 0.0 );
+
+        reject.setEventHandler( nos.getEventHandler() );
+        return reject;
+    }
+
+    private Event rejectCancelReplaceRequest( CancelReplaceRequest msg, ZString errMsg ) {
+        final ClientCancelRejectImpl reject = _canRejFactory.get();
+        
+        reject.getClOrdIdForUpdate().    setValue( msg.getClOrdId() );
+        reject.getOrigClOrdIdForUpdate().setValue( msg.getOrigClOrdId() );
+        reject.getOrderIdForUpdate().    setValue( NONE );
+        reject.getTextForUpdate().       setValue( errMsg );
+
+        reject.setCxlRejResponseTo( CxlRejResponseTo.CancelReplace );
+        reject.setCxlRejReason(     CxlRejReason.Other );
+        reject.setOrdStatus(        OrdStatus.Unknown );
+
+        return reject;
+    }
+
+    private Event rejectCancelRequest( CancelRequest msg, ZString errMsg ) {
+        final ClientCancelRejectImpl reject = _canRejFactory.get();
+        
+        reject.getClOrdIdForUpdate().    setValue( msg.getClOrdId() );
+        reject.getOrigClOrdIdForUpdate().setValue( msg.getOrigClOrdId() );
+        reject.getOrderIdForUpdate().    setValue( NONE );
+        reject.getTextForUpdate().       setValue( errMsg );
+
+        reject.setCxlRejResponseTo( CxlRejResponseTo.CancelRequest );
+        reject.setCxlRejReason(     CxlRejReason.Other );
+        reject.setOrdStatus(        OrdStatus.Unknown );
+
+        return reject;
+    }
+
+    private static final byte[] STATS       = "     [".getBytes();
+    private static final byte   STAT_DELIM  = ',';
+    private static final byte   STAT_END    = ']';
+
+

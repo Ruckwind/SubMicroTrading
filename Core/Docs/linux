@@ -1,0 +1,1197 @@
+RED HAT SUB : df1a3ee2df96743e
+RED HAT SUB : cd2ce179cda0ace1
+Red Hat Login : denevil C9   
+
+
+Firstly, to DELETE a system that you have previously registered, please do the following:
+
+1) log in to rhn.redhat.com
+2) click on the Systems tab in the red bar
+3) click on the name of each system and this will link you to another page
+4) click on Delete System in the top right corner of this page
+5) make sure to click the Delete Profile button on the next prompted page
+
+Secondly, to re-register your system with Red Hat Network to keep your system up2date, please refer to the following link:
+
+http://www.redhat.com/apps/register/connect/
+
+
+==================================================
+
+DEBUG
+
+gdb java
+break mcast_join_leave
+run -Djava.net.preferIPv4Stack=true -DUSE_NATIVE_LINUX=true -classpath ./class:jars/jmxtools.jar:jars/junit-4.8.1.jar:jars/log4j-1.2.16.jar:jars/xercesImpl.jar:jars/xml-apis.jar org.junit.runner.JUnitCore com.rr.core.socket.TestMulticastSocketFromFactory
+n = next, step over
+s = next, step in
+p var - print var
+backtrace = print stack trace
+
+
+===================================================
+
+Max Krasnyanskiy - cpuisol: CPU isolation extensions (take 2)
+http://readlist.com/lists/vger.kernel.org/linux-kernel/89/447300.html
+
+
+http://www.mvista.com/real_time_linux.php
+
+https://rt.wiki.kernel.org/index.php/Main_Page
+
+http://en.wikipedia.org/wiki/Ingo_Moln%C3%A1r
+
+Monta Vista Real Time Linux
+
+https://www.osadl.org/Realtime-Preempt-Kernel.kernel-rt.0.html
+
+
+Keith Kong and use of isolcpu
+http://lkml.org/lkml/2009/1/14/402
+
+
+Disc 1  MD5: 5ac43bfc8989e805dfadbf817f9f4ec4 
+SHA-256: 808a0bdd69c999257a93b619e9a2fd134b374f2b97a8e72d283e3c7f63c75bbf  
+ Binary Disc 2 (Server Core)  630 MB MD5: 7d2304205b8ab335b66a94edad447701 
+SHA-256: 8b2297bd2d2ca01a1b7127a4381ac5de19e970b121641a2e5691b44498bf2ba0  
+ Binary Disc 3 (Server Core)  630 MB MD5: 42271722b67bc6109e43a295c1fa5a69 
+SHA-256: 84d13af7e150dbfaf2b36298fd9a94692b083ba2a0bd9ae39876342b67b0f9f2  
+ Binary Disc 4 (Server Core)  631 MB MD5: 857466f65a313fbc8619671f6588afd4 
+SHA-256: b4641aba13d7a35bceb9fe63cdc105f5d11d42bfbbd9736343518147bcd9c2af  
+ Binary Disc 5 (Server Core)  615 MB MD5: f5257ac2abc88b0858fa3c1d99f031ca 
+SHA-256: a618494e54ad25b2aaf71bc56816c5bc9ba3369593fb9ab36e8c42199906856b  
+ Binary Disc 6 (Server Core/Cluster/Cluster Storage/Virtualization)  398 MB MD5: 8aa8a991cb7fd28452b7e1688397fb08 
+SHA-256: 4ecdf7804b168cf0058b878c60df3a1b9b460a623b83922d94d14fc42fcf0831  
+
+
+For the 5.5 DVD download
+MD5: f3119f883257ef9041234feda2f1cad0 
+SHA-256: ba41ae43b327fdd2456fb356f64242a7b5dd96eaa5de48f04665cf97f2a8e16d
+
+
+V6 Beta
+ boot.iso  185 MB MD5: a495284a93f96e5802be85e8a73d94a7  
+ Binary DVD  3,238 MB MD5: fec2081f272e98b5dce40a85195fb50f  
+
+
+
+
+2.2. Setting persistent tuning parameters
+This book contains many examples on how to specify kernel tuning parameters. Unless stated
+otherwise, the instructions will cause the parameters to remain in effect until the system reboots or
+they are explicitly changed. This approach is effective for establishing the initial tuning configuration.
+Once you have decided what tuning configuration works for your system, you will probably want
+those parameters to be persistent across reboots. Which method you choose depends on the type of
+parameter you are setting.
+Editing the /etc/sysctl.conf file
+For any parameter that begins with /proc/sys/, including it in the /etc/sysctl.conf file will
+make the parameter persistent.
+1. Open the /etc/sysctl.conf file in your chosen text editor
+2. Remove the /proc/sys/ prefix from the command and replace the central / character with a .
+character.
+Chapter 2. General System Tuning
+10
+For example: the command echo 2 > /proc/sys/kernel/vsyscall64 will become
+kernel.vsyscall64.
+3. Insert the new entry into the /etc/sysctl.conf file with the required parameter
+# Enable gettimeofday(2)
+kernel.vsyscall64 = 2
+4. Run # sysctl -p to refresh with the new configuration
+# sysctl -p
+...[output truncated]...
+kernel.vsyscall64 = 2
+Editing files in the /etc/sysconfig/ directory
+Files in the /etc/sysconfig/ directory can be added for most other parameters. As files in this
+directory can differ significantly, instructions for these will be explicitly stated where appropriate.
+Alternatively, check the Red Hat Enterprise Linux Deployment Guide available from the Red Hat
+Documentation website1 for information on the /etc/sysconfig/ directory.
+Editing the /etc/rc.d/rc.local file
+Use this option only as a last resort!
+1. Adjust the command as per the Editing the /etc/sysctl.conf file intructions.
+2. Insert the new entry into the /etc/rc.d/rc.local file with the required parameter
+
+
+ ===========================================
+ 
+ Linux commands
+
+1) rhn_register - register for updates
+2) yum install gcc gcc-c++ autoconf automake    - install compiler 
+3) ifconfig - list network info
+4) cat /proc/interrupts    - see interrupts on cpus
+5) edit  /etc/sysctl.conf eg add 
+    # Enable gettimeofday(2)
+    kernel.vsyscall64 = 2
+
+    # sysctl -p             to read file refresh
+    
+    8254 timer not connected to the IO_APIC
+ 
+ ===================================================
+
+IRQ AFFINITY
+
+/proc/irq/default_smp_affinity specifies default affinity mask 
+
+Here is an example of restricting IRQ44 (eth1) to CPU0-3 then restricting
+
+18  it to CPU4-7 (this is an 8-CPU SMP box):
+19  
+20  [root@moon 44]# cd /proc/irq/44
+21  [root@moon 44]# cat smp_affinity
+22  ffffffff
+23  
+24  [root@moon 44]# echo 0f > smp_affinity
+25  [root@moon 44]# cat smp_affinity
+26  0000000f
+27  [root@moon 44]# ping -f h
+28  PING hell (195.4.7.3): 56 data bytes
+29  ...
+30  --- hell ping statistics ---
+31  6029 packets transmitted, 6027 packets received, 0% packet loss
+32  round-trip min/avg/max = 0.1/0.1/0.4 ms
+33  [root@moon 44]# cat /proc/interrupts | grep 'CPU\|44:'
+34             CPU0       CPU1       CPU2       CPU3      CPU4       CPU5        CPU6       CPU7
+35   44:       1068       1785       1785       1783         0          0           0         0    IO-APIC-level  eth1
+36  
+37  As can be seen from the line above IRQ44 was delivered only to the first four
+38  processors (0-3).
+39  Now lets restrict that IRQ to CPU(4-7).
+40  
+41  [root@moon 44]# echo f0 > smp_affinity
+42  [root@moon 44]# cat smp_affinity
+43  000000f0
+44  [root@moon 44]# ping -f h
+45  PING hell (195.4.7.3): 56 data bytes
+46  ..
+47  --- hell ping statistics ---
+48  2779 packets transmitted, 2777 packets received, 0% packet loss
+49  round-trip min/avg/max = 0.1/0.5/585.4 ms
+50  [root@moon 44]# cat /proc/interrupts |  'CPU\|44:'
+51             CPU0       CPU1       CPU2       CPU3      CPU4       CPU5        CPU6       CPU7
+52   44:       1068       1785       1785       1783      1784       1069        1070       1069   IO-APIC-level  eth1
+53  
+54  This time around IRQ44 was delivered only to the last four processors.
+55  i.e counters for the CPU0-3 did not change.
+
+
+RED HAT cat /proc/interrupts
+
+
+          CPU0       CPU1       CPU2       CPU3       CPU4       CPU5       CPU6       CPU7       CPU8       CPU9       CPU10      CPU11      
+  0:     604421          0          0          0          0          0          0          0          0          0          0          0    IO-APIC-edge  timer
+  1:          2          0          0          0          0          0          0          0          0          0          0          0    IO-APIC-edge  i8042
+  8:          1          0          0          0          0          0          0          0          0          0          0          0    IO-APIC-edge  rtc
+ 12:          4          0          0          0          0          0          0          0          0          0          0          0    IO-APIC-edge  i8042
+ 14:      13486          0          0          0      10561      58832          0          0          0          0      57905          0    IO-APIC-edge  ide0
+ 15:     104977          0          0          0          0       3583          0          0          0          0          0     139169    IO-APIC-edge  ide1
+ 74:          2          0          0          0          0          0          0          0          0          0          0          0   IO-APIC-level  ehci_hcd:usb2, uhci_hcd:usb6
+ 82:         36          0          0          0          0          0          0          0          0          0          0          0   IO-APIC-level  uhci_hcd:usb3, ahci
+ 90:          0          0          0          0          0          0          0          0          0          0          0          0   IO-APIC-level  uhci_hcd:usb4
+ 98:         85          0          0          7          0          0          0          0          0          0          0          0   IO-APIC-level  uhci_hcd:usb5, uhci_hcd:usb7, ata_piix
+114:          4          0          0          0          0          0          0          0          0          0          0          0         PCI-MSI  ahci
+122:         22          0          0          0          0        429          0          0          0          0          0          1         PCI-MSI  eth0
+130:          1          0          0          0          0          0          0          0          0          0          0          0         PCI-MSI  eth1
+146:        199          0          0          0          0          0          0          0          0          0          0          0         PCI-MSI  HDA Intel
+169:          0          0          0          0          0          0          0          0          0          0          0          0   IO-APIC-level  acpi
+177:        111          0          0          0         13          0          0          0          0          0          0          0   IO-APIC-level  sata_sil24
+193:         23          0          0          0          0          0          0          0          0          0          0          0   IO-APIC-level  ehci_hcd:usb1, uhci_hcd:usb8
+NMI:       1014         85         85         85         87        115         82         83         82         82         91        105 
+LOC:     613894     630467     630389     630310     630219     619839     630075     629985     629907     629829     629751     629673 
+ERR:          0
+
+           CPU0       CPU1       CPU2       CPU3       CPU4       CPU5       CPU6       CPU7       CPU8       CPU9       CPU10      CPU11      
+  0:    1697783          0          0          0          0          0          0          0          0          0          0          0    IO-APIC-edge  timer
+  1:          2          0          0          0          0          0          0          0          0          0          0          0    IO-APIC-edge  i8042
+  8:          1          0          0          0          0          0          0          0          0          0          0          0    IO-APIC-edge  rtc
+ 12:          4          0          0          0          0          0          0          0          0          0          0          0    IO-APIC-edge  i8042
+ 14:      13486          0          0        144      11882      58832          0          0          0        615      57905          0    IO-APIC-edge  ide0
+ 15:     104977          0          0          0       1336      46640          0          0          0          0     543351     139169    IO-APIC-edge  ide1
+ 74:          2          0          0          0          0          0          0          0          0          0          0          0   IO-APIC-level  ehci_hcd:usb2, uhci_hcd:usb6
+ 82:         36          0          0          0          0          0          0          0          0          0          0          0   IO-APIC-level  uhci_hcd:usb3, ahci
+ 90:          0          0          0          0          0          0          0          0          0          0          0          0   IO-APIC-level  uhci_hcd:usb4
+ 98:         85          0          0          7          0          0          0          0          0          0          0          0   IO-APIC-level  uhci_hcd:usb5, uhci_hcd:usb7, ata_piix
+114:          4          0          0          0          0          0          0          0          0          0          0          0         PCI-MSI  ahci
+122:         22          0          0          0          0       1644          0          0          0          0          0        753         PCI-MSI  eth0
+130:          1          0          0          0          0          0          0          0          0          0          0          0         PCI-MSI  eth1
+146:        199          0          0          0          0          0          0          0          0          0          0          0         PCI-MSI  HDA Intel
+169:          0          0          0          0          0          0          0          0          0          0          0          0   IO-APIC-level  acpi
+177:        111          0          0          0         13          0          0          0          0          0          0          0   IO-APIC-level  sata_sil24
+193:         23          0          0          0          0          0          0          0          0          0          0          0   IO-APIC-level  ehci_hcd:usb1, uhci_hcd:usb8
+NMI:       1050        115        111        105        109        154       1223        365       1107       1015       1119        107 
+LOC:    1707228    1723801    1723723    1723644    1723553    1713173    1723409    1723319    1723241    1723163    1723085    1723007 
+ERR:          0
+
+
+15 ide1 543351 on cpu 10 ==> move to 11 ... made no differencce
+122 eth0 moved to cpu 11 ....
+
+EXAMPLE set ide1 to CPU12:  cd /proc/irq/15 ; echo 800 >smp_affinity ; cat smp_affinity .... check its 800 .. may take few seconds, note its hex, dec=2048
+
+
+
+  0:     IO-APIC-edge  timer
+  1:     IO-APIC-edge  i8042
+  8:     IO-APIC-edge  rtc
+ 12:     IO-APIC-edge  i8042
+ 14:     IO-APIC-edge  ide0
+ 15:     IO-APIC-edge  ide1
+ 74:     IO-APIC-level  ehci_hcd:usb2, uhci_hcd:usb6
+ 82:     IO-APIC-level  uhci_hcd:usb3, ahci
+ 90:     IO-APIC-level  uhci_hcd:usb4
+ 98:     IO-APIC-level  uhci_hcd:usb5, uhci_hcd:usb7, ata_piix
+114:     PCI-MSI  ahci
+122:     PCI-MSI  eth0
+130:     PCI-MSI  eth1
+146:     PCI-MSI  HDA Intel
+169:     IO-APIC-level  acpi
+177:     IO-APIC-level  sata_sil24
+193:     IO-APIC-level  ehci_hcd:usb1, uhci_hcd:usb8
+
+
+
+
+=====================================================
+
+
+A) INSTALL RH FROM DVD
+ 
+RH install number df1a 3ee2 df96 743e
+ 
+Load Optimised Defaults 
+ 
+BIOS Settings :
+    Advanced BIOS Features -> SATA Configuration
+                                SATA#1 Configuration            : ENHANCED
+                                    Configure SATA1             : IDE
+                              SATA Master Break Event           : Disabled
+                                
+    Advanced Chipset Features -> PCI Express Configuration
+                                Active State Power Management   : DISABLED
+                                
+    PCI/PNP Resource Management -> Plug and Play OS             : NO
+                                   PCI IDE Busmaster            : ENABLED
+                                                                                                 
+    Boot Settings -> Boot Settings Configuration
+                                    QuickBoot                   : DISABLED
+                                    Bootup Screen Logo          : DISABLED
+                                    
+    Power Management Features -> ACPI -> General ACPI 
+                                    NUMA Support                : ENABLED
+                                 ACPI -> Chipset ACPI
+                                    Energy Lake Feature         : DISABLED
+                                    APIC ACPI SCI IRQ           : ENABLED
+                                    High Precision Timer        : ENABLED                                      
+
+    Frequency Voltage Control ->CPU Configuration
+                                    Max CPUID Value Limit       : Disabled
+                                    Intel Virtualisation Tech   : Enabled
+                                    Intel VT-d                  : Enabled
+                                    Coherency Spport            : Disabled
+                                    Execute Disable Bit         : Enabled
+                                    Hyper Threading             : Disabled
+                                    A20M                        : Disabled
+                                    SpeedStep                   : Enabled
+                                    TurboMode                   : Disabled
+                                    C-State                     : Disabled
+                                    ACPI T State                : Disabled
+                              ->Memory Configuration
+                                    Demand Scrubbing            : Enabled
+                                    Patrol Scrubbing            : Enabled (try Disabled)
+                                    
+                                          
+                                    
+                                    
+ 
+ 
+Remove logical volumes AND swap
+ 
+(hdX,Y) X is drive starting at 0, Y is partition starting at 1 
+  
+SATA#1  /dev/hdb
+            /dev/hdb1   /boot   ext3    101MB       1       13          (hd1,1)
+            /dev/hdb2   /usr    ext3    299995MB    14      38257
+                                FREE    415305
+            
+SSD#2  /dev/hdc
+            /dev/hdc1   /       ext3    29996MB     1       3824        (hd2,1)
+            /dev/hdc2   /tmp    ext3    10001MB     3824    5099
+            /dev/hdc3   /home   ext3    29996MB     5100    8923
+                                FREE    45378MB                     
+ 
+ On install when presented with install options, deselect all and use custom, install dev option which includes gcc and make
+ 
+ SET DEVICE LABEL READY FOR GRUB  (** DONT FORGET UPDATE fstab OR IT WONT BOOT **)
+    e2label /dev/hdc1 RH_ROOT
+   edit /etc/fstab
+    LABEL=RH_ROOT          /                       ext3    defaults        1 1
+ 
+ 
+    
+ 
+ 
+B) Login   
+
+when you entered smt as user maybe didnt set root pwd
+If so then restart with RH dvd in player and type 
+    linux rescue
+    at command prompt type chroot /mnt/sysimage
+    passwd root
+     
+C) set IP address (required by redhat licencse as already setup on redhat side)
+
+*** NOTE eth0 will be the mellanox card !! ***
+
+http://www.cyberciti.biz/faq/rhel-centos-fedoracore-linux-network-card-configuration/
+
+vi /etc/sysconfig/network-scripts/ifcfg-eth0 (right hand side port on SR2)
+# Marvell Technology Group Ltd. Unknown device 4380
+DEVICE=eth0
+BOOTPROTO=none
+IPADDR=192.168.1.173
+HWADDR=00:1F:BC:02:8F:74
+ONBOOT=yes
+TYPE=Ethernet
+NETMASK=255.255.255.0
+GATEWAY=192.168.1.1
+USERCTL=no
+IPV6INIT=no
+PEERDNS=yes
+
+or via GUI tool system-config-network & - EDIT, in general tab, set IP 192.168.1.173, submet=255.255.255.0, gateway=192.168.1.1
+
+/etc/init.d/network restart
+
+To check that the IP address has taken type
+
+/sbin/ifconfig. 
+
+To change the MTU of an interface on GNU/Linux, you just need to tell ifconfig to do so, like this for example: 
+
+/sbin/ifconfig eth1 mtu 1492
+
+To change it permanently on Debian, put it in the /etc/network/interfaces .where almost all network parameters are found. To do this, just add a line mtu to the definition of your interface. Example: 
+
+iface eth1 inet static
+                address 192.168.0.1
+                network 192.168.0.0
+                gateway 192.168.0.254
+                netmask 255.255.255.0
+                mtu 1492
+
+SETUP for Direct Attach 1Ge to 1Ge for Rack to rack
+vi /etc/sysconfig/network-scripts/ifcfg-eth2    (left hand side port on SR2)
+DEVICE=eth2
+BOOTPROTO=static
+HWADDR=00:1F:BC:02:8F:75
+ONBOOT=yes
+NETMASK=255.255.255.0
+GATEWAY=10.0.0.1
+USERCTL=no
+IPV6INIT=no
+
+
+D) INSTALL UBUNTU
+
+SCSI1 (0,1,0) sdb
+SCSI2 (0,0,0) sdc
+
+partition 3 of SCSI1 (0,1,0 (sdb) as ext4   50GB    /           (primary)
+partition 5 of SCSI1 (0,1,0 (sdb) as ext4   20GB    /usr        (logical)
+partition 6 of SCSI1 (0,1,0 (sdb) as ext4   100GB   /apps       (logical)
+partition 5 of SCSI1 (0,0,0 (sdc) as ext4   30GB    /home       (logical)
+partition 6 of SCSI1 (0,0,0 (sdc) as ext4   17.6GB  /tmp        (logical)
+
+E) add entry for redhat to the grub 2 config and rebuild config  ***** DOESNT WORK *****
+
+sudo -i
+vi /etc/grub.d/40*
+  add after comment
+    menuentry 'REDHAT 5.5' --class gnu-linux --class gnu --class os {
+        insmod ext3
+        set root='(hd1,1)'
+        linux (hd1,1)/vmlinuz-2.6.18-194.el5 ro root=LABEL=RH_ROOT isolcpus=6,7,8,9,10,11 rhgb 
+        initrd (hd1,1)/initrd-2.6.18-194.el5.img
+    }
+
+The (hd1,1) should be the BOOT device not the root device, using root=/dev/sd.. doesnt work
+
+vi /etc/default/grub and change GRUB_DEFAULT from 0 to 7 or whatever is appropriate !
+
+cd /boot/grub
+update-grub
+
+
+F) Install patches UBUNTU
+
+sudo apt-get install linux-rt
+sudo apt-get install build-essential linux-headers-`uname -r`
+sudo apt-get install gawk
+sudo apt-get install chkconfig
+
+G) Upload dist.zip, jdk, hwloc, put hwloc in ./install/hwloc
+./configure --prefix=/home/smt/tools/hwloc
+make
+make install
+
+
+H) create setup.sh and invoke from .bashrc
+
+typeset -x JAVA_HOME=/home/smt/tools/jdk1.6.0_21
+typeset -x HWLOC_HOME=/home/smt/tools/hwloc
+typeset -x PATH=$JAVA_HOME/bin:$PATH:$HWLOC_HOME/bin
+typeset -x LD_LIBRARY_PATH=$JAVA_HOME/lib:$PATH:$HWLOC_HOME/lib:$HOME/dist/lib
+
+ 
+I) check for unwanted daemons
+ /sbin/chkconfig --list | grep "5:on"
+  
+ DAEMONS  (run setup as root to change)
+ ========
+ http://magazine.redhat.com/2007/03/09/understanding-your-red-hat-enterprise-linux-daemons/
+ http://www.cyberciti.biz/faq/linux-default-services-which-are-enabled-at-boot/
+ 
+ acpid      (MAYBE) Advanced Configuration and Power Interface 
+ anacron    (NO)    Anacron is a periodic command scheduler
+ atd        (NO)    Runs commands scheduled with "at"
+ auditd     (MAYBE) The Linux Auditing System provides kernel-resident logging of system calls and user space tools to collect and view the logs. 
+                    The auditd daemon writes the logging records to disk. ** EVENTS LOGGED ARE CONFIGURABLE **
+ avahi-daemon (NO)  Service discovery used eg sharing music
+ bluetooth  (NO) 
+ cpuspeed   (NO)    power saving, if CPU supports adjustable freqs .. useful for mobiles
+ crond      (YES)   runs cron tasks dont disable
+ cups       (NO)    printing 
+ gpm        (MAYBE) This daemon enables you to use your mouse in text-based applications such as the console
+ haldaemon  (XWin)    Collects info about h/w devices and supplies it in standard format .. only used for X and desktops
+ hidd       (NO)    This is the Bluetooth Human Interface Device Daemon. It provides keyboard, mouse, and track-ball device support 
+ ip6tables  (MAYBE) firewall IP6
+ iptables   (MAYBE) firewall IP4
+ isdn       (NO)    connecting to ISDN network
+ kudzu      (YES)   detects new devices on startup ... no runtime overhead
+ lvm2-monitor (NO)  Starts and stops dmeventd monitoring for lvm2. If you are not using LVM2 
+ mcstrans   (YES)   This daemon translates security context informartion into a human readable form
+ mdmonitor  (YES)   software RAID 
+ mdmpd      (YES)   software RAID
+ messagebus (XWin)  This service broadcasts notifications of system events and other messages (D-bus). Turn it on for bluetooth, X Windows and desktop systems
+ microcode_ctl (NO) Script to apply cpu microcode for Intel IA32 processor
+ netfs      (NO)    NFS
+ network    (YES)   Network support
+ nfslock    (NO)    NFS
+ pand       (NO)    Ethernet via Bluetooth 
+ pcscd      (NO)    Smartcard related
+ portmap    (NO)    NFS/RPC
+ rawdevices (YES)   Block devices.  Links hardware to devices that store data.
+ readahead_early (NO)   caching of files for some services 
+ readahead_later (NO)   caching of files for some services
+ restorecond (YES)  This service restores the correct security context for SELinux.
+ rpcgssd    (NO)    NFS
+ rpcidmapd  (NO)    NFS
+ rhnsd      (NO)    RH update service .. use yum-updatesd instead
+ sendmail   (NO)    mail daemon
+ smartd     (YES)   Self Monitoring and Reporting Technology (SMART) Daemon for hard disks.
+ sshd       (YES)   open ssh daemon
+ syslog     (YES)   system event log
+ xfs        (XWin)  XWindows font server
+ yum-updatesd (YES) Update notification daemon for system packages
+ 
+ chkconfig irqbalance off
+ chkconfig anacron off
+ chkconfig atd off
+ chkconfig avahi-daemon off 
+ chkconfig bluetooth off 
+ chkconfig cups off       
+ chkconfig hidd off       
+ chkconfig isdn off       
+ chkconfig pand off       
+ chkconfig rhnsd off      
+ chkconfig sendmail off   
+ chkconfig cpuspeed off   
+
+J) change /etc/inittab default run lvl from 5 to 3    
+        id:3:initdefault
+
+K)  vi /etc/rc.local  ..... not yet!
+
+#/sbin/ifconfig eth1 txqueuelen 20000
+#/sbin/ifconfig eth0 txqueuelen 20000
+
+
+L) settings for results (N2) - best results
+
+acpid           0:off   1:off   2:on    3:on    4:on    5:on    6:off
+auditd          0:off   1:off   2:on    3:on    4:on    5:on    6:off
+autofs          0:off   1:off   2:off   3:on    4:on    5:on    6:off
+cpuspeed        0:off   1:on    2:on    3:on    4:on    5:on    6:off
+crond           0:off   1:off   2:on    3:on    4:on    5:on    6:off
+firstboot       0:off   1:off   2:off   3:on    4:off   5:on    6:off
+gpm             0:off   1:off   2:on    3:on    4:on    5:on    6:off
+ip6tables       0:off   1:off   2:on    3:on    4:on    5:on    6:off
+iptables        0:off   1:off   2:on    3:on    4:on    5:on    6:off
+kudzu           0:off   1:off   2:off   3:on    4:on    5:on    6:off
+lvm2-monitor    0:off   1:on    2:on    3:on    4:on    5:on    6:off
+mcstrans        0:off   1:off   2:on    3:on    4:on    5:on    6:off
+mdmonitor       0:off   1:off   2:on    3:on    4:on    5:on    6:off
+mdmpd           0:off   1:off   2:on    3:on    4:on    5:on    6:off
+microcode_ctl   0:off   1:off   2:on    3:on    4:on    5:on    6:off
+netfs           0:off   1:off   2:on    3:on    4:on    5:on    6:off
+network         0:off   1:off   2:on    3:on    4:on    5:on    6:off
+nfslock         0:off   1:off   2:on    3:on    4:on    5:on    6:off
+pcscd           0:off   1:off   2:on    3:on    4:on    5:on    6:off
+portmap         0:off   1:off   2:on    3:on    4:on    5:on    6:off
+rawdevices      0:off   1:off   2:off   3:on    4:on    5:on    6:off
+readahead_early 0:off   1:off   2:on    3:on    4:on    5:on    6:off
+readahead_later 0:off   1:off   2:on    3:on    4:on    5:on    6:off
+restorecond     0:off   1:off   2:on    3:on    4:on    5:on    6:off
+rpcgssd         0:off   1:off   2:on    3:on    4:on    5:on    6:off
+rpcidmapd       0:off   1:off   2:on    3:on    4:on    5:on    6:off
+setroubleshoot  0:off   1:off   2:off   3:on    4:on    5:on    6:off
+smartd          0:off   1:off   2:on    3:on    4:on    5:on    6:off
+sshd            0:off   1:off   2:on    3:on    4:on    5:on    6:off
+syslog          0:off   1:off   2:on    3:on    4:on    5:on    6:off
+xinetd          0:off   1:off   2:off   3:on    4:on    5:on    6:off
+yum-updatesd    0:off   1:off   2:on    3:on    4:on    5:on    6:off
+
+M) set cpu scaling 
+
+echo performance >/sys/devices/system/cpu/cpu0/cpufreq/scaling_governor
+echo performance >/sys/devices/system/cpu/cpu10/cpufreq/scaling_governor
+echo performance >/sys/devices/system/cpu/cpu11/cpufreq/scaling_governor
+echo performance >/sys/devices/system/cpu/cpu1/cpufreq/scaling_governor
+echo performance >/sys/devices/system/cpu/cpu2/cpufreq/scaling_governor
+echo performance >/sys/devices/system/cpu/cpu3/cpufreq/scaling_governor
+echo performance >/sys/devices/system/cpu/cpu4/cpufreq/scaling_governor
+echo performance >/sys/devices/system/cpu/cpu5/cpufreq/scaling_governor
+echo performance >/sys/devices/system/cpu/cpu6/cpufreq/scaling_governor
+echo performance >/sys/devices/system/cpu/cpu7/cpufreq/scaling_governor
+echo performance >/sys/devices/system/cpu/cpu8/cpufreq/scaling_governor
+echo performance >/sys/devices/system/cpu/cpu9/cpufreq/scaling_governor
+
+
+
+
+===================================================================================
+
+SETUP   SIMULATOR   RACK SERVER
+
+check BIOS settings
+    Set Throttling Mode: CLTT
+    processor disable C6 and HT 
+    ensure PCI pwer down is off, turbo off : 
+    Enabled Memory Mapped IO above 4GB **
+
+
+
+
+A) INSTALL RH FROM DVD
+ 
+Remove logical volumes AND swap
+ 
+(hdX,Y) X is drive starting at 0, Y is partition starting at 1 
+  
+SSD-60GB-ATA_WDC_SSC    #1  /dev/sdb
+            /dev/sdb1   /       ext3    10000MB     
+            /dev/sdb2   /home   ext3    10000MB     
+            /dev/sdb3   /tmp    ext3    10000MB     
+
+DISK-2000GB-ATA-ST32    #2  /dev/sdc
+            /dev/sdc1   /boot   ext3    401MB       1       13          (hd1,1)
+            /dev/sdc2   /usr    ext3    299995MB    14      38257
+                                FREE    45378MB                     
+ 
+ On install when presented with install options, deselect all and use custom, install dev option which includes gcc and make
+ 
+ SET DEVICE LABEL READY FOR GRUB  (** DONT FORGET UPDATE fstab OR IT WONT BOOT **)
+    e2label /dev/sdb1 RH_ROOT
+   edit /etc/fstab
+    LABEL=RH_ROOT          /                       ext3    defaults        1 1
+ 
+   edit /boot/grub/grub.conf
+        change LABEL=/   to LABEL=RH_ROOT    and add isolcpu
+        :-
+        kernal /vmlinuz-2.6.18-194.el5 ro root=LABEL=RH_ROOT isolcpus=6,7,8,9,10,11 rhgb 
+ 
+C) set IP address (required by redhat licencse as already setup on redhat side)
+
+http://www.cyberciti.biz/faq/rhel-centos-fedoracore-linux-network-card-configuration/
+
+use the GUI network tool to show eth0 is Mellanox on the intel rack
+
+vi /etc/sysconfig/network-scripts/ifcfg-eth1
+DEVICE=eth1
+BOOTPROTO=none
+IPADDR=192.168.1.174
+HWADDR=00:15:17:EA:67:DC
+ONBOOT=yes
+TYPE=Ethernet
+NETMASK=255.255.255.0
+GATEWAY=192.168.1.1
+USERCTL=no
+IPV6INIT=no
+PEERDNS=yes
+
+
+SETUP for Direct Attach 1Ge to 1Ge for Rack to rack
+vi /etc/sysconfig/network-scripts/ifcfg-eth2
+DEVICE=eth2
+BOOTPROTO=static
+HWADDR=00:15:17:EA:67:DD
+ONBOOT=yes
+NETMASK=255.255.0.0
+GATEWAY=10.0.0.2
+USERCTL=no
+IPV6INIT=no
+
+
+
+/etc/init.d/network restart
+
+To check that the IP address has taken type
+
+/sbin/ifconfig. 
+
+
+in GUI go to network/DNS and add 192.168.1.1 as DNS server
+
+
+G) Upload dist.zip, tools.zip
+
+H) create setup.sh and invoke from .bashrc
+
+typeset -x JAVA_HOME=/home/smt/tools/jdk1.6.0_21
+typeset -x HWLOC_HOME=/home/smt/tools/hwloc
+typeset -x PATH=$JAVA_HOME/bin:$PATH:$HWLOC_HOME/bin
+typeset -x LD_LIBRARY_PATH=$JAVA_HOME/lib:$PATH:$HWLOC_HOME/lib:$HOME/dist/lib
+
+ 
+I) check for unwanted daemons
+ /sbin/chkconfig --list | grep "5:on"
+  
+ chkconfig irqbalance off
+ chkconfig anacron off
+ chkconfig atd off
+ chkconfig avahi-daemon off 
+ chkconfig bluetooth off 
+ chkconfig cups off       
+ chkconfig hidd off       
+ chkconfig isdn off       
+ chkconfig pand off       
+ chkconfig rhnsd off      
+ chkconfig sendmail off   
+ chkconfig cpuspeed off   
+
+J) change /etc/inittab default run lvl from 5 to 3    
+        id:3:initdefault
+
+K) setup network scripts
+
+crossOver1GE.sh
+---------------
+
+export OM_HOST=OM_HOSTNAME
+export SIM_HOST=SIM_HOSTNAME
+export HUB_HOST=HUB_HOSTNAME
+
+# NIC the OM uses to talk to simulators
+export OM_NIC=eth1
+# NIC the OM uses to talk to HUB
+export HUB_NIC=eth1
+# NIC the SIMs use to talk to OM
+export SIM_NIC=eth1
+
+# /OM/config/simCPUMasks.cfg
+export SIM_CPU_MASKS=./config/simCPUMasks.cfg
+
+
+L) add /etc/hosts
+
+OM SERVER
+
+10.0.0.2        SIM_HOSTNAME HUB_HOSTNAME
+192.168.0.2     SIM_HOSTNAME_10GE
+127.0.0.1       localhost.localdomain localhost OM_HOSTNAME
+
+SIM SERVER
+
+10.0.0.1        OM_HOSTNAME
+192.168.0.1     OM_HOSTNAME_10GE
+127.0.0.1       localhost.localdomain localhost SIM_HOSTNAME HUB_HOSTNAME
+
+M) 
+echo performance >/sys/devices/system/cpu/cpu0/cpufreq/scaling_governor
+echo performance >/sys/devices/system/cpu/cpu10/cpufreq/scaling_governor
+echo performance >/sys/devices/system/cpu/cpu11/cpufreq/scaling_governor
+echo performance >/sys/devices/system/cpu/cpu1/cpufreq/scaling_governor
+echo performance >/sys/devices/system/cpu/cpu2/cpufreq/scaling_governor
+echo performance >/sys/devices/system/cpu/cpu3/cpufreq/scaling_governor
+echo performance >/sys/devices/system/cpu/cpu4/cpufreq/scaling_governor
+echo performance >/sys/devices/system/cpu/cpu5/cpufreq/scaling_governor
+echo performance >/sys/devices/system/cpu/cpu6/cpufreq/scaling_governor
+echo performance >/sys/devices/system/cpu/cpu7/cpufreq/scaling_governor
+echo performance >/sys/devices/system/cpu/cpu8/cpufreq/scaling_governor
+echo performance >/sys/devices/system/cpu/cpu9/cpufreq/scaling_governor
+
+
+
+MELLANOX CONFIG
+=================
+
+vi /etc/rc.local /etc/libsdp.conf /etc/modprobe.d/ib_sdp.conf
+
+http://www.openfabrics.org/downloads/OFED/ofed-1.5.2/
+
+mlx4 module = mellanox ethernet support
+
+lspci -v | grep Mellanox                                list Mellanox device
+/usr/bin/hca_self_test.ofed                             infiniband self test
+/etc/infiniband/info                                    infiniband info
+/etc/init.d/openibd start | restart                     start | restart I/B
+/etc/sysconfig/network-scripts/ifcfg-ib[n]              IPoIB config
+/etc/infiniband/connectx.conf                           adapter config
+/sbin/connectx_port_config -s                           will show current port configuration 
+ethtool -k eth<x>                                       show offload status
+/sys/module/mlx4_en/parameters/                         mlx4 params
+modinfo mlx4_en                                         list mlx4 params
+ibdev2netdev                                            list devices ports assigned too
+cat /proc/net/sdpstats
+sdpnetstat -S
+
+P.S: If the physical links will go up, you will need a Subnet Manager to move the
+links to an Active state, run:
+
+opensm &
+
+
+
+on SIM HOST
+    ifconfig eth0 192.168.0.2
+    
+on OM HOST
+    ifconfig eth2 192.168.0.1
+
+add entries to /etc/hosts
+
+add config scripts to each server eg :-
+vi /etc/sysconfig/network-scripts/ifcfg-eth2
+BOOTPROTO=static
+IPADDR=192.168.0.1
+NETMASK=255.255.0.0
+
+
+echo "options ib_sdp sdp_link_layer_ib_only=0" >> /etc/modprobe.d/ib_sdp.conf
+
+http://www.29west.com/docs/THPM/latency-interrupt-coalescing.html
+
+****** PERF NETWORK CHANGES *******
+ethtool -C eth2 adaptive-rx off             
+ethtool -C eth2 rx-usecs 0 rx-frames 0 rx-usecs-high 0 rx-usecs-low 0       
+ethtool -A eth2 rx off tx off               
+
+
+
+
+5/sec min
+1 200ms 300
+
+ethernet10GE.sh
+
+export OM_HOST=192.168.0.1
+export SIM_HOST=192.168.0.2
+export HUB_HOST=192.168.0.2
+
+# NIC the OM uses to talk to simulators
+export OM_NIC=eth2
+# NIC the OM uses to talk to HUB
+export HUB_NIC=eth0
+# NIC the SIMs use to talk to OM
+export SIM_NIC=eth0
+
+# if running SIM on same box as OM dont use simCPUMasks !!!
+FOR OM : export SIM_CPU_MASKS=./config/cpumasks.cfg
+FOR SIM : export SIM_CPU_MASKS=./config/simCPUMasks.cfg
+
+
+
+Install iperf
+on server : iperf -s -l64k
+on client : iperf -c 192.168.0.1 -l64k -P2
+
+RoCE ping
+ibv_rc_pingpong -g 0 -i 2
+ibv_rc_pingpong -g 0 -i 2 192.168.0.2
+
+
+
+
+OFED1.5.2
+=========
+
+To use RoCE with SDP need OFED1.5.2
+
+That requires the following packages (assuming installed development as part of RH install) :-
+
+yum install libevent-devel nfs-utils-lib-devel tcl-devel libsysfs-devel
+
+cp OFED-1.5.2.gz /INSTALL
+cd /INSTALL
+gunzip OFED-1.5.2.gz
+tar -xvf OFED-1.5.2
+
+cd /INSTALL/OFED-1.5.2
+./install.pl 
+
+vi /etc/security/limits.conf
+==> add to end of file
+* soft memlock unlimited
+* hard memlock unlimited
+ 
+
+OFED 1.5.2
+
+[root@localhost ~]# modinfo mlx4_en
+parm:           inline_thold:treshold for using inline data (int)
+parm:           tcp_rss:Enable RSS for incomming TCP traffic or disabled (0) (uint)
+parm:           udp_rss:Enable RSS for incomming UDP traffic or disabled (0) (uint)
+parm:           num_lro:Number of LRO sessions per ring or disabled (0) (uint)
+parm:           ip_reasm:Allow reassembly of fragmented IP packets (!0) (uint)
+parm:           pfctx:Priority based Flow Control policy on TX[7:0]. Per priority bit mask (uint)
+parm:           pfcrx:Priority based Flow Control policy on RX[7:0]. Per priority bit mask (uint)
+
+[root@localhost ~]# modinfo mlx4_core
+parm:           set_4k_mtu:attempt to set 4K MTU to all ConnectX ports (int)
+parm:           debug_level:Enable debug tracing if > 0 (int)
+parm:           block_loopback:Block multicast loopback packets if > 0 (int)
+parm:           msi_x:attempt to use MSI-X if nonzero (int)
+parm:           log_num_mac:Log2 max number of MACs per ETH port (1-7) (int)
+parm:           use_prio:Enable steering by VLAN priority on ETH ports (0/1, default 0) (bool)
+parm:           log_num_qp:log maximum number of QPs per HCA (int)
+parm:           log_num_srq:log maximum number of SRQs per HCA (int)
+parm:           log_rdmarc_per_qp:log number of RDMARC buffers per QP (int)
+parm:           log_num_cq:log maximum number of CQs per HCA (int)
+parm:           log_num_mcg:log maximum number of multicast groups per HCA (int)
+parm:           log_num_mpt:log maximum number of memory protection table entries per HCA (int)
+parm:           log_num_mtt:log maximum number of memory translation table segments per HCA (int)
+parm:           log_mtts_per_seg:Log2 number of MTT entries per segment (1-7) (int)
+parm:           enable_qos:Enable Quality of Service support in the HCA (default: off) (bool)
+parm:           enable_pre_t11_mode:For FCoXX, enable pre-t11 mode if non-zero (default: 0) (int)
+parm:           internal_err_reset:Reset device on internal errors if non-zero (default 1) (int)
+
+modinfo ib_sdp
+parm:           rcvbuf_initial_size:Receive buffer initial size in bytes. [32 * 1024] (int)
+parm:           rcvbuf_scale:Receive buffer size scale factor. [0x10] (int)
+parm:           top_mem_usage:Top system wide sdp memory usage for recv (in MB). [0] (int)
+parm:           max_large_sockets:Max number of large sockets (32k buffers). [1000] (int)
+parm:           sdp_keepalive_probes_sent:Total number of keepalive probes sent. [0] (int)
+parm:           sdp_link_layer_ib_only:Support only link layer of type Infiniband [1] (int)
+parm:           sdp_debug_level:Enable debug tracing if > 0. [0] (int)
+parm:           sdp_data_debug_level:Enable data path debug tracing if > 0. [0] (int)
+parm:           sdp_fmr_pool_size:Number of FMRs to allocate for pool [20] (int)
+parm:           sdp_fmr_dirty_wm:Watermark to flush fmr pool [5] (int)
+parm:           recv_poll:usecs to poll recv before arming interrupt. [700] (int)
+parm:           sdp_keepalive_time:Default idle time in seconds before keepalive probe sent. [SDP_KEEPALIVE_TIME] (int)
+parm:           sdp_zcopy_thresh:Zero copy using RDMA threshold; 0=Off. [SDP_DEF_ZCOPY_THRESH] (int)
+parm:           sdp_rx_coal_target:Target number of bytes to coalesce with interrupt moderation. [0x50000] (int)
+parm:           sdp_rx_coal_time:rx coal time (jiffies). [0x10] (int)
+parm:           sdp_rx_rate_low:rx_rate low (packets/sec). [80000] (int)
+parm:           sdp_rx_coal_time_low:low moderation usec. [0] (int)
+parm:           sdp_rx_rate_high:rx_rate high (packets/sec). [100000] (int)
+parm:           sdp_rx_coal_time_high:high moderation usec. [128] (int)
+parm:           sdp_rx_rate_thresh:rx rate thresh (). [(200000 / SDP_RX_COAL_TIME_HIGH)] (int)
+parm:           sdp_sample_interval:sample interval (jiffies). [(HZ / 4)] (int)
+parm:           hw_int_mod_count:forced hw int moderation val. -1 for auto (packets). [-1] (int)
+parm:           hw_int_mod_usec:forced hw int moderation val. -1 for auto (usec). [-1] (int)
+
+
+[root@localhost ~]# modinfo rdma_cm
+depends:        ib_addr,ib_cm,iw_cm,ib_core,ib_core,ib_sa,ipv6
+vermagic:       2.6.18-194.el5 SMP mod_unload gcc-4.1
+parm:           tavor_quirk:Tavor performance quirk: limit MTU to 1K if > 0 (int)
+parm:           unify_tcp_port_space:Unify the host TCP and RDMA port space allocation (default=0) (int)
+parm:           cma_response_timeout:CMA_CM_RESPONSE_TIMEOUT default=20 (int)
+parm:           def_prec2sl:Default value for SL priority with RoCE. Valid values 0 - 7 (int)
+
+[root@localhost ~]# modinfo ib_cm
+parm:           max_timeout:Maximum IB CM per message timeout (default=21, or ~8 seconds) (int)
+
+[root@localhost ~]# modinfo ib_sa
+parm:           paths_per_dest:Maximum number of paths to retrieve to each destination (DGID).  Set to 0 to disable cache.
+parm:           subscribe_inform_info:Subscribe for SA InformInfo/Notice events.
+parm:           lookup_method:Method used to return path records when multiple paths exist to a given destination.
+
+
+
+
+
+CHELSIO
+============
+
+1) Install OFED1.5.2
+
+2) add entry to modprobe.conf
+        options iw_cxgb3 peer2peer=1
+        
+   reboot
+
+3) Install Chelsio driver
+    cd cxgb3toe-W.X.YY.ZZZ 
+    (cd src; make && make install) 
+    (cd tools/cxgbtool; make && make install)
+
+4) add entry to modprobe.conf
+    options iw_cxgb3 peer2peer=1 
+    install cxgb3 /sbin/modprobe -i cxgb3; /sbin/modprobe -f iw_cxgb3; /sbin/modprobe rdma_ucm 
+    alias eth2 cxgb3 # assume eth2 is used by the Chelsio interface.
+
+Load cxgb3, iw_cxgb3 and rdma_ucm modules. 
+After you load iw_cxgb3 and rdma_ucm, you will see one or two ethernet interfaces for the T3 device. 
+Configure them with an appropriate ip address, netmask, etc. 
+You can use the Linux ping command to test basic connectivity via the T3 interface. 
+To test RDMA, use the rping command that is included in the librdmacm-utils rpm: 
+
+    rping -s -a server_ip_addr -p 9999 
+    rping -c –Vv -C10 -a server_ip_addr -p 9999 
+    
+
+
+http://hpc.ufl.edu/benchmarks/iwarp_sdp/
+perftune.sh
+
+
+
+KERNAL BUILD
+============
+
+yum install kernel-devel bison flex rpm-build redhat-rpm-config zlib-devel krb5-devel libevent-devel nfs-utils-lib-devel openldap-devel e2fsprogs-devel tcl-devel openssl-devel
+yum install gcc glib glib-devel glibc glibc-devel glibc-devel-32bit zlib-devel libstdc++-devel kernel-devel rpm-build redhat-rpm-config unifdef
+yum groupinstall "Development Tools" ncurses-devel qt-devel libsysfs-devel
+
+*** IF YOU DIDNT INSTALL SOURCES WITH LINUX ** check /usr/src
+
+cd /tmp
+wget ftp://ftp.redhat.com/pub/redhat/linux/enterprise/5Server/en/os/SRPMS/kernel-2.6.18-194.el5.src.rpm
+
+As an ordinary user, not root, create a directory tree based on ~/rpmbuild: 
+
+*** AS user SMT ****
+cd
+mkdir -p rpmbuild/{BUILD,RPMS,SOURCES,SPECS,SRPMS}
+echo '%_topdir %(echo $HOME)/rpmbuild' > .rpmmacros
+cd ~/rpmbuild/SPECS
+rpmbuild -bp --target=`uname -m` kernel-2.6.spec 2> prep-err.log | tee prep-out.log
+cd /home/smt/rpmbuild/BUILD/kernel-2.6.18/linux-2.6.18.x86_64
+cp /boot/config-`uname -r` .config
+make oldconfig
+make prepare
+
+
+#########################################
+
+Overclocking
+============
+
+TRADE SERVER with 2Ghz Memory A50 BIOS
+--------------------------------------
+base clock 180 (orig base 133)
+cpu multiplier x22
+QPI 4.8
+memory 1333
+MCH_STRAP=1333Mhz
+uncore multiplier x20
+Memory Settings all Auto
+
+==> Memory will run at (1333/origBase) * 180 = 1800 Mhz
+==> Uncore at 3.6Ghz
+==> QPI at (4800 / origBase) * 180 = 36 * 180 = 6400 
+
+
+
+
+
+==========================================
+MAIN SERVER
+
+DISK 0  120GB   Windows
+DISK 1  700GB   
+                100GB
+                300GB
+                 50GB
+                 20GB
+                 90GB
+                247GB FREE
+DISK 2  120GB
+                30GB
+                10GB
+                30GB
+                30GB
+                15GB
+
+DISK 3  700GB
+                550GB NTFS
+                150GB Free                                
+
+
+[root@RR-WORKSTATION smt]# cat /etc/hosts
+# Do not remove the following line, or various programs
+# that require network functionality will fail.
+10.0.0.2                SIM_HOSTNAME HUB_HOSTNAME
+192.168.0.2             SIM_HOSTNAME_10GE HUB_HOSTNAME_10GE
+127.0.0.1               localhost.localdomain localhost OM_HOSTNAME
+::1             localhost6.localdomain6 localhost6
+
+[root@RR-WORKSTATION smt]# cat /etc/rc.local 
+#!/bin/sh
+#
+# This script will be executed *after* all the other init scripts.
+# You can put your own initialization stuff in here if you don't
+# want to do the full Sys V style init stuff.
+
+touch /var/lock/subsys/local
+
+export LD_PRELOAD=/usr/lib64/libsdp.so
+export LIBSDP_CONFIG_FILE=/etc/libsdp.conf
+
+ethtool -C eth0 adaptive-rx off             
+ethtool -C eth0 rx-usecs 0 rx-frames 0 rx-usecs-high 0 rx-usecs-low 0 pkt-rate-low 0 pkt-rate-high 0
+ethtool -A eth0 rx off tx off               
+
+[root@RR-WORKSTATION smt]# cat /etc/sysctl.conf
+# Kernel sysctl configuration file for Red Hat Linux
+#
+# For binary values, 0 is disabled, 1 is enabled.  See sysctl(8) and
+# sysctl.conf(5) for more details.
+
+kernel.sysrq = 0
+kernel.core_uses_pid = 1
+
+net.ipv4.tcp_low_latency=1
+
+# Controls the maximum size of a message, in bytes
+kernel.msgmnb = 65536
+
+# Controls the default maxmimum size of a mesage queue
+kernel.msgmax = 65536
+
+# Controls the maximum shared segment size, in bytes
+kernel.shmmax = 68719476736
+
+# Controls the maximum number of shared memory segments, in pages
+kernel.shmall = 4294967296
+
+kernal.isolcpus=6,7,8,9,10,11
+kernel.vsyscall64 = 2
+
+
+ 
+[root@RR-WORKSTATION smt]# cat /etc/security/limits.conf 
+===> add following to end
+* soft memlock unlimited
+* hard memlock unlimited
+ 
+ 
+ 
+ 
+ # Marvell Technology Group Ltd. Unknown device 4380
+DEVICE=eth0
+BOOTPROTO=none
+IPADDR=192.168.1.173
+HWADDR=00:1F:BC:02:8F:74
+ONBOOT=yes
+TYPE=Ethernet
+NETMASK=255.255.255.0
+GATEWAY=192.168.1.1
+USERCTL=no
+IPV6INIT=no
+PEERDNS=yes
+ 
+# Marvell Technology Group Ltd. Unknown device 4380
+DEVICE=eth1
+#BOOTPROTO=dhcp
+#HWADDR=00:1F:BC:02:8F:75
+#ONBOOT=no
+#HOTPLUG=no
+#TYPE=Ethernet
+BOOTPROTO=static
+IPADDR=10.0.0.1
+HWADDR=00:1F:BC:02:8F:75
+ONBOOT=yes
+NETMASK=255.0.0.0
+USERCTL=no
+IPV6INIT=no
+
+DEVICE=eth2
+BOOTPROTO=static
+IPADDR=192.168.0.1
+NETMASK=255.255.255.0
+ONBOOT=yes
+NOZEROCONF=yes
+USERCTL=no
+IPV6INIT=no
+ 
+ COMMANDS
+ ===========
+ 
+ halt       ==> shutdown and turnoff
+ 
+ sudo -i    =>dont need enter pwd all the time
+ 
+ sudo bash  -> start a bash shell as root
+ 
+ mount -t ext4 /dev/hda2 /mnt/sysimage      mount /dev/hda2 asfile system ext4 at point /mnt/sysimage          
+ 
+ /sbin/chkconfig --list | grep "5:on"       list daemon services
+ 
+ # after changing systcl
+ /sbin/sysctl -p 
+ sysctl -w net.ipv4.route.flush=1 
+ 
+ ls /sys/module                          see which modules are loaded
+ modinfo -p ${modulename}                shows a current list of all parameters of a loadable module
+ 
+ 
+cat /proc/interrupts                    show interrupt counts
+ 
+ 
+service irqbalance status
+service irqbalance stop     - stop the irq balance daemon
+chkconfig irqbalance off    - ensure doesnt start on reboot
+ 
+==> convert ext3 to ext2
+umount /dev/hdc3
+tune2fs -O ^has_journal /dev/hdc3
+vi /etc/fstab and change from ext3 to ext2   (actually probably only need to do that!)
+delete .journal 
+
+
+netstat --listen    show ports listened too
+
+netstat -nr         show routing table
+
+mount -t iso9660 -o ro /dev/cdrom /cdrom                mount CD rom to /cdrom
+
+mount -o ro,loop MLNX_OFED_LINUX-1.5.1-rhel5.5.iso /mnt          mount an ISO image to /mnt
+
+ip route show                   show static route table
+route -e                        show static route table
+
+route add -host 192.168.0.2 eth2        add route entry for host via interface
+
+/usr/bin/cpufreq-selector -g performance        Disable CPU throttling
+
+yum install pciutils                    install the PCI utils
+/sbin/update-pciids                     update the PCI info database
+
+modinfo sfc                             show module params look in /sys/module/sfc/parameters ... to see values
+rmmod sfc                               remove module
+modprobe sfc                            load module
+
+date +%T -s "14:36:00"
+date +%T -s "14:36:10"
+date +%Y%m%d -s "20101122"
+
+cat /proc/acpi/processor/CPU0/throttling    see throttling params IF enabled
+
+ifdown eth0
+ifup eth0       start eth0
+
+onload_tool disable_cstates persist
+
+

@@ -1,0 +1,72 @@
+
+18/07/2010  added id to types for use in case statements
+            added fill support to open state
+            
+20/07/2010  added cancelReplace and replaced support
+
+23/07/2010  added unit tests for replace & fills in pending state tests
+            dont allow full fill in pending state to move order to completed as we expect message from exchange
+
+24/07/2010  added trade registry (simple and full) with unit tests
+            updated plan            
+            
+25/07/2010  added trade cancel and unit test, wrote trade correct .. but not tested
+            refactor order status setting to be more compliant with precedence
+            
+28/07/2010  trade correct unit test now works
+            added major/minor ccy and px adjustments within the builder
+            copy fields from lastAcc to amend eg ccy,instrument
+            add amend call to validator
+            add DMA low latency validation and  LSE validator
+
+30/07/2010  major/minor unit test and fixes
+
+31/07/2010  DMA NOS validator test
+
+01/08/2010  moved senderId,senderSubId,targetSubId, targetId in encode/decode,
+            add verification of comp ids 
+            change model to support fixmessagemap entries which dont exist in event, requires deocde/encode func 
+            from the message pojos into codec direct validation
+            verify ccy, ord type, symbol, 48, 22 not changed on amend
+            
+02/08/2010  added tickscales and unit test and tick type manager
+
+05/08/2010  exchange and exchange session refactoring
+
+09/08/2010  SocketSession
+
+10/08/2010  SocketSession unit test finished (excludes sending copy to Hub)
+
+12/08/2010  Reviewed synchronisation, moved ack stats generation to be logged so it has correct time ie including all persistence
+            
+14/08/2010  Wrote memmap persister and memmapPageManager (not tested)
+
+24/08/2010  Fix Engine completed with indexed mm persister, added new recovery classes and recovery decoder
+
+25/08/2010  Use RecoveryRejected for synth NOS as encoder doesnt care about physical imp
+            Tidy up fix unit tests and generate checksum and body length
+
+27/08/2010  Various fixes getting Test Fix Exchange simulator connected to the test OM
+
+28/08/2010  Wrote client sim
+
+30/08/2010  Lots bug fixing, now doesnt try encode unset numbers
+            Finish of async logging and file logger
+
+12/09/2010  Added MDSConsumer and trading range binary encode / decoding             
+
+25/09/2010  Fixed bug in recycling and in indexed memmap persister.
+            Benchmarking with 1,000,000 trades
+            
+02/12/2010  Changed generator so that decoder current tag is stored in _tag which is used in decode exceptions
+            Generate codecId enum and codecFactory
+            New SMTMain with AppProp management
+            New shared spin locks for multi session true non blocking sessions
+
+further tuning reduced latency by about 10% and throughput doubled to 500,000 order events per second at average of 5usecs.
+Web based admin commands
+Scalable low latency multi socket support
+Model based Binary protocol generator
+UTP Euronext Cash implementation (currently to spec, requires 1-2 weeks exchange connectivity to finish)
+
+                                                 

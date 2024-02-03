@@ -1,46 +1,39 @@
-/*******************************************************************************
- * Copyright (c) 2015 Low Latency Trading Limited  :  Author Richard Rose
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at	http://www.apache.org/licenses/LICENSE-2.0
- * Unless required by applicable law or agreed to in writing,  software distributed under the License 
- * is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and limitations under the License.
- *******************************************************************************/
 package com.rr.model.generated.internal.events.impl;
 
-import com.rr.core.model.Book;
+/*
+Copyright 2015 Low Latency Trading Limited
+Author Richard Rose
+*/
+
 import com.rr.model.generated.internal.events.interfaces.TickUpdate;
-import com.rr.core.lang.ViewString;
-import com.rr.core.lang.ReusableString;
-import com.rr.core.lang.Constants;
-import com.rr.core.model.MsgFlag;
-import com.rr.core.lang.ReusableType;
-import com.rr.core.lang.Reusable;
-import com.rr.core.model.Message;
-import com.rr.core.model.MessageHandler;
+import com.rr.core.utils.Utils;
+import com.rr.core.lang.*;
+import com.rr.core.model.*;
+import com.rr.core.annotations.*;
 import com.rr.model.internal.type.*;
 import com.rr.model.generated.internal.core.ModelReusableTypes;
 import com.rr.model.generated.internal.core.SizeType;
 import com.rr.model.generated.internal.core.EventIds;
 import com.rr.model.generated.internal.events.interfaces.*;
 
-@SuppressWarnings( "unused" )
+@SuppressWarnings( { "unused", "override"  })
 
-public final class MDUpdateImpl implements BaseMDResponse, MDUpdateWrite, Reusable<MDUpdateImpl> {
+public final class MDUpdateImpl implements BaseMDResponse, MDUpdateWrite, Copyable<MDUpdate>, Reusable<MDUpdateImpl> {
 
    // Attrs
 
-    private          MDUpdateImpl _next = null;
-    private volatile Message        _nextMessage    = null;
-    private          MessageHandler _messageHandler = null;
+    private transient          MDUpdateImpl _next = null;
+    private transient volatile Event        _nextMessage    = null;
+    private transient          EventHandler _messageHandler = null;
     private final ReusableString _mdReqId = new ReusableString( SizeType.MD_REQ_LEN.getSize() );
     private int _noMDEntries = Constants.UNSET_INT;
     private int _msgSeqNum = Constants.UNSET_INT;
+    @TimestampMS private long _eventTimestamp = Constants.UNSET_LONG;
 
     private Book _book;
     private TickUpdate _tickUpdates;
 
-    private byte           _flags          = 0;
+    private int           _flags          = 0;
 
    // Getters and Setters
     @Override public final ViewString getMdReqId() { return _mdReqId; }
@@ -60,6 +53,9 @@ public final class MDUpdateImpl implements BaseMDResponse, MDUpdateWrite, Reusab
     @Override public final int getMsgSeqNum() { return _msgSeqNum; }
     @Override public final void setMsgSeqNum( int val ) { _msgSeqNum = val; }
 
+    @Override public final long getEventTimestamp() { return _eventTimestamp; }
+    @Override public final void setEventTimestamp( long val ) { _eventTimestamp = val; }
+
 
     @Override public final boolean getPossDupFlag() { return isFlagSet( MsgFlag.PossDupFlag ); }
     @Override public final void setPossDupFlag( boolean val ) { setFlag( MsgFlag.PossDupFlag, val ); }
@@ -73,6 +69,7 @@ public final class MDUpdateImpl implements BaseMDResponse, MDUpdateWrite, Reusab
         _noMDEntries = Constants.UNSET_INT;
         _tickUpdates = null;
         _msgSeqNum = Constants.UNSET_INT;
+        _eventTimestamp = Constants.UNSET_LONG;
         _flags = 0;
         _next = null;
         _nextMessage = null;
@@ -100,22 +97,22 @@ public final class MDUpdateImpl implements BaseMDResponse, MDUpdateWrite, Reusab
     }
 
     @Override
-    public final Message getNextQueueEntry() {
+    public final Event getNextQueueEntry() {
         return _nextMessage;
     }
 
     @Override
-    public final void attachQueue( Message nxt ) {
+    public final void attachQueue( Event nxt ) {
         _nextMessage = nxt;
     }
 
     @Override
-    public final MessageHandler getMessageHandler() {
+    public final EventHandler getEventHandler() {
         return _messageHandler;
     }
 
     @Override
-    public final void setMessageHandler( MessageHandler handler ) {
+    public final void setEventHandler( EventHandler handler ) {
         _messageHandler = handler;
     }
 
@@ -123,7 +120,7 @@ public final class MDUpdateImpl implements BaseMDResponse, MDUpdateWrite, Reusab
    // Helper methods
     @Override
     public void setFlag( MsgFlag flag, boolean isOn ) {
-        _flags = (byte) MsgFlag.setFlag( _flags, flag, isOn );
+        _flags = MsgFlag.setFlag( _flags, flag, isOn );
     }
 
     @Override
@@ -132,19 +129,26 @@ public final class MDUpdateImpl implements BaseMDResponse, MDUpdateWrite, Reusab
     }
 
     @Override
-    public String toString() {
-        ReusableString buf = new ReusableString();
-        dump( buf );
-        return buf.toString();
+    public int getFlags() {
+        return _flags;
     }
 
     @Override
-    public final void dump( ReusableString out ) {
+    public String toString() {
+        ReusableString buf = TLC.instance().pop();
+        dump( buf );
+        String rs = buf.toString();
+        TLC.instance().pushback( buf );
+        return rs;
+    }
+
+    @Override
+    public final void dump( final ReusableString out ) {
         out.append( "MDUpdateImpl" ).append( ' ' );
-        out.append( ", mdReqId=" ).append( getMdReqId() );
-        out.append( ", book=" );
-        if ( getBook() != null ) getBook().id( out );
-        out.append( ", noMDEntries=" ).append( getNoMDEntries() );
+        if ( getMdReqId().length() > 0 )             out.append( ", mdReqId=" ).append( getMdReqId() );
+        if ( getBook() != null )             out.append( ", book=" );
+        if ( getBook() != null ) out.append( getBook().id() );
+        if ( Constants.UNSET_INT != getNoMDEntries() && 0 != getNoMDEntries() )             out.append( ", noMDEntries=" ).append( getNoMDEntries() );
 
         TickUpdateImpl tPtrtickUpdates = (TickUpdateImpl) getTickUpdates();
         int tIdxtickUpdates=0;
@@ -155,8 +159,61 @@ public final class MDUpdateImpl implements BaseMDResponse, MDUpdateWrite, Reusab
             tPtrtickUpdates = tPtrtickUpdates.getNext();
         }
 
-        out.append( ", msgSeqNum=" ).append( getMsgSeqNum() );
+        if ( Constants.UNSET_INT != getMsgSeqNum() && 0 != getMsgSeqNum() )             out.append( ", msgSeqNum=" ).append( getMsgSeqNum() );
         out.append( ", possDupFlag=" ).append( getPossDupFlag() );
+        if ( Constants.UNSET_LONG != getEventTimestamp() && 0 != getEventTimestamp() ) {
+            out.append( ", eventTimestamp=" );
+            TimeUtilsFactory.safeTimeUtils().unixTimeToLocalTimestamp( out, getEventTimestamp() );
+            out.append( " / " );
+            TimeUtilsFactory.safeTimeUtils().unixTimeToUTCTimestamp( out, getEventTimestamp() );
+            out.append( " ( " );
+            out.append( getEventTimestamp() ).append( " ) " );
+        }
+    }
+
+    @Override public final void snapTo( MDUpdate dest ) {
+        ((MDUpdateImpl)dest).deepCopyFrom( this );
+    }
+
+    /** DEEP copy all members ... INCLUDING subEvents : WARNING CREATES NEW OBJECTS SO MONITOR FOR GC */
+    @Override public final void deepCopyFrom( MDUpdate src ) {
+        getMdReqIdForUpdate().copy( src.getMdReqId() );
+        setBook( src.getBook() );
+        setNoMDEntries( src.getNoMDEntries() );
+        TickUpdateImpl tSrcPtrTickUpdates = (TickUpdateImpl) src.getTickUpdates();
+        TickUpdateImpl tNewPtrTickUpdates = null;
+        while( tSrcPtrTickUpdates != null ) {
+            if ( tNewPtrTickUpdates == null ) {
+                tNewPtrTickUpdates = new TickUpdateImpl();
+                setTickUpdates( tNewPtrTickUpdates );
+            } else {
+                tNewPtrTickUpdates.setNext( new TickUpdateImpl() );
+                tNewPtrTickUpdates = tNewPtrTickUpdates.getNext();
+            }
+            tNewPtrTickUpdates.deepCopyFrom( tSrcPtrTickUpdates );
+            tSrcPtrTickUpdates = tSrcPtrTickUpdates.getNext();
+        }
+        setMsgSeqNum( src.getMsgSeqNum() );
+        setPossDupFlag( src.getPossDupFlag() );
+        setEventTimestamp( src.getEventTimestamp() );
+    }
+
+    /** shallow copy all primitive members ... EXCLUDING subEvents */
+    @Override public final void shallowCopyFrom( MDUpdate src ) {
+        getMdReqIdForUpdate().copy( src.getMdReqId() );
+        setBook( src.getBook() );
+        setMsgSeqNum( src.getMsgSeqNum() );
+        setPossDupFlag( src.getPossDupFlag() );
+        setEventTimestamp( src.getEventTimestamp() );
+    }
+
+    /** shallow copy all primitive members ... EXCLUDING subEvents */
+    @Override public final void shallowMergeFrom( MDUpdate src ) {
+        if ( src.getMdReqId().length() > 0 ) getMdReqIdForUpdate().copy( src.getMdReqId() );
+        if ( getBook() != null )  setBook( src.getBook() );
+        if ( Constants.UNSET_INT != src.getMsgSeqNum() ) setMsgSeqNum( src.getMsgSeqNum() );
+        setPossDupFlag( src.getPossDupFlag() );
+        if ( Constants.UNSET_LONG != src.getEventTimestamp() ) setEventTimestamp( src.getEventTimestamp() );
     }
 
 }

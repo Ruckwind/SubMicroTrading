@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<classpath>
+	<classpathentry kind="src" path="src"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/Core"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/Generated"/>
+	<classpathentry kind="lib" path="/Core/exlib/jars/xercesImpl.jar"/>
+	<classpathentry kind="lib" path="/Core/exlib/jars/xml-apis.jar"/>
+	<classpathentry kind="output" path="bin"/>
+</classpath>

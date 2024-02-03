@@ -1,0 +1,17 @@
+sourceSets {
+    test {
+        runtimeClasspath += project( ':Core' ).sourceSets.main.output
+    }
+}
+
+
+dependencies {
+    api project( ':OM' )
+    api project( ':Core' )
+    api project( ':Generated' )
+
+    testImplementation project( ':OM' ).sourceSets.test.output
+    testImplementation project( ':OM' ).sourceSets.main.output
+
+    testImplementation project( ':Core' ).sourceSets.test.output
+}

@@ -1,0 +1,1233 @@
+
+Tax Mitigation : http://www.montpeliergroup.com/group/ourbrand.asp
+
+========
+
+ITCH
+======
+
+a) change new ITCH to send 1000,000 packets as fast as can (or at same rate as the and measure
+Multicast send 10,000,000 packets, no delay between packets, 25 msg per packet (approx 1024 bytes), QOS=8
+PONG the packats back and measure latency
+
+a) randomise instrument  over 1000 instruments
+b) randomise buy/sell price within 5% range  ie move up then move down 
+c) lookup book
+d) add flags eg market, limit order
+e) add event to book ring bufferMap, if ring bufferMap full then recycle/discard ie dont block, count num discards (add book property)!
+f) add book to proc ring bufferMap (proc ring bufferMap has thread which iters over changed book, processing all pending updates in bufferMap
+g) benchmark using new variant of itch sample 
+h) add book update processing
+
+add book subscribers to the book, but hide in BookInternals interface
+
+
+f) add sequence number checking ... 
+
+
+a) get model compiling with standard builder
+b) copy code from generated itch decoder and use as a base for unit test
+c) write perf test, broadcast packed tick updates
+
+d) fix bug, event type long eg nanosecond, is overriding binary type of int ! 
+
+1) add ITCH 
+a) write itch builder
+a) PackedMessageContainer, has a seqNum and array list of messages
+b) add to decoder void decodePackedMessage( PackedMessageContainer dest )
+
+c) specialised Session 
+has a single instance of PackedMessageContainer packedMsg 
+
+overrides processReadMessage
+        _decoder.decodePackedMessage( packedMsg );
+        
+        shiftInBufferLeft( extraBytes, hdrLenPlusMsgLen );
+
+        _inMsgSeqNo = packedMsg.getMsgSeqNum();
+
+        invokeController( msg );
+
+d) controller extracts the messages from the packedMsg array and async dispatches to processor
+e) add to model concept of packed messages 
+f) write new ITCHSocketSession extend AbstractSocketSession assume sessionless
+
+
+================================================================
+
+
+1) add to smt.properties
+proc.queue=RingBuffer1C
+proc.queuePresize=${RING_BUFFER_PROC_QUEUE_SIZE}
+
+2) bugs in multi exchange and standard client on sim server
+get reconnect working
+check for slow consumer in exchaneg/client
+check using multi for all 3
+
+1) run test with all non blocking
+
+1) have changed sysctl
+
+1) try idle=poll linux option
+
+4) check new disruptor code
+2) Write BatchEventProcessor and adapt queues to work that way
+
+3) SMT on startup address already in use
+
+==> URGENT SOME MULTI-SESSIONS WERE NOT USING NIO WHICH BROKE WARMUP ... check doesnt cause apps to lock on startup like used to
+
+1) why cant I rerun client against multiSMT ... reconnect not working
+2) why doesnt the multi client run properly
+4) why get this socket busy error ?
+
+7) why getting warmup error in client ?
+
+63230 [main] INFO com.rr.om.warmup.sim.ClientSimSender  - Sent 0
+63234 [WARM_CLTSIM_DISPATCHER] INFO com.rr.om.warmup.sim.WarmClientReplyHandler  - WarmClientReplyHandler: Stats cant find entry for exec ClientRejected, clOrdId=WARMUP1357841226
+
+
+8) Fix SuperPool Bug
+
+3544 [main] INFO com.rr.om.warmup.sim.ClientSimSender  - ClientSimSender about to start sending 20000, asyncMode=FALSE, isThrottle=false
+3549 [main] INFO com.rr.om.warmup.sim.ClientSimSender  - Sent 0
+### Excluding compile: com.rr.core.instrument.DummyInstrumentLocator::getInstrument
+### Excluding compile: com.rr.core.instrument.DummyInstrumentLocator::getInstrument
+4231 [WarmupExchangeSimAdapter] ERROR com.rr.om.warmup.sim.WarmupExchangeSimAdapter  - [WES100] Exception processing event null
+java.lang.NullPointerException
+        at com.rr.om.order.collections.HashEntryFactory.get(HashEntryFactory.java:22)
+        at com.rr.om.order.collections.HashEntry.newEntry(HashEntry.java:32)
+        at com.rr.om.order.collections.SegmentOrderMap$Segment.put(SegmentOrderMap.java:373)
+        at com.rr.om.order.collections.SegmentOrderMap.put(SegmentOrderMap.java:125)
+        at com.rr.om.exchange.ExchangeSim.registerOrderInMap(ExchangeSim.java:495)
+        at com.rr.om.exchange.ExchangeSim.createOrder(ExchangeSim.java:472)
+        at com.rr.om.exchange.ExchangeSim.processNewOrder(ExchangeSim.java:319)
+        at com.rr.om.exchange.ExchangeSim.applyNewOrderSingle(ExchangeSim.java:308)
+        at com.rr.om.warmup.sim.WarmupExchangeSimAdapter.handleNewOrderSingle(WarmupExchangeSimAdapter.java:138)
+        at com.rr.om.warmup.sim.WarmupExchangeSimAdapter.handleNow(WarmupExchangeSimAdapter.java:83)
+        at com.rr.core.dispatch.ThreadedDispatcher$Dispatcher.connectedHandler(ThreadedDispatcher.java:81)
+        at com.rr.core.dispatch.ThreadedDispatcher$Dispatcher.run(ThreadedDispatcher.java:54)
+### Excluding compile: com.rr.om.warmup.sim.WarmupExchangeSimAdapter::handleNewOrderSingle
+### Excluding compile: com.rr.om.exchange.ExchangeSim::applyNewOrderSingle
+### Excluding compile: com.rr.om.exchange.ExchangeSim::createOrder
+
+9) replace all pools with Generic use, not missing finals in pools
+
+
+3) add support to model to encode/decode fix repeating groups
+
+
+-> change mcast linux,remove outSocket and add structure of fid,sockaddressPtr which is poulated in native and passed back to java, add join,send
+-> test linux mcast
+
+1) market data requires join multiple groups and sends need to be directed
+2) add MulticastSession interface, add receive 
+
+==> millenium itch has multiple channels, each mcast channel has active backup channel and dedicated TCP replay and TCP recovery channel
+==> ItchSession has multicastSession primary  and multicastSecondary sockets, replay and recovery socket
+      controller gets primary and secondary messages 
+
+2) plugin new mcast sockets into the AbstractSocketSession, add new unit test
+3) write linux optimised multicast socket
+
+
+5) NEW SERVER CHANGES
+CPU Config -> disable HT, C State, CPU throttling
+Northbridge -> VT-d enabled
+
+
+2) verify the all the Message classes can be made generic with no perf hit
+3) add ringbuffer queue to Process Q
+4) add single producer single consumer to Session Q
+5) add multi producer single consumer to logger Q ... make configurable
+6) RingBuffer pull common code into base class
+
+               
+
+--> check VT-d disabled 
+
+
+6) NEW SERVER CHECK IMPACT
+
+--> check VT-d disabled 
+
+
+15:15:38.272 [ERROR] [SEC200] Error opening socket:  WARMM_OM2CLT Failed to create server NIO socket: Address already in use, host=127.0.0.1, port=14171 
+Address already in use
+
+5) check exchange for GC and JIT
+6) remove all entries in the dont compile list and try again
+
+
+
+!!! WARmupRegistry .... try 120sec wait before rerun warmup ... if doesnt work then remove the dup code
+
+follow up exchange sim bug
+352035 [main] ERROR com.rr.om.warmup.sim.WarmupExchangeSimAdapter  - [WES100] Exception processing event null
+java.lang.ArrayIndexOutOfBoundsException
+
+bug with  -Xconcurrentio
+
+
+3) test the multisync 
+
+WIRELESS ADAPTER
+
+lookat JITLog.txt !!!!!!!
+
+change sim to use client new order single not the recovery ... think thats why recompiling
+
+check all warmup routines, how many loops creating ClientNewOrderSingle
+
+-XX:-UseTypeProfile                 disable type profiling
+-XX:TypeProfileMinimumRatio=3       was 9 
+
+-XX:DeoptimizeALotInterval=10000    was 5
+-XX:ZombieALotInterval=10000        was 5
+-XX:-UseCounterDecay                disable counters for recompilation
+-XX:-UseOnStackReplacement          try disable On Stack Replacement
+ 
+try the tiered compilation
+
+-XX:+UseNiagaraInstrs 
+
+-XX:PrintOptoAssembly               ok lets see what its doing !!
+
+add methods to dont compile list
+
+
+GuaranteedSafepointInterval (was 1000ms)
+SafepointTimeoutDelay (was 10000ms)
+SafepointALot (was false)
+
+
+
+--> rerun 100K, batch=1       5 times
+--> rerun 500K, batch=4       5 times
+--> rerun 500K, batch=1000000 5 times
+
+rerun with sfc 3.0.10, sfutil 3.0.10
+rerun with sfc 3.0.11, sfutil 3.0.11
+rerun with openonload 201102
+rerun with sfc 3.1, sfutil 3.1
+
+
+
+
+
+1) jdk 27
+2) spin lock jvm changes
+
+
+apply latest intel microcode, microcode file in download dir copy to /etc/firmware
+
+try increase size of sync spins 
+
+-XX:PrintOptoAssembly
+
+-XX:PreBlockSpin=10
+-XX:+UseSpinning
+
+-XX:+AlwaysPreTouch
+-XX:+PrintInlining 
+
+-XX:MaxInlineSize=1024 
+-XX:FreqInlineSize=1024
+
+-XX:InlineSmallCode=4096
+-XX:LoopUnrollLimit=
+
++UnlockExperimentalVMOptions
++UnlockDiagnosticVMOptions
+
+LogFile=/tmp/rhino*.log
+#+PrintAssembly
+
++EnableInvokeDynamic
+
+MaxInlineLevel=15
+
+-XX:+NUMAStats
+
+# Experimental JVM feature.
+TrustFinalFields=sun.dyn,java.dyn,java.lang,org.mozilla.javascript.classy
+# java.lang: Integer.value, works with EliminateAutoBox & Integer constants
+
+# Experimental JVM feature.
++ProfileDynamicTypes #if negated, adds 25% overhead
+
++ProfilerRecordPC
+
+===> remove -comp and check
+-XX:-UseRecompilation
+
+
+1) check JIT/classunloading/pools in exchange ... some tests back to 2
+
+
+1) investigate why going passive after connected 
+
+1) tidy up added JIT code .. remove whats not needed now
+
+multi client wont reconnect to OM when restarted
+when receiver is stopped then must stop all its connector threads
+
+1) when nothing ready doesnt invoke flush
+2) when all elements not ready should be able to sleep and wakeup
+
+
+RUN OLD VERSION
+
+work out why multiSMT with 5 core is SOOOO slow with batch=1000000, retry cpu=3 with 1 client/exchange at 1K/sec
+
+
+
+IF CANT FIX THEN NEED ROLLBACK ... check patch file
+
+
+BUG - when start MultSMT first, after 10 connect attempts only exchange1 will keep retrying
+
+---
+
+
+
+2) benchmark system using millenium
+
+3) benchmark unit test with raw sockets
+
+2) benchmark JDK1.6.0.25
+    -XX:+TieredCompilation 
+    -XX:+AggressiveOpts 
+    -XX:+UseCompressedStrings 
+    -XX:+OptimizeStringConcat 
+    
+2) benchmark JDK1.6.0.27
+3) benchmark JDK1.7    
+4) get the sfc ping pong working .... get the recv spin checked 
+    how fast is it ??? wrap its sockets into C api
+
+
+4) add multicast socket, unit test with test price client and server in same process
+
+4)MAJOR rework loaders, multiFix ....dont want multiUTP and multiMillenium instead add property
+
+refactor multi code from multiFIX to multiSession
+add support for Millenium and UTP non blocking sessions ... reuse code ... ie create Abstract and extend
+            
+            
+    
+3) extract the session creation to SessionFactory
+
+2)  change decoder to precache the next actual event so in processor cache
+        add _nextNOS, _nextACK etc to decoder
+        in session AFTER dispatch event, invoke decoder.repopulateEvent
+
+
+2) add segmentId for millenium used to populate appId in outbound messages
+
+a1) write throttler - required for LSE
+
+
+4) try compile the open jdk on linux
+
+5) check intel microcode updates
+
+6) add date roll to session and reset seqNums !
+
+=======================
+
+MULTI-BUS
+
+1) use command event paradigm, each proc when starts up uses JNDI to request a controller which it then binds to. Events are broadcast to all and the command also broadcast to all
+2) events are broadcast on a channel, on startup an app uses JNDI to find its required channels eg ALGO_XETRA, DMA_FAST1
+3) channels use different multicast addresses and ports
+4) persisters sit on the bus and persist configured channels
+
+
+=======================
+
+3) move the hard coded ignore fields from BaseBinaryEncoder to the model dictionary
+
+
+==============================
+
+benchark the concQ on linux
+
+ie: decode to pojo + dispatch over Q + OM + dispatch + encode
+
+ie: decode to pojo + DIRECT dispatch + OM + DIRECT dispatch + encode
+
+check how long and percentiles
+
+============================
+
+Knock up a version with 1 in session, 1 out session and no queues ... ie direct (NON SYNC) dispatchers, use single thread to poll in session then out session 
+add sync to sendNow and compare performance (as heartbeats would need this)
+
+==============================
+
+MILLENIUM
+
+CHECKIN
+
+
+==============================
+
+split up XML model file
+
+<?xml version="1.0"?>
+<!DOCTYPE book SYSTEM "book.dtd" [
+  <!ENTITY chapter1 SYSTEM "malapropisms.xml">
+  <!ENTITY chapter2 SYSTEM "mispronunciations.xml">
+  <!ENTITY chapter3 SYSTEM "madeupwords.xml">
+]>
+<book>
+  <title>The Wit and Wisdom of George W. Bush</title>
+  &chapter1;
+  &chapter2;
+  &chapter3;
+</book>
+
+
+
+==========================================================================
+
+1) write version which uses non blocking client and exchange socket and non sync routers ... in effect single threaded from msg in to msg out
+-> need version for client and exchange sim as well
+-> need use a CAS lock for write as scheduler may send heartbeat
+
+
+
+===========================================================
+
+
+1) write fix client supported spec along (1 day)
+2) Millenium LSE (remember ids must be unique for 3 days)
+4) add UTP market data session
+3) add ITCH market data session
+3) Change multiFixSocket to multiSession and be compatible with UTP and LSE sessions
+
+
+02/21   Reconciliation
+
+04/01   24*7 mode, with scheduled end of trading and end of day events .. recycle, .. check each IDGenerator to see if it requires reseeding
+ 
+02/15   add UTP trading session status processing to disable/enable orders via instrument sector .. allow inst sector to be picked by different codes eg ENXSectorCode
+
+02/16   write ant script to run all JUnit tests .. hook into subversion
+
+        
+
+4) UTP market data feed
+
+a) get running on WIndows 2008 ... check for unformatted partition in windows
+-> install cygwin, hwloc, JDK
+-> install solarflare drivers in windows
+-> test on socket 0 and socket 1
+-> test with memcpy min set to 1,4,6,20
+-> add logging to ReusableString ensureCapacity .. check not leaking space
+
+4)  write unit test to check tag 39=5 for fix4.2 (if cumQty=0), check fix4.4 doesnt use the replaced
+
+
+RECONCILIATION
+
+read in all records keep key info like clOrdId, persistentKey (so can reread), srcSession (will be exchange or client)
+process into correct state then reread records required to populate orderMap or possibly just to generate cancels back to client
+ 
+
+1) mass order status (2 days) .. dont need if always cancel on disconnect
+2) mass trade request support (2 days)
+3) memmap persistence for socket session (2 days) - only persist seqNums, clOrdId ... other fields required for cancelling orders
+4) recovery controller
+    -> replay events from session persistence files into order model (3 days)
+    -> reconcile & cancel all open if cancelOnRecovery (3 days)
+
+
+4) UTP market data feed
+
+
+TAGS TO CONSIDER ADDING
+=======================
+
+NOS --- SecondaryClOrdId (526)
+NOS --- DeliverToCompID (128)
+ACK --- ClientID( 109 )        
+
+==============================
+
+ALL CHANGES MUST BE DOCUMENTED SO CAN ROLL BACK
+
+================================================================
+
+check price
+
+fiber transceiver splitter
+Gigamon (SFP-532)
+SPP5100SR-GM1     10G 850nm MM SR
+
+NetOptics - splitter tap : model 10Gb fiber slim tap
+part num : TP-SR3-LCSLM rev B
+
+Corvil 5000
+
+=======================================================
+
+e1) change model.xml ..   
+      
+      create DerivNOS extends NOS use in the exchange codecs that support options
+
+
+=====================================================
+
+d) check CHIX and FIX spec for mismatch seqNum behaviour .... SMT is prolly too lenient ... fine for test but not prod
+
+========================================================
+
+    
+A) TestStats vs StatsCfgFile 
+
+
+Fix HACK
+((FixDecoder)decoder).setValidateChecksum( true ); // @TODO remove hard fix hack ... perhaps make true the default ... check unit tests etc
+
+
+
+=================================================================
+
+==> add fill and cancel and amend to sim, use tag 58 to drive FILL, UCAN, PFIL (ord qty must be 2)
+
+==> PERF TEST ON LINUX SHOWED ARRAYS SUPER FAST ... REEVALUATE USE FOF ARRAYS eg PASSING MESSAGES 
+
+==> rerun with compiled for ubuntu RT
+
+How to set the scheduler for the devices, change from cfq to noop
+
+==> use numactl  to tune NUMA
+        --preferred=255
+        --membind=!0-1
+        --cpunodebind=6-11
+        --physcpubind=1
+        --localalloc
+        
+==> look at cpuset as isolcpu may not be working
+http://www.slideshare.net/NOVL/perfomance-tuning-monitoring-management-getting-the-most-from-suse-linux-enterprise-server P62
+
+=====================================================
+
+sysctl -p | grep mem
+
+CUR PARAMS
+
+error: "kernal.isolcpus" is an unknown key
+
+
+=====================================================
+
+==> vm.swappiness = 0 to /etc/sysctl.conf
+==> one can directly add a line
+
+        cat /sys/block/sda/queue/scheduler
+        echo noop > /sys/block/sdX/queue/scheduler
+        To make this change permanent you could add appropriate lines to /etc/rc.local
+        
+    This will only change the scheduler for the specified device, so
+    this is the way to go on a mixed system with both SSDs and HDDs
+==> how much I/O traffic you have on the SSD, you can check with iostat -m -d /dev/sda
+==> The Vertex does not identify itself as a non-rotating medium. This can be changed by running:
+        echo 0 > /sys/block/sdb/queue/rotational
+==> hdparm -t /dev/sda
+    hdparm -t --direct /dev/sda
+==> RAM DISK
+        To create a RAM drive we're going to use tmpfs.
+        
+        To mount the system temp folder in tmpfs.
+        •Open /etc/fstab in your favourite text editor as root. [sudo gedit /etc/fstab]
+        •Add tmpfs /tmp tmpfs defaults,noatime,mode=1777 0 0 at the end of the file.
+        •Restart system.
+        All temporary files will now be written to your RAM instead of to your disk.
+        To verify this, use the command df. Search for lines begging with temps.
+        
+        Code:
+        tmpfs                  1996928     23404   1973524   2% /tmpThis tweak could also be used to create a general purpose Ram disk.
+        •Create an empty folder as a root. [sudo mkdir /media/Ramdisk]
+        •Open /etc/fstab in your favourite text editor as root. [sudo gedit /etc/fstab]
+        •Add at the end of the file. 
+        
+            tmpfs /media/Ramdisk tmpfs defaults,noatime,mode=1777 0 0 
+            
+            
+
+try using FS ext2 and ReiserFS instead of ext3 (journaled)
+the no DRQ after issuing MULTWRITE 
+and hdc status timeout status=0xd0 { Busy }  adding latency
+
+
+a) tune the RH install and reboot and bench after each change
+
+b) try RH and UBUNTU using /dev/cpuset as per the URL
+        http://www.ibm.com/developerworks/wikis/display/LinuxP/Practical+experiences+with+OS+Jitter
+
+GET IRQBALANCE RUNNING ON non isol cpu
+
+
+
+BENCHMARK mtu, MRU values
+
+install and benchmark RTAI & XENOMAI
+
+
+
+
+=================================
+
+
+1) BATS validator (1 day)
+
+3) write a service locator (3 days)
+
+
+BATS validation
+
+3) if MDS enabled reject trades if no price ... check warmup warmsup MDS class and PT classes
+4) use two different classes for trading range, one allow orders when no price yet arrived the other doesnt
+
+2) MDSEncoder ... how will that send
+
+
+
+===> the MDSProducer must add the TradingRange instance to a set, then if get multiple updates before set is dispatched still only has one entry
+instance needs to exist in more than one set
+====> decoder should NOT produce a message but lookup the inst and update the band without temp object creation
+
+in validator if dont have price band then subscribe to it
+
+1) check the / 1000000 for faster variant ... replace in price manips
+
+=> write ReusableString test
+
+add jni function for microsecond wait
+
+add jni function for the new linux fast mutexs
+
+2) add ant deploy task to compile without line nums and vars and then obfusicate
+
+3) change warmup to send 1 at a time (2 hours)
+4) finish warmup (2 days)
+5) add obfusication and check doesnt impact performance
+6) write memmap file TCP ring bufferMap implementation .. dont forget clear pipe when reconnecting, use ring bufferMap (2 days)
+
+==> check if should seperate upstream and dowstream hub
+
+
+exchange sim to unsol cancel IOC orders if not filled
+
+add unit test for unsoll cancel in pendingNew, pendingReplace, open ... check cancel takes off limit
+
+recovery / gap fill needs to use a client 
+
+==> get some instrument data
+
+A) ABLE TO BLACK BOX TEST VIA SIMULATORS (20 days)  (Target 15th August)
+
+try perftest, replace ViewString in NOS with FieldString which is created from a ReusableString and has a super ptr to the owning ReusableString, that 
+way when NOS needs resize bufferMap no view string changes are required
+
+B) PERSISTENCE & FIX SOCKET SESSION (15 days)   (Target September 2nd)
+
+dont decode tag52 on inbound execs .. just encode  ie add encodeNoDecode option
+
+==> change decoder to check messages with view buffers dont exceed the view bufferMap len
+     if so reject or increase bufferMap and repoint ALL the viewstrings to new bhyte array
+==> NIO not working on server mode, not recev more than 1 msg
+
+
+BUG3: disconnect and reconnect require new unit test ... when manually invoke disconnect should not reconnect
+      need add more states and change the simple boolean isConnected
+
+=> BUG AbstractSocketSession, in server connect code closing the serverSocketChannel on exit which is WRONG
+---> careful fixing tho had some issues when tried with lost messages      
+
+
+start of day code needs to repopulate super pools upto previous days max
+
+C) Performance Analysis  (10 days) (Target September 14)
+1) benchmark and compare single thread to mkt with single thread back, 1 client and 1 exchange session (5 days)
+2) compare with standard model using thread affinity and OS optimisations (5 days)
+3) benchmark effect of making StandardEncoder extends AbstractEncoder ... if ok remove alot of the code from enricher file into base
+
+D) GENERAL ENHANCEMENTS  (3 days)  (Target September 17th)
+
+
+E) STATIC DATA (8 days)         (Target September 28th)
+1) instrument loader (2 days) 
+2) instrument decorator for enrichment (2 days)
+3) tick data loader (2 days)
+4) client profile loader (2 days)
+
+F) HUB PROCESS  (10 days)       (Target October 14th)
+-> add Hub send to session
+7) socket session unit test for normal chain and async chain
+1) write Hub process use multiplexed IO session (3 days)
+2) accept and batch persist messages            (2 days)
+3) send events to Hub process                   (1 day)
+4) recover open orders from hub process         (3 days)
+5) all errors goto hub process                  (1 day)
+
+G) RECOVERY     (12 days)       (Target October 31st)
+1) mass order status (2 days)
+2) mass trade request support (2 days)
+3) memmap persistence for socket session (2 days) - only persist seqNums, clOrdId ... other fields required for cancelling orders
+4) recovery controller
+    -> replay events from session persistence files into order model (3 days)
+    -> reconcile & cancel all open if cancelOnRecovery (3 days)
+
+
+H) PRODUCTIONISE (12 days)      (Target November 15th)
+generate fix factory, get model working for other fix versions and client/exchange customisations
+1) write config loader (3 days)
+2) start and end of day events and event scheduler (3 days) - check recycle ALL (2 days)
+19) write message protocol template document, unsupported tags are dropped (4 days)
+dont try cconnect to exchange out of hours
+add expired and done for day
+
+I) LSE & CHI Feeds (38 days)    (Target 5th January)
+    ensure each tick that changes PT has tickId and the value it changed ie upper, lower or both.
+1) CHIX session     (3 days)
+6) unit test for all mesages for CHIX for CHIX (1 day)
+2) CHIX market data (10 days)
+1) Millenium LSE MA (10 days)
+2) Millenium LSE Price Feed (10 days)
+3) PT Conflation feed (5 days)
+
+5) write price tolerance server socket implementation (1 days)
+get FX from file and then overwite with services from MDS
+6) simple PT simulator (2 days) 
+
+
+
+J) BOOKING
+1) Booking integration
+2) via Hub process 
+
+
+1) Refactor ALL warmup code, replace use of String appName and String[] args, with warmupPropertyBase
+   add Warmable interface with <? extends Warmup> getWarmupClass() 
+   
+Add warmupUTP ... only invoked IF codec configured in a session ... 
+
+            add Warmable interface, in static {} method register string warmup class with WarmupManager
+            WarmupManager iterates over Warmable objects, instantiates them and runs them concurrently on different threads
+
+
+
+
+
+====================================================================================
+
+find out  which exchanges dont supply clOrdId on fill ... some just send orderId
+
+b) try the new firmware for X56xx
+
+
+checkall uses of market order status in messages, is it blindly copied to client messages
+
+check impact of try catch handler
+check impact of throws ... ie if have 3 level of routines that throw is impact ?
+check impact of changing StateException to extend from RuntimeException
+
+unit test for handling of exception in cancel request handler ... should force cancel client and mkt
+check what happens when get cancelled from exchange for order not in map ... eg may of been force cancelled
+
+4) extend order processsor and states to support event queue instead of message dispatcher .. assumes single client and single exchange session
+-->  note client limits will need sync updating
+
+5) write new perf test based on other one with same thread support
+6) run the perf tests with the new map and check all work
+
+==> check all use of SubId ... in encoder check case 0: and default and then use invoke nonModelEncoder( Message )
+
+==>  investigate use of AtomicLock  over sync 
+
+
+==> what about 
+a) single client process, with single thread for inbound + process + send
+   and single thread back ... each thread has its own processor instance but the map is shared
+   ... need own processor instance as need seperate queues, states and order map must be shared
+   .... need sync on order on changeState ... could do this in the onEnter onExit or by sync order in the changeState
+   .... if inbound thread needs send back to client needs to offload onto third thread which will sync against the upstream thread on send
+   
+b) single thread for incoming thread plusprocesssor, dispatch is off its own thread
+   .... each client has own processor thread
+   .... each exchange session has its own processor thread 
+   .... processoor threads share the map instance
+   ==> NO POINT CANT DISPATCH BACKTO CORRECT PROCESSOR WITHOUT STORING clOrdID to proc in map ... could access the orderMap from router ??
+   ==> MAY JUST AS WELL RUN ONE INSTANCE OF PROC PER CLIENT
+   
+   DECISION is DO you want throughput or lowest latency
+   
+write new sync Q based on conQ and uses pool for nodes to avoid extra CAS call
+
+==> write perf test without the queues
+---->use a lock state delegator
+
+=> DONT encode senderId. sendersubId, targetId, targetsubId from the message ... should be props
+   of the decoder ... 
+
+=> document NOS in, NOS out, ack, fill, cancel replace, cancel in and out
+=> check expected NOS size ... change from 400 !!
+
+add bookingType to NOS, add support for order capacity
+
+-> major to minor in codec
+
+check reject if instrument is null
+
+add validation
+
+copy instrument over on amend ... dont lookup again
+copy instrument over on cancel ... dont lookup again
+check instrument not changed on amend
+
+issue instrument and exchange now in core, I want ClientProfile and Enricher to have events 
+which are generated ... how to do and remove the two casts required
+
+add client profile to the NOS event
+add vendor cliet profile support
+add client prefix to CLORDID, use special decode on NOS/Can/rep and special encode exec report funtion to skip ID
+
+write order processsor with startOfDay and endOfDay events
+write pendingNew, openState, and unit test and perf test
+perf test int vs long
+create Version class with major/minor and create in generator
+
+-> in validator dont allow instrument to be changed
+
+
+check if using interface as var names is slower than using concrete name
+
+perf test tableswitch with 0 to n vs 1 to n possibly change generator again
+
+How to set 150=1/2 for fix4.2
+add fix4.2 to the model
+write tests to decode fix4.2 and fix4.4 include trade correction .. use realistic sample messages
+
+c) HOW CAN I CHAIN MESSAGES IN QUEUE WHEN NEXT POINTER IS SPECIFIC TO A MESSAGE TYPE
+    ==>dont need to for concurrentLinkedQueue
+   --- how can put NOS & ExecRpt in list without using Generics
+   try and have simple Message getNext() ... then check handle( NOS )  is fine ... should be
+
+for exchange side tags ignore non  known fields. For client side throw exception for unknown tags
+       
+
+
+2) how to handle invalid value eg in TIF ... throw special runtime exception
+2) write unit test for, NoS -> model -> OutNOS ... hand crank before get generator running to prove patterns
+3) split codec into Decoder and Encoder
+2) write unit test using the generated code, NoS -> model -> OutNOS, Ack -> model -> OutAck
+3) write perf test for roundtrip time using unit test above as base
+?) write pert test to  show how many bytes a memcpy becomes faster, use  
+perf test the hashmap hash function ... do I need change the hash function in reusableString ?
+
+any unsupported tags = reject order ... like tag 99 stopPx
+
+NOTE BUFFER HELPER is NOT CHECKING FOR OVERRUN ... ensure trap this properly with a single catch holder
+after encoded ... check length < bufferLen   buf is BIg so shouldnt be problem
+
+Check all uses of  @SuppressWarnings( "unused" )
+
+Note in spec decode csum for exchange messages is NOT undertaken atm .. make configurable
+
+Check impact of volatile _nextMessage pointer in queues on target h/w and OS
+
+rebenchmark
+
+write unit test to check every Order / exec status combination
+
+-> go thru perf tests and coument properly including examples .. show windows and linux
+
+==> upto 1.4usec for decode and 1usec for encode .. due to checksum processing
+
+==> use of CAS means event next ptr is volatile, BUT this is just overheadd for processor which wants to link in internalQ ... could use small array 
+    and index
+
+==> get toUSD and populate in ccy
+
+==> write the admins like changing client limits
+
+==> check if can get rid of the hash overhead in maps
+    also checkif should use
+    
+            // Spread bits to regularize both segment and index locations,
+        // using variant of single-word Wang/Jenkins hash.
+        h += (h <<  15) ^ 0xffffcd7d;
+        h ^= (h >>> 10);
+        h += (h <<   3);
+        h ^= (h >>>  6);
+        h += (h <<   2) + (h << 14);
+        return h ^ (h >>> 16);
+    
+==> check perf of concQ using node .... will save a CAS write    
+            change order map to take a key ..a change concQ to use node and remove 1 CAS lock
+
+
+==> on EOD event need reset/reseed the ID generators    
+    
+    
+==> ids on LSE must be unique for 3 days
+
+==> ENX id len is 10, with 1 for seed    
+
+==> write reflective test to check reset resets all fields, invoke get, check blank, invoke set, then get and check expected, reset then get all and check all blank
+
+==> auctions  ... intraday .. from 
+
+==> subclass LIS and IOB instrument properties
+
+==> Write onboarding document and ensure get sample copy of messages confirming the format of clOrdId .. use for checking hash algo
+===== try and optimise out need for the double hash in maps/sets
+
+==> check at end of day roll all the maps/sets clear RECYCLE and dont allow go to gc .... should also check free pool size and heap size
+
+==> Note if Processsor cant process will forward exec to hub with 58=HUB (trade cancel correct) or 39=F (unknown)
+
+==> rethink use of int for timestamps, store all TS in long local 
+
+==> should take currentTime once when msg comes in and supply that to logger and use in the isExchangeOpen ?
+
+==> note doesnt support giveup orders
+
+==> implement canTradeRestricted
+
+==> note tickscale weight is only 6dp .. had issues with major to minor conv
+
+==> make decode checksum  optional
+
+==> write test client which VALIDATES EVERY field it gets back from the OM, need use with a
+    template file with day of trades ... run admin to clear orders in OM then rinse and repeat
+
+==> can we rewrite this to use bit shift
+        return  Math.abs( Math.IEEEremainder( price, _fixedTick ) ) <= Constants.TICK_WEIGHT;
+
+    <<20 will bring 6dp into INT
+
+    or mult by 1000000 and use int based mod, the fixed tick can keep an "int"-field scale
+    
+==> change MessageMap so it can extend another MessageMap eg StandardHdr which then does
+                <!-- senderCompId (49), senderSubId(50), targetCompId(56), targetSubId(57) -->
+                <Map fixTag="49"><Hook type="decode" code="decodeSenderCompID()"/><Hook type="encode" code="_encoder.encodeString( FixDictionary44.SenderCompID, _senderId ); // tag49"/></Map>
+                <Map fixTag="56"><Hook type="decode" code="decodeTargetCompID()"/><Hook type="encode" code="_encoder.encodeString( FixDictionary44.TargetCompID, _targetId ); // tag56"/></Map>
+                <Map fixTag="50"><Hook type="decode" code="decodeSenderSubID()"/><Hook type="encode" code="_encoder.encodeString( FixDictionary44.SenderSubID, _senderSubId ); // tag50"/></Map>
+                <Map fixTag="57"><Hook type="decode" code="decodeTargetSubID()"/><Hook type="encode" code="_encoder.encodeString( FixDictionary44.TargetSubID, _targetSubId ); // tag57"/></Map>
+
+    and then remove the cut and paste entries in map for above
+    
+ 
+            
+        
+==> NUMA - use NUMA
+
+The NUMA-aware allocator is implemented for Solaris (>= 9u2) and Linux (kernel >= 2.6.19, glibc >= 2.6.1) operating systems, and can be turned on for the Parallel Scavenger garbage collector with the -XX:+UseNUMA flag. Parallel Scavenger remains the default for a server-class machine and can also be turned on explicitly by specifying the -XX:+UseParallelGC option. The impact of the change is significant: When evaluated against the SPEC JBB 2005 benchmark on an 8 chip Opteron machine, NUMA-aware systems gave about a 30% (for 32-bit) to 40% (for 64-bit) increase in performance.
+
+DECISION TO USE SINGLE ORDER MAP FOR CLIENT AND EXCHANGE SIDE IS DANGEROUS
+DO WE REALLY WANT TO DO THIS !!! NEED AGREE FORMAT WITH CLIENTS
+...may be safe if we always add pre code to CLORDID
+
+
+outbound persister is index based, 
+inbound persister is also index based but we recover from the data file  not the index, so if reboot after admining the seqNum it wont be picked up
+
+==> write an MDS subscriber single stock, timestamp each tick in nanos, write an MDS subscriber for 5000 stocks including the single symbol from other test
+==> run both at same time on different machines
+    then compare the relative latencies from the two and check the drift on the big subscriber   
+
+==> fix 4.4 replaced is not used as ordStatus   .. for 4.2 client how will this be managed
+
+===> DONT FORGET ID ON LSE MUST BBE UNIQUE FOR 3 DAYS !!    
+
+==> State machine doesnt support delayed cancels
+
+==> warmup needs to warmup all configured codecs 
+
+
+==> checkout http://en.wikipedia.org/wiki/Jazelle
+
+
+-Xmx4g -Xmn4g -server 
+-XX:+PrintGCDetails -XX:+PrintGCTimeStamps -XX:+PrintGCApplicationStoppedTime 
+-Xcomp -Xconcurrentio -XX:+UseFastAccessorMethods -XX:+UseFastJNIAccessors 
+-XX:+UseThreadPriorities 
+-XX:CMSInitiatingOccupancyFraction=85 -XX:CMSIncrementalDutyCycleMin=0 -XX:SurvivorRatio=1024 -XX:MaxTenuringThreshold=0 
+-XX:+UseParNewGC -XX:NewSize=500m -XX:MaxNewSize=500m -XX:-UseBiasedLocking
+-XX:+UseNUMA 
+
+-Xrs        reduce use of signals
+-XX:+UseSpinning -XX:PreBlockSpin=100  
+-XX:+UseTLAB
+-XX:-RelaxAccessControlCheck
+-XX:+UseAltSigs
+-XX:+UseSplitVerifier
+-XX:CompileThreshold=5  .... 1000 ?
+-XX:LargePageSizeInBytes=4m
+-XX:+UseLargePages
+
+-XX:AllocatePrefetchLines=1 Number of cache lines to load after the last object allocation using prefetch instructions generated in JIT compiled code. Default values are 1 if the last allocated object was an instance and 3 if it was an array.
+                            ===> try  1,2, 5, 10, 20, 30
+
+ 
+-XX:AllocatePrefetchStyle=1 Generated code style for prefetch instructions. 
+0 - no prefetch instructions are generate*d*, 
+1 - execute prefetch instructions after each allocation, 
+2 - use TLAB allocation watermark pointer to gate when prefetch instructions are executed. 
+ 
+-XX:+AggressiveOpts 
+
+disable page swapping
+
+use sched_setscheduler  SCHED_FIFO for the process
+
+write line handler with no order management but client limit checking
+
+disable HUB does it improve perf ... if so try using one hub socket per fix session to remove the cross session sync point
+
+on test when ran past 1am then tstClient failed so some time wrap issue
+
+Memmap persister needs to be on SINGLE thread so never close it
+
+-> get rid of new sync in FixSOcketSession around out persister ... rework use of floatingPage in MemMapPageManager
+     /..... but popPage not safe if it returns curPage as that can be swapped out
+            popPage should only use floatingPage ... perhaps add ref counting to Page and add attach, detatch, in detatch if refCnt=0 unmap 
+      ..... what happens if floatingPage can be same as curPage ??
+
+b) Change SIM so that the sessions use 2 second heartbeat
+
+
+
+#============================================================================================================
+
+MAKE NO CHANGES YET - RERUN BENCHMARK FOR BASELINE
+
+1) SET CPU mask FOR init
+
+http://www.linuxjournal.com/article/6799?page=0,2
+
+In short, make sure 'init' is getting started with affinity for one proc (it's children will inherit), then you'll want to use:
+Instead, we can edit the system startup script. On most systems this is /etc/rc.d/rc.sysinit or /etc/rc.sysinit, the first script run by init. Place the sample bind program in /bin, and add these lines to the start of rc.sysinit:
+
+NEED INVOKE THE SETUP SCRIPT... check no ./lib path entries
+
+/home/SubMicro/bin/BindSocket 1 1                   ==> didnt work
+/home/SubMicro/bin/BindSocket $$ 1
+
+also try   /etc/sysctl.conf
+
+kernal.isolcpus = 63        - 
+kernal.isolcpus = 6, 7, 8, 9, 10, 11
+ 
+service irqbalance status
+service irqbalance stop     - stop the irq balance daemon
+chkconfig irqbalance off    - ensure doesnt start on reboot
+
+/etc/sysconfig/irqbalance - IRQBALANCE_BANNED_CPUS=4032
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    
+2) SET SCHED TO FIFO
+
+3) check process process priority ... max is 99 min is 1
+    2->69 and 90 to 98 for super high priority
+    
+4) compile the native linux library for SubMicro
+
+default mask
+
+1000011010011110000100000110000
+
+
+5) install TUNA 
+# yum install tuna
+
+use tuna to  check process thread affinity
+
+tuna --threads 7861 --show_threads
+
+6) Disable IRQ daemon
+
+a. Check the status of the irqbalance daemon
+# service irqbalance status
+irqbalance (pid PID) is running...
+
+b. If the irqbalance daemon is running, stop it using the service command.
+# service irqbalance stop
+Stopping irqbalance: [ OK ]
+
+c. Use chkconfig to ensure that irqbalance does not restart on boot.
+# chkconfig irqbalance off
+
+
+7) man  sched_setscheduler
+
+8)disable atime
+
+Disabling atime
+
+a. Open the /etc/fstab file using your chosen text editor and locate the entry for the root mount
+point.
+LABEL=/ / ext3 defaults 1 1
+...[output truncated]...
+
+b. Edit the options sections to include the terms noatime and nodiratime. noatime prevents
+access timestamps being updated when a file is read and nodiratime will stop directory inode
+access times being updated.
+LABEL=/ / ext3 noatime,nodiratime 1 1
+
+c. The tmpwatch file on Red Hat Enterprise Linux is set by default to clean files in /tmp based on
+their atime. If this is the case on your system, then the instructions above will result in users' /
+tmp/* files being emptied every day. This can be resolved by starting tmpwatch with the --
+mtime option.
+
+--- /etc/cron.daily/tmpwatch.orig +++ /etc/cron.daily/tmpwatch @@ -3,6 +3,6 @@
+/usr/sbin/tmpwatch 720 /var/tmp
+for d in /var/{cache/man,catman}/{cat?,X11R6/cat?,local/cat?}; do
+if [ -d "$d" ]; then
+- /usr/sbin/tmpwatch -f 720 "$d" + /usr/sbin/tmpwatch --mtime -f 720 "$d"
+fi
+
+
+
+9) disable
+
+# echo 2 > /proc/sys/kernel/vsyscall64
+
+When enabled, the VDSO overrides the glibc definition of gettimeofday with it's own. This
+removes the overhead of a system call, as the call is made direct to the kernel memory, rather than
+going through the glibc.
+The VDSO boot parameter has three possible values:
+
+0
+Provides the most accurate time intervals at μs (microsecond) resolution, but also produces the
+highest call overhead, as it uses a regular system call
+
+1
+Slightly less accurate, although still at μs resolution, with a lower call overhead
+
+2
+The least accurate, with time intervals at the ms (millisecond) level, but offers the lowest call
+overhead
+
+
+10) change the run level to 3 by default
+
+Do not run graphics there they are not absolutely required, especially on servers. To avoid running
+the desktop software, open the /etc/inittab file with your preferred text editor and locate the
+following line:
+
+id:5:initdefault:
+...[output truncated]...
+
+This setting changes the runlevel that the machine automatically boots into. By default, the runlevel
+is 5 - full multi-user mode, using the graphical interface. By changing the number in the string to 3,
+the default runlevel will be full multi-user mode, but without the graphical interface.
+
+id:3:initdefault:
+...[output truncated]...
+
+
+
+11) uninstall sendmail, RPC, NFS, Gnome - gpm
+
+Sendmail
+Unless you are actively using Sendmail on the system you are tuning, disable it. If it is required,
+ensure it is well tuned or consider moving it to a dedicated machine.
+• Remote Procedure Calls (RPCs)
+• Network File System (NFS)
+• Mouse Services
+If you are not using Gnome, then you probably won't need a mouse either. Remove the hardware
+and uninstall gpm.
+          
+
+12) disable swap
+
+To remove a swap file: 
+
+
+At a shell prompt as root, execute the following command to disable the swap file (where /swapfile is the swap file):
+
+[root@localhost /]# swapoff -v /dev/VolGroup00/LogVol01
+swapoff on /dev/VolGroup00/LogVol01
+[root@localhost /]# lvm lvremove /dev/VolGroup00/LogVol01
+Do you really want to remove active logical volume LogVol01? [y/n]: y
+  Logical volume "LogVol01" successfully removed
+ 
+Remove its entry from /etc/fstab.
+    /dev/VolGroup00/LogVol01 swap                    swap    defaults        0 0
+
+ 
+
+13) Disable pcscd daemon
+
+Disabling the pcscd Daemon
+1. Check the status of the pcscd daemon
+# service pcscd status
+pcscd (pid PID) is running...
+2. If the pcscd daemon is running, stop it using the service command.
+# service pcscd stop
+Stopping PC/SC smart card daemon (pcscd): [ OK ]
+3. Use chkconfig to ensure that pcscd does not restart on boot.
+# chkconfig pcscd off 
+ 
+ 
+14) Reduce TCP spikes from timestamp generation
+
+In order to reduce a performance spike with relation to timestamps generation, change the values of
+the TCP related entries with the sysctl command.
+1. Use sysctl to change the value of net.ipv4.neigh.default.unres_qlen from 3 to 100.
+The -w option will make the change persistent between reboots:
+# /sbin/sysctl -w net.ipv4.neigh.default.unres_qlen=100
+2. Make the same change for net.ipv4.neigh.eth0.unres_qlen:
+# /sbin/sysctl -w net.ipv4.neigh.eth0.unres_qlen=100 
+          
+          
+15) Reduce delayed ack reduction
+
+Some applications that send small network packets can experience latencies due to the TCP delayed
+acknowledgement timeout. This value defaults to 40ms. To avoid this problem, try reducing the
+tcp_delack_min timeout value. This changes the minimum time to delay before sending an
+acknowledgement systemwide.
+1. Write the desired minimum value, in microseconds, to /proc/sys/net/ipv4/
+tcp_delack_min:
+# echo 1 > /proc/sys/net/ipv4/tcp_delack_min          
+          
+          
+16) check the ibm link for using large pages          
+                    
+a) filePreSize and initFileSize BAD          
+
+
+
+
+
+
+
+
+          

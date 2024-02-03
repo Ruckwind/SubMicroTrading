@@ -1,0 +1,67 @@
+    private byte _msgCount;
+
+    private byte _mktDataGroup;
+
+    private int _msgSeqNum;
+
+    private static Factory<ZString,Book> _bookFactory = null;
+
+    private static int                  _preSizeSymbols = 1024;
+
+    public static <T extends Factory<ZString,Book>> void setBookFactory( Class<T> bookFactory, int presizeSymbols ) {
+
+        try {
+            _bookFactory = bookFactory.newInstance();
+        } catch( Exception e ) {
+            throw new RuntimeException( "BookFactoryException " + e.getMessage(), e );
+        }
+        _preSizeSymbols = presizeSymbols;
+    }
+
+    private final FactoryCache<ZString,Book>  _bookMap = new MapFactoryCache<ZString, Book>( _preSizeSymbols, _bookFactory );
+
+    private final ReusableString _instId  = new ReusableString();
+
+    public final Book lookupBook( int id ) {
+
+        Book book = _bookMap.getItem( _instId.copy( id ) );
+
+        return book;
+    }
+
+    @Override
+    public final int parseHeader( final byte[] msg, final int offset, final int bytesRead ) {
+
+        _binaryMsg = msg;
+        _maxIdx = bytesRead + offset; // temp assign maxIdx to last data bytes in bufferMap
+        _offset = offset;
+        _builder.start( msg, offset, _maxIdx );
+        
+        if ( bytesRead < 8 ) {
+            ReusableString copy = TLC.instance().getString();
+            if ( bytesRead == 0 )  {
+                copy.setValue( "{empty}" );
+            } else{
+                copy.setValue( msg, offset, bytesRead );
+            }
+            throw new RuntimeDecodingException( "ITCH Messsage too small, len=" + bytesRead, copy );
+        } else if ( msg.length < _maxIdx ){
+            throwDecodeException( "Buffer too small for specified bytesRead=" + bytesRead + ",offset=" + offset + ", bufLen=" + msg.length );
+        }
+        
+        _msgStatedLen = _builder.decodeShort();
+        _msgCount = _builder.decodeByte();         
+        _mktDataGroup = _builder.decodeByte();
+        _msgSeqNum = _builder.decodeInt();         
+        
+        _maxIdx = _msgStatedLen + _offset;  // correctly assign maxIdx as last bytes of current message 
+
+        if ( _maxIdx > _binaryMsg.length )  _maxIdx  = _binaryMsg.length;
+        
+        return _msgStatedLen;
+    }
+    
+    public final byte getMarketDataGroup() {
+        return _mktDataGroup;
+    }
+    

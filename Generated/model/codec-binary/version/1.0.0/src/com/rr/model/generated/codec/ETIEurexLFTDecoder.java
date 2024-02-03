@@ -1,18 +1,17 @@
-/*******************************************************************************
- * Copyright (c) 2015 Low Latency Trading Limited  :  Author Richard Rose
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at	http://www.apache.org/licenses/LICENSE-2.0
- * Unless required by applicable law or agreed to in writing,  software distributed under the License 
- * is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and limitations under the License.
- *******************************************************************************/
 package com.rr.model.generated.codec;
+
+/*
+Copyright 2015 Low Latency Trading Limited
+Author Richard Rose
+*/
 
 import java.util.HashMap;
 import java.util.Map;
-import com.rr.core.codec.AbstractBinaryDecoder;
+import com.rr.core.codec.*;
+import com.rr.core.utils.*;
 import com.rr.core.lang.*;
 import com.rr.core.model.*;
+import com.rr.core.factories.*;
 import com.rr.core.pool.SuperPool;
 import com.rr.core.pool.SuperpoolManager;
 import com.rr.model.internal.type.*;
@@ -28,6 +27,8 @@ import com.rr.model.generated.internal.core.SizeType;
 @SuppressWarnings( "unused" )
 
 public final class ETIEurexLFTDecoder extends AbstractBinaryDecoder implements com.rr.codec.emea.exchange.eti.ETIDecoder {
+
+    private final ReusableString _tmpLookupKey = new ReusableString();
 
    // Attrs
     private static final short      MSG_ConnectionGatewayRequest = 10020;
@@ -69,17 +70,18 @@ public final class ETIEurexLFTDecoder extends AbstractBinaryDecoder implements c
 
     private       short _msgType;
     private final byte                        _protocolVersion;
+    private final String                      _id;
     private       int                         _msgStatedLen;
-    private final ViewString                  _lookup = new ViewString();
     private final ReusableString _dump  = new ReusableString(256);
+    private final ReusableString _missedMsgTypes = new ReusableString();
 
     // dict var holders for conditional mappings and fields with no corresponding event entry .. useful for hooks
     private       int                         _msgSeqNum;
     private       int                         _senderSubID;
     private       int                         _partyIDSessionID;
     private       ReusableString              _password = new ReusableString(30);
-    private       int                         _requestTime;
-    private       int                         _sendingTime;
+    private       long                        _requestTime;
+    private       long                        _sendingTime;
     private       int                         _gatewayID;
     private       int                         _gatewaySubID;
     private       int                         _secondaryGatewayID;
@@ -119,7 +121,7 @@ public final class ETIEurexLFTDecoder extends AbstractBinaryDecoder implements c
     private       int                         _marketSegmentID;
     private       int                         _simpleSecurityID;
     private       int                         _targetPartyIDSessionID;
-    private       int                         _trdRegTSTimeOut;
+    private       long                        _trdRegTSTimeOut;
     private       ReusableString              _applMsgID = new ReusableString(30);
     private       byte                        _applID;
     private       boolean                     _applResendFlag;
@@ -134,10 +136,10 @@ public final class ETIEurexLFTDecoder extends AbstractBinaryDecoder implements c
     private       byte                        _ordStatus;
     private       byte                        _execType;
     private       byte                        _productComplex;
-    private       int                         _trdRegTSTimeIn;
+    private       long                        _trdRegTSTimeIn;
     private       long                        _tranExecId;
-    private       int                         _trdRegTSEntryTime;
-    private       int                         _trdRegTSTimePriority;
+    private       long                        _trdRegTSEntryTime;
+    private       long                        _trdRegTSTimePriority;
     private       int                         _leavesQty;
     private       int                         _noLegExecs;
     private       byte                        _triggered;
@@ -173,7 +175,7 @@ public final class ETIEurexLFTDecoder extends AbstractBinaryDecoder implements c
     private       byte                        _orderCapacity;
     private       byte                        _positionEffect;
     private       ReusableString              _uniqueClientCode = new ReusableString(30);
-    private       ReusableString              _srcLinkId = new ReusableString(30);
+    private       ReusableString              _parentClOrdId = new ReusableString(30);
 
    // Pools
 
@@ -240,35 +242,37 @@ public final class ETIEurexLFTDecoder extends AbstractBinaryDecoder implements c
     private final SuperPool<ETISessionLogoutNotificationImpl> _eTISessionLogoutNotificationPool = SuperpoolManager.instance().getSuperPool( ETISessionLogoutNotificationImpl.class );
     private final ETISessionLogoutNotificationFactory _eTISessionLogoutNotificationFactory = new ETISessionLogoutNotificationFactory( _eTISessionLogoutNotificationPool );
 
-    private final SuperPool<RecoveryCancelRequestImpl> _cancelRequestPool = SuperpoolManager.instance().getSuperPool( RecoveryCancelRequestImpl.class );
-    private final RecoveryCancelRequestFactory _cancelRequestFactory = new RecoveryCancelRequestFactory( _cancelRequestPool );
+    private final SuperPool<CancelRequestImpl> _cancelRequestPool = SuperpoolManager.instance().getSuperPool( CancelRequestImpl.class );
+    private final CancelRequestFactory _cancelRequestFactory = new CancelRequestFactory( _cancelRequestPool );
 
-    private final SuperPool<RecoveryCancelledImpl> _cancelledPool = SuperpoolManager.instance().getSuperPool( RecoveryCancelledImpl.class );
-    private final RecoveryCancelledFactory _cancelledFactory = new RecoveryCancelledFactory( _cancelledPool );
+    private final SuperPool<CancelledImpl> _cancelledPool = SuperpoolManager.instance().getSuperPool( CancelledImpl.class );
+    private final CancelledFactory _cancelledFactory = new CancelledFactory( _cancelledPool );
 
-    private final SuperPool<RecoveryTradeNewImpl> _tradeNewPool = SuperpoolManager.instance().getSuperPool( RecoveryTradeNewImpl.class );
-    private final RecoveryTradeNewFactory _tradeNewFactory = new RecoveryTradeNewFactory( _tradeNewPool );
+    private final SuperPool<TradeNewImpl> _tradeNewPool = SuperpoolManager.instance().getSuperPool( TradeNewImpl.class );
+    private final TradeNewFactory _tradeNewFactory = new TradeNewFactory( _tradeNewPool );
 
     private final SuperPool<SessionRejectImpl> _sessionRejectPool = SuperpoolManager.instance().getSuperPool( SessionRejectImpl.class );
     private final SessionRejectFactory _sessionRejectFactory = new SessionRejectFactory( _sessionRejectPool );
 
-    private final SuperPool<RecoveryNewOrderSingleImpl> _newOrderSinglePool = SuperpoolManager.instance().getSuperPool( RecoveryNewOrderSingleImpl.class );
-    private final RecoveryNewOrderSingleFactory _newOrderSingleFactory = new RecoveryNewOrderSingleFactory( _newOrderSinglePool );
+    private final SuperPool<NewOrderSingleImpl> _newOrderSinglePool = SuperpoolManager.instance().getSuperPool( NewOrderSingleImpl.class );
+    private final NewOrderSingleFactory _newOrderSingleFactory = new NewOrderSingleFactory( _newOrderSinglePool );
 
-    private final SuperPool<RecoveryCancelReplaceRequestImpl> _cancelReplaceRequestPool = SuperpoolManager.instance().getSuperPool( RecoveryCancelReplaceRequestImpl.class );
-    private final RecoveryCancelReplaceRequestFactory _cancelReplaceRequestFactory = new RecoveryCancelReplaceRequestFactory( _cancelReplaceRequestPool );
+    private final SuperPool<CancelReplaceRequestImpl> _cancelReplaceRequestPool = SuperpoolManager.instance().getSuperPool( CancelReplaceRequestImpl.class );
+    private final CancelReplaceRequestFactory _cancelReplaceRequestFactory = new CancelReplaceRequestFactory( _cancelReplaceRequestPool );
 
-    private final SuperPool<RecoveryNewOrderAckImpl> _newOrderAckPool = SuperpoolManager.instance().getSuperPool( RecoveryNewOrderAckImpl.class );
-    private final RecoveryNewOrderAckFactory _newOrderAckFactory = new RecoveryNewOrderAckFactory( _newOrderAckPool );
+    private final SuperPool<NewOrderAckImpl> _newOrderAckPool = SuperpoolManager.instance().getSuperPool( NewOrderAckImpl.class );
+    private final NewOrderAckFactory _newOrderAckFactory = new NewOrderAckFactory( _newOrderAckPool );
 
-    private final SuperPool<RecoveryReplacedImpl> _replacedPool = SuperpoolManager.instance().getSuperPool( RecoveryReplacedImpl.class );
-    private final RecoveryReplacedFactory _replacedFactory = new RecoveryReplacedFactory( _replacedPool );
+    private final SuperPool<ReplacedImpl> _replacedPool = SuperpoolManager.instance().getSuperPool( ReplacedImpl.class );
+    private final ReplacedFactory _replacedFactory = new ReplacedFactory( _replacedPool );
 
 
    // Constructors
-    public ETIEurexLFTDecoder() {
+    public ETIEurexLFTDecoder() { this( null ); }
+    public ETIEurexLFTDecoder( String id ) {
         super();
         setBuilder();
+        _id = id;
         _protocolVersion = (byte)'1';
     }
 
@@ -295,12 +299,12 @@ public final class ETIEurexLFTDecoder extends AbstractBinaryDecoder implements c
     }
 
     private void setBuilder() {
-        _builder = (_debug) ? new DebugBinaryDecodeBuilder<com.rr.codec.emea.exchange.eti.ETIDecodeBuilderImpl>( _dump, new com.rr.codec.emea.exchange.eti.ETIDecodeBuilderImpl() )
+        _builder = (_debug) ? new DebugBinaryDecodeBuilder<>( _dump, new com.rr.codec.emea.exchange.eti.ETIDecodeBuilderImpl() )
                             : new com.rr.codec.emea.exchange.eti.ETIDecodeBuilderImpl();
     }
 
     @Override
-    protected final Message doMessageDecode() {
+    protected final Event doMessageDecode() {
         _builder.setMaxIdx( _maxIdx );
 
         switch( _msgType ) {
@@ -454,7 +458,7 @@ public final class ETIEurexLFTDecoder extends AbstractBinaryDecoder implements c
         return null;
     }
 
-    private final Message decodeConnectionGatewayRequest() {
+    private Event decodeConnectionGatewayRequest() {
         if ( _debug ) {
             _dump.append( "\nKnown Message : " ).append( "ConnectionGatewayRequest" ).append( " : " );
         }
@@ -478,7 +482,7 @@ public final class ETIEurexLFTDecoder extends AbstractBinaryDecoder implements c
         return msg;
     }
 
-    private final Message decodeConnectionGatewayResponse() {
+    private Event decodeConnectionGatewayResponse() {
         if ( _debug ) {
             _dump.append( "\nKnown Message : " ).append( "ConnectionGatewayResponse" ).append( " : " );
         }
@@ -489,7 +493,7 @@ public final class ETIEurexLFTDecoder extends AbstractBinaryDecoder implements c
         msg.setRequestTime( _builder.decodeTimestampUTC() );
 
         if ( _debug ) _dump.append( "\nField: " ).append( "sendingTime" ).append( " : " );
-        msg.setSendingTime( _builder.decodeTimestampUTC() );
+        msg.setEventTimestamp( _builder.decodeTimestampUTC() );
 
         if ( _debug ) _dump.append( "\nField: " ).append( "msgSeqNum" ).append( " : " );
         msg.setMsgSeqNum( _builder.decodeUInt() );
@@ -519,7 +523,7 @@ public final class ETIEurexLFTDecoder extends AbstractBinaryDecoder implements c
         return msg;
     }
 
-    private final Message decodeSessionLogonRequest() {
+    private Event decodeSessionLogonRequest() {
         if ( _debug ) {
             _dump.append( "\nKnown Message : " ).append( "SessionLogonRequest" ).append( " : " );
         }
@@ -576,7 +580,7 @@ public final class ETIEurexLFTDecoder extends AbstractBinaryDecoder implements c
         return msg;
     }
 
-    private final Message decodeSessionLogonResponse() {
+    private Event decodeSessionLogonResponse() {
         if ( _debug ) {
             _dump.append( "\nKnown Message : " ).append( "SessionLogonResponse" ).append( " : " );
         }
@@ -587,7 +591,7 @@ public final class ETIEurexLFTDecoder extends AbstractBinaryDecoder implements c
         msg.setRequestTime( _builder.decodeTimestampUTC() );
 
         if ( _debug ) _dump.append( "\nField: " ).append( "sendingTime" ).append( " : " );
-        msg.setSendingTime( _builder.decodeTimestampUTC() );
+        msg.setEventTimestamp( _builder.decodeTimestampUTC() );
 
         if ( _debug ) _dump.append( "\nField: " ).append( "msgSeqNum" ).append( " : " );
         msg.setMsgSeqNum( _builder.decodeUInt() );
@@ -622,7 +626,7 @@ public final class ETIEurexLFTDecoder extends AbstractBinaryDecoder implements c
         return msg;
     }
 
-    private final Message decodeSessionLogoutRequest() {
+    private Event decodeSessionLogoutRequest() {
         if ( _debug ) {
             _dump.append( "\nKnown Message : " ).append( "SessionLogoutRequest" ).append( " : " );
         }
@@ -637,7 +641,7 @@ public final class ETIEurexLFTDecoder extends AbstractBinaryDecoder implements c
         return msg;
     }
 
-    private final Message decodeSessionLogoutResponse() {
+    private Event decodeSessionLogoutResponse() {
         if ( _debug ) {
             _dump.append( "\nKnown Message : " ).append( "SessionLogoutResponse" ).append( " : " );
         }
@@ -648,7 +652,7 @@ public final class ETIEurexLFTDecoder extends AbstractBinaryDecoder implements c
         msg.setRequestTime( _builder.decodeTimestampUTC() );
 
         if ( _debug ) _dump.append( "\nField: " ).append( "sendingTime" ).append( " : " );
-        msg.setSendingTime( _builder.decodeTimestampUTC() );
+        msg.setEventTimestamp( _builder.decodeTimestampUTC() );
 
         if ( _debug ) _dump.append( "\nField: " ).append( "msgSeqNum" ).append( " : " );
         msg.setMsgSeqNum( _builder.decodeUInt() );
@@ -659,7 +663,7 @@ public final class ETIEurexLFTDecoder extends AbstractBinaryDecoder implements c
         return msg;
     }
 
-    private final Message decodeUserLogonRequest() {
+    private Event decodeUserLogonRequest() {
         if ( _debug ) {
             _dump.append( "\nKnown Message : " ).append( "UserLogonRequest" ).append( " : " );
         }
@@ -683,7 +687,7 @@ public final class ETIEurexLFTDecoder extends AbstractBinaryDecoder implements c
         return msg;
     }
 
-    private final Message decodeUserLogonResponse() {
+    private Event decodeUserLogonResponse() {
         if ( _debug ) {
             _dump.append( "\nKnown Message : " ).append( "UserLogonResponse" ).append( " : " );
         }
@@ -694,7 +698,7 @@ public final class ETIEurexLFTDecoder extends AbstractBinaryDecoder implements c
         msg.setRequestTime( _builder.decodeTimestampUTC() );
 
         if ( _debug ) _dump.append( "\nField: " ).append( "sendingTime" ).append( " : " );
-        msg.setSendingTime( _builder.decodeTimestampUTC() );
+        msg.setEventTimestamp( _builder.decodeTimestampUTC() );
 
         if ( _debug ) _dump.append( "\nField: " ).append( "msgSeqNum" ).append( " : " );
         msg.setMsgSeqNum( _builder.decodeUInt() );
@@ -705,7 +709,7 @@ public final class ETIEurexLFTDecoder extends AbstractBinaryDecoder implements c
         return msg;
     }
 
-    private final Message decodeUserLogoutRequest() {
+    private Event decodeUserLogoutRequest() {
         if ( _debug ) {
             _dump.append( "\nKnown Message : " ).append( "UserLogoutRequest" ).append( " : " );
         }
@@ -726,7 +730,7 @@ public final class ETIEurexLFTDecoder extends AbstractBinaryDecoder implements c
         return msg;
     }
 
-    private final Message decodeUserLogoutResponse() {
+    private Event decodeUserLogoutResponse() {
         if ( _debug ) {
             _dump.append( "\nKnown Message : " ).append( "UserLogoutResponse" ).append( " : " );
         }
@@ -737,7 +741,7 @@ public final class ETIEurexLFTDecoder extends AbstractBinaryDecoder implements c
         msg.setRequestTime( _builder.decodeTimestampUTC() );
 
         if ( _debug ) _dump.append( "\nField: " ).append( "sendingTime" ).append( " : " );
-        msg.setSendingTime( _builder.decodeTimestampUTC() );
+        msg.setEventTimestamp( _builder.decodeTimestampUTC() );
 
         if ( _debug ) _dump.append( "\nField: " ).append( "msgSeqNum" ).append( " : " );
         msg.setMsgSeqNum( _builder.decodeUInt() );
@@ -748,7 +752,7 @@ public final class ETIEurexLFTDecoder extends AbstractBinaryDecoder implements c
         return msg;
     }
 
-    private final Message decodeThrottleUpdateNotification() {
+    private Event decodeThrottleUpdateNotification() {
         if ( _debug ) {
             _dump.append( "\nKnown Message : " ).append( "ThrottleUpdateNotification" ).append( " : " );
         }
@@ -756,7 +760,7 @@ public final class ETIEurexLFTDecoder extends AbstractBinaryDecoder implements c
         final ETIThrottleUpdateNotificationImpl msg = _eTIThrottleUpdateNotificationFactory.get();
 
         if ( _debug ) _dump.append( "\nField: " ).append( "sendingTime" ).append( " : " );
-        msg.setSendingTime( _builder.decodeTimestampUTC() );
+        msg.setEventTimestamp( _builder.decodeTimestampUTC() );
 
         if ( _debug ) _dump.append( "\nField: " ).append( "throttleTimeIntervalMS" ).append( " : " );
         msg.setThrottleTimeIntervalMS( _builder.decodeLong() );
@@ -770,7 +774,7 @@ public final class ETIEurexLFTDecoder extends AbstractBinaryDecoder implements c
         return msg;
     }
 
-    private final Message decodeSubscribe() {
+    private Event decodeSubscribe() {
         if ( _debug ) {
             _dump.append( "\nKnown Message : " ).append( "Subscribe" ).append( " : " );
         }
@@ -794,7 +798,7 @@ public final class ETIEurexLFTDecoder extends AbstractBinaryDecoder implements c
         return msg;
     }
 
-    private final Message decodeSubscribeResponse() {
+    private Event decodeSubscribeResponse() {
         if ( _debug ) {
             _dump.append( "\nKnown Message : " ).append( "SubscribeResponse" ).append( " : " );
         }
@@ -805,7 +809,7 @@ public final class ETIEurexLFTDecoder extends AbstractBinaryDecoder implements c
         msg.setRequestTime( _builder.decodeTimestampUTC() );
 
         if ( _debug ) _dump.append( "\nField: " ).append( "sendingTime" ).append( " : " );
-        msg.setSendingTime( _builder.decodeTimestampUTC() );
+        msg.setEventTimestamp( _builder.decodeTimestampUTC() );
 
         if ( _debug ) _dump.append( "\nField: " ).append( "msgSeqNum" ).append( " : " );
         msg.setMsgSeqNum( _builder.decodeUInt() );
@@ -822,7 +826,7 @@ public final class ETIEurexLFTDecoder extends AbstractBinaryDecoder implements c
         return msg;
     }
 
-    private final Message decodeUnsubscribe() {
+    private Event decodeUnsubscribe() {
         if ( _debug ) {
             _dump.append( "\nKnown Message : " ).append( "Unsubscribe" ).append( " : " );
         }
@@ -843,7 +847,7 @@ public final class ETIEurexLFTDecoder extends AbstractBinaryDecoder implements c
         return msg;
     }
 
-    private final Message decodeUnsubscribeResponse() {
+    private Event decodeUnsubscribeResponse() {
         if ( _debug ) {
             _dump.append( "\nKnown Message : " ).append( "UnsubscribeResponse" ).append( " : " );
         }
@@ -854,7 +858,7 @@ public final class ETIEurexLFTDecoder extends AbstractBinaryDecoder implements c
         msg.setRequestTime( _builder.decodeTimestampUTC() );
 
         if ( _debug ) _dump.append( "\nField: " ).append( "sendingTime" ).append( " : " );
-        msg.setSendingTime( _builder.decodeTimestampUTC() );
+        msg.setEventTimestamp( _builder.decodeTimestampUTC() );
 
         if ( _debug ) _dump.append( "\nField: " ).append( "msgSeqNum" ).append( " : " );
         msg.setMsgSeqNum( _builder.decodeUInt() );
@@ -865,7 +869,7 @@ public final class ETIEurexLFTDecoder extends AbstractBinaryDecoder implements c
         return msg;
     }
 
-    private final Message decodeRetransmit() {
+    private Event decodeRetransmit() {
         if ( _debug ) {
             _dump.append( "\nKnown Message : " ).append( "Retransmit" ).append( " : " );
         }
@@ -898,7 +902,7 @@ public final class ETIEurexLFTDecoder extends AbstractBinaryDecoder implements c
         return msg;
     }
 
-    private final Message decodeRetransmitResponse() {
+    private Event decodeRetransmitResponse() {
         if ( _debug ) {
             _dump.append( "\nKnown Message : " ).append( "RetransmitResponse" ).append( " : " );
         }
@@ -909,7 +913,7 @@ public final class ETIEurexLFTDecoder extends AbstractBinaryDecoder implements c
         msg.setRequestTime( _builder.decodeTimestampUTC() );
 
         if ( _debug ) _dump.append( "\nField: " ).append( "sendingTime" ).append( " : " );
-        msg.setSendingTime( _builder.decodeTimestampUTC() );
+        msg.setEventTimestamp( _builder.decodeTimestampUTC() );
 
         if ( _debug ) _dump.append( "\nField: " ).append( "msgSeqNum" ).append( " : " );
         msg.setMsgSeqNum( _builder.decodeUInt() );
@@ -932,7 +936,7 @@ public final class ETIEurexLFTDecoder extends AbstractBinaryDecoder implements c
         return msg;
     }
 
-    private final Message decodeRetransmitOrderEvents() {
+    private Event decodeRetransmitOrderEvents() {
         if ( _debug ) {
             _dump.append( "\nKnown Message : " ).append( "RetransmitOrderEvents" ).append( " : " );
         }
@@ -965,7 +969,7 @@ public final class ETIEurexLFTDecoder extends AbstractBinaryDecoder implements c
         return msg;
     }
 
-    private final Message decodeRetransmitOrderEventsResponse() {
+    private Event decodeRetransmitOrderEventsResponse() {
         if ( _debug ) {
             _dump.append( "\nKnown Message : " ).append( "RetransmitOrderEventsResponse" ).append( " : " );
         }
@@ -976,7 +980,7 @@ public final class ETIEurexLFTDecoder extends AbstractBinaryDecoder implements c
         msg.setRequestTime( _builder.decodeTimestampUTC() );
 
         if ( _debug ) _dump.append( "\nField: " ).append( "sendingTime" ).append( " : " );
-        msg.setSendingTime( _builder.decodeTimestampUTC() );
+        msg.setEventTimestamp( _builder.decodeTimestampUTC() );
 
         if ( _debug ) _dump.append( "\nField: " ).append( "msgSeqNum" ).append( " : " );
         msg.setMsgSeqNum( _builder.decodeUInt() );
@@ -999,7 +1003,7 @@ public final class ETIEurexLFTDecoder extends AbstractBinaryDecoder implements c
         return msg;
     }
 
-    private final Message decodeHeartbeat() {
+    private Event decodeHeartbeat() {
         if ( _debug ) {
             _dump.append( "\nKnown Message : " ).append( "Heartbeat" ).append( " : " );
         }
@@ -1009,7 +1013,7 @@ public final class ETIEurexLFTDecoder extends AbstractBinaryDecoder implements c
         return msg;
     }
 
-    private final Message decodeHeartbeatNotification() {
+    private Event decodeHeartbeatNotification() {
         if ( _debug ) {
             _dump.append( "\nKnown Message : " ).append( "HeartbeatNotification" ).append( " : " );
         }
@@ -1020,7 +1024,7 @@ public final class ETIEurexLFTDecoder extends AbstractBinaryDecoder implements c
         return msg;
     }
 
-    private final Message decodeSessionLogoutNotification() {
+    private Event decodeSessionLogoutNotification() {
         if ( _debug ) {
             _dump.append( "\nKnown Message : " ).append( "SessionLogoutNotification" ).append( " : " );
         }
@@ -1028,7 +1032,7 @@ public final class ETIEurexLFTDecoder extends AbstractBinaryDecoder implements c
         final ETISessionLogoutNotificationImpl msg = _eTISessionLogoutNotificationFactory.get();
 
         if ( _debug ) _dump.append( "\nField: " ).append( "sendingTime" ).append( " : " );
-        msg.setSendingTime( _builder.decodeTimestampUTC() );
+        msg.setEventTimestamp( _builder.decodeTimestampUTC() );
         if ( _debug ) _dump.append( "\nField: " ).append( "varTextLen" ).append( " : " );
         _varTextLen = _builder.decodeUShort();
 
@@ -1039,12 +1043,12 @@ public final class ETIEurexLFTDecoder extends AbstractBinaryDecoder implements c
         return msg;
     }
 
-    private final Message decodeCancelOrderSingleRequest() {
+    private Event decodeCancelOrderSingleRequest() {
         if ( _debug ) {
             _dump.append( "\nKnown Message : " ).append( "CancelOrderSingleRequest" ).append( " : " );
         }
 
-        final RecoveryCancelRequestImpl msg = _cancelRequestFactory.get();
+        final CancelRequestImpl msg = _cancelRequestFactory.get();
 
         if ( _debug ) _dump.append( "\nField: " ).append( "msgSeqNum" ).append( " : " );
         msg.setMsgSeqNum( _builder.decodeUInt() );
@@ -1072,17 +1076,17 @@ public final class ETIEurexLFTDecoder extends AbstractBinaryDecoder implements c
         return msg;
     }
 
-    private final Message decodeCancelOrderNotification() {
+    private Event decodeCancelOrderNotification() {
         if ( _debug ) {
             _dump.append( "\nKnown Message : " ).append( "CancelOrderNotification" ).append( " : " );
         }
 
-        final RecoveryCancelledImpl msg = _cancelledFactory.get();
+        final CancelledImpl msg = _cancelledFactory.get();
         if ( _debug ) _dump.append( "\nField: " ).append( "trdRegTSTimeOut" ).append( " : " );
         _trdRegTSTimeOut = _builder.decodeTimestampUTC();
 
         if ( _debug ) _dump.append( "\nField: " ).append( "sendingTime" ).append( " : " );
-        msg.setSendingTime( _builder.decodeTimestampUTC() );
+        msg.setEventTimestamp( _builder.decodeTimestampUTC() );
         if ( _debug ) _dump.append( "\nField: " ).append( "applSubID" ).append( " : " );
         _applSubID = _builder.decodeUInt();
         if ( _debug ) _dump.append( "\nField: " ).append( "partitionID" ).append( " : " );
@@ -1142,12 +1146,12 @@ public final class ETIEurexLFTDecoder extends AbstractBinaryDecoder implements c
         return msg;
     }
 
-    private final Message decodeImmediateExecResponse() {
+    private Event decodeImmediateExecResponse() {
         if ( _debug ) {
             _dump.append( "\nKnown Message : " ).append( "ImmediateExecResponse" ).append( " : " );
         }
 
-        RecoveryTradeNewImpl msg = null;
+        TradeNewImpl msg = null;
         if ( _debug ) _dump.append( "\nField: " ).append( "requestTime" ).append( " : " );
         _requestTime = _builder.decodeTimestampUTC();
         if ( _debug ) _dump.append( "\nField: " ).append( "trdRegTSTimeIn" ).append( " : " );
@@ -1206,10 +1210,10 @@ public final class ETIEurexLFTDecoder extends AbstractBinaryDecoder implements c
         _builder.skip( 7 );
 
         {
-            RecoveryTradeNewImpl firstMsg = msg;
+            TradeNewImpl firstMsg = msg;
             for( int i=0 ; i < _noFills ; ++i ) { 
                 if ( msg != null ) {
-                    final RecoveryTradeNewImpl nxtMsg = _tradeNewFactory.get();
+                    final TradeNewImpl nxtMsg = _tradeNewFactory.get();
                     msg.setNext( nxtMsg );
                     msg = nxtMsg;
                 } else {
@@ -1227,7 +1231,7 @@ public final class ETIEurexLFTDecoder extends AbstractBinaryDecoder implements c
                 _fillLiquidityInd = _builder.decodeUByte();
                 if ( _debug ) _dump.append( "\nField: " ).append( "fillerFillsGrp" ).append( " : " );
                 _builder.skip( 3 );
-                msg.setSendingTime( _sendingTime );
+                msg.setEventTimestamp( _sendingTime );
                 msg.setMsgSeqNum( _msgSeqNum );
                 msg.getOrderIdForUpdate().append( _orderId );
                 msg.getClOrdIdForUpdate().append( _clOrdId );
@@ -1263,12 +1267,12 @@ public final class ETIEurexLFTDecoder extends AbstractBinaryDecoder implements c
         return msg;
     }
 
-    private final Message decodeBookOrderExecution() {
+    private Event decodeBookOrderExecution() {
         if ( _debug ) {
             _dump.append( "\nKnown Message : " ).append( "BookOrderExecution" ).append( " : " );
         }
 
-        RecoveryTradeNewImpl msg = null;
+        TradeNewImpl msg = null;
         if ( _debug ) _dump.append( "\nField: " ).append( "trdRegTSTimeOut" ).append( " : " );
         _trdRegTSTimeOut = _builder.decodeTimestampUTC();
         if ( _debug ) _dump.append( "\nField: " ).append( "sendingTime" ).append( " : " );
@@ -1333,10 +1337,10 @@ public final class ETIEurexLFTDecoder extends AbstractBinaryDecoder implements c
         _builder.skip( 39 );
 
         {
-            RecoveryTradeNewImpl firstMsg = msg;
+            TradeNewImpl firstMsg = msg;
             for( int i=0 ; i < _noFills ; ++i ) { 
                 if ( msg != null ) {
-                    final RecoveryTradeNewImpl nxtMsg = _tradeNewFactory.get();
+                    final TradeNewImpl nxtMsg = _tradeNewFactory.get();
                     msg.setNext( nxtMsg );
                     msg = nxtMsg;
                 } else {
@@ -1354,7 +1358,7 @@ public final class ETIEurexLFTDecoder extends AbstractBinaryDecoder implements c
                 _fillLiquidityInd = _builder.decodeUByte();
                 if ( _debug ) _dump.append( "\nField: " ).append( "fillerFillsGrp" ).append( " : " );
                 _builder.skip( 3 );
-                msg.setSendingTime( _sendingTime );
+                msg.setEventTimestamp( _sendingTime );
                 msg.getOrderIdForUpdate().append( _orderId );
                 msg.getClOrdIdForUpdate().append( _clOrdId );
                 msg.getSecurityIdForUpdate().append( _securityId );
@@ -1389,7 +1393,7 @@ public final class ETIEurexLFTDecoder extends AbstractBinaryDecoder implements c
         return msg;
     }
 
-    private final Message decodeReject() {
+    private Event decodeReject() {
         if ( _debug ) {
             _dump.append( "\nKnown Message : " ).append( "Reject" ).append( " : " );
         }
@@ -1399,7 +1403,7 @@ public final class ETIEurexLFTDecoder extends AbstractBinaryDecoder implements c
         _requestTime = _builder.decodeTimestampUTC();
 
         if ( _debug ) _dump.append( "\nField: " ).append( "sendingTime" ).append( " : " );
-        msg.setSendingTime( _builder.decodeTimestampUTC() );
+        msg.setEventTimestamp( _builder.decodeTimestampUTC() );
 
         if ( _debug ) _dump.append( "\nField: " ).append( "msgSeqNum" ).append( " : " );
         msg.setRefSeqNum( _builder.decodeUInt() );
@@ -1422,12 +1426,12 @@ public final class ETIEurexLFTDecoder extends AbstractBinaryDecoder implements c
         return msg;
     }
 
-    private final Message decodeNewOrderRequest() {
+    private Event decodeNewOrderRequest() {
         if ( _debug ) {
             _dump.append( "\nKnown Message : " ).append( "NewOrderRequest" ).append( " : " );
         }
 
-        final RecoveryNewOrderSingleImpl msg = _newOrderSingleFactory.get();
+        final NewOrderSingleImpl msg = _newOrderSingleFactory.get();
 
         if ( _debug ) _dump.append( "\nField: " ).append( "msgSeqNum" ).append( " : " );
         msg.setMsgSeqNum( _builder.decodeUInt() );
@@ -1503,8 +1507,8 @@ public final class ETIEurexLFTDecoder extends AbstractBinaryDecoder implements c
         if ( _debug ) _dump.append( "\nField: " ).append( "uniqueClientCode" ).append( " : " );
         _builder.decodeString( _uniqueClientCode );
 
-        if ( _debug ) _dump.append( "\nField: " ).append( "srcLinkId" ).append( " : " );
-        _builder.decodeZStringFixedWidth( msg.getSrcLinkIdForUpdate(), 24 );
+        if ( _debug ) _dump.append( "\nField: " ).append( "parentClOrdId" ).append( " : " );
+        _builder.decodeZStringFixedWidth( msg.getParentClOrdIdForUpdate(), 24 );
 
         if ( _debug ) _dump.append( "\nField: " ).append( "filler8" ).append( " : " );
         _builder.skip( 3 );
@@ -1514,12 +1518,12 @@ public final class ETIEurexLFTDecoder extends AbstractBinaryDecoder implements c
         return msg;
     }
 
-    private final Message decodeReplaceOrderSingleRequest() {
+    private Event decodeReplaceOrderSingleRequest() {
         if ( _debug ) {
             _dump.append( "\nKnown Message : " ).append( "ReplaceOrderSingleRequest" ).append( " : " );
         }
 
-        final RecoveryCancelReplaceRequestImpl msg = _cancelReplaceRequestFactory.get();
+        final CancelReplaceRequestImpl msg = _cancelReplaceRequestFactory.get();
 
         if ( _debug ) _dump.append( "\nField: " ).append( "msgSeqNum" ).append( " : " );
         msg.setMsgSeqNum( _builder.decodeUInt() );
@@ -1604,8 +1608,8 @@ public final class ETIEurexLFTDecoder extends AbstractBinaryDecoder implements c
         if ( _debug ) _dump.append( "\nField: " ).append( "filler6" ).append( " : " );
         _builder.skip( 20 );
 
-        if ( _debug ) _dump.append( "\nField: " ).append( "srcLinkId" ).append( " : " );
-        _builder.decodeZStringFixedWidth( msg.getSrcLinkIdForUpdate(), 24 );
+        if ( _debug ) _dump.append( "\nField: " ).append( "parentClOrdId" ).append( " : " );
+        _builder.decodeZStringFixedWidth( msg.getParentClOrdIdForUpdate(), 24 );
 
         if ( _debug ) _dump.append( "\nField: " ).append( "filler7" ).append( " : " );
         _builder.skip( 18 );
@@ -1613,12 +1617,12 @@ public final class ETIEurexLFTDecoder extends AbstractBinaryDecoder implements c
         return msg;
     }
 
-    private final Message decodeNewOrderStandardResponse() {
+    private Event decodeNewOrderStandardResponse() {
         if ( _debug ) {
             _dump.append( "\nKnown Message : " ).append( "NewOrderStandardResponse" ).append( " : " );
         }
 
-        final RecoveryNewOrderAckImpl msg = _newOrderAckFactory.get();
+        final NewOrderAckImpl msg = _newOrderAckFactory.get();
         if ( _debug ) _dump.append( "\nHook : " ).append( "predecode" ).append( " : " );
         if ( _nanoStats ) msg.setAckReceived( _received );
         if ( _debug ) _dump.append( "\nField: " ).append( "requestTime" ).append( " : " );
@@ -1629,7 +1633,7 @@ public final class ETIEurexLFTDecoder extends AbstractBinaryDecoder implements c
         _trdRegTSTimeOut = _builder.decodeTimestampUTC();
 
         if ( _debug ) _dump.append( "\nField: " ).append( "sendingTime" ).append( " : " );
-        msg.setSendingTime( _builder.decodeTimestampUTC() );
+        msg.setEventTimestamp( _builder.decodeTimestampUTC() );
 
         if ( _debug ) _dump.append( "\nField: " ).append( "msgSeqNum" ).append( " : " );
         msg.setMsgSeqNum( _builder.decodeUInt() );
@@ -1674,11 +1678,11 @@ public final class ETIEurexLFTDecoder extends AbstractBinaryDecoder implements c
         return msg;
     }
 
-    private final Message conditionalDecoder1( Message prevMsg ) {
+    private Event conditionalDecoder1( Event prevMsg ) {
         switch( _execType ) {
         case '4': {
-                final RecoveryCancelledImpl msg = _cancelledFactory.get();
-                msg.setSendingTime( _sendingTime );
+                final CancelledImpl msg = _cancelledFactory.get();
+                msg.setEventTimestamp( _sendingTime );
                 msg.setMsgSeqNum( _msgSeqNum );
                 msg.getOrderIdForUpdate().append( _orderId );
                 msg.getClOrdIdForUpdate().append( _clOrdId );
@@ -1693,8 +1697,8 @@ public final class ETIEurexLFTDecoder extends AbstractBinaryDecoder implements c
                 return msg;
             }
         case '5': {
-                final RecoveryReplacedImpl msg = _replacedFactory.get();
-                msg.setSendingTime( _sendingTime );
+                final ReplacedImpl msg = _replacedFactory.get();
+                msg.setEventTimestamp( _sendingTime );
                 msg.setMsgSeqNum( _msgSeqNum );
                 msg.getOrderIdForUpdate().append( _orderId );
                 msg.getClOrdIdForUpdate().append( _clOrdId );
@@ -1711,8 +1715,8 @@ public final class ETIEurexLFTDecoder extends AbstractBinaryDecoder implements c
         }
         throw new RuntimeDecodingException( "No matching condition for conditional message type" );
     }
-    private final Message decodeReplaceOrderStandardResponse() {
-        Message msg = null;
+    private Event decodeReplaceOrderStandardResponse() {
+        Event msg;
         if ( _debug ) _dump.append( "\nField: " ).append( "requestTime" ).append( " : " );
         _requestTime = _builder.decodeTimestampUTC();
         if ( _debug ) _dump.append( "\nField: " ).append( "trdRegTSTimeIn" ).append( " : " );
@@ -1764,11 +1768,11 @@ public final class ETIEurexLFTDecoder extends AbstractBinaryDecoder implements c
         return msg;
     }
 
-    private final Message conditionalDecoder2( Message prevMsg ) {
+    private Event conditionalDecoder2( Event prevMsg ) {
         switch( _ordStatus ) {
         case '4': {
-                final RecoveryCancelledImpl msg = _cancelledFactory.get();
-                msg.setSendingTime( _sendingTime );
+                final CancelledImpl msg = _cancelledFactory.get();
+                msg.setEventTimestamp( _sendingTime );
                 msg.setMsgSeqNum( _msgSeqNum );
                 msg.getOrderIdForUpdate().append( _orderId );
                 msg.getClOrdIdForUpdate().append( _clOrdId );
@@ -1784,8 +1788,8 @@ public final class ETIEurexLFTDecoder extends AbstractBinaryDecoder implements c
         }
         throw new RuntimeDecodingException( "No matching condition for conditional message type" );
     }
-    private final Message decodeCancelOrderStandardResponse() {
-        Message msg = null;
+    private Event decodeCancelOrderStandardResponse() {
+        Event msg;
         if ( _debug ) _dump.append( "\nField: " ).append( "requestTime" ).append( " : " );
         _requestTime = _builder.decodeTimestampUTC();
         if ( _debug ) _dump.append( "\nField: " ).append( "trdRegTSTimeIn" ).append( " : " );
@@ -1833,6 +1837,8 @@ public final class ETIEurexLFTDecoder extends AbstractBinaryDecoder implements c
         return msg;
     }
 
+
+    @Override public String getComponentId() { return _id; }
 
    // transform methods
     private static final Side[] _sideMap = new Side[3];
@@ -1964,7 +1970,7 @@ public final class ETIEurexLFTDecoder extends AbstractBinaryDecoder implements c
         return intVal;
     }
 
-    private static final Map<ViewString,SessionRejectReason> _sessionRejectReasonMap = new HashMap<ViewString, SessionRejectReason>( 60);
+    private static final Map<ViewString,SessionRejectReason> _sessionRejectReasonMap = new HashMap<>( 60);
     static {
          _sessionRejectReasonMap.put( StringFactory.hexToViewString( "0x01" ), SessionRejectReason.RequiredTagMissing );
          _sessionRejectReasonMap.put( StringFactory.hexToViewString( "0x05" ), SessionRejectReason.ValueIncorrect );
@@ -1984,12 +1990,87 @@ public final class ETIEurexLFTDecoder extends AbstractBinaryDecoder implements c
     }
 
     private SessionRejectReason transformSessionRejectReason( byte[] buf, int offset, int len ) {
-        _lookup.setValue( buf, offset, len );
-        SessionRejectReason intVal = _sessionRejectReasonMap.get( _lookup );
+        _tmpLookupKey.setValue( buf, offset, len );
+        SessionRejectReason intVal = _sessionRejectReasonMap.get( _tmpLookupKey );
         if ( intVal == null ) {
             return SessionRejectReason.Other;
         }
         return intVal;
     }
 
-    private int _headerPad = 2; // receiving from exchange pad is 2    @Override    public final int parseHeader( final byte[] msg, final int offset, final int bytesRead ) {               _applMsgID.reset();        _binaryMsg = msg;        _maxIdx = bytesRead + offset; // temp assign maxIdx to last data bytes in buffer        _offset = offset;        _builder.start( msg, offset, _maxIdx );                if ( bytesRead < 8 ) {            ReusableString copy = TLC.instance().getString();            if ( bytesRead == 0 )  {                copy.setValue( "{empty}" );            } else{                copy.setValue( msg, offset, bytesRead );            }            throw new RuntimeDecodingException( "ETI Messsage too small, len=" + bytesRead, copy );        } else if ( msg.length < _maxIdx ){            throwDecodeException( "Buffer too small for specified bytesRead=" + bytesRead + ",offset=" + offset + ", bufLen=" + msg.length );        }                _msgStatedLen = _builder.decodeInt();                _msgType = _builder.decodeUShort();                _builder.skip( _headerPad ); // spacer for network messageId + pad(2)                _maxIdx = _msgStatedLen + _offset;  // correctly assign maxIdx as last bytes of current message        if ( _maxIdx > _binaryMsg.length )  _maxIdx  = _binaryMsg.length;                return _msgStatedLen;    }    @Override        public void setExchangeEmulationOn() {        _headerPad = 10;                    // receiving AT exchange is 10    }    @Override    public com.rr.codec.emea.exchange.eti.ETIDecodeContext getLastContext( com.rr.codec.emea.exchange.eti.ETIDecodeContext context ) {        context.reset();        if ( _applMsgID.length() > 0 ) {            context.setLastApplMsgID( _applMsgID );            context.setLastPartitionID( _partitionID );        }                return context;    }    private static final ViewString _eurexREC = new ViewString( "d" ); // XEUR        private void enrich( RecoveryNewOrderSingleImpl nos ) {                Instrument instr = null;                if ( _simpleSecurityID > 0 ) {            instr = _instrumentLocator.getInstrumentByID( _eurexREC, _simpleSecurityID );        }        if ( instr != null ) {            nos.setCurrency( instr.getCurrency() );            nos.getSymbolForUpdate().setValue( instr.getRIC() );        }                nos.setInstrument( instr );    }}
+
+    private int _headerPad = 2; // receiving from exchange pad is 2
+
+    @Override
+    public final int parseHeader( final byte[] msg, final int offset, final int bytesRead ) {
+
+        if ( _debug ) _dump.reset();
+
+        _applMsgID.reset();
+        _binaryMsg = msg;
+        _maxIdx = bytesRead + offset; // temp assign maxIdx to last data bytes in bufferMap
+        _offset = offset;
+        _builder.start( msg, offset, _maxIdx );
+        
+        if ( bytesRead < 8 ) {
+            ReusableString copy = TLC.instance().getString();
+            if ( bytesRead == 0 )  {
+                copy.setValue( "{empty}" );
+            } else{
+                copy.setValue( msg, offset, bytesRead );
+            }
+            throw new RuntimeDecodingException( "ETI Messsage too small, len=" + bytesRead, copy );
+        } else if ( msg.length < _maxIdx ){
+            throwDecodeException( "Buffer too small for specified bytesRead=" + bytesRead + ",offset=" + offset + ", bufLen=" + msg.length );
+        }
+        
+        _msgStatedLen = _builder.decodeInt();
+        
+        _msgType = _builder.decodeUShort();
+        
+        _builder.skip( _headerPad ); // spacer for network messageId + pad(2)
+        
+        _maxIdx = _msgStatedLen + _offset;  // correctly assign maxIdx as last bytes of current message
+
+        if ( _maxIdx > _binaryMsg.length )  _maxIdx  = _binaryMsg.length;
+        
+        return _msgStatedLen;
+    }
+
+    @Override    
+    public void setExchangeEmulationOn() {
+        _headerPad = 10;                    // receiving AT exchange is 10
+    }
+
+    @Override
+    public com.rr.codec.emea.exchange.eti.ETIDecodeContext getLastContext( com.rr.codec.emea.exchange.eti.ETIDecodeContext context ) {
+        context.reset();
+        if ( _applMsgID.length() > 0 ) {
+            context.setLastApplMsgID( _applMsgID );
+            context.setLastPartitionID( _partitionID );
+        }
+        
+        return context;
+    }
+
+    private static final ExchangeCode _eurexREC = ExchangeCode.XEUR;
+    private static final ReusableString _instId = new ReusableString();
+
+    private void enrich( NewOrderSingleImpl nos ) {
+        
+        ExchangeInstrument instr = null;
+        
+        if ( _simpleSecurityID > 0 ) {
+            instr = _instrumentLocator.getExchInst( _instId.copy( _simpleSecurityID ), SecurityIDSource.ExchangeSymbol, _eurexREC );
+        }
+
+        if ( instr != null ) {
+            nos.setCurrency( instr.getCurrency() );
+            nos.getSymbolForUpdate().setValue( ((ExchangeInstrument)instr).getExchangeSymbol() );
+        }
+        
+        nos.setInstrument( instr );
+    }
+
+
+}

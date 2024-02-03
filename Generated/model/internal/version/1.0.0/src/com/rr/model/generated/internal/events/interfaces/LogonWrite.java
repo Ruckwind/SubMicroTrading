@@ -1,51 +1,47 @@
-/*******************************************************************************
- * Copyright (c) 2015 Low Latency Trading Limited  :  Author Richard Rose
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at	http://www.apache.org/licenses/LICENSE-2.0
- * Unless required by applicable law or agreed to in writing,  software distributed under the License 
- * is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and limitations under the License.
- *******************************************************************************/
 package com.rr.model.generated.internal.events.interfaces;
 
-import com.rr.model.generated.internal.type.EncryptMethod;
-import com.rr.core.lang.ReusableString;
+/*
+Copyright 2015 Low Latency Trading Limited
+Author Richard Rose
+*/
 
-public interface LogonWrite extends SessionHeader, Logon {
+import com.rr.model.generated.internal.type.EncryptMethod;
+import com.rr.core.utils.Utils;
+import com.rr.core.lang.*;
+import com.rr.core.model.*;
+import com.rr.core.annotations.*;
+
+@SuppressWarnings( { "unused", "override"  })
+
+public interface LogonWrite extends SessionHeaderWrite, Logon {
 
    // Getters and Setters
-    public void setSenderCompId( byte[] buf, int offset, int len );
-    public ReusableString getSenderCompIdForUpdate();
+    void setSenderCompId( byte[] buf, int offset, int len );
+    ReusableString getSenderCompIdForUpdate();
 
-    public void setSenderSubId( byte[] buf, int offset, int len );
-    public ReusableString getSenderSubIdForUpdate();
+    void setSenderSubId( byte[] buf, int offset, int len );
+    ReusableString getSenderSubIdForUpdate();
 
-    public void setTargetCompId( byte[] buf, int offset, int len );
-    public ReusableString getTargetCompIdForUpdate();
+    void setTargetCompId( byte[] buf, int offset, int len );
+    ReusableString getTargetCompIdForUpdate();
 
-    public void setTargetSubId( byte[] buf, int offset, int len );
-    public ReusableString getTargetSubIdForUpdate();
+    void setTargetSubId( byte[] buf, int offset, int len );
+    ReusableString getTargetSubIdForUpdate();
 
-    public void setOnBehalfOfId( byte[] buf, int offset, int len );
-    public ReusableString getOnBehalfOfIdForUpdate();
+    void setOnBehalfOfId( byte[] buf, int offset, int len );
+    ReusableString getOnBehalfOfIdForUpdate();
 
-    public void setEncryptMethod( EncryptMethod val );
+    void setEncryptMethod( EncryptMethod val );
 
-    public void setHeartBtInt( int val );
+    void setHeartBtInt( int val );
 
-    public void setRawDataLen( int val );
+    void setRawDataLen( int val );
 
-    public void setRawData( byte[] buf, int offset, int len );
-    public ReusableString getRawDataForUpdate();
+    void setRawData( byte[] buf, int offset, int len );
+    ReusableString getRawDataForUpdate();
 
-    public void setResetSeqNumFlag( boolean val );
+    void setResetSeqNumFlag( boolean val );
 
-    public void setNextExpectedMsgSeqNum( int val );
-
-    public void setMsgSeqNum( int val );
-
-    public void setPossDupFlag( boolean val );
-
-    public void setSendingTime( int val );
+    void setNextExpectedMsgSeqNum( int val );
 
 }

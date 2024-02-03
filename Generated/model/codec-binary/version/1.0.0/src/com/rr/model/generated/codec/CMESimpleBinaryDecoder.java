@@ -1,18 +1,17 @@
-/*******************************************************************************
- * Copyright (c) 2015 Low Latency Trading Limited  :  Author Richard Rose
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at	http://www.apache.org/licenses/LICENSE-2.0
- * Unless required by applicable law or agreed to in writing,  software distributed under the License 
- * is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and limitations under the License.
- *******************************************************************************/
 package com.rr.model.generated.codec;
+
+/*
+Copyright 2015 Low Latency Trading Limited
+Author Richard Rose
+*/
 
 import java.util.HashMap;
 import java.util.Map;
-import com.rr.core.codec.AbstractBinaryDecoder;
+import com.rr.core.codec.*;
+import com.rr.core.utils.*;
 import com.rr.core.lang.*;
 import com.rr.core.model.*;
+import com.rr.core.factories.*;
 import com.rr.core.pool.SuperPool;
 import com.rr.core.pool.SuperpoolManager;
 import com.rr.model.internal.type.*;
@@ -25,10 +24,13 @@ import com.rr.model.generated.internal.events.interfaces.*;
 import com.rr.model.generated.internal.type.*;
 import com.rr.model.generated.internal.core.SizeType;
 import com.rr.core.codec.binary.sbe.SBEPacketHeader;
+import com.rr.core.utils.StringUtils;
 
 @SuppressWarnings( "unused" )
 
 public final class CMESimpleBinaryDecoder extends AbstractBinaryDecoder implements com.rr.core.codec.binary.sbe.SBEDecoder {
+
+    private final ReusableString _tmpLookupKey = new ReusableString();
 
    // Attrs
     private static final short      MSG_MDIncrementalRefreshReal = 1;
@@ -46,12 +48,13 @@ public final class CMESimpleBinaryDecoder extends AbstractBinaryDecoder implemen
 
     private       short _msgType;
     private final byte                        _protocolVersion;
+    private final String                      _id;
     private       int                         _msgStatedLen;
-    private final ViewString                  _lookup = new ViewString();
     private final ReusableString _dump  = new ReusableString(256);
+    private final ReusableString _missedMsgTypes = new ReusableString();
 
     // dict var holders for conditional mappings and fields with no corresponding event entry .. useful for hooks
-    private       int                         _sendingTime;
+    private       long                        _sendingTime;
     private       int                         _timeBracket;
     private       byte                        _matchEventStartIndicator;
     private       byte                        _noMDEntries;
@@ -75,7 +78,7 @@ public final class CMESimpleBinaryDecoder extends AbstractBinaryDecoder implemen
     private       byte                        _securityTradingEvent;
     private       byte                        _totNumReports;
     private       byte                        _securityUpdateAction;
-    private       int                         _lastUpdateTime;
+    private       long                        _lastUpdateTime;
     private       ReusableString              _applID = new ReusableString(30);
     private       byte                        _marketSegmentID;
     private       ReusableString              _symbol = new ReusableString(30);
@@ -133,7 +136,7 @@ public final class CMESimpleBinaryDecoder extends AbstractBinaryDecoder implemen
     private       ReusableString              _mDFeedType = new ReusableString(30);
     private       byte                        _marketDepth;
     private       byte                        _eventType;
-    private       int                         _eventTime;
+    private       long                        _eventTime;
     private       byte                        _instAttribType;
     private       int                         _instAttribValue;
     private       byte                        _lotType;
@@ -162,17 +165,19 @@ public final class CMESimpleBinaryDecoder extends AbstractBinaryDecoder implemen
     private final SuperPool<SDFeedTypeImpl> _sDFeedTypePool = SuperpoolManager.instance().getSuperPool( SDFeedTypeImpl.class );
     private final SDFeedTypeFactory _sDFeedTypeFactory = new SDFeedTypeFactory( _sDFeedTypePool );
 
-    private final SuperPool<SecDefEventsImpl> _secDefEventsPool = SuperpoolManager.instance().getSuperPool( SecDefEventsImpl.class );
-    private final SecDefEventsFactory _secDefEventsFactory = new SecDefEventsFactory( _secDefEventsPool );
+    private final SuperPool<SecDefEventImpl> _secDefEventPool = SuperpoolManager.instance().getSuperPool( SecDefEventImpl.class );
+    private final SecDefEventFactory _secDefEventFactory = new SecDefEventFactory( _secDefEventPool );
 
     private final SuperPool<SecurityDefinitionImpl> _securityDefinitionPool = SuperpoolManager.instance().getSuperPool( SecurityDefinitionImpl.class );
     private final SecurityDefinitionFactory _securityDefinitionFactory = new SecurityDefinitionFactory( _securityDefinitionPool );
 
 
    // Constructors
-    public CMESimpleBinaryDecoder() {
+    public CMESimpleBinaryDecoder() { this( null ); }
+    public CMESimpleBinaryDecoder( String id ) {
         super();
         setBuilder();
+        _id = id;
         _protocolVersion = (byte)'1';
     }
 
@@ -199,12 +204,12 @@ public final class CMESimpleBinaryDecoder extends AbstractBinaryDecoder implemen
     }
 
     private void setBuilder() {
-        _builder = (_debug) ? new DebugBinaryDecodeBuilder<com.rr.codec.emea.exchange.cme.sbe.SBEDecodeBuilderImpl>( _dump, new com.rr.codec.emea.exchange.cme.sbe.SBEDecodeBuilderImpl() )
+        _builder = (_debug) ? new DebugBinaryDecodeBuilder<>( _dump, new com.rr.codec.emea.exchange.cme.sbe.SBEDecodeBuilderImpl() )
                             : new com.rr.codec.emea.exchange.cme.sbe.SBEDecodeBuilderImpl();
     }
 
     @Override
-    protected final Message doMessageDecode() {
+    protected final Event doMessageDecode() {
         _builder.setMaxIdx( _maxIdx );
 
         switch( _msgType ) {
@@ -230,16 +235,15 @@ public final class CMESimpleBinaryDecoder extends AbstractBinaryDecoder implemen
         return null;
     }
 
-    private final Message decodeMDIncrementalRefreshReal() {
+    private Event decodeMDIncrementalRefreshReal() {
         if ( _debug ) {
             _dump.append( "\nKnown Message : " ).append( "MDIncrementalRefreshReal" ).append( " : " );
         }
 
         final MDIncRefreshImpl msg = _mDIncRefreshFactory.get();
         final int startRootBlockIdx = _builder.getCurrentIndex();
-
         if ( _debug ) _dump.append( "\nField: " ).append( "sendingTime" ).append( " : " );
-        msg.setSendingTime( _builder.decodeTimestampUTC() );
+        _sendingTime = _builder.decodeTimestampUTC();
         if ( _debug ) _dump.append( "\nField: " ).append( "TimeBracket" ).append( " : " );
         _timeBracket = _builder.decodeInt();
         if ( _debug ) _dump.append( "\nField: " ).append( "MatchEventStartIndicator" ).append( " : " );
@@ -274,7 +278,7 @@ public final class CMESimpleBinaryDecoder extends AbstractBinaryDecoder implemen
                 tmpMDEntriesReal.setMdEntryType( transformMDEntryType( _builder.decodeByte() ) );
 
                 if ( _debug ) _dump.append( "\nField: " ).append( "SecurityID" ).append( " : " );
-                tmpMDEntriesReal.setSecurityID( _builder.decodeInt() );
+                _builder.decodeIntToString( tmpMDEntriesReal.getSecurityIDForUpdate() );
 
                 if ( _debug ) _dump.append( "\nField: " ).append( "RtpSeq" ).append( " : " );
                 tmpMDEntriesReal.setRepeatSeq( _builder.decodeInt() );
@@ -301,16 +305,15 @@ public final class CMESimpleBinaryDecoder extends AbstractBinaryDecoder implemen
         return msg;
     }
 
-    private final Message decodeMDIncrementalRefreshTrade() {
+    private Event decodeMDIncrementalRefreshTrade() {
         if ( _debug ) {
             _dump.append( "\nKnown Message : " ).append( "MDIncrementalRefreshTrade" ).append( " : " );
         }
 
         final MDIncRefreshImpl msg = _mDIncRefreshFactory.get();
         final int startRootBlockIdx = _builder.getCurrentIndex();
-
         if ( _debug ) _dump.append( "\nField: " ).append( "sendingTime" ).append( " : " );
-        msg.setSendingTime( _builder.decodeTimestampUTC() );
+        _sendingTime = _builder.decodeTimestampUTC();
         if ( _debug ) _dump.append( "\nField: " ).append( "TimeBracket" ).append( " : " );
         _timeBracket = _builder.decodeInt();
         if ( _debug ) _dump.append( "\nField: " ).append( "MatchEventStartIndicator" ).append( " : " );
@@ -342,7 +345,7 @@ public final class CMESimpleBinaryDecoder extends AbstractBinaryDecoder implemen
                 tmpMDEntriesTrade.setMdUpdateAction( transformMDUpdateAction( _builder.decodeByte() ) );
 
                 if ( _debug ) _dump.append( "\nField: " ).append( "SecurityID" ).append( " : " );
-                tmpMDEntriesTrade.setSecurityID( _builder.decodeInt() );
+                _builder.decodeIntToString( tmpMDEntriesTrade.getSecurityIDForUpdate() );
 
                 if ( _debug ) _dump.append( "\nField: " ).append( "RtpSeq" ).append( " : " );
                 tmpMDEntriesTrade.setRepeatSeq( _builder.decodeInt() );
@@ -371,16 +374,15 @@ public final class CMESimpleBinaryDecoder extends AbstractBinaryDecoder implemen
         return msg;
     }
 
-    private final Message decodeMDIncrementalRefreshVolume() {
+    private Event decodeMDIncrementalRefreshVolume() {
         if ( _debug ) {
             _dump.append( "\nKnown Message : " ).append( "MDIncrementalRefreshVolume" ).append( " : " );
         }
 
         final MDIncRefreshImpl msg = _mDIncRefreshFactory.get();
         final int startRootBlockIdx = _builder.getCurrentIndex();
-
         if ( _debug ) _dump.append( "\nField: " ).append( "sendingTime" ).append( " : " );
-        msg.setSendingTime( _builder.decodeTimestampUTC() );
+        _sendingTime = _builder.decodeTimestampUTC();
         if ( _debug ) _dump.append( "\nField: " ).append( "TimeBracket" ).append( " : " );
         _timeBracket = _builder.decodeInt();
         if ( _debug ) _dump.append( "\nField: " ).append( "MatchEventStartIndicator" ).append( " : " );
@@ -412,7 +414,7 @@ public final class CMESimpleBinaryDecoder extends AbstractBinaryDecoder implemen
                 tmpMDEntriesVolume.setMdUpdateAction( transformMDUpdateAction( _builder.decodeByte() ) );
 
                 if ( _debug ) _dump.append( "\nField: " ).append( "SecurityID" ).append( " : " );
-                tmpMDEntriesVolume.setSecurityID( _builder.decodeInt() );
+                _builder.decodeIntToString( tmpMDEntriesVolume.getSecurityIDForUpdate() );
 
                 if ( _debug ) _dump.append( "\nField: " ).append( "RtpSeq" ).append( " : " );
                 tmpMDEntriesVolume.setRepeatSeq( _builder.decodeInt() );
@@ -431,7 +433,7 @@ public final class CMESimpleBinaryDecoder extends AbstractBinaryDecoder implemen
         return msg;
     }
 
-    private final Message decodeMDSecurityStatus() {
+    private Event decodeMDSecurityStatus() {
         if ( _debug ) {
             _dump.append( "\nKnown Message : " ).append( "MDSecurityStatus" ).append( " : " );
         }
@@ -449,7 +451,7 @@ public final class CMESimpleBinaryDecoder extends AbstractBinaryDecoder implemen
         _builder.decodeZStringFixedWidth( _asset, 6 );
 
         if ( _debug ) _dump.append( "\nField: " ).append( "SecurityID" ).append( " : " );
-        msg.setSecurityID( _builder.decodeInt() );
+        _builder.decodeIntToString( msg.getSecurityIDForUpdate() );
 
         if ( _debug ) _dump.append( "\nField: " ).append( "SecurityTradingStatus" ).append( " : " );
         msg.setSecurityTradingStatus( transformSecurityTradingStatus( _builder.decodeByte() ) );
@@ -467,16 +469,15 @@ public final class CMESimpleBinaryDecoder extends AbstractBinaryDecoder implemen
         return msg;
     }
 
-    private final Message decodeMDSnapshotRefresh() {
+    private Event decodeMDSnapshotRefresh() {
         if ( _debug ) {
             _dump.append( "\nKnown Message : " ).append( "MDSnapshotRefresh" ).append( " : " );
         }
 
         final MDSnapshotFullRefreshImpl msg = _mDSnapshotFullRefreshFactory.get();
         final int startRootBlockIdx = _builder.getCurrentIndex();
-
         if ( _debug ) _dump.append( "\nField: " ).append( "sendingTime" ).append( " : " );
-        msg.setSendingTime( _builder.decodeTimestampUTC() );
+        _sendingTime = _builder.decodeTimestampUTC();
         if ( _debug ) _dump.append( "\nField: " ).append( "TimeBracket" ).append( " : " );
         _timeBracket = _builder.decodeInt();
         if ( _debug ) _dump.append( "\nField: " ).append( "MatchEventStartIndicator" ).append( " : " );
@@ -530,16 +531,15 @@ public final class CMESimpleBinaryDecoder extends AbstractBinaryDecoder implemen
         return msg;
     }
 
-    private final Message decodeMDIncrementalRefreshStats() {
+    private Event decodeMDIncrementalRefreshStats() {
         if ( _debug ) {
             _dump.append( "\nKnown Message : " ).append( "MDIncrementalRefreshStats" ).append( " : " );
         }
 
         final MDIncRefreshImpl msg = _mDIncRefreshFactory.get();
         final int startRootBlockIdx = _builder.getCurrentIndex();
-
         if ( _debug ) _dump.append( "\nField: " ).append( "sendingTime" ).append( " : " );
-        msg.setSendingTime( _builder.decodeTimestampUTC() );
+        _sendingTime = _builder.decodeTimestampUTC();
         if ( _debug ) _dump.append( "\nField: " ).append( "TimeBracket" ).append( " : " );
         _timeBracket = _builder.decodeInt();
         if ( _debug ) _dump.append( "\nField: " ).append( "MatchEventStartIndicator" ).append( " : " );
@@ -574,7 +574,7 @@ public final class CMESimpleBinaryDecoder extends AbstractBinaryDecoder implemen
                 tmpMDEntriesStats.setMdEntryType( transformMDEntryType( _builder.decodeByte() ) );
 
                 if ( _debug ) _dump.append( "\nField: " ).append( "SecurityID" ).append( " : " );
-                tmpMDEntriesStats.setSecurityID( _builder.decodeInt() );
+                _builder.decodeIntToString( tmpMDEntriesStats.getSecurityIDForUpdate() );
 
                 if ( _debug ) _dump.append( "\nField: " ).append( "RtpSeq" ).append( " : " );
                 tmpMDEntriesStats.setRepeatSeq( _builder.decodeInt() );
@@ -598,16 +598,15 @@ public final class CMESimpleBinaryDecoder extends AbstractBinaryDecoder implemen
         return msg;
     }
 
-    private final Message decodeMDIncrementalRefreshImplied() {
+    private Event decodeMDIncrementalRefreshImplied() {
         if ( _debug ) {
             _dump.append( "\nKnown Message : " ).append( "MDIncrementalRefreshImplied" ).append( " : " );
         }
 
         final MDIncRefreshImpl msg = _mDIncRefreshFactory.get();
         final int startRootBlockIdx = _builder.getCurrentIndex();
-
         if ( _debug ) _dump.append( "\nField: " ).append( "sendingTime" ).append( " : " );
-        msg.setSendingTime( _builder.decodeTimestampUTC() );
+        _sendingTime = _builder.decodeTimestampUTC();
         if ( _debug ) _dump.append( "\nField: " ).append( "TimeBracket" ).append( " : " );
         _timeBracket = _builder.decodeInt();
         if ( _debug ) _dump.append( "\nField: " ).append( "MatchEventStartIndicator" ).append( " : " );
@@ -642,7 +641,7 @@ public final class CMESimpleBinaryDecoder extends AbstractBinaryDecoder implemen
                 tmpMDEntriesImplied.setMdEntryType( transformMDEntryType( _builder.decodeByte() ) );
 
                 if ( _debug ) _dump.append( "\nField: " ).append( "SecurityID" ).append( " : " );
-                tmpMDEntriesImplied.setSecurityID( _builder.decodeInt() );
+                _builder.decodeIntToString( tmpMDEntriesImplied.getSecurityIDForUpdate() );
 
                 if ( _debug ) _dump.append( "\nField: " ).append( "RtpSeq" ).append( " : " );
                 tmpMDEntriesImplied.setRepeatSeq( _builder.decodeInt() );
@@ -666,7 +665,7 @@ public final class CMESimpleBinaryDecoder extends AbstractBinaryDecoder implemen
         return msg;
     }
 
-    private final Message decodeMDInstrumentDefinition() {
+    private Event decodeMDInstrumentDefinition() {
         if ( _debug ) {
             _dump.append( "\nKnown Message : " ).append( "MDInstrumentDefinition" ).append( " : " );
         }
@@ -679,9 +678,8 @@ public final class CMESimpleBinaryDecoder extends AbstractBinaryDecoder implemen
 
         if ( _debug ) _dump.append( "\nField: " ).append( "SecurityUpdateAction" ).append( " : " );
         msg.setSecurityUpdateAction( SecurityUpdateAction.getVal( _builder.decodeByte() ) );
-
         if ( _debug ) _dump.append( "\nField: " ).append( "LastUpdateTime" ).append( " : " );
-        msg.setLastUpdateTime( _builder.decodeTimestampUTC() );
+        _lastUpdateTime = _builder.decodeTimestampUTC();
 
         if ( _debug ) _dump.append( "\nField: " ).append( "ApplID" ).append( " : " );
         _builder.decodeZStringFixedWidth( msg.getApplIDForUpdate(), 5 );
@@ -692,7 +690,7 @@ public final class CMESimpleBinaryDecoder extends AbstractBinaryDecoder implemen
         _builder.decodeZStringFixedWidth( msg.getSymbolForUpdate(), 20 );
 
         if ( _debug ) _dump.append( "\nField: " ).append( "SecurityID" ).append( " : " );
-        msg.setSecurityID( _builder.decodeInt() );
+        _builder.decodeIntToString( msg.getSecurityIDForUpdate() );
 
         if ( _debug ) _dump.append( "\nField: " ).append( "MaturityMonthYear" ).append( " : " );
         msg.setMaturityMonthYear( _builder.decodeUShort() );
@@ -703,7 +701,8 @@ public final class CMESimpleBinaryDecoder extends AbstractBinaryDecoder implemen
         _builder.decodeZStringFixedWidth( _asset, 6 );
 
         if ( _debug ) _dump.append( "\nField: " ).append( "SecurityType" ).append( " : " );
-        msg.setSecurityType( SecurityType.getVal( _binaryMsg, _builder.getCurrentIndex(), 6) );
+        _tmpLookupKey.setValue( _binaryMsg, _builder.getCurrentIndex(), 6 );
+        msg.setSecurityType( SecurityType.getVal( _tmpLookupKey ) );
         _builder.skip( 6);
 
         if ( _debug ) _dump.append( "\nField: " ).append( "CFICode" ).append( " : " );
@@ -712,12 +711,13 @@ public final class CMESimpleBinaryDecoder extends AbstractBinaryDecoder implemen
         _builder.decodeZStringFixedWidth( _securitySubType, 5 );
         if ( _debug ) _dump.append( "\nField: " ).append( "UserDefinedInstrument" ).append( " : " );
         _userDefinedInstrument = _builder.decodeChar();
-
         if ( _debug ) _dump.append( "\nField: " ).append( "UnderlyingProdcut" ).append( " : " );
-        _builder.decodeString( msg.getUnderlyingProductForUpdate() );
+        _underlyingProdcut = _builder.decodeByte();
 
         if ( _debug ) _dump.append( "\nField: " ).append( "SecurityExchange" ).append( " : " );
-        _builder.decodeZStringFixedWidth( msg.getSecurityExchangeForUpdate(), 4 );
+        _tmpLookupKey.setValue( _binaryMsg, _builder.getCurrentIndex(), 4 );
+        msg.setSecurityExchange( ExchangeCode.getVal( _tmpLookupKey ) );
+        _builder.skip( 4);
 
         if ( _debug ) _dump.append( "\nField: " ).append( "SecurityTradingStatus" ).append( " : " );
         msg.setSecurityTradingStatus( transformSecurityTradingStatus( _builder.decodeByte() ) );
@@ -726,15 +726,18 @@ public final class CMESimpleBinaryDecoder extends AbstractBinaryDecoder implemen
         msg.setStrikePrice( _builder.decodeDecimal() );
 
         if ( _debug ) _dump.append( "\nField: " ).append( "StrikeCurrency" ).append( " : " );
-        msg.setStrikeCurrency( Currency.getVal( _binaryMsg, _builder.getCurrentIndex(), 3) );
+        _tmpLookupKey.setValue( _binaryMsg, _builder.getCurrentIndex(), 3 );
+        msg.setStrikeCurrency( Currency.getVal( _tmpLookupKey ) );
         _builder.skip( 3);
 
         if ( _debug ) _dump.append( "\nField: " ).append( "Currency" ).append( " : " );
-        msg.setCurrency( Currency.getVal( _binaryMsg, _builder.getCurrentIndex(), 3) );
+        _tmpLookupKey.setValue( _binaryMsg, _builder.getCurrentIndex(), 3 );
+        msg.setCurrency( Currency.getVal( _tmpLookupKey ) );
         _builder.skip( 3);
 
         if ( _debug ) _dump.append( "\nField: " ).append( "SettlCurrency" ).append( " : " );
-        msg.setSettlCurrency( Currency.getVal( _binaryMsg, _builder.getCurrentIndex(), 3) );
+        _tmpLookupKey.setValue( _binaryMsg, _builder.getCurrentIndex(), 3 );
+        msg.setSettlCurrency( Currency.getVal( _tmpLookupKey ) );
         _builder.skip( 3);
         if ( _debug ) _dump.append( "\nField: " ).append( "MinCabPrice" ).append( " : " );
         _minCabPrice = _builder.decodePrice();
@@ -844,7 +847,7 @@ public final class CMESimpleBinaryDecoder extends AbstractBinaryDecoder implemen
                 lastLegsGrp = tmpLegsGrp;
 
                 if ( _debug ) _dump.append( "\nField: " ).append( "LegSecurityID" ).append( " : " );
-                tmpLegsGrp.setLegSecurityID( _builder.decodeInt() );
+                _builder.decodeIntToString( tmpLegsGrp.getLegSecurityIDForUpdate() );
 
                 if ( _debug ) _dump.append( "\nField: " ).append( "LegSide" ).append( " : " );
                 tmpLegsGrp.setLegSide( transformSide( _builder.decodeByte() ) );
@@ -892,13 +895,13 @@ public final class CMESimpleBinaryDecoder extends AbstractBinaryDecoder implemen
 
 
         {
-             // CHECKPOINT: repeatingGroup type SecDefEvents
-            SecDefEventsImpl tmpEventsGrp;
-            SecDefEventsImpl lastEventsGrp = null;
+             // CHECKPOINT: repeatingGroup type SecDefEvent
+            SecDefEventImpl tmpEventsGrp;
+            SecDefEventImpl lastEventsGrp = null;
             int counterEventsGrp = msg.getNoEvents();
             for( int i=0 ; i < counterEventsGrp ; ++i ) { 
                 final int startBlockIdx = _builder.getCurrentIndex();
-                tmpEventsGrp = _secDefEventsFactory.get();
+                tmpEventsGrp = _secDefEventFactory.get();
                 if ( lastEventsGrp == null ) {
                     msg.setEvents( tmpEventsGrp );
                 } else {
@@ -907,7 +910,7 @@ public final class CMESimpleBinaryDecoder extends AbstractBinaryDecoder implemen
                 lastEventsGrp = tmpEventsGrp;
 
                 if ( _debug ) _dump.append( "\nField: " ).append( "EventType" ).append( " : " );
-                tmpEventsGrp.setEventType( _builder.decodeByte() );
+                tmpEventsGrp.setEventType( SecDefEventType.getVal( _builder.decodeByte() ) );
 
                 if ( _debug ) _dump.append( "\nField: " ).append( "EventTime" ).append( " : " );
                 tmpEventsGrp.setEventTime( _builder.decodeTimestampUTC() );
@@ -930,10 +933,14 @@ public final class CMESimpleBinaryDecoder extends AbstractBinaryDecoder implemen
             _builder.skip( bytesToSkip ); // SKIPPING repeating group : LotTypeRulesGrp
         }
 
+        if ( _debug ) _dump.append( "\nHook : " ).append( "postdecode" ).append( " : " );
+        msg.setExchangeLongId( StringUtils.parseLong( msg.getSecurityID() ) );
         _builder.end();
         return msg;
     }
 
+
+    @Override public String getComponentId() { return _id; }
 
    // transform methods
     private static final SecurityTradingStatus[] _securityTradingStatusMap = new SecurityTradingStatus[26];
@@ -945,8 +952,8 @@ public final class CMESimpleBinaryDecoder extends AbstractBinaryDecoder implemen
          _securityTradingStatusMap[ (byte)0x02 - _securityTradingStatusIndexOffset ] = SecurityTradingStatus.TradingHalt;
          _securityTradingStatusMap[ (byte)0x04 - _securityTradingStatusIndexOffset ] = SecurityTradingStatus.NoOpenNoResume;
          _securityTradingStatusMap[ (byte)0x0E - _securityTradingStatusIndexOffset ] = SecurityTradingStatus.NewPriceIndication;
-         _securityTradingStatusMap[ (byte)0x11 - _securityTradingStatusIndexOffset ] = SecurityTradingStatus.StartOfTradingSession;
-         _securityTradingStatusMap[ (byte)0x12 - _securityTradingStatusIndexOffset ] = SecurityTradingStatus.EndOfSessionTradingUnavailable;
+         _securityTradingStatusMap[ (byte)0x11 - _securityTradingStatusIndexOffset ] = SecurityTradingStatus.ReadyToTrade;
+         _securityTradingStatusMap[ (byte)0x12 - _securityTradingStatusIndexOffset ] = SecurityTradingStatus.NotAvailableForTrading;
          _securityTradingStatusMap[ (byte)0x14 - _securityTradingStatusIndexOffset ] = SecurityTradingStatus.Invalid;
          _securityTradingStatusMap[ (byte)0x15 - _securityTradingStatusIndexOffset ] = SecurityTradingStatus.PreOpen;
          _securityTradingStatusMap[ (byte)0x1A - _securityTradingStatusIndexOffset ] = SecurityTradingStatus.NoOpenNoResume;
@@ -979,6 +986,43 @@ public final class CMESimpleBinaryDecoder extends AbstractBinaryDecoder implemen
         Side intVal = _sideMap[ arrIdx ];
         if ( intVal == null ) {
             throw new RuntimeDecodingException( " unsupported decoding on Side for value " + (char)extVal );
+        }
+        return intVal;
+    }
+
+    private static final ProductComplex[] _productComplexMap = new ProductComplex[18];
+    private static final int    _productComplexIndexOffset = 1;
+    static {
+        for ( int i=0 ; i < _productComplexMap.length ; i++ ) {
+             _productComplexMap[i] = null;
+        }
+         _productComplexMap[ (byte)0x01 - _productComplexIndexOffset ] = ProductComplex.Agency;
+         _productComplexMap[ (byte)0x02 - _productComplexIndexOffset ] = ProductComplex.Commodity;
+         _productComplexMap[ (byte)0x03 - _productComplexIndexOffset ] = ProductComplex.Corporate;
+         _productComplexMap[ (byte)0x04 - _productComplexIndexOffset ] = ProductComplex.Currency;
+         _productComplexMap[ (byte)0x05 - _productComplexIndexOffset ] = ProductComplex.Equity;
+         _productComplexMap[ (byte)0x06 - _productComplexIndexOffset ] = ProductComplex.Government;
+         _productComplexMap[ (byte)0x07 - _productComplexIndexOffset ] = ProductComplex.Index;
+         _productComplexMap[ (byte)0x08 - _productComplexIndexOffset ] = ProductComplex.Loan;
+         _productComplexMap[ (byte)0x09 - _productComplexIndexOffset ] = ProductComplex.MoneyMarket;
+         _productComplexMap[ (byte)0x0A - _productComplexIndexOffset ] = ProductComplex.Mortgage;
+         _productComplexMap[ (byte)0x0B - _productComplexIndexOffset ] = ProductComplex.Municipal;
+         _productComplexMap[ (byte)0x0C - _productComplexIndexOffset ] = ProductComplex.Other;
+         _productComplexMap[ (byte)0x0D - _productComplexIndexOffset ] = ProductComplex.Financing;
+         _productComplexMap[ (byte)0x0E - _productComplexIndexOffset ] = ProductComplex.InterestRate;
+         _productComplexMap[ (byte)0x0F - _productComplexIndexOffset ] = ProductComplex.FXCash;
+         _productComplexMap[ (byte)0x10 - _productComplexIndexOffset ] = ProductComplex.Energy;
+         _productComplexMap[ (byte)0x11 - _productComplexIndexOffset ] = ProductComplex.Metals;
+    }
+
+    private ProductComplex transformProductComplex( byte extVal ) {
+        final int arrIdx = extVal - _productComplexIndexOffset;
+        if ( arrIdx < 0 || arrIdx >= _productComplexMap.length ) {
+            throw new RuntimeDecodingException( " unsupported decoding on ProductComplex for value " + (char)extVal );
+        }
+        ProductComplex intVal = _productComplexMap[ arrIdx ];
+        if ( intVal == null ) {
+            throw new RuntimeDecodingException( " unsupported decoding on ProductComplex for value " + (char)extVal );
         }
         return intVal;
     }
@@ -1039,4 +1083,67 @@ public final class CMESimpleBinaryDecoder extends AbstractBinaryDecoder implemen
         return intVal;
     }
 
-    private       int _curMsgRootBlockLen;    private       int _schemaId;    private       int _curMsgSchemaVersion;    private final ReusableString        _destFixMsg         = new ReusableString();    private       int                   _subMsgId;    private       int                   _packetSeqNum;    public void decodeStartPacket( byte[] msg, int offset, int maxIdx, SBEPacketHeader h ) {        _builder.start( msg, offset, maxIdx );        h._packetSeqNum  =  _packetSeqNum  = _builder.decodeUInt();        h._sendTimeNanos = _builder.decodeULong();        _subMsgId = 0;    }    @Override    public final int parseHeader( final byte[] msg, final int offset, final int bytesRead ) {               _binaryMsg = msg;        _maxIdx = bytesRead + offset; // temp assign maxIdx to last data bytes in buffer        _offset = offset;        _builder.start( msg, offset, _maxIdx );                if ( bytesRead < 8 ) {            ReusableString copy = TLC.instance().getString();            if ( bytesRead == 0 )  {                copy.setValue( "{empty}" );            } else{                copy.setValue( msg, offset, bytesRead );            }            throw new RuntimeDecodingException( "SBE Messsage too small, len=" + bytesRead, copy );        } else if ( msg.length < _maxIdx ){            throwDecodeException( "Buffer too small for specified bytesRead=" + bytesRead + ",offset=" + offset + ", bufLen=" + msg.length );        }                _msgStatedLen        = _builder.decodeUShort();        _curMsgRootBlockLen  = _builder.decodeUShort();        _msgType             = _builder.decodeUShort(); // actually the templateId        _schemaId            = _builder.decodeUShort();         _curMsgSchemaVersion = _builder.decodeUShort();                 _maxIdx = _msgStatedLen + _offset;  // correctly assign maxIdx as last bytes of current message        if ( _maxIdx > _binaryMsg.length )  _maxIdx  = _binaryMsg.length;                ++_subMsgId;                return _msgStatedLen;    }    @Override    public void logLastMsg() {        _destFixMsg.reset();        _destFixMsg.append( "IN  [" ).append( _packetSeqNum ).append( "] [idx#" ).append( _subMsgId ).append( "] [t#" ).append( _schemaId ).append( "] ");        _destFixMsg.appendHEX( _builder.getBuffer(), _builder.getOffset(), _builder.getMaxIdx() );        _log.info( _destFixMsg );    }    @Override    public int getCurrentOffset() {        return _builder.getCurrentIndex();    }}
+
+    private       int _curMsgRootBlockLen;
+    private       int _schemaId;
+    private       int _curMsgSchemaVersion;
+
+    private final ReusableString        _destFixMsg         = new ReusableString();
+    private       int                   _subMsgId;
+    private       int                   _packetSeqNum;
+
+    @Override public void decodeStartPacket( byte[] msg, int offset, int maxIdx, SBEPacketHeader h ) {
+        _builder.start( msg, offset, maxIdx );
+
+        h._packetSeqNum  =  _packetSeqNum  = _builder.decodeUInt();
+        h._sendTimeNanos = _builder.decodeULong();
+        _subMsgId = 0;
+    }
+
+    @Override public final int parseHeader( final byte[] msg, final int offset, final int bytesRead ) {
+       
+        _binaryMsg = msg;
+        _maxIdx = bytesRead + offset; // temp assign maxIdx to last data bytes in bufferMap
+        _offset = offset;
+        _builder.start( msg, offset, _maxIdx );
+        
+        if ( bytesRead < 8 ) {
+            ReusableString copy = TLC.instance().getString();
+            if ( bytesRead == 0 )  {
+                copy.setValue( "{empty}" );
+            } else{
+                copy.setValue( msg, offset, bytesRead );
+            }
+            throw new RuntimeDecodingException( "SBE Messsage too small, len=" + bytesRead, copy );
+        } else if ( msg.length < _maxIdx ){
+            throwDecodeException( "Buffer too small for specified bytesRead=" + bytesRead + ",offset=" + offset + ", bufLen=" + msg.length );
+        }
+        
+        _msgStatedLen        = _builder.decodeUShort();
+        _curMsgRootBlockLen  = _builder.decodeUShort();
+        _msgType             = _builder.decodeUShort(); // actually the templateId
+        _schemaId            = _builder.decodeUShort(); 
+        _curMsgSchemaVersion = _builder.decodeUShort(); 
+        
+        _maxIdx = _msgStatedLen + _offset;  // correctly assign maxIdx as last bytes of current message
+
+        if ( _maxIdx > _binaryMsg.length )  _maxIdx  = _binaryMsg.length;
+        
+        ++_subMsgId;
+        
+        return _msgStatedLen;
+    }
+
+
+    @Override public void logLastMsg() {
+        _destFixMsg.reset();
+        _destFixMsg.append( "IN  [" ).append( _packetSeqNum ).append( "] [idx#" ).append( _subMsgId ).append( "] [t#" ).append( _schemaId ).append( "] ");
+        _destFixMsg.appendHEX( _builder.getBuffer(), _builder.getOffset(), _builder.getMaxIdx() );
+
+        _log.info( _destFixMsg );
+    }
+
+    @Override public int getCurrentOffset() {
+        return _builder.getCurrentIndex();
+    }
+}

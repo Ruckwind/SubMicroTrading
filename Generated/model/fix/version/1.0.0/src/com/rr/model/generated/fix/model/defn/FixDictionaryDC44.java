@@ -1,12 +1,9 @@
-/*******************************************************************************
- * Copyright (c) 2015 Low Latency Trading Limited  :  Author Richard Rose
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at	http://www.apache.org/licenses/LICENSE-2.0
- * Unless required by applicable law or agreed to in writing,  software distributed under the License 
- * is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and limitations under the License.
- *******************************************************************************/
 package com.rr.model.generated.fix.model.defn;
+
+/*
+Copyright 2015 Low Latency Trading Limited
+Author Richard Rose
+*/
 
 
 import javax.annotation.Generated;
@@ -66,12 +63,15 @@ public interface FixDictionaryDC44 {
     public int OrdRejReason = 103;
     public int SecurityDesc = 107;
     public int heartBtInt = 108;
+    public int clientID = 109;
+    public int displayQty = 111;
     public int testReqID = 112;
     public int OnBehalfOfCompID = 115;
     public int OnBehalfOfSubID = 116;
     public int settlCurrency = 120;
     public int OrigSendingTime = 122;
     public int GapFillFlag = 123;
+    public int expireTime = 126;
     public int DeliverToCompID = 128;
     public int DeliverToSubID = 129;
     public int ResetSeqNumFlag = 141;
@@ -83,6 +83,8 @@ public interface FixDictionaryDC44 {
     public int ExecType = 150;
     public int LeavesQty = 151;
     public int SecurityType = 167;
+    public int effectiveTime = 168;
+    public int maturityMonthYear = 200;
     public int SecurityExchange = 207;
     public int PegOffsetValue = 211;
     public int mdReqId = 262;
@@ -104,36 +106,86 @@ public interface FixDictionaryDC44 {
     public int CxlRejResponseTo = 434;
     public int MultiLegReportingType = 442;
     public int PartyIDSource = 447;
-    public int SrcLinkId = 526;
+    public int parentClOrdId = 526;
     public int OrderCapacity = 528;
     public int OrderRestrictions = 529;
     public int BookingType = 775;
     public int NextExpectedMsgSeqNum = 789;
-    public int LastLiquidityInd = 851;
+    public int TargetStrategy = 847;
+    public int StratParams = 848;
+    public int LiquidityInd = 851;
+    public int strategyId = 1601;
+    public int origStrategyId = 1602;
     public int TradingSystemName = 1603;
     public int TradingSystemVersion = 1604;
     public int TradingSystemVendor = 1605;
+    public int TradingStatus = 1700;
     public int AckStats = 11611;
-    public int algoId = 9001;
+    public int idOfExportComponent = 9001;
     public int timestamp = 9002;
     public int algoEventSeqNum = 9003;
     public int lastTickId = 9004;
     public int pnl = 9005;
-    public int lastEventInst = 9000;
     public int noInstEntries = 9006;
-    public int instrument = 9007;
-    public int totLongContractsExecuted = 9008;
-    public int totShortContractsExecuted = 9009;
-    public int totLongContractsOpen = 9010;
-    public int totShortContractsOpen = 9011;
-    public int totLongValueExecuted = 9012;
-    public int totShortValueExecuted = 9013;
-    public int totalLongOrders = 9014;
-    public int totalShortOrders = 9015;
-    public int bidPx = 9016;
-    public int askPx = 9017;
-    public int lastDecidedPosition = 9018;
-    public int totLongContractsUnwound = 9019;
-    public int totShortContractsUnwound = 9020;
-    public int unwindPnl = 9021;
+    public int fromLongRealisedTotalQty = 9008;
+    public int fromLongRealisedTotalLongValue = 9009;
+    public int fromLongRealisedTotalShortValue = 9010;
+    public int fromLongRealisedTotalLongAvePrice = 9011;
+    public int fromLongRealisedTotalShortAvePrice = 9012;
+    public int fromLongRealisedTotalPnL = 9013;
+    public int fromShortRealisedTotalQty = 9014;
+    public int fromShortRealisedTotalLongValue = 9015;
+    public int fromShortRealisedTotalShortValue = 9016;
+    public int fromShortRealisedTotalLongAvePrice = 9017;
+    public int fromShortRealisedTotalShortAvePrice = 9018;
+    public int fromShortRealisedTotalPnL = 9019;
+    public int unrealisedTotalValue = 9020;
+    public int unrealisedTotalAvePrice = 9021;
+    public int unrealisedTotalPnL = 9022;
+    public int lastPrice = 9023;
+    public int position = 9024;
+    public int totalTradeQty = 9025;
+    public int totalTradeVal = 9026;
+    public int averagePrice = 9027;
+    public int pointValue = 9028;
+    public int totalLongOrders = 9029;
+    public int totalShortOrders = 9030;
+    public int totLongContractsUnwound = 9031;
+    public int totShortContractsUnwound = 9032;
+    public int bidPx = 9033;
+    public int askPx = 9034;
+    public int lastDecidedPosition = 9035;
+    public int unwindPnl = 9036;
+    public int totLongOpenQty = 9037;
+    public int totShortOpenQty = 9038;
+    public int realisedTotalPnL = 9039;
+    public int liveStartTimestamp = 9040;
+    public int status = 9041;
+    public int algoId = 9042;
+    public int btStartTimestamp = 9043;
+    public int btEndTimestamp = 9044;
+    public int strategyDefinition = 9045;
+    public int userName = 9046;
+    public int numTrades = 9047;
+    public int numStrategies = 9048;
+    public int stratTimestamp = 9049;
+    public int id = 9050;
+    public int liveEndTimestamp = 9051;
+    public int publishSeqNum = 9052;
+    public int stratTimeZone = 9053;
+    public int stratStateMsgsInGrp = 9054;
+    public int curStratStateMsgInGrp = 9055;
+    public int isDeltaMode = 9056;
+    public int isActiveTracker = 9057;
+    public int unrealisedTotalPnLMin = 9058;
+    public int fromLongRealisedTotalPnLMin = 9059;
+    public int fromShortRealisedTotalPnLMin = 9060;
+    public int unrealisedTotalPnLMax = 9061;
+    public int fromLongRealisedTotalPnLMax = 9062;
+    public int fromShortRealisedTotalPnLMax = 9063;
+    public int cashAllocation = 9064;
+    public int leverage = 9065;
+    public int cashBalance = 9066;
+    public int cumCashAdj = 9067;
+    public int sicFlags = 9068;
 }

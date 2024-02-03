@@ -1,36 +1,29 @@
-/*******************************************************************************
- * Copyright (c) 2015 Low Latency Trading Limited  :  Author Richard Rose
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at	http://www.apache.org/licenses/LICENSE-2.0
- * Unless required by applicable law or agreed to in writing,  software distributed under the License 
- * is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and limitations under the License.
- *******************************************************************************/
 package com.rr.model.generated.internal.events.impl;
+
+/*
+Copyright 2015 Low Latency Trading Limited
+Author Richard Rose
+*/
 
 import com.rr.model.generated.internal.type.MDEntryType;
 import com.rr.model.generated.internal.type.Side;
-import com.rr.core.lang.ViewString;
-import com.rr.core.lang.ReusableString;
-import com.rr.core.lang.Constants;
-import com.rr.core.model.MsgFlag;
-import com.rr.core.lang.ReusableType;
-import com.rr.core.lang.Reusable;
-import com.rr.core.model.Message;
-import com.rr.core.model.MessageHandler;
+import com.rr.core.utils.Utils;
+import com.rr.core.lang.*;
+import com.rr.core.model.*;
+import com.rr.core.annotations.*;
 import com.rr.model.internal.type.*;
 import com.rr.model.generated.internal.core.ModelReusableTypes;
 import com.rr.model.generated.internal.core.SizeType;
 import com.rr.model.generated.internal.core.EventIds;
 import com.rr.model.generated.internal.events.interfaces.*;
 
-@SuppressWarnings( "unused" )
+@SuppressWarnings( { "unused", "override"  })
 
-public final class TickUpdateImpl implements TickUpdate, Reusable<TickUpdateImpl> {
+public final class TickUpdateImpl implements TickUpdate, Reusable<TickUpdateImpl>, Copyable<TickUpdate> {
 
    // Attrs
 
-    private          TickUpdateImpl _next = null;
+    private transient          TickUpdateImpl _next = null;
     private double _mdEntryPx = Constants.UNSET_DOUBLE;
     private int _mdEntrySize = Constants.UNSET_INT;
     private long _tradeTime = Constants.UNSET_LONG;
@@ -39,7 +32,7 @@ public final class TickUpdateImpl implements TickUpdate, Reusable<TickUpdateImpl
     private MDEntryType _mdEntryType;
     private Side _tickDirection;
 
-    private byte           _flags          = 0;
+    private int           _flags          = 0;
 
    // Getters and Setters
     @Override public final MDEntryType getMdEntryType() { return _mdEntryType; }
@@ -94,20 +87,56 @@ public final class TickUpdateImpl implements TickUpdate, Reusable<TickUpdateImpl
    // Helper methods
     @Override
     public String toString() {
-        ReusableString buf = new ReusableString();
+        ReusableString buf = TLC.instance().pop();
         dump( buf );
-        return buf.toString();
+        String rs = buf.toString();
+        TLC.instance().pushback( buf );
+        return rs;
     }
 
     @Override
-    public final void dump( ReusableString out ) {
+    public final void dump( final ReusableString out ) {
         out.append( "TickUpdateImpl" ).append( ' ' );
-        out.append( ", mdEntryType=" ).append( getMdEntryType() );
-        out.append( ", mdEntryPx=" ).append( getMdEntryPx() );
-        out.append( ", mdEntrySize=" ).append( getMdEntrySize() );
-        out.append( ", tradeTime=" ).append( getTradeTime() );
-        out.append( ", tickDirection=" ).append( getTickDirection() );
-        out.append( ", numberOfOrders=" ).append( getNumberOfOrders() );
+        if ( getMdEntryType() != null )             out.append( ", mdEntryType=" ).append( getMdEntryType() );
+        if ( Utils.hasVal( getMdEntryPx() ) ) out.append( ", mdEntryPx=" ).append( getMdEntryPx() );
+        if ( Constants.UNSET_INT != getMdEntrySize() && 0 != getMdEntrySize() )             out.append( ", mdEntrySize=" ).append( getMdEntrySize() );
+        if ( Constants.UNSET_LONG != getTradeTime() && 0 != getTradeTime() )             out.append( ", tradeTime=" ).append( getTradeTime() );
+        if ( getTickDirection() != null )             out.append( ", tickDirection=" ).append( getTickDirection() );
+        if ( Constants.UNSET_INT != getNumberOfOrders() && 0 != getNumberOfOrders() )             out.append( ", numberOfOrders=" ).append( getNumberOfOrders() );
+    }
+
+    @Override public final void snapTo( TickUpdate dest ) {
+        ((TickUpdateImpl)dest).deepCopyFrom( this );
+    }
+
+    /** DEEP copy all members ... INCLUDING subEvents : WARNING CREATES NEW OBJECTS SO MONITOR FOR GC */
+    @Override public final void deepCopyFrom( TickUpdate src ) {
+        setMdEntryType( src.getMdEntryType() );
+        setMdEntryPx( src.getMdEntryPx() );
+        setMdEntrySize( src.getMdEntrySize() );
+        setTradeTime( src.getTradeTime() );
+        setTickDirection( src.getTickDirection() );
+        setNumberOfOrders( src.getNumberOfOrders() );
+    }
+
+    /** shallow copy all primitive members ... EXCLUDING subEvents */
+    @Override public final void shallowCopyFrom( TickUpdate src ) {
+        setMdEntryType( src.getMdEntryType() );
+        setMdEntryPx( src.getMdEntryPx() );
+        setMdEntrySize( src.getMdEntrySize() );
+        setTradeTime( src.getTradeTime() );
+        setTickDirection( src.getTickDirection() );
+        setNumberOfOrders( src.getNumberOfOrders() );
+    }
+
+    /** shallow copy all primitive members ... EXCLUDING subEvents */
+    @Override public final void shallowMergeFrom( TickUpdate src ) {
+        setMdEntryType( src.getMdEntryType() );
+        if ( Utils.hasVal( src.getMdEntryPx() ) ) setMdEntryPx( src.getMdEntryPx() );
+        if ( Constants.UNSET_INT != src.getMdEntrySize() ) setMdEntrySize( src.getMdEntrySize() );
+        if ( Constants.UNSET_LONG != src.getTradeTime() ) setTradeTime( src.getTradeTime() );
+        setTickDirection( src.getTickDirection() );
+        if ( Constants.UNSET_INT != src.getNumberOfOrders() ) setNumberOfOrders( src.getNumberOfOrders() );
     }
 
 }

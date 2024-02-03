@@ -1,0 +1,19 @@
+dependencies {
+    api project(':CoreStrats')
+
+    testImplementation project(':Core').sourceSets.test.output
+
+    testImplementation project(':OM').sourceSets.main.output
+    testImplementation project(':OM').sourceSets.test.output
+
+    testImplementation project(':CoreStrats').sourceSets.main.output
+    testImplementation project(':CoreStrats').sourceSets.test.output
+}
+
+sourceSets {
+    test {
+        runtimeClasspath += project(':Core').sourceSets.main.output
+        runtimeClasspath += project(':CoreStrats').sourceSets.main.output
+    }
+}
+

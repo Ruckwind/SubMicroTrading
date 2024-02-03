@@ -1,0 +1,44 @@
+@INCLUDE MDDecoder44.include
+
+
+/*
+ * CME HANDCODED DECODER METHDOS
+ */
+
+    private long getCMETime() {
+        final int start = _idx;
+        final int valLen = getValLength();
+
+        long time = 0L;
+
+        if ( valLen == 21 ) {
+            // 20131002-23:16:18.147
+
+            time =  (_fixMsg[start]    - '0') * 10000000000000000L +
+                    (_fixMsg[start+1]  - '0') * 1000000000000000L +
+                    (_fixMsg[start+2]  - '0') * 100000000000000L +
+                    (_fixMsg[start+3]  - '0') * 10000000000000L +
+                    (_fixMsg[start+4]  - '0') * 1000000000000L +
+                    (_fixMsg[start+5]  - '0') * 100000000000L +
+                    (_fixMsg[start+6]  - '0') * 10000000000L +
+                    (_fixMsg[start+7]  - '0') * 1000000000L +
+
+                    (_fixMsg[start+9]  - '0') * 100000000L +
+                    (_fixMsg[start+10] - '0') * 10000000L +
+
+                    (_fixMsg[start+12] - '0') * 1000000L +
+                    (_fixMsg[start+13] - '0') * 100000L +
+
+                    (_fixMsg[start+15] - '0') * 10000 +
+                    (_fixMsg[start+16] - '0') * 1000 +
+
+                    (_fixMsg[start+18] - '0') * 100 +
+                    (_fixMsg[start+19] - '0') * 10 +
+                    (_fixMsg[start+20] - '0');
+
+        }
+
+        return time;
+    }
+
+

@@ -1,0 +1,317 @@
+
+
+1) use of array lookups instead of case statements in Types
+2) events only extend interfaces not classes
+3) use of ViewString to reduce mem copying
+4) cancel only contains OrigClOrdId and ClOrdId
+5) NOS ack only contains marketOrderId and marketAssignedOrderId=,
+6) fill only contains qty, price, avgPrice, liquidityInd, execId, marketOrderId
+7) force decode method switch to be tableswitch instead of lookupswitch
+8) make all generated methods final and attrs final where possible
+9) avoid generic functions.
+
+    public T get() {
+
+        if ( _root == null ) {
+            allocate();
+        }
+
+        T obj = _root;
+        _root = _root.getNext();
+        obj.setNext( null );
+
+        return obj;
+    }
+
+This is 200 nanos slower than when T is replaced with the concrete type.
+
+Note encode takes 840nanos
+Note decode on same NOS takes 840nanos
+Decode on new NOS takes 8micros
+Decode with pool takes 1140nanos
+Decode with pooling and recycling takes 1250nanos  ... so recycling adding 100nanos
+
+Implementing the concrete pool which implements the generic interface reduced the time from 1140 downto  1040
+
+eg    public class ClientNewOrderAckFactory implements PoolFactory<ClientNewOrderAckImpl> {
+
+
+
+10) for invoking the getter all 3 below offer same performance
+
+        public ReusableType getReusableType();
+        public Enum<? extends ReusableType> getReusableType();
+        public ModelReusableTypes getReusableType();
+        
+    But putting these in a switch statement shows enums are TWICE SLOWER than constants
+    So changed event generation to generate constants that can be used
+
+11) for power of 2 you can avoid mod and use &
+
+                int a = hashVal % tblLen;
+                int b = hashVal & (tblLen-1);
+
+12) PerfTestNextPointer, shows that explicit access to a types next is 10-20% faster than cast/generics
+    BUT if the object is not cached in memory the difference is unnoticeable
+
+    run with chainSize of 1000    
+    Run 4 NEXT by METHOD, generics=172, cast=171, explicit=140
+    Run 4 NEXT by DIRECT, generics=172, cast=171, explicit=141
+
+    runwith chainSize = 1000000;
+    Run 3 NEXT by METHOD, generics=374, cast=374, explicit=390
+    Run 3 NEXT by DIRECT, generics=390, cast=375, explicit=374
+    Run 4 NEXT by METHOD, generics=437, cast=374, explicit=374
+    Run 4 NEXT by DIRECT, generics=358, cast=374, explicit=390
+
+    
+13) use of try catch handler in AbstractFiDecoder adds around 40nanos
+
+14) use of checksum generation on decode adding around 400 usecs !!
+
+15) the system.nano call increasing encode 1.4 usec to 2.4 usec ..... when under tight load
+
+        final long sent = System.nanoTime();
+        
+        msg.setOrderSent( sent );        // HOOK
+
+    so make nano logging configurable!
+
+16) PerfTestGenericsForMap ... generics half the speed of explicit for reads, same perf for writes
+
+with 
+        int runs = 5;   int size = 1000000;   int numIterations = 100;
+
+we get :-
+
+Run 2 GET generic=1045, genFinalAccessor=1030, explicit=374, expFinalAccessor=406, wrapped=1030
+
+with 
+
+        int runs = 5;   int size = 100000;        int numIterations = 1000;
+
+we get :-
+
+Run 2 GET generic=469, genFinalAccessor=483, explicit=251, expFinalAccessor=265, wrapped=484
+Run 1 SET generic=422, genFinalAccessor=422, explicit=407, expFinalAccessor=406, wrapped=405
+
+also note plastering final everywhere doesnt seem to help.
+
+17) PerfTestInterfacevsConcrete
+
+Using a map with concrete OrderImpl vs Order interface showed no real/significant performance difference
+
+Run 3 concrete=4165, interface=4290
+
+18) New concurrent linked queue, no GC, 99th  percentile is 6usec over 121usecs for Sun
+===> investigate why the 50th percentile is 1usec slower ... need bench MULTI times
+===> and with multi loads including 1order every second
+
+Note use of CAS in Q means the next ptr has to be volatile.
+
+test 1
+------
+
+[SUN]  NanoSecond stats  count=5000000, med=4320, ave=19880, min=3359, max=47766263
+                 , p99=121914, p95=4320, p90=4320, p80=4320, p70=4320, p50=4320
+[SUN]  NanoSecond stats  count=5000000, med=4799, ave=12756, min=3839, max=7469284
+                 , p99=66715, p95=5280, p90=5280, p80=4800, p70=4800, p50=4799
+
+[RR]  NanoSecond stats  count=5000000, med=5279, ave=12954, min=3839, max=21189505
+                 , p99=6720, p95=5760, p90=5280, p80=5280, p70=5280, p50=4800
+                 
+[RRSYNC]  NanoSecond stats  count=5000000, med=4800, ave=12634, min=3839, max=87556505
+                 , p99=6240, p95=5280, p90=5280, p80=4800, p70=4800, p50=4800
+                 
+[RRBLOCK]  NanoSecond stats  count=5000000, med=5279, ave=15422, min=4319, max=12923177
+                 , p99=95514, p95=5760, p90=5760, p80=5280, p70=5280, p50=5279
+
+
+
+Richard@RR-ADAMO ~/NewProj/Generated/bin
+
+javap -classpath . -c -l com.rr.model.generated.fix.codec.base.Standard44Decoder >x
+javap -classpath . -c -l com.rr.om.session.fixsocket.LoggedOnFixState >y
+
+TODO verify impact on size of tableswitch
+
+
+===============================================================================
+
+[SUN]  NanoSecond stats  count=4000, med=5760, ave=11248, min=4320, max=3615130
+                 , p99=69115, p95=22078, p90=10559, p80=7680, p70=6720, p50=5760
+[RRCAS]  NanoSecond stats  count=4000, med=5760, ave=11078, min=4319, max=3657367
+                 , p99=62876, p95=20158, p90=10080, p80=8160, p70=7200, p50=5760
+[RRSYNC]  NanoSecond stats  count=4000, med=5760, ave=17206, min=4799, max=4013505
+                 , p99=301421, p95=18719, p90=8640, p80=7679, p70=7199, p50=5760
+[RRBLOCK]  NanoSecond stats  count=4000, med=5760, ave=21186, min=4800, max=4116698
+                 , p99=263024, p95=17759, p90=9599, p80=8159, p70=7200, p50=5760
+
+105626 [main] INFO com.rr.om.order.collections.PerfTestQueueTest  - RRCASQ   delay=10, totCnt=4000, over threads=4, time=20 secs
+105626 [main] INFO com.rr.om.order.collections.PerfTestQueueTest  - SUNQ     delay=10, totCnt=4000, over threads=4, time=20 secs
+105642 [main] INFO com.rr.om.order.collections.PerfTestQueueTest  - RRSYNC   delay=10, totCnt=4000, over threads=4, time=20 secs
+105642 [main] INFO com.rr.om.order.collections.PerfTestQueueTest  - RRBLOCK  delay=10, totCnt=4000, over threads=4, time=20 secs
+
+===============================================================================
+
+[SUN]  NanoSecond stats  count=400, med=5760, ave=8406, min=4799, max=275502
+                 , p99=37437, p95=15839, p90=10560, p80=8640, p70=7199, p50=5760
+[RRCAS]  NanoSecond stats  count=400, med=5760, ave=21308, min=5279, max=1422150
+                 , p99=216466, p95=23039, p90=13439, p80=10079, p70=8159, p50=5760
+[RRSYNC]  NanoSecond stats  count=400, med=7680, ave=12966, min=5279, max=745392
+                 , p99=130552, p95=17759, p90=11519, p80=9120, p70=8640, p50=7680
+[RRBLOCK]  NanoSecond stats  count=400, med=6239, ave=17758, min=5279, max=1064093
+                 , p99=340778, p95=19679, p90=11519, p80=9120, p70=8160, p50=6239
+
+168464 [main] INFO com.rr.om.order.collections.PerfTestQueueTest  - RRCASQ   delay=100, totCnt=400, over threads=4, time=15 secs
+168464 [main] INFO com.rr.om.order.collections.PerfTestQueueTest  - SUNQ     delay=100, totCnt=400, over threads=4, time=15 secs
+168480 [main] INFO com.rr.om.order.collections.PerfTestQueueTest  - RRSYNC   delay=100, totCnt=400, over threads=4, time=15 secs
+168480 [main] INFO com.rr.om.order.collections.PerfTestQueueTest  - RRBLOCK  delay=100, totCnt=400, over threads=4, time=15 secs
+
+19) Test use of Long vs Int ..... over time INT are 10% faster
+
+2576 [main] INFO com.rr.om.events.perf.PerfTestCodecLong  - START TEST ==================
+DECODE INT 1, cnt=1000000, time=152
+DECODE LONG 1, cnt=1000000, time=160
+ENCODE INT 1, cnt=1000000, time=413
+ENCODE LONG, cnt=1000000, time=472
+
+31083 [main] INFO com.rr.om.events.perf.PerfTestCodecLong  - START TEST ==================
+DECODE INT 987654321, cnt=1000000, time=212
+DECODE LONG 987654321, cnt=1000000, time=241
+ENCODE INT 987654321, cnt=1000000, time=896
+ENCODE LONG, cnt=1000000, time=1000
+
+20) use final in problic method declaration so compiler can inline
+
+21) removed use of ZString, as jre was picking equals(Object) over equals(ViewString)
+
+22) PerfTestRoundTrip shows that no delay between messages gives best performance
+==> need quantify when this happens as not for all uses of ZString
+
+[TO_MARKET]  ROUND TRIP NanoSecond stats  count=10000, genDelayMS=0, acckDelayMS=0, med=6240, ave=7714, min=4799, max=2646539
+                 , p99=18719, p95=15838, p90=8640, p80=6720, p70=6240, p50=6240
+
+[ROUNDTRIP]  ROUND TRIP NanoSecond stats  count=10000, genDelayMS=0, acckDelayMS=0, med=15358, ave=17990, min=12479, max=2663338
+                 , p99=44157, p95=39357, p90=19678, p80=15839, p70=15360, p50=15358
+
+=====================================
+
+[TO_MARKET]  ROUND TRIP NanoSecond stats  count=10000, genDelayMS=0, acckDelayMS=1, med=35517, ave=33923, min=7200, max=1370786
+                 , p99=48477, p95=41758, p90=40317, p80=36958, p70=36477, p50=35517
+
+[ROUNDTRIP]  ROUND TRIP NanoSecond stats  count=10000, genDelayMS=0, acckDelayMS=1, med=102712, ave=96924, min=20158, max=1446621
+                 , p99=136310, p95=111832, p90=109433, p80=106553, p70=104632, p50=102712
+
+                 
+23) Use of concurrent map faster than ORDER hash map
+====================================================
+
+--> pooling of nodes helps
+
+[HASHMAP: TO_MARKET]  ROUND TRIP NanoSecond stats  count=10000, genDelayMS=0, acckDelayMS=0, med=6240, ave=9586, min=5279, max=1110644
+                 , p99=29758, p95=23518, p90=19199, p80=7200, p70=6719, p50=6240
+
+[CONCMAP: TO_MARKET]  ROUND TRIP NanoSecond stats  count=10000, genDelayMS=0, acckDelayMS=0, med=5760, ave=6383, min=4799, max=1127443
+                 , p99=8640, p95=6719, p90=6240, p80=6239, p70=5760, p50=5760
+
+[HASHMAP: ROUNDTRIP]  ROUND TRIP NanoSecond stats  count=10000, genDelayMS=0, acckDelayMS=0, med=14400, ave=22912, min=11999, max=3340091
+                 , p99=73434, p95=52316, p90=45118, p80=22559, p70=15359, p50=14400
+
+[CONCMAP: ROUNDTRIP]  ROUND TRIP NanoSecond stats  count=10000, genDelayMS=0, acckDelayMS=0, med=13439, ave=14356, min=11999, max=1137043
+                 , p99=20158, p95=15359, p90=14879, p80=14399, p70=13920, p50=13439
+
+
+
+
+-------------------------------
++++++++++++++++++++++++++++++++
+DELETED OrderHashMap : 9th July
++++++++++++++++++++++++++++++++
+===============================
+
+24) PERF degraded after changes to add in 
+
+[TO_MARKET]  ROUND TRIP NanoSecond stats  count=10000, genDelayMS=0, acckDelayMS=0, med=9600, ave=11405, min=8640, max=645561
+                 , p99=32158, p95=23519, p90=12479, p80=11040, p70=10559, p50=9600
+
+[ROUNDTRIP]  ROUND TRIP NanoSecond stats  count=10000, genDelayMS=0, acckDelayMS=0, med=17760, ave=21544, min=16798, max=3764896
+                 , p99=58078, p95=46557, p90=22560, p80=20159, p70=19678, p50=17760
+
+20% slower
+
+
+THIS IS DOWN TO ENCODER USING
+
+        switch( msg.getEventIdWithinCategory() ) {
+
+OVER 
+
+        switch( msg.getReusableType().getIdWithinCategory() ) {
+
+Wrote new unit test and when a delay is introduced the indirect call viaa reusable type is faster
+Without the delay the direct call is MUCH faster !!
+
+0 [main] INFO com.rr.om.events.perf.PerfTestUnexpectedLatency  - typeId via interface                  =1220957764
+0 [main] INFO com.rr.om.events.perf.PerfTestUnexpectedLatency  - typeId via reusable type and final var=1233321830
+
+==> NOTE THE TWO SWITCH STATMENTS ARE NOT EQUAL
+
+
+25) with a 1 second sleep timer in the memmap  thread the page size needs to be bigenuff for 1 second eg 1000 orders or 8000 events ie 2MB
+
+26) java sleep has a 10 ms resolution on linux with outliers to 50ms
+                 
+27) check impact of running memmap thread on other CPU                 
+
+28) avoid large methods JIT can end up recompiling parts, splitting internal classes out and using smaller methods avoids recompilation
+
+29) when using syncronized use in method name as opposed to in code
+
+public synchronized int top1()
+{
+  return intArr[0];
+}
+public int top2()
+{
+ synchronized (this) {
+  return intArr[0];
+ }
+}
+ 
+to see the bytecode checkout :-
+ 
+http://www.ibm.com/developerworks/ibm/library/it-haggar_bytecode/ 
+
+
+
+
+==================================================
+
+Using FIFO scheduling
+
+==> set FIFO
+
+JNIEXPORT void JNICALL
+Java_BusySleeperNC_sleep
+(JNIEnv *, jclass)
+{
+    int max = sched_get_priority_max(SCHED_FIFO);
+    struct sched_param p;
+    p.sched_priority = max;
+    sched_setscheduler(0, SCHED_FIFO, &p);
+}                 
+
+==> sleep ... use for low sleeps
+
+JNIEXPORT void JNICALL
+Java_BusySleeperNC_sleep
+(JNIEnv *, jclass, jlong x)
+{
+    struct timespec t,r, start, end;
+    t.tv_sec = 0;
+    t.tv_nsec = 1*1000*1000;
+    for(int i = 0; i < x; i++) {
+        nanosleep(&t, &r);
+    }
+}                 

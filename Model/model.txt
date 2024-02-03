@@ -1,0 +1,75 @@
+
+Internal Model Schema
+
+	Model : [InternalModel] [InternalVersion]
+
+	InternalModel : [PackagePrefix] [Instruction]+ [InternalType]* [Event]*
+	Instruction : UseViewString
+	InternalType:	[Id] [TypeEntry]* 
+	TypeEntry: [Name][Value]
+
+	Event: [Id] [Attribute]*
+	Attribute: [Id] [type] (RetainSrcValue)
+	type : int | short | double | float | char | char\[nnn\] | InternalTypeId
+
+Fix Model (depends on Internal Model Schema)
+
+	Model : [InternalModelVersion] [FixModel]+ 
+
+	FixModel : [Id] [FixVersion] [InternalVersion] [FixHelper] [Dictionary] [FixMessage]*
+	Dictionary = [Tag]* [SimpleFormatters]* [ComplexFormatters]*
+	FixMessage = [Id] [FixMessageElements]*
+	FixMessageElement = [Tag] (Priority) | [RepeatingGroup]
+	RepeatingGroup = [StartMarker][CountTag][Tag]*[EndMarker]
+	Tag : [Id] [Name]  
+
+	MessageMapping: [FixMessageId] [EventId] [Mapping]* ( [PostMapUserFunct] )
+	Mapping: [TagId] [AttributeId] (MapInstruction) { [AttrUserFunct] | [ValueMap] }
+	ValueMap : [FixValue][TypeEntryName] 
+	
+
+[InternalTypeId]	
+
+	Format: [FormatId] [decodeMethod] [encodeMethod]		
+
+
+
+Customised Fix Model (depends on FixModel)
+
+	Model : [CustomisedFixModel]*
+
+	CustomisedFixModel : [Id] [InternalVersion] [BaseModelId] [InternalBaseModelVersion]
+				   [FixHelper] [Dictionary] [FixMessage]*
+
+
+
+Notes
+
+CustomisedFixModel is an override of a FixModel eg for client that wants to change some mappings. Initially the base model is loaded then the entries from the CustomisedFixModel are added.
+
+FixHelper is the fix helper class used in encoding and decoding.
+
+InternalTypeClassName is the full classname of the internal Pojo used for that type eg OrderCapacity.
+
+Sometimes more than one fix field can map to an internal model value. When there is a clash then the priority is used to ensure highest priority wins.
+
+When processing internal model, determine the type (eg char, byte, int etc)	
+
+Sometimes the original value from client or exchange needs to be maintained as well as the internal model value. This is denoted by the RetainSrcValue element. 
+
+Use enums for all types
+
+Default encoder will auto matchup tags by tag name to attribute name in the OrderEvent, only entries for 
+
+Syntax
+
+[xx]	denotes xx is not a base type
++	one or more occurances 
+*	zero or more occurances
+()	denotes optional
+
+
+
+
+
+	

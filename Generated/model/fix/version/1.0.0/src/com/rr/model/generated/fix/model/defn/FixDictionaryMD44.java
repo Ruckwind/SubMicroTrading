@@ -1,12 +1,9 @@
-/*******************************************************************************
- * Copyright (c) 2015 Low Latency Trading Limited  :  Author Richard Rose
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at	http://www.apache.org/licenses/LICENSE-2.0
- * Unless required by applicable law or agreed to in writing,  software distributed under the License 
- * is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and limitations under the License.
- *******************************************************************************/
 package com.rr.model.generated.fix.model.defn;
+
+/*
+Copyright 2015 Low Latency Trading Limited
+Author Richard Rose
+*/
 
 
 import javax.annotation.Generated;
@@ -87,6 +84,8 @@ public interface FixDictionaryMD44 {
     public int RefTagID = 371;
     public int RefMsgType = 372;
     public int SessionRejectReason = 373;
+    public int Country = 421;
+    public int netChangePrevDay = 451;
     public int noSecurityAltID = 454;
     public int securityAltID = 455;
     public int securityAltIDSource = 456;
@@ -102,9 +101,8 @@ public interface FixDictionaryMD44 {
     public int legRatioQty = 623;
     public int legSide = 624;
     public int TradingSessionSubID = 625;
-    public int lastUpdateTime = 779;
     public int NextExpectedMsgSeqNum = 789;
-    public int LastLiquidityInd = 851;
+    public int LiquidityInd = 851;
     public int noEvents = 864;
     public int eventType = 865;
     public int eventDate = 866;
@@ -113,6 +111,7 @@ public interface FixDictionaryMD44 {
     public int securityStatus = 965;
     public int minPriceIncrement = 969;
     public int SecurityUpdateAction = 980;
+    public int unitOfMeasure = 996;
     public int tradeVolume = 1020;
     public int mdBookType = 1021;
     public int feedType = 1022;
@@ -122,6 +121,7 @@ public interface FixDictionaryMD44 {
     public int noSDFeedTypes = 1141;
     public int eventTime = 1145;
     public int minPriceIncrementAmount = 1146;
+    public int unitOfMeasureQty = 1147;
     public int lowLimitPx = 1148;
     public int highLimitPx = 1149;
     public int tradingReferencePrice = 1150;
@@ -134,9 +134,34 @@ public interface FixDictionaryMD44 {
     public int instrumentScopeProductComplex = 1544;
     public int securityMassTradingStatus = 1679;
     public int mdSecurityTradingStatus = 1682;
+    public int futPointValue = 1700;
     public int priceRatio = 5770;
     public int openInterestQty = 5792;
     public int tradingReferenceDate = 5796;
+    public int aggressorSide = 5797;
+    public int MatchEventIndicator = 5799;
+    public int TickRule = 6350;
     public int displayFactor = 9787;
+    public int securityLongDesc = 9800;
+    public int underlyingSecurityIDSource = 9801;
+    public int underlyingSecurityID = 9802;
+    public int underlyingScurityExchange = 9803;
+    public int primarySecurityExchange = 9804;
+    public int commonSecurityId = 9805;
+    public int parentCompanyId = 9806;
+    public int securityStartDate = 9807;
+    public int securityEndDate = 9808;
+    public int isinStartDate = 9809;
+    public int isinEndDate = 9810;
+    public int companyName = 9811;
+    public int gicsCode = 9812;
+    public int getOutDate = 9813;
+    public int uniqueInstId = 9814;
+    public int deadTimestamp = 9815;
+    public int endTimestamp = 9816;
+    public int startTimestamp = 9817;
+    public int dataSrc = 9818;
+    public int SecDefSpecialType = 9819;
+    public int CompanyStatusType = 9820;
     public int AckStats = 11611;
 }

@@ -1,46 +1,40 @@
-/*******************************************************************************
- * Copyright (c) 2015 Low Latency Trading Limited  :  Author Richard Rose
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at	http://www.apache.org/licenses/LICENSE-2.0
- * Unless required by applicable law or agreed to in writing,  software distributed under the License 
- * is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and limitations under the License.
- *******************************************************************************/
 package com.rr.model.generated.internal.events.impl;
 
+/*
+Copyright 2015 Low Latency Trading Limited
+Author Richard Rose
+*/
+
 import com.rr.model.generated.internal.type.ETIEurexDataStream;
-import com.rr.core.lang.ViewString;
-import com.rr.core.lang.ReusableString;
-import com.rr.core.lang.Constants;
-import com.rr.core.model.MsgFlag;
-import com.rr.core.lang.ReusableType;
-import com.rr.core.lang.Reusable;
-import com.rr.core.model.Message;
-import com.rr.core.model.MessageHandler;
+import com.rr.core.utils.Utils;
+import com.rr.core.lang.*;
+import com.rr.core.model.*;
+import com.rr.core.annotations.*;
 import com.rr.model.internal.type.*;
 import com.rr.model.generated.internal.core.ModelReusableTypes;
 import com.rr.model.generated.internal.core.SizeType;
 import com.rr.model.generated.internal.core.EventIds;
 import com.rr.model.generated.internal.events.interfaces.*;
 
-@SuppressWarnings( "unused" )
+@SuppressWarnings( { "unused", "override"  })
 
-public final class ETIRetransmitOrderEventsImpl implements BaseETIRequest, ETIRetransmitOrderEventsWrite, Reusable<ETIRetransmitOrderEventsImpl> {
+public final class ETIRetransmitOrderEventsImpl implements BaseETIRequest, ETIRetransmitOrderEventsWrite, Copyable<ETIRetransmitOrderEvents>, Reusable<ETIRetransmitOrderEventsImpl> {
 
    // Attrs
 
-    private          ETIRetransmitOrderEventsImpl _next = null;
-    private volatile Message        _nextMessage    = null;
-    private          MessageHandler _messageHandler = null;
+    private transient          ETIRetransmitOrderEventsImpl _next = null;
+    private transient volatile Event        _nextMessage    = null;
+    private transient          EventHandler _messageHandler = null;
     private int _subscriptionScope = Constants.UNSET_INT;
     private short _partitionID = Constants.UNSET_SHORT;
     private final ReusableString _applBegMsgID = new ReusableString( SizeType.ETI_APP_MSG_ID_LENGTH.getSize() );
     private final ReusableString _applEndMsgID = new ReusableString( SizeType.ETI_APP_MSG_ID_LENGTH.getSize() );
     private int _msgSeqNum = Constants.UNSET_INT;
+    @TimestampMS private long _eventTimestamp = Constants.UNSET_LONG;
 
     private ETIEurexDataStream _refApplID;
 
-    private byte           _flags          = 0;
+    private int           _flags          = 0;
 
    // Getters and Setters
     @Override public final int getSubscriptionScope() { return _subscriptionScope; }
@@ -65,6 +59,9 @@ public final class ETIRetransmitOrderEventsImpl implements BaseETIRequest, ETIRe
     @Override public final int getMsgSeqNum() { return _msgSeqNum; }
     @Override public final void setMsgSeqNum( int val ) { _msgSeqNum = val; }
 
+    @Override public final long getEventTimestamp() { return _eventTimestamp; }
+    @Override public final void setEventTimestamp( long val ) { _eventTimestamp = val; }
+
 
     @Override public final boolean getPossDupFlag() { return isFlagSet( MsgFlag.PossDupFlag ); }
     @Override public final void setPossDupFlag( boolean val ) { setFlag( MsgFlag.PossDupFlag, val ); }
@@ -79,6 +76,7 @@ public final class ETIRetransmitOrderEventsImpl implements BaseETIRequest, ETIRe
         _applBegMsgID.reset();
         _applEndMsgID.reset();
         _msgSeqNum = Constants.UNSET_INT;
+        _eventTimestamp = Constants.UNSET_LONG;
         _flags = 0;
         _next = null;
         _nextMessage = null;
@@ -106,22 +104,22 @@ public final class ETIRetransmitOrderEventsImpl implements BaseETIRequest, ETIRe
     }
 
     @Override
-    public final Message getNextQueueEntry() {
+    public final Event getNextQueueEntry() {
         return _nextMessage;
     }
 
     @Override
-    public final void attachQueue( Message nxt ) {
+    public final void attachQueue( Event nxt ) {
         _nextMessage = nxt;
     }
 
     @Override
-    public final MessageHandler getMessageHandler() {
+    public final EventHandler getEventHandler() {
         return _messageHandler;
     }
 
     @Override
-    public final void setMessageHandler( MessageHandler handler ) {
+    public final void setEventHandler( EventHandler handler ) {
         _messageHandler = handler;
     }
 
@@ -129,7 +127,7 @@ public final class ETIRetransmitOrderEventsImpl implements BaseETIRequest, ETIRe
    // Helper methods
     @Override
     public void setFlag( MsgFlag flag, boolean isOn ) {
-        _flags = (byte) MsgFlag.setFlag( _flags, flag, isOn );
+        _flags = MsgFlag.setFlag( _flags, flag, isOn );
     }
 
     @Override
@@ -138,22 +136,77 @@ public final class ETIRetransmitOrderEventsImpl implements BaseETIRequest, ETIRe
     }
 
     @Override
-    public String toString() {
-        ReusableString buf = new ReusableString();
-        dump( buf );
-        return buf.toString();
+    public int getFlags() {
+        return _flags;
     }
 
     @Override
-    public final void dump( ReusableString out ) {
+    public String toString() {
+        ReusableString buf = TLC.instance().pop();
+        dump( buf );
+        String rs = buf.toString();
+        TLC.instance().pushback( buf );
+        return rs;
+    }
+
+    @Override
+    public final void dump( final ReusableString out ) {
         out.append( "ETIRetransmitOrderEventsImpl" ).append( ' ' );
-        out.append( ", subscriptionScope=" ).append( getSubscriptionScope() );
-        out.append( ", partitionID=" ).append( getPartitionID() );
-        out.append( ", refApplID=" ).append( getRefApplID() );
-        out.append( ", applBegMsgID=" ).append( getApplBegMsgID() );
-        out.append( ", applEndMsgID=" ).append( getApplEndMsgID() );
-        out.append( ", msgSeqNum=" ).append( getMsgSeqNum() );
+        if ( Constants.UNSET_INT != getSubscriptionScope() && 0 != getSubscriptionScope() )             out.append( ", subscriptionScope=" ).append( getSubscriptionScope() );
+        if ( Constants.UNSET_SHORT != getPartitionID() && 0 != getPartitionID() )             out.append( ", partitionID=" ).append( getPartitionID() );
+        if ( getRefApplID() != null )             out.append( ", refApplID=" ).append( getRefApplID() );
+        if ( getApplBegMsgID().length() > 0 )             out.append( ", applBegMsgID=" ).append( getApplBegMsgID() );
+        if ( getApplEndMsgID().length() > 0 )             out.append( ", applEndMsgID=" ).append( getApplEndMsgID() );
+        if ( Constants.UNSET_INT != getMsgSeqNum() && 0 != getMsgSeqNum() )             out.append( ", msgSeqNum=" ).append( getMsgSeqNum() );
         out.append( ", possDupFlag=" ).append( getPossDupFlag() );
+        if ( Constants.UNSET_LONG != getEventTimestamp() && 0 != getEventTimestamp() ) {
+            out.append( ", eventTimestamp=" );
+            TimeUtilsFactory.safeTimeUtils().unixTimeToLocalTimestamp( out, getEventTimestamp() );
+            out.append( " / " );
+            TimeUtilsFactory.safeTimeUtils().unixTimeToUTCTimestamp( out, getEventTimestamp() );
+            out.append( " ( " );
+            out.append( getEventTimestamp() ).append( " ) " );
+        }
+    }
+
+    @Override public final void snapTo( ETIRetransmitOrderEvents dest ) {
+        ((ETIRetransmitOrderEventsImpl)dest).deepCopyFrom( this );
+    }
+
+    /** DEEP copy all members ... INCLUDING subEvents : WARNING CREATES NEW OBJECTS SO MONITOR FOR GC */
+    @Override public final void deepCopyFrom( ETIRetransmitOrderEvents src ) {
+        setSubscriptionScope( src.getSubscriptionScope() );
+        setPartitionID( src.getPartitionID() );
+        setRefApplID( src.getRefApplID() );
+        getApplBegMsgIDForUpdate().copy( src.getApplBegMsgID() );
+        getApplEndMsgIDForUpdate().copy( src.getApplEndMsgID() );
+        setMsgSeqNum( src.getMsgSeqNum() );
+        setPossDupFlag( src.getPossDupFlag() );
+        setEventTimestamp( src.getEventTimestamp() );
+    }
+
+    /** shallow copy all primitive members ... EXCLUDING subEvents */
+    @Override public final void shallowCopyFrom( ETIRetransmitOrderEvents src ) {
+        setSubscriptionScope( src.getSubscriptionScope() );
+        setPartitionID( src.getPartitionID() );
+        setRefApplID( src.getRefApplID() );
+        getApplBegMsgIDForUpdate().copy( src.getApplBegMsgID() );
+        getApplEndMsgIDForUpdate().copy( src.getApplEndMsgID() );
+        setMsgSeqNum( src.getMsgSeqNum() );
+        setPossDupFlag( src.getPossDupFlag() );
+        setEventTimestamp( src.getEventTimestamp() );
+    }
+
+    /** shallow copy all primitive members ... EXCLUDING subEvents */
+    @Override public final void shallowMergeFrom( ETIRetransmitOrderEvents src ) {
+        if ( Constants.UNSET_INT != src.getSubscriptionScope() ) setSubscriptionScope( src.getSubscriptionScope() );
+        if ( Constants.UNSET_SHORT != src.getPartitionID() ) setPartitionID( src.getPartitionID() );
+        setRefApplID( src.getRefApplID() );
+        if ( src.getApplBegMsgID().length() > 0 ) getApplBegMsgIDForUpdate().copy( src.getApplBegMsgID() );
+        if ( src.getApplEndMsgID().length() > 0 ) getApplEndMsgIDForUpdate().copy( src.getApplEndMsgID() );
+        if ( Constants.UNSET_INT != src.getMsgSeqNum() ) setMsgSeqNum( src.getMsgSeqNum() );
+        setPossDupFlag( src.getPossDupFlag() );
+        if ( Constants.UNSET_LONG != src.getEventTimestamp() ) setEventTimestamp( src.getEventTimestamp() );
     }
 
 }

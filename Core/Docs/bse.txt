@@ -1,0 +1,110 @@
+
+
+
+
+MARKET DATA
+
+1.1) The UDP datagram starts with 
+• the packet header message as shown in section 11.1.2. 
+• Followed by a FAST reset message. 
+• Followed by the actual message (Message1 ). 
+• Possibly followed by one or more messages (Message2 - Messagen ). 
+Each message shown in the picture above has the following sub structure: 
+• PMAP (Presence Map). • TID (Template ID). • Data Part.
+
+1.2) MsgType=U0 => beacon message, used when no ticks on book .. contains the last valid MsgSeqNum of each product
+
+2) A Performance Indicator4 is provided for incrementals within the Packet Header
+
+3) *** Packet for BSE EMDI can contain MULTIPLE messages not like CME which has 1
+
+4) 9.3.1 Determination of the price sources 
+
+The new trading platform supports synthetic matching, where the implied prices from complex instruments can create prices equal or better than the best outright price 
+in the instrument. The implied prices are disseminated in the market data in addition to the prices from outright orders. 
+These prices are shown without a price level. 
+The reported quantities for implied prices and level 1 are not aggregated, i.e. quantities on level 1 are fully outright and do not contain any implied components. 
+The BSE system publishes implied prices in market data only in case it is equal to or better than the best outright price in the respective instrument. 
+In order to find out which situation applies, a price comparison between the implied price (with empty price level) and level 1 (see figure 16) needs to be done: 
+
+1. Implied price is better than the outright price at level one -> Fully Implied. 
+2. Implied price disseminated is equal to the outright price at level 1 -> Partially Implied. 
+3. Implied price is deleted or absent -> the Best Market price is fully outright and is the same as on level 1. 
+
+Examples for all three cases are provided in section 14.2, Example for determination of the price source.
+
+5) 35='h'  TradingStatusMessage needs to be added (P18)
+
+6) Instrument Status
+
+4.2.2 Instrument State Changes The instrument state is published with an instrument state change message (FIX SecurityStatus, MsgType = f) in case of a single instrument, 
+or with a (FIX SecurityMassStatus, MsgType = CO) message in case that all or most of the instruments of a product and of a specific instrument type7 change their state. 
+• In the instrument state change message (FIX SecurityStatus, MsgType = f), the instrument state can be found directly in the field SecurityTradingStatus (326). 
+• In the mass instrument state change message (FIX SecurityMassStatus, MsgType = CO), the in- strument state can be found in the field SecurityMassTradingStatus (1679). 
+This message may contain an exception list of instruments that have a different instrument state. 
+The exception list contains the instrument state in the field SecurityTradingStatus (326) for each of these instruments.
+
+7) Fast Reset Message
+Technical heartbeat message is sent out periodically by the BSE system on every multicast ad- dress and on a specific port assigned for the technical heartbeat ; 
+it consists of a FAST reset message only.
+
+8) • BSE is available from approximately 6:00 IST. 
+It is recommended to start applications between 6:30 IST and 7:20 IST • 
+Market data messages are sent from the time a product changes to the state “Start-Of-Day” and stops when it changes to the state “End-Of-Day”. 
+During that period depth snapshots are sent. The reference data is independent to any one product state so it has its own schedule.
+
+9) Need add new fast fix Data Types  Byte vector 
+
+10) sequence number handling completely different to CME
+at session level, is a packet seq num which is scoped by senderCompId
+MktDataController will need to change its mark dirty to all books by senderCompId
+on incremental message the msgSeqNum is unique per product ... doenst appear to have the CME rptSeqNum
+
+11) dictionary only reset on templateId=120 .... fields SHARED across templates
+
+12) At start of every packet is a fast reset method ... really want to just reset the dictionary ... how to do with generated templates
+
+============
+TRADING
+
+Each segment requires its own session
+
+All rejections and errors on an application and session level are communicated via the FIX standard Reject (3) message.
+
+Sender
+  Username (553),
+  SenderSubID (50)
+  
+Additionally for multi leg instruments it is mandatory to specify the instrument type in all order requests.
+
+
+Identifier Description Relevant FIX Tags
+
+  Product Identifier. The product identifier uniquely identifies a BSE product.
+  MarketSegmentID (1300)
+
+  Instrument Identifier. The instrument identifier uniquely identifies an instrument in the core system.
+  SecurityID (48),
+  SimpleSecurityID (30048)1
+
+  Instrument Type. Required for complex instruments, valid values are: 1 = Simple Instrument 5 = Futures Spread
+  ProductComplex (1227)
+  
+OrderId from exchange unique PER product
+
+TIF
+  Non-persistent: Non-persistent orders are automatically cancelled in case of a trading interruption, session loss or exchange system failure and are 
+  only valid good-for-day.
+    ExecInst (18) = Q  (encoded as bit map with second bit being set)
+
+  Lean: The receipt of status information of orders having this flag set is restricted to the owning session. Only match events in the session scope and 
+  unsolicited events may be recovered via the retransmission request. Note: Lean orders are always Non-persistent and are only valid good-for-day.
+
+    ApplSeqIndicator (28703) = 0 (No_Recovery_Required)
+    
+Location ID The Location Id of the end-user who is placing the orders should be registered with the Exchange. 
+The location id consists of 16 digits and break-up of this Location Id contains info like Sort / DMA Trading etc
+
+Binary values are presented in little endian byte order.
+
+

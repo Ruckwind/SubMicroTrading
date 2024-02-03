@@ -1,12 +1,9 @@
-/*******************************************************************************
- * Copyright (c) 2015 Low Latency Trading Limited  :  Author Richard Rose
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at	http://www.apache.org/licenses/LICENSE-2.0
- * Unless required by applicable law or agreed to in writing,  software distributed under the License 
- * is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and limitations under the License.
- *******************************************************************************/
 package com.rr.model.generated.fix.model.defn;
+
+/*
+Copyright 2015 Low Latency Trading Limited
+Author Richard Rose
+*/
 
 
 import javax.annotation.Generated;
@@ -66,12 +63,15 @@ public interface FixDictionary50 {
     public int OrdRejReason = 103;
     public int SecurityDesc = 107;
     public int heartBtInt = 108;
+    public int clientID = 109;
+    public int displayQty = 111;
     public int testReqID = 112;
     public int OnBehalfOfCompID = 115;
     public int OnBehalfOfSubID = 116;
     public int settlCurrency = 120;
     public int OrigSendingTime = 122;
     public int GapFillFlag = 123;
+    public int expireTime = 126;
     public int DeliverToCompID = 128;
     public int DeliverToSubID = 129;
     public int ResetSeqNumFlag = 141;
@@ -83,6 +83,8 @@ public interface FixDictionary50 {
     public int ExecType = 150;
     public int LeavesQty = 151;
     public int SecurityType = 167;
+    public int effectiveTime = 168;
+    public int maturityMonthYear = 200;
     public int SecurityExchange = 207;
     public int PegOffsetValue = 211;
     public int mdReqId = 262;
@@ -104,14 +106,19 @@ public interface FixDictionary50 {
     public int CxlRejResponseTo = 434;
     public int MultiLegReportingType = 442;
     public int PartyIDSource = 447;
-    public int SrcLinkId = 526;
+    public int parentClOrdId = 526;
     public int OrderCapacity = 528;
     public int OrderRestrictions = 529;
     public int BookingType = 775;
     public int NextExpectedMsgSeqNum = 789;
-    public int LastLiquidityInd = 851;
+    public int TargetStrategy = 847;
+    public int StratParams = 848;
+    public int LiquidityInd = 851;
+    public int strategyId = 1601;
+    public int origStrategyId = 1602;
     public int TradingSystemName = 1603;
     public int TradingSystemVersion = 1604;
     public int TradingSystemVendor = 1605;
+    public int TradingStatus = 1700;
     public int AckStats = 11611;
 }

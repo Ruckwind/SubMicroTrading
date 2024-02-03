@@ -1,0 +1,75 @@
+<!--suppress ALL -->
+
+
+@SECTION DEFAULT_SIZES_CONSTANTS START
+
+            <DefaultSize id="ACCOUNT_LENGTH" val="5"/>
+            <DefaultSize id="CLIENTID_LENGTH" val="5"/>
+            <DefaultSize id="CLORDID_LENGTH" val="20"/>
+            <DefaultSize id="CURRENCY_LENGTH" val="3"/>
+            <DefaultSize id="ORDERID_LENGTH" val="10"/>
+            <DefaultSize id="EXDESTINATION_LENGTH" val="4"/>
+            <DefaultSize id="EXECID_LENGTH" val="10"/>
+            <DefaultSize id="MARKETORDERREF_LENGTH" val="10"/>
+            <DefaultSize id="SECURITYID_LENGTH" val="12"/>
+            <DefaultSize id="ONBEHALFOFID_LENGTH" val="10"/>
+            <DefaultSize id="EXECBROKER_LENGTH" val="10"/>
+            <DefaultSize id="SYMBOL_LENGTH" val="12"/>
+            <DefaultSize id="COMPID_LENGTH" val="10"/>
+            <DefaultSize id="SENDERLOCID_LENGTH" val="8"/>
+            <DefaultSize id="TEXT_LENGTH" val="4"/>
+            <DefaultSize id="TRADE_TEXT_LENGTH" val="4"/>
+            <DefaultSize id="BENCHMARK_LENGTH" val="16"/>
+            <DefaultSize id="USERNAME" val="10"/>
+            <DefaultSize id="PASSWORD" val="10"/>
+            <DefaultSize id="LASTMKT_LENGTH" val="4"/>
+            <DefaultSize id="SECURITYEXCH_LENGTH" val="4"/>
+            <DefaultSize id="SUBPARTYGRPID_LENGTH" val="10"/>
+            <DefaultSize id="MATURITYMONTHYEAR_LENGTH" val="6"/>
+            <DefaultSize id="MATURITYDAY_LENGTH" val="2"/>
+            <DefaultSize id="VIEW_NOS_BUFFER" val="400"/>
+            <DefaultSize id="MIN_ENCODE_BUFFER" val="128"/>
+            <DefaultSize id="TESTRECID_LENGTH" val="16"/>
+            <DefaultSize id="USERNAME_LENGTH" val="15"/>
+            <DefaultSize id="STRATPARAM_LENGTH" val="15"/>
+
+            <DefaultSize id="TAG_LEN" val="4"/>
+
+                    <!-- MD constants -->
+
+            <DefaultSize id="MD_REQ_LEN" val="9"/>
+
+                    <!-- ALGO  constants -->
+
+            <DefaultSize id="ALGO_ID_LEN"                   val="30"/>
+            <DefaultSize id="STRAT_DEF_ID_LEN"              val="32"/>   <!-- initial size -->
+            <DefaultSize id="TIMEZONE_LEN"                  val="20"/>
+
+
+                    <!-- INST constants ... require review -->
+
+            <DefaultSize id="INST_FEED_TYPE_LENGTH"         val="9"/>
+            <DefaultSize id="INST_SEC_GRP_LEN"              val="9"/>
+            <DefaultSize id="INST_SEC_DESC_LENGTH"          val="9"/>
+            <DefaultSize id="INST_CFI_CODE_LENGTH"          val="9"/>
+            <DefaultSize id="INST_APPL_ID_LENGTH"           val="9"/>
+            <DefaultSize id="INST_SEC_LDESC_LENGTH"         val="20"/>
+            <DefaultSize id="COMPANY_NAME_LEN"              val="20"/>
+            <DefaultSize id="INST_INSTRUCTION_LEN"          val="4"/>
+
+
+                <!-- Other-->
+
+            <DefaultSize id="HOLIDAY_NAME_LEN"              val="12"/>
+            <DefaultSize id="MARKET_LEN"                    val="9"/>
+
+            <DefaultSize id="SUBJECT_LEN"                   val="40"/>
+            <DefaultSize id="INFO_LEN"                      val="40"/>
+            <DefaultSize id="SHORT_NEWS_LEN"                val="40"/>
+            <DefaultSize id="LONG_NEWS_LEN"                 val="100"/>
+
+            <DefaultSize id="CODE_LEN"                      val="50"/>
+            <DefaultSize id="LOAN_RESPONSE_LEN"             val="15"/>
+
+
+@SECTION DEFAULT_SIZES_CONSTANTS END

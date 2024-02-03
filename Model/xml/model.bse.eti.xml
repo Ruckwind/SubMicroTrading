@@ -1,0 +1,149 @@
+<!--suppress ALL -->
+
+
+        @SECTION BSE_ETI_BINARY_CODEC START
+
+
+<BinaryCodec id="ETIBSE"
+                         model="ETIEurex"
+                         extends="BaseETI"
+                         decodeInclude="./eti/BSEDecoder.include"
+                         encodeInclude="./eti/BSEEncoder.include"
+                         decodeGenerator="com.rr.model.generator.emea.eti.ETIDecoderGenerator"
+                         encodeGenerator="com.rr.model.generator.emea.eti.ETIEncoderGenerator">
+
+                <MessageMap id="BaseBSEOrder" messageId="" ignore="true" extends="BaseRequest">
+                    <Map field="marketSegmentID"><Hook type="encode" code="encodeMarketSegmentID( msg.getInstrument() )"/></Map>
+
+                    <Map eventAttr="securityId" field="simpleSecurityID">
+                        <Hook type="encode" code="encodeSimpleSecurityId( msg.getInstrument() )"/>
+                        <Hook type="decode" code="_securityId = _builder.decodeUInt()"/>
+                    </Map>
+
+                    <Map field="priceValidityCheckType"><Hook type="encode" code="_builder.encodeByte( (byte)0 )"/></Map>
+                    <Map field="accountType"><Hook type="encode" code="_builder.encodeByte( (byte)20 )"/></Map>
+                    <Map field="maxPricePercentage"><Hook type="encode" code="_builder.encodePrice( 0.5 )"/></Map>
+                    <Map field="senderLocationID"><Hook type="encode" code="_builder.encodeLong( _locationId )"/></Map>
+                    <Map field="orderCapacity"><Hook type="encode" code="_builder.encodeByte( (byte)1 )"/></Map>
+                    <Map field="positionEffect"><Hook type="encode" code="_builder.encodeByte( (byte)'C' )"/></Map>
+                    <Map field="account"><Hook type="encode" code="_builder.encodeStringFixedWidth( _account, 2 )"/></Map>
+                    <Map field="applSeqIndicator"><Hook type="encode" code="_builder.encodeByte( (byte)0 )"/></Map>
+                    <Map field="execInst"><Hook type="encode" code="_builder.encodeByte( (byte)2 )"/></Map>
+                    <Map field="uniqueClientCode">
+                        <Hook type="encode" code="_builder.encodeStringFixedWidth( _uniqueClientCode, 12 )"/>
+                        <Hook type="decode" code="_builder.skip( 12 )"/>
+                    </Map>
+                </MessageMap>
+
+                <!--
+                    LIMIT ORDER MESSAGES
+                -->
+
+                <MessageMap id="NewLimitOrder"   eventId="NewOrderSingle" messageId="NewOrderRequestSimple" extends="BaseBSEOrder" encodeFunc="encodeNOS">
+                    <Map field="productComplex"><Hook type="encode" code="_builder.encodeByte( (byte)1 )"/></Map>
+                    <Hook type="postDecode" code="enrich( msg ) ; msg.setOrdType( OrdType.Limit )"/>
+                </MessageMap>
+
+                <MessageMap id="CancelReplaceLimitOrder"   eventId="CancelReplaceRequest" messageId="ReplaceOrderSingleShortRequest" extends="BaseBSEOrder" encodeFunc="encodeReplace">
+                </MessageMap>
+
+                <MessageMap id="OrderAckLean"   eventId="NewOrderAck"    messageId="NewOrderLeanResponse" extends="BaseExec" key1="ordStatus" val1="0">
+                    <Hook type="preDecode" code="if ( _nanoStats ) msg.setAckReceived( _received )"/>
+                    <Map eventAttr="price" field="priceMkToLimitPx"/>
+                </MessageMap>
+                <MessageMap id="OrderAckLeanCancel"    eventId="Cancelled"    messageId="NewOrderLeanResponse" extends="BaseExec" key1="ordStatus" val1="4"/>
+                <MessageMap id="OrderAckLeanSuspend"   eventId="Suspended"    messageId="NewOrderLeanResponse" extends="BaseExec" key1="ordStatus" val1="9"/>
+
+                <MessageMap id="ReplaceLeanResponseAck"       eventId="Replaced"     messageId="ReplaceOrderLeanResponse"  key1="ordStatus"  val1="0" extends="BaseExec"/>
+                <MessageMap id="ReplaceLeanResponsePartial"   eventId="Replaced"     messageId="ReplaceOrderLeanResponse"  key1="ordStatus"  val1="1" extends="BaseExec"/>
+                <MessageMap id="ReplaceLeanResponseCancelled" eventId="Cancelled"    messageId="ReplaceOrderLeanResponse"  key1="ordStatus"  val1="4" extends="BaseExec"/>
+                <MessageMap id="ReplaceLeanResponseSuspended" eventId="Suspended"    messageId="ReplaceOrderLeanResponse"  key1="ordStatus"  val1="9" extends="BaseExec"/>
+
+                <MessageMap id="OrderCancelledLean"          eventId="Cancelled"     messageId="CancelOrderLeanResponse"   key1="ordStatus"  val1="4" extends="BaseExec"/>
+                <MessageMap id="OrderCancelSuspendLean"      eventId="Suspended"     messageId="CancelOrderLeanResponse"   key1="ordStatus"  val1="9" extends="BaseExec"/>
+
+                <!--
+                    STANDARD ORDER MESSAGES
+                -->
+
+                <MessageMap id="NewOrderSingle"   eventId="NewOrderSingle" messageId="NewOrderRequest" extends="BaseBSEOrder" encodeFunc="encodeNOS">
+                    <Map field="productComplex"><Hook type="encode" code="_builder.encodeByte( (byte)1 )"/></Map>
+                    <Hook type="postDecode" code="enrich( msg )"/>
+                </MessageMap>
+
+                <MessageMap id="OrderReplaceRequest"   eventId="CancelReplaceRequest" messageId="ReplaceOrderSingleRequest" extends="BaseBSEOrder" encodeFunc="encodeReplace">
+                </MessageMap>
+
+                <MessageMap id="OrderCancelRequest"   eventId="CancelRequest" messageId="CancelOrderSingleRequest" extends="BaseRequest" encodeFunc="encodeCancel">
+                    <Map field="marketSegmentID"><Hook type="encode" code="encodeMarketSegmentID( msg.getInstrument() )"/></Map>
+                    <Map field="simpleSecurityID"><Hook type="encode" code="encodeSimpleSecurityId( msg.getInstrument() )"/></Map>
+                </MessageMap>
+
+                <MessageMap id="OrderAck"   eventId="NewOrderAck"    messageId="NewOrderStandardResponse" extends="BaseExec" key1="ordStatus" val1="0">
+                    <Hook type="preDecode" code="if ( _nanoStats ) msg.setAckReceived( _received )"/>
+                    <Map eventAttr="price" field="priceMkToLimitPx"/>
+                </MessageMap>
+                <MessageMap id="OrderAckCancel"   eventId="Cancelled"    messageId="NewOrderStandardResponse" extends="BaseExec" key1="ordStatus" val1="4"/>
+                <MessageMap id="OrderAckSuspend"   eventId="Suspended"    messageId="NewOrderStandardResponse" extends="BaseExec" key1="ordStatus" val1="9"/>
+
+                <MessageMap id="ReplaceResponseAck"       eventId="Replaced"     messageId="ReplaceOrderStandardResponse"  key1="ordStatus"  val1="0" extends="BaseExec"/>
+                <MessageMap id="ReplaceResponsePartial"   eventId="Replaced"     messageId="ReplaceOrderStandardResponse"  key1="ordStatus"  val1="1" extends="BaseExec"/>
+                <MessageMap id="ReplaceResponseCancelled" eventId="Cancelled"    messageId="ReplaceOrderStandardResponse"  key1="ordStatus"  val1="4" extends="BaseExec"/>
+                <MessageMap id="ReplaceResponseSuspended" eventId="Suspended"    messageId="ReplaceOrderStandardResponse"  key1="ordStatus"  val1="9" extends="BaseExec"/>
+
+                <MessageMap id="OrderCancelled"           eventId="Cancelled"    messageId="CancelOrderStandardResponse"   key1="ordStatus" val1="4" extends="BaseExec"/>
+                <MessageMap id="OrderCancelSuspended"     eventId="Suspended"    messageId="CancelOrderStandardResponse"   key1="ordStatus" val1="9" extends="BaseExec"/>
+
+                <!--
+                    MULTILEG ORDER MESSAGES
+                -->
+
+                <MessageMap id="NewOrderSingleMultiLeg"   eventId="NewOrderSingle" messageId="NewOrderRequestMultiLeg" extends="BaseBSEOrder" encodeFunc="encodeNOS">
+                    <Map eventAttr="securityId" field="securityID">
+                        <Hook type="encode" code="encodeSecurityId( msg.getInstrument() )"/>
+                        <Hook type="decode" code="_securityId = _builder.decodeULong()"/>
+                    </Map>
+                    <Map field="noLegs">
+                        <Hook type="encode" code="final int numLegs = ((ExchDerivInstrument)msg.getInstrument()).getNumLegs() ; _builder.encodeUByte( (byte)numLegs )"/>
+                        <Hook type="decode" code="int noLegs = _builder.decodeUByte()"/>
+                    </Map>
+                    <Map field="OrderLegsGrp">
+                        <Hook type="encode" code="encodeOrderLegs( numLegs )"/>
+                        <Hook type="decode" code="_builder.skip( noLegs * 8 )"/>
+                    </Map>
+                    <Map field="productComplex"><Hook type="encode" code="_builder.encodeByte( (byte)5 )"/></Map>
+                    <Hook type="postDecode" code="enrich( msg )"/>
+                </MessageMap>
+
+                <MessageMap id="OrderReplaceMultiLeg"   eventId="CancelReplaceRequest" messageId="ReplaceOrderMultiLeg" extends="BaseBSEOrder" encodeFunc="encodeReplace">
+                    <Map eventAttr="securityId" field="securityID">
+                        <Hook type="encode" code="encodeSecurityId( msg.getInstrument() )"/>
+                        <Hook type="decode" code="_securityId = _builder.decodeULong()"/>
+                    </Map>
+                    <Map field="productComplex"><Hook type="encode" code="_builder.encodeByte( (byte)5 )"/></Map>
+                    <Map field="noLegs">
+                        <Hook type="encode" code="final int numLegs = ((ExchDerivInstrument)msg.getInstrument()).getNumLegs() ; _builder.encodeUByte( (byte)numLegs )"/>
+                        <Hook type="decode" code="int noLegs = _builder.decodeUByte()"/>
+                    </Map>
+                    <Map field="OrderLegsGrp">
+                        <Hook type="encode" code="encodeOrderLegs( numLegs )"/>
+                        <Hook type="decode" code="_builder.skip( noLegs * 8 )"/>
+                    </Map>
+                </MessageMap>
+
+                <MessageMap id="CancelMultiLeg"   eventId="CancelRequest" messageId="CancelOrderMultiLeg" extends="BaseRequest" encodeFunc="encodeCancel">
+                    <Map field="marketSegmentID"><Hook type="encode" code="encodeMarketSegmentID( msg.getInstrument() )"/></Map>
+                    <Map eventAttr="securityId" field="securityID">
+                        <Hook type="encode" code="encodeSecurityId( msg.getInstrument() )"/>
+                        <Hook type="decode" code="_securityId = _builder.decodeULong()"/>
+                    </Map>
+                </MessageMap>
+
+                <!--
+                    OTHER MESSAGES
+                -->
+
+
+        </BinaryCodec>
+
+@SECTION BSE_ETI_BINARY_CODEC END

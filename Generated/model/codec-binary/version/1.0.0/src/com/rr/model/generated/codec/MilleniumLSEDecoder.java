@@ -1,18 +1,17 @@
-/*******************************************************************************
- * Copyright (c) 2015 Low Latency Trading Limited  :  Author Richard Rose
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at	http://www.apache.org/licenses/LICENSE-2.0
- * Unless required by applicable law or agreed to in writing,  software distributed under the License 
- * is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and limitations under the License.
- *******************************************************************************/
 package com.rr.model.generated.codec;
+
+/*
+Copyright 2015 Low Latency Trading Limited
+Author Richard Rose
+*/
 
 import java.util.HashMap;
 import java.util.Map;
-import com.rr.core.codec.AbstractBinaryDecoder;
+import com.rr.core.codec.*;
+import com.rr.core.utils.*;
 import com.rr.core.lang.*;
 import com.rr.core.model.*;
+import com.rr.core.factories.*;
 import com.rr.core.pool.SuperPool;
 import com.rr.core.pool.SuperpoolManager;
 import com.rr.model.internal.type.*;
@@ -28,6 +27,8 @@ import com.rr.model.generated.internal.core.SizeType;
 @SuppressWarnings( "unused" )
 
 public final class MilleniumLSEDecoder extends AbstractBinaryDecoder {
+
+    private final ReusableString _tmpLookupKey = new ReusableString();
 
    // Attrs
     private static final byte      MSG_Logon = (byte)'A';
@@ -51,9 +52,10 @@ public final class MilleniumLSEDecoder extends AbstractBinaryDecoder {
 
     private       byte _msgType;
     private final byte                        _protocolVersion;
+    private final String                      _id;
     private       int                         _msgStatedLen;
-    private final ViewString                  _lookup = new ViewString();
     private final ReusableString _dump  = new ReusableString(256);
+    private final ReusableString _missedMsgTypes = new ReusableString();
 
     // dict var holders for conditional mappings and fields with no corresponding event entry .. useful for hooks
     private       ReusableString              _userName = new ReusableString(30);
@@ -87,7 +89,7 @@ public final class MilleniumLSEDecoder extends AbstractBinaryDecoder {
     private       ReusableString              _origClOrdId = new ReusableString(30);
     private       ReusableString              _orderId = new ReusableString(30);
     private       int                         _msgSeqNum;
-    private       int                         _sendingTime;
+    private       long                        _sendingTime;
     private       ReusableString              _rejectReason = new ReusableString(30);
     private       byte                        _rejectMsgType;
     private       ReusableString              _execId = new ReusableString(30);
@@ -125,59 +127,61 @@ public final class MilleniumLSEDecoder extends AbstractBinaryDecoder {
     private final SuperPool<HeartbeatImpl> _heartbeatPool = SuperpoolManager.instance().getSuperPool( HeartbeatImpl.class );
     private final HeartbeatFactory _heartbeatFactory = new HeartbeatFactory( _heartbeatPool );
 
-    private final SuperPool<RecoveryNewOrderSingleImpl> _newOrderSinglePool = SuperpoolManager.instance().getSuperPool( RecoveryNewOrderSingleImpl.class );
-    private final RecoveryNewOrderSingleFactory _newOrderSingleFactory = new RecoveryNewOrderSingleFactory( _newOrderSinglePool );
+    private final SuperPool<NewOrderSingleImpl> _newOrderSinglePool = SuperpoolManager.instance().getSuperPool( NewOrderSingleImpl.class );
+    private final NewOrderSingleFactory _newOrderSingleFactory = new NewOrderSingleFactory( _newOrderSinglePool );
 
-    private final SuperPool<RecoveryCancelRequestImpl> _cancelRequestPool = SuperpoolManager.instance().getSuperPool( RecoveryCancelRequestImpl.class );
-    private final RecoveryCancelRequestFactory _cancelRequestFactory = new RecoveryCancelRequestFactory( _cancelRequestPool );
+    private final SuperPool<CancelRequestImpl> _cancelRequestPool = SuperpoolManager.instance().getSuperPool( CancelRequestImpl.class );
+    private final CancelRequestFactory _cancelRequestFactory = new CancelRequestFactory( _cancelRequestPool );
 
-    private final SuperPool<RecoveryCancelRejectImpl> _cancelRejectPool = SuperpoolManager.instance().getSuperPool( RecoveryCancelRejectImpl.class );
-    private final RecoveryCancelRejectFactory _cancelRejectFactory = new RecoveryCancelRejectFactory( _cancelRejectPool );
+    private final SuperPool<CancelRejectImpl> _cancelRejectPool = SuperpoolManager.instance().getSuperPool( CancelRejectImpl.class );
+    private final CancelRejectFactory _cancelRejectFactory = new CancelRejectFactory( _cancelRejectPool );
 
     private final SuperPool<SessionRejectImpl> _sessionRejectPool = SuperpoolManager.instance().getSuperPool( SessionRejectImpl.class );
     private final SessionRejectFactory _sessionRejectFactory = new SessionRejectFactory( _sessionRejectPool );
 
-    private final SuperPool<RecoveryVagueOrderRejectImpl> _vagueOrderRejectPool = SuperpoolManager.instance().getSuperPool( RecoveryVagueOrderRejectImpl.class );
-    private final RecoveryVagueOrderRejectFactory _vagueOrderRejectFactory = new RecoveryVagueOrderRejectFactory( _vagueOrderRejectPool );
+    private final SuperPool<VagueOrderRejectImpl> _vagueOrderRejectPool = SuperpoolManager.instance().getSuperPool( VagueOrderRejectImpl.class );
+    private final VagueOrderRejectFactory _vagueOrderRejectFactory = new VagueOrderRejectFactory( _vagueOrderRejectPool );
 
-    private final SuperPool<RecoveryCancelReplaceRequestImpl> _cancelReplaceRequestPool = SuperpoolManager.instance().getSuperPool( RecoveryCancelReplaceRequestImpl.class );
-    private final RecoveryCancelReplaceRequestFactory _cancelReplaceRequestFactory = new RecoveryCancelReplaceRequestFactory( _cancelReplaceRequestPool );
+    private final SuperPool<CancelReplaceRequestImpl> _cancelReplaceRequestPool = SuperpoolManager.instance().getSuperPool( CancelReplaceRequestImpl.class );
+    private final CancelReplaceRequestFactory _cancelReplaceRequestFactory = new CancelReplaceRequestFactory( _cancelReplaceRequestPool );
 
-    private final SuperPool<RecoveryNewOrderAckImpl> _newOrderAckPool = SuperpoolManager.instance().getSuperPool( RecoveryNewOrderAckImpl.class );
-    private final RecoveryNewOrderAckFactory _newOrderAckFactory = new RecoveryNewOrderAckFactory( _newOrderAckPool );
+    private final SuperPool<NewOrderAckImpl> _newOrderAckPool = SuperpoolManager.instance().getSuperPool( NewOrderAckImpl.class );
+    private final NewOrderAckFactory _newOrderAckFactory = new NewOrderAckFactory( _newOrderAckPool );
 
-    private final SuperPool<RecoveryCancelledImpl> _cancelledPool = SuperpoolManager.instance().getSuperPool( RecoveryCancelledImpl.class );
-    private final RecoveryCancelledFactory _cancelledFactory = new RecoveryCancelledFactory( _cancelledPool );
+    private final SuperPool<CancelledImpl> _cancelledPool = SuperpoolManager.instance().getSuperPool( CancelledImpl.class );
+    private final CancelledFactory _cancelledFactory = new CancelledFactory( _cancelledPool );
 
-    private final SuperPool<RecoveryReplacedImpl> _replacedPool = SuperpoolManager.instance().getSuperPool( RecoveryReplacedImpl.class );
-    private final RecoveryReplacedFactory _replacedFactory = new RecoveryReplacedFactory( _replacedPool );
+    private final SuperPool<ReplacedImpl> _replacedPool = SuperpoolManager.instance().getSuperPool( ReplacedImpl.class );
+    private final ReplacedFactory _replacedFactory = new ReplacedFactory( _replacedPool );
 
-    private final SuperPool<RecoveryRejectedImpl> _rejectedPool = SuperpoolManager.instance().getSuperPool( RecoveryRejectedImpl.class );
-    private final RecoveryRejectedFactory _rejectedFactory = new RecoveryRejectedFactory( _rejectedPool );
+    private final SuperPool<RejectedImpl> _rejectedPool = SuperpoolManager.instance().getSuperPool( RejectedImpl.class );
+    private final RejectedFactory _rejectedFactory = new RejectedFactory( _rejectedPool );
 
-    private final SuperPool<RecoveryExpiredImpl> _expiredPool = SuperpoolManager.instance().getSuperPool( RecoveryExpiredImpl.class );
-    private final RecoveryExpiredFactory _expiredFactory = new RecoveryExpiredFactory( _expiredPool );
+    private final SuperPool<ExpiredImpl> _expiredPool = SuperpoolManager.instance().getSuperPool( ExpiredImpl.class );
+    private final ExpiredFactory _expiredFactory = new ExpiredFactory( _expiredPool );
 
-    private final SuperPool<RecoveryRestatedImpl> _restatedPool = SuperpoolManager.instance().getSuperPool( RecoveryRestatedImpl.class );
-    private final RecoveryRestatedFactory _restatedFactory = new RecoveryRestatedFactory( _restatedPool );
+    private final SuperPool<RestatedImpl> _restatedPool = SuperpoolManager.instance().getSuperPool( RestatedImpl.class );
+    private final RestatedFactory _restatedFactory = new RestatedFactory( _restatedPool );
 
-    private final SuperPool<RecoveryTradeNewImpl> _tradeNewPool = SuperpoolManager.instance().getSuperPool( RecoveryTradeNewImpl.class );
-    private final RecoveryTradeNewFactory _tradeNewFactory = new RecoveryTradeNewFactory( _tradeNewPool );
+    private final SuperPool<TradeNewImpl> _tradeNewPool = SuperpoolManager.instance().getSuperPool( TradeNewImpl.class );
+    private final TradeNewFactory _tradeNewFactory = new TradeNewFactory( _tradeNewPool );
 
-    private final SuperPool<RecoveryTradeCorrectImpl> _tradeCorrectPool = SuperpoolManager.instance().getSuperPool( RecoveryTradeCorrectImpl.class );
-    private final RecoveryTradeCorrectFactory _tradeCorrectFactory = new RecoveryTradeCorrectFactory( _tradeCorrectPool );
+    private final SuperPool<TradeCorrectImpl> _tradeCorrectPool = SuperpoolManager.instance().getSuperPool( TradeCorrectImpl.class );
+    private final TradeCorrectFactory _tradeCorrectFactory = new TradeCorrectFactory( _tradeCorrectPool );
 
-    private final SuperPool<RecoveryTradeCancelImpl> _tradeCancelPool = SuperpoolManager.instance().getSuperPool( RecoveryTradeCancelImpl.class );
-    private final RecoveryTradeCancelFactory _tradeCancelFactory = new RecoveryTradeCancelFactory( _tradeCancelPool );
+    private final SuperPool<TradeCancelImpl> _tradeCancelPool = SuperpoolManager.instance().getSuperPool( TradeCancelImpl.class );
+    private final TradeCancelFactory _tradeCancelFactory = new TradeCancelFactory( _tradeCancelPool );
 
-    private final SuperPool<RecoverySuspendedImpl> _suspendedPool = SuperpoolManager.instance().getSuperPool( RecoverySuspendedImpl.class );
-    private final RecoverySuspendedFactory _suspendedFactory = new RecoverySuspendedFactory( _suspendedPool );
+    private final SuperPool<SuspendedImpl> _suspendedPool = SuperpoolManager.instance().getSuperPool( SuspendedImpl.class );
+    private final SuspendedFactory _suspendedFactory = new SuspendedFactory( _suspendedPool );
 
 
    // Constructors
-    public MilleniumLSEDecoder() {
+    public MilleniumLSEDecoder() { this( null ); }
+    public MilleniumLSEDecoder( String id ) {
         super();
         setBuilder();
+        _id = id;
         _protocolVersion = (byte)'2';
     }
 
@@ -204,12 +208,12 @@ public final class MilleniumLSEDecoder extends AbstractBinaryDecoder {
     }
 
     private void setBuilder() {
-        _builder = (_debug) ? new DebugBinaryDecodeBuilder<com.rr.codec.emea.exchange.millenium.MilleniumDecodeBuilderImpl>( _dump, new com.rr.codec.emea.exchange.millenium.MilleniumDecodeBuilderImpl() )
+        _builder = (_debug) ? new DebugBinaryDecodeBuilder<>( _dump, new com.rr.codec.emea.exchange.millenium.MilleniumDecodeBuilderImpl() )
                             : new com.rr.codec.emea.exchange.millenium.MilleniumDecodeBuilderImpl();
     }
 
     @Override
-    protected final Message doMessageDecode() {
+    protected final Event doMessageDecode() {
         _builder.setMaxIdx( _maxIdx );
 
         switch( _msgType ) {
@@ -289,14 +293,18 @@ public final class MilleniumLSEDecoder extends AbstractBinaryDecoder {
             break;
         }
         if ( _debug ) {
-            _dump.append( "Skipped Unsupported Message : " ).append( _msgType );
-            _log.info( _dump );
-            _dump.reset();
+            _tmpLookupKey.copy( '|' ).append( _msgType ).append( '|' );
+            if ( ! _missedMsgTypes.contains( _tmpLookupKey ) ) {
+                _dump.append( "Skipped Unsupported Message : " ).append( _msgType );
+                _log.info( _dump );
+                _dump.reset();
+                _missedMsgTypes.append( _tmpLookupKey );
+            }
         }
         return null;
     }
 
-    private final Message decodeLogon() {
+    private Event decodeLogon() {
         if ( _debug ) {
             _dump.append( "\nKnown Message : " ).append( "Logon" ).append( " : " );
         }
@@ -317,7 +325,7 @@ public final class MilleniumLSEDecoder extends AbstractBinaryDecoder {
         return msg;
     }
 
-    private final Message decodeLogonReply() {
+    private Event decodeLogonReply() {
         if ( _debug ) {
             _dump.append( "\nKnown Message : " ).append( "LogonReply" ).append( " : " );
         }
@@ -333,7 +341,7 @@ public final class MilleniumLSEDecoder extends AbstractBinaryDecoder {
         return msg;
     }
 
-    private final Message decodeLogout() {
+    private Event decodeLogout() {
         if ( _debug ) {
             _dump.append( "\nKnown Message : " ).append( "Logout" ).append( " : " );
         }
@@ -346,7 +354,7 @@ public final class MilleniumLSEDecoder extends AbstractBinaryDecoder {
         return msg;
     }
 
-    private final Message decodeMissedMessageRequest() {
+    private Event decodeMissedMessageRequest() {
         if ( _debug ) {
             _dump.append( "\nKnown Message : " ).append( "MissedMessageRequest" ).append( " : " );
         }
@@ -362,7 +370,7 @@ public final class MilleniumLSEDecoder extends AbstractBinaryDecoder {
         return msg;
     }
 
-    private final Message decodeMissedMsgRequestAck() {
+    private Event decodeMissedMsgRequestAck() {
         if ( _debug ) {
             _dump.append( "\nKnown Message : " ).append( "MissedMsgRequestAck" ).append( " : " );
         }
@@ -375,7 +383,7 @@ public final class MilleniumLSEDecoder extends AbstractBinaryDecoder {
         return msg;
     }
 
-    private final Message decodeMissedMsgReport() {
+    private Event decodeMissedMsgReport() {
         if ( _debug ) {
             _dump.append( "\nKnown Message : " ).append( "MissedMsgReport" ).append( " : " );
         }
@@ -388,7 +396,7 @@ public final class MilleniumLSEDecoder extends AbstractBinaryDecoder {
         return msg;
     }
 
-    private final Message decodeHeartbeat() {
+    private Event decodeHeartbeat() {
         if ( _debug ) {
             _dump.append( "\nKnown Message : " ).append( "Heartbeat" ).append( " : " );
         }
@@ -398,12 +406,12 @@ public final class MilleniumLSEDecoder extends AbstractBinaryDecoder {
         return msg;
     }
 
-    private final Message decodeNewOrder() {
+    private Event decodeNewOrder() {
         if ( _debug ) {
             _dump.append( "\nKnown Message : " ).append( "NewOrder" ).append( " : " );
         }
 
-        final RecoveryNewOrderSingleImpl msg = _newOrderSingleFactory.get();
+        final NewOrderSingleImpl msg = _newOrderSingleFactory.get();
 
         if ( _debug ) _dump.append( "\nField: " ).append( "clOrdId" ).append( " : " );
         _builder.decodeZStringFixedWidth( msg.getClOrdIdForUpdate(), 20 );
@@ -461,12 +469,12 @@ public final class MilleniumLSEDecoder extends AbstractBinaryDecoder {
         return msg;
     }
 
-    private final Message decodeOrderCancelRequest() {
+    private Event decodeOrderCancelRequest() {
         if ( _debug ) {
             _dump.append( "\nKnown Message : " ).append( "OrderCancelRequest" ).append( " : " );
         }
 
-        final RecoveryCancelRequestImpl msg = _cancelRequestFactory.get();
+        final CancelRequestImpl msg = _cancelRequestFactory.get();
 
         if ( _debug ) _dump.append( "\nField: " ).append( "clOrdId" ).append( " : " );
         _builder.decodeZStringFixedWidth( msg.getClOrdIdForUpdate(), 20 );
@@ -491,12 +499,12 @@ public final class MilleniumLSEDecoder extends AbstractBinaryDecoder {
         return msg;
     }
 
-    private final Message decodeCancelReject() {
+    private Event decodeCancelReject() {
         if ( _debug ) {
             _dump.append( "\nKnown Message : " ).append( "CancelReject" ).append( " : " );
         }
 
-        final RecoveryCancelRejectImpl msg = _cancelRejectFactory.get();
+        final CancelRejectImpl msg = _cancelRejectFactory.get();
         if ( _debug ) _dump.append( "\nField: " ).append( "appId" ).append( " : " );
         _appId = _builder.decodeUByte();
 
@@ -512,7 +520,7 @@ public final class MilleniumLSEDecoder extends AbstractBinaryDecoder {
         _rejectCode = _builder.decodeInt();
 
         if ( _debug ) _dump.append( "\nField: " ).append( "sendingTime" ).append( " : " );
-        msg.setSendingTime( _builder.decodeTimestampUTC() );
+        msg.setEventTimestamp( _builder.decodeTimestampUTC() );
 
         if ( _debug ) _dump.append( "\nField: " ).append( "filler" ).append( " : " );
         _builder.skip( 8 );
@@ -520,7 +528,7 @@ public final class MilleniumLSEDecoder extends AbstractBinaryDecoder {
         return msg;
     }
 
-    private final Message decodeReject() {
+    private Event decodeReject() {
         if ( _debug ) {
             _dump.append( "\nKnown Message : " ).append( "Reject" ).append( " : " );
         }
@@ -540,12 +548,12 @@ public final class MilleniumLSEDecoder extends AbstractBinaryDecoder {
         return msg;
     }
 
-    private final Message decodeBusinessReject() {
+    private Event decodeBusinessReject() {
         if ( _debug ) {
             _dump.append( "\nKnown Message : " ).append( "BusinessReject" ).append( " : " );
         }
 
-        final RecoveryVagueOrderRejectImpl msg = _vagueOrderRejectFactory.get();
+        final VagueOrderRejectImpl msg = _vagueOrderRejectFactory.get();
         if ( _debug ) _dump.append( "\nField: " ).append( "appId" ).append( " : " );
         _appId = _builder.decodeUByte();
 
@@ -562,7 +570,7 @@ public final class MilleniumLSEDecoder extends AbstractBinaryDecoder {
         _builder.decodeZStringFixedWidth( msg.getOrderIdForUpdate(), 12 );
 
         if ( _debug ) _dump.append( "\nField: " ).append( "sendingTime" ).append( " : " );
-        msg.setSendingTime( _builder.decodeTimestampUTC() );
+        msg.setEventTimestamp( _builder.decodeTimestampUTC() );
 
         if ( _debug ) _dump.append( "\nField: " ).append( "filler" ).append( " : " );
         _builder.skip( 10 );
@@ -570,12 +578,12 @@ public final class MilleniumLSEDecoder extends AbstractBinaryDecoder {
         return msg;
     }
 
-    private final Message decodeOrderReplaceRequest() {
+    private Event decodeOrderReplaceRequest() {
         if ( _debug ) {
             _dump.append( "\nKnown Message : " ).append( "OrderReplaceRequest" ).append( " : " );
         }
 
-        final RecoveryCancelReplaceRequestImpl msg = _cancelReplaceRequestFactory.get();
+        final CancelReplaceRequestImpl msg = _cancelReplaceRequestFactory.get();
 
         if ( _debug ) _dump.append( "\nField: " ).append( "clOrdId" ).append( " : " );
         _builder.decodeZStringFixedWidth( msg.getClOrdIdForUpdate(), 20 );
@@ -618,10 +626,10 @@ public final class MilleniumLSEDecoder extends AbstractBinaryDecoder {
         return msg;
     }
 
-    private final Message conditionalDecoder1( Message prevMsg ) {
+    private Event conditionalDecoder1( Event prevMsg ) {
         switch( _execType ) {
         case 'G': {
-                final RecoveryTradeCorrectImpl msg = _tradeCorrectFactory.get();
+                final TradeCorrectImpl msg = _tradeCorrectFactory.get();
                 msg.setMsgSeqNum( _msgSeqNum );
                 msg.getExecIdForUpdate().copy( _execId );
                 msg.getClOrdIdForUpdate().copy( _clOrdId );
@@ -634,12 +642,12 @@ public final class MilleniumLSEDecoder extends AbstractBinaryDecoder {
                 msg.setLeavesQty( _leavesQty );
                 msg.setSide( Side.getVal( _side ) );
                 msg.setLiquidityInd( transformLiquidityInd( _liquidityInd ) );
-                msg.setSendingTime( _sendingTime );
+                msg.setEventTimestamp( _sendingTime );
                 if ( prevMsg != null ) prevMsg.attachQueue( msg );
                 return msg;
             }
-        case '5': {
-                final RecoveryReplacedImpl msg = _replacedFactory.get();
+        case '8': {
+                final RejectedImpl msg = _rejectedFactory.get();
                 msg.setMsgSeqNum( _msgSeqNum );
                 msg.getExecIdForUpdate().copy( _execId );
                 msg.getClOrdIdForUpdate().copy( _clOrdId );
@@ -648,12 +656,30 @@ public final class MilleniumLSEDecoder extends AbstractBinaryDecoder {
                 msg.setOrdStatus( OrdStatus.getVal( _ordStatus ) );
                 msg.setLeavesQty( _leavesQty );
                 msg.setSide( Side.getVal( _side ) );
-                msg.setSendingTime( _sendingTime );
+                msg.setEventTimestamp( _sendingTime );
+                if ( prevMsg != null ) prevMsg.attachQueue( msg );
+                return msg;
+            }
+        case 'H': {
+                final TradeCancelImpl msg = _tradeCancelFactory.get();
+                msg.setMsgSeqNum( _msgSeqNum );
+                msg.getExecIdForUpdate().copy( _execId );
+                msg.getClOrdIdForUpdate().copy( _clOrdId );
+                msg.getOrderIdForUpdate().copy( _orderId );
+                msg.setExecType( ExecType.getVal( _execType ) );
+                msg.getExecRefIDForUpdate().copy( _execRefID );
+                msg.setOrdStatus( OrdStatus.getVal( _ordStatus ) );
+                msg.setLastPx( _lastPx );
+                msg.setLastQty( _lastQty );
+                msg.setLeavesQty( _leavesQty );
+                msg.setSide( Side.getVal( _side ) );
+                msg.setLiquidityInd( transformLiquidityInd( _liquidityInd ) );
+                msg.setEventTimestamp( _sendingTime );
                 if ( prevMsg != null ) prevMsg.attachQueue( msg );
                 return msg;
             }
         case '4': {
-                final RecoveryCancelledImpl msg = _cancelledFactory.get();
+                final CancelledImpl msg = _cancelledFactory.get();
                 msg.setMsgSeqNum( _msgSeqNum );
                 msg.getExecIdForUpdate().copy( _execId );
                 msg.getClOrdIdForUpdate().copy( _clOrdId );
@@ -662,12 +688,12 @@ public final class MilleniumLSEDecoder extends AbstractBinaryDecoder {
                 msg.setOrdStatus( OrdStatus.getVal( _ordStatus ) );
                 msg.setLeavesQty( _leavesQty );
                 msg.setSide( Side.getVal( _side ) );
-                msg.setSendingTime( _sendingTime );
+                msg.setEventTimestamp( _sendingTime );
                 if ( prevMsg != null ) prevMsg.attachQueue( msg );
                 return msg;
             }
-        case 'D': {
-                final RecoveryRestatedImpl msg = _restatedFactory.get();
+        case 'C': {
+                final ExpiredImpl msg = _expiredFactory.get();
                 msg.setMsgSeqNum( _msgSeqNum );
                 msg.getExecIdForUpdate().copy( _execId );
                 msg.getClOrdIdForUpdate().copy( _clOrdId );
@@ -676,12 +702,12 @@ public final class MilleniumLSEDecoder extends AbstractBinaryDecoder {
                 msg.setOrdStatus( OrdStatus.getVal( _ordStatus ) );
                 msg.setLeavesQty( _leavesQty );
                 msg.setSide( Side.getVal( _side ) );
-                msg.setSendingTime( _sendingTime );
+                msg.setEventTimestamp( _sendingTime );
                 if ( prevMsg != null ) prevMsg.attachQueue( msg );
                 return msg;
             }
         case 'F': {
-                final RecoveryTradeNewImpl msg = _tradeNewFactory.get();
+                final TradeNewImpl msg = _tradeNewFactory.get();
                 msg.setMsgSeqNum( _msgSeqNum );
                 msg.getExecIdForUpdate().copy( _execId );
                 msg.getClOrdIdForUpdate().copy( _clOrdId );
@@ -693,12 +719,40 @@ public final class MilleniumLSEDecoder extends AbstractBinaryDecoder {
                 msg.setLeavesQty( _leavesQty );
                 msg.setSide( Side.getVal( _side ) );
                 msg.setLiquidityInd( transformLiquidityInd( _liquidityInd ) );
-                msg.setSendingTime( _sendingTime );
+                msg.setEventTimestamp( _sendingTime );
+                if ( prevMsg != null ) prevMsg.attachQueue( msg );
+                return msg;
+            }
+        case '5': {
+                final ReplacedImpl msg = _replacedFactory.get();
+                msg.setMsgSeqNum( _msgSeqNum );
+                msg.getExecIdForUpdate().copy( _execId );
+                msg.getClOrdIdForUpdate().copy( _clOrdId );
+                msg.getOrderIdForUpdate().copy( _orderId );
+                msg.setExecType( ExecType.getVal( _execType ) );
+                msg.setOrdStatus( OrdStatus.getVal( _ordStatus ) );
+                msg.setLeavesQty( _leavesQty );
+                msg.setSide( Side.getVal( _side ) );
+                msg.setEventTimestamp( _sendingTime );
+                if ( prevMsg != null ) prevMsg.attachQueue( msg );
+                return msg;
+            }
+        case 'D': {
+                final RestatedImpl msg = _restatedFactory.get();
+                msg.setMsgSeqNum( _msgSeqNum );
+                msg.getExecIdForUpdate().copy( _execId );
+                msg.getClOrdIdForUpdate().copy( _clOrdId );
+                msg.getOrderIdForUpdate().copy( _orderId );
+                msg.setExecType( ExecType.getVal( _execType ) );
+                msg.setOrdStatus( OrdStatus.getVal( _ordStatus ) );
+                msg.setLeavesQty( _leavesQty );
+                msg.setSide( Side.getVal( _side ) );
+                msg.setEventTimestamp( _sendingTime );
                 if ( prevMsg != null ) prevMsg.attachQueue( msg );
                 return msg;
             }
         case '9': {
-                final RecoverySuspendedImpl msg = _suspendedFactory.get();
+                final SuspendedImpl msg = _suspendedFactory.get();
                 msg.setMsgSeqNum( _msgSeqNum );
                 msg.getExecIdForUpdate().copy( _execId );
                 msg.getClOrdIdForUpdate().copy( _clOrdId );
@@ -707,26 +761,12 @@ public final class MilleniumLSEDecoder extends AbstractBinaryDecoder {
                 msg.setOrdStatus( OrdStatus.getVal( _ordStatus ) );
                 msg.setLeavesQty( _leavesQty );
                 msg.setSide( Side.getVal( _side ) );
-                msg.setSendingTime( _sendingTime );
-                if ( prevMsg != null ) prevMsg.attachQueue( msg );
-                return msg;
-            }
-        case '8': {
-                final RecoveryRejectedImpl msg = _rejectedFactory.get();
-                msg.setMsgSeqNum( _msgSeqNum );
-                msg.getExecIdForUpdate().copy( _execId );
-                msg.getClOrdIdForUpdate().copy( _clOrdId );
-                msg.getOrderIdForUpdate().copy( _orderId );
-                msg.setExecType( ExecType.getVal( _execType ) );
-                msg.setOrdStatus( OrdStatus.getVal( _ordStatus ) );
-                msg.setLeavesQty( _leavesQty );
-                msg.setSide( Side.getVal( _side ) );
-                msg.setSendingTime( _sendingTime );
+                msg.setEventTimestamp( _sendingTime );
                 if ( prevMsg != null ) prevMsg.attachQueue( msg );
                 return msg;
             }
         case '0': {
-                final RecoveryNewOrderAckImpl msg = _newOrderAckFactory.get();
+                final NewOrderAckImpl msg = _newOrderAckFactory.get();
                 if ( _debug ) _dump.append( "\nHook : " ).append( "predecode" ).append( " : " );
                 if ( _nanoStats ) msg.setAckReceived( _received );
                 msg.setMsgSeqNum( _msgSeqNum );
@@ -737,39 +777,7 @@ public final class MilleniumLSEDecoder extends AbstractBinaryDecoder {
                 msg.setOrdStatus( OrdStatus.getVal( _ordStatus ) );
                 msg.setLeavesQty( _leavesQty );
                 msg.setSide( Side.getVal( _side ) );
-                msg.setSendingTime( _sendingTime );
-                if ( prevMsg != null ) prevMsg.attachQueue( msg );
-                return msg;
-            }
-        case 'C': {
-                final RecoveryExpiredImpl msg = _expiredFactory.get();
-                msg.setMsgSeqNum( _msgSeqNum );
-                msg.getExecIdForUpdate().copy( _execId );
-                msg.getClOrdIdForUpdate().copy( _clOrdId );
-                msg.getOrderIdForUpdate().copy( _orderId );
-                msg.setExecType( ExecType.getVal( _execType ) );
-                msg.setOrdStatus( OrdStatus.getVal( _ordStatus ) );
-                msg.setLeavesQty( _leavesQty );
-                msg.setSide( Side.getVal( _side ) );
-                msg.setSendingTime( _sendingTime );
-                if ( prevMsg != null ) prevMsg.attachQueue( msg );
-                return msg;
-            }
-        case 'H': {
-                final RecoveryTradeCancelImpl msg = _tradeCancelFactory.get();
-                msg.setMsgSeqNum( _msgSeqNum );
-                msg.getExecIdForUpdate().copy( _execId );
-                msg.getClOrdIdForUpdate().copy( _clOrdId );
-                msg.getOrderIdForUpdate().copy( _orderId );
-                msg.setExecType( ExecType.getVal( _execType ) );
-                msg.getExecRefIDForUpdate().copy( _execRefID );
-                msg.setOrdStatus( OrdStatus.getVal( _ordStatus ) );
-                msg.setLastPx( _lastPx );
-                msg.setLastQty( _lastQty );
-                msg.setLeavesQty( _leavesQty );
-                msg.setSide( Side.getVal( _side ) );
-                msg.setLiquidityInd( transformLiquidityInd( _liquidityInd ) );
-                msg.setSendingTime( _sendingTime );
+                msg.setEventTimestamp( _sendingTime );
                 if ( prevMsg != null ) prevMsg.attachQueue( msg );
                 return msg;
             }
@@ -779,8 +787,8 @@ case 61: case 62: case 63: case 64: case 65: case 66: case 69:
         }
         throw new RuntimeDecodingException( "No matching condition for conditional message type" );
     }
-    private final Message decodeExecutionReport() {
-        Message msg = null;
+    private Event decodeExecutionReport() {
+        Event msg;
         if ( _debug ) _dump.append( "\nField: " ).append( "appId" ).append( " : " );
         _appId = _builder.decodeUByte();
         if ( _debug ) _dump.append( "\nField: " ).append( "msgSeqNum" ).append( " : " );
@@ -833,6 +841,8 @@ case 61: case 62: case 63: case 64: case 65: case 66: case 69:
     }
 
 
+    @Override public String getComponentId() { return _id; }
+
    // transform methods
     private static final LiquidityInd[] _liquidityIndMap = new LiquidityInd[19];
     private static final int    _liquidityIndIndexOffset = 'A';
@@ -877,4 +887,67 @@ case 61: case 62: case 63: case 64: case 65: case 66: case 69:
         return intVal;
     }
 
-    @Override    public final int parseHeader( final byte[] msg, final int offset, final int bytesRead ) {        _appId = -1;               _binaryMsg = msg;        _maxIdx = bytesRead + offset; // temp assign maxIdx to last data bytes in buffer        _offset = offset;        _builder.start( msg, offset, _maxIdx );                if ( bytesRead < 4 ) {            ReusableString copy = TLC.instance().getString();            if ( bytesRead == 0 )  {                copy.setValue( "{empty}" );            } else{                copy.setValue( msg, offset, bytesRead );            }            throw new RuntimeDecodingException( "Millenium Messsage too small, len=" + bytesRead, copy );        } else if ( msg.length < _maxIdx ){            throwDecodeException( "Buffer too small for specified bytesRead=" + bytesRead + ",offset=" + offset + ", bufLen=" + msg.length );        }                final byte version = _builder.decodeByte();                if ( version != _protocolVersion ) {            throwDecodeException( "Expected version="  + _protocolVersion + " not " + version );        }        _msgStatedLen = _builder.decodeShort() + 3; // add 3 to pass protoVer and length        _msgType = _builder.decodeByte();                _maxIdx = _msgStatedLen + _offset;  // correctly assign maxIdx as last bytes of current message         if ( _maxIdx > _binaryMsg.length )  _maxIdx  = _binaryMsg.length;                return _msgStatedLen;    }        public final byte getAppId() {        return _appId;    }        // enrich of NOS only used by exchange emulator        private static final ViewString _lseREC = new ViewString( "L" );        private void enrich( RecoveryNewOrderSingleImpl nos ) {                Instrument instr = null;                if ( _instrumentId > 0 ) {            instr = _instrumentLocator.getInstrumentByID( _lseREC, _instrumentId );        }        if ( instr != null ) {            nos.setCurrency( instr.getCurrency() );            nos.getSymbolForUpdate().setValue( instr.getRIC() );        }                nos.setInstrument( instr );    }    }
+
+    @Override
+    public final int parseHeader( final byte[] msg, final int offset, final int bytesRead ) {
+
+        _appId = -1;       
+        _binaryMsg = msg;
+        _maxIdx = bytesRead + offset; // temp assign maxIdx to last data bytes in bufferMap
+        _offset = offset;
+        _builder.start( msg, offset, _maxIdx );
+        
+        if ( bytesRead < 4 ) {
+            ReusableString copy = TLC.instance().getString();
+            if ( bytesRead == 0 )  {
+                copy.setValue( "{empty}" );
+            } else{
+                copy.setValue( msg, offset, bytesRead );
+            }
+            throw new RuntimeDecodingException( "Millenium Messsage too small, len=" + bytesRead, copy );
+        } else if ( msg.length < _maxIdx ){
+            throwDecodeException( "Buffer too small for specified bytesRead=" + bytesRead + ",offset=" + offset + ", bufLen=" + msg.length );
+        }
+        
+        final byte version = _builder.decodeByte();
+        
+        if ( version != _protocolVersion ) {
+            throwDecodeException( "Expected version="  + _protocolVersion + " not " + version );
+        }
+
+        _msgStatedLen = _builder.decodeShort() + 3; // add 3 to pass protoVer and length
+
+        _msgType = _builder.decodeByte();
+        
+        _maxIdx = _msgStatedLen + _offset;  // correctly assign maxIdx as last bytes of current message 
+
+        if ( _maxIdx > _binaryMsg.length )  _maxIdx  = _binaryMsg.length;
+        
+        return _msgStatedLen;
+    }
+    
+    public final byte getAppId() {
+        return _appId;
+    }
+    
+    // enrich of NOS only used by exchange emulator
+    
+    private static final ViewString _lseREC = new ViewString( "L" );
+
+    private void enrich( NewOrderSingleImpl nos ) {
+        
+        ExchangeInstrument instr = null;
+        
+        if ( _instrumentId > 0 ) {
+            instr = _instrumentLocator.getExchInstByExchangeLong( ExchangeCode.XLON, _instrumentId );
+        }
+
+        if ( instr != null ) {
+            nos.setCurrency( instr.getCurrency() );
+            nos.getSymbolForUpdate().setValue( ((ExchangeInstrument)instr).getExchangeSymbol() );
+        }
+        
+        nos.setInstrument( instr );
+    }
+    
+}

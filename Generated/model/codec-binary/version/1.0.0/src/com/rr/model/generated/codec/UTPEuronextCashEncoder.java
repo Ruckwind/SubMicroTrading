@@ -1,16 +1,14 @@
-/*******************************************************************************
- * Copyright (c) 2015 Low Latency Trading Limited  :  Author Richard Rose
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at	http://www.apache.org/licenses/LICENSE-2.0
- * Unless required by applicable law or agreed to in writing,  software distributed under the License 
- * is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and limitations under the License.
- *******************************************************************************/
 package com.rr.model.generated.codec;
+
+/*
+Copyright 2015 Low Latency Trading Limited
+Author Richard Rose
+*/
 
 import java.util.HashMap;
 import java.util.Map;
 import com.rr.core.lang.*;
+import com.rr.core.utils.*;
 import com.rr.core.model.*;
 import com.rr.core.pool.SuperpoolManager;
 import com.rr.core.pool.SuperPool;
@@ -57,12 +55,13 @@ public final class UTPEuronextCashEncoder implements BinaryEncoder {
     private static final byte      DEFAULT_OrderCapacity = (byte)'2';
 
     private final byte[]                  _buf;
+    private final String                  _id;
     private final int                     _offset;
     private final ZString                 _binaryVersion;
 
     private BinaryEncodeBuilder     _builder;
 
-    private       TimeZoneCalculator      _tzCalculator = new TimeZoneCalculator();
+    private       TimeUtils               _tzCalculator = TimeUtilsFactory.createTimeUtils();
     private       SingleByteLookup        _sv;
     private       TwoByteLookup           _tv;
     private       MultiByteLookup         _mv;
@@ -71,10 +70,13 @@ public final class UTPEuronextCashEncoder implements BinaryEncoder {
     private boolean                 _debug = false;
 
    // Constructors
-    public UTPEuronextCashEncoder( byte[] buf, int offset ) {
+    public UTPEuronextCashEncoder( byte[] buf, int offset ) { this( null, buf, offset ); }
+
+    public UTPEuronextCashEncoder( String id, byte[] buf, int offset ) {
         if ( buf.length < SizeType.MIN_ENCODE_BUFFER.getSize() ) {
             throw new RuntimeException( "Encode buffer too small only " + buf.length + ", min=" + SizeType.MIN_ENCODE_BUFFER.getSize() );
         }
+        _id = id;
         _buf = buf;
         _offset = offset;
         _binaryVersion   = new ViewString( "2");
@@ -85,7 +87,7 @@ public final class UTPEuronextCashEncoder implements BinaryEncoder {
    // encode methods
 
     @Override
-    public final void encode( final Message msg ) {
+    public final void encode( final Event msg ) {
         switch( msg.getReusableType().getSubId() ) {
         case EventIds.ID_UTPLOGON:
             encodeLogon( (UTPLogon) msg );
@@ -132,28 +134,68 @@ public final class UTPEuronextCashEncoder implements BinaryEncoder {
         case EventIds.ID_TRADECORRECT:
             encodeCorrect( (TradeCorrect) msg );
             break;
-        case 4:
+        case 2:
+        case 3:
         case 5:
         case 6:
+        case 7:
+        case 8:
+        case 9:
+        case 10:
+        case 11:
         case 12:
         case 13:
-        case 14:
-        case 15:
-        case 16:
+        case 17:
+        case 18:
         case 19:
-        case 22:
-        case 23:
-        case 24:
         case 25:
         case 26:
         case 27:
         case 28:
         case 29:
-        case 30:
-        case 31:
         case 32:
         case 33:
         case 34:
+        case 35:
+        case 36:
+        case 37:
+        case 38:
+        case 39:
+        case 40:
+        case 41:
+        case 42:
+        case 43:
+        case 44:
+        case 45:
+        case 46:
+        case 47:
+        case 48:
+        case 49:
+        case 50:
+        case 51:
+        case 52:
+        case 53:
+        case 54:
+        case 55:
+        case 56:
+        case 57:
+        case 58:
+        case 59:
+        case 60:
+        case 61:
+        case 62:
+        case 63:
+        case 64:
+        case 65:
+        case 66:
+        case 67:
+        case 68:
+        case 69:
+        case 70:
+        case 71:
+        case 72:
+        case 73:
+        case 74:
             _builder.start();
             break;
         default:
@@ -177,20 +219,20 @@ public final class UTPEuronextCashEncoder implements BinaryEncoder {
     }
 
     private void setBuilder() {
-        _builder = (_debug) ? new DebugBinaryEncodeBuilder<com.rr.codec.emea.exchange.utp.UTPEncodeBuilderImpl>( _dump, new com.rr.codec.emea.exchange.utp.UTPEncodeBuilderImpl( _buf, _offset, _binaryVersion ) )
+        _builder = (_debug) ? new DebugBinaryEncodeBuilder<>( _dump, new com.rr.codec.emea.exchange.utp.UTPEncodeBuilderImpl( _buf, _offset, _binaryVersion ) )
                             : new com.rr.codec.emea.exchange.utp.UTPEncodeBuilderImpl( _buf, _offset, _binaryVersion );
     }
 
 
     public final void encodeLogon( final UTPLogon msg ) {
-        final int now = _tzCalculator.getNowUTC();
+        final long now = _tzCalculator.getNowAsInternalTime();
         _builder.start( MSG_Logon );
         if ( _debug ) {
             _dump.append( "  encodeMap=" ).append( "Logon" ).append( "  eventType=" ).append( "UTPLogon" ).append( " : " );
         }
 
         if ( _debug ) _dump.append( "\nField: " ).append( "lastMsgSeqNum" ).append( " : " );
-        _builder.encodeInt( (int)msg.getLastMsgSeqNum() );
+        _builder.encodeInt( msg.getLastMsgSeqNum() );
         if ( _debug ) _dump.append( "\nField: " ).append( "userName" ).append( " : " );
         _builder.encodeZStringFixedWidth( msg.getUserName(), 11 );
         if ( _debug ) _dump.append( "\nField: " ).append( "filler" ).append( " : " );
@@ -199,16 +241,16 @@ public final class UTPEuronextCashEncoder implements BinaryEncoder {
     }
 
     public final void encodeLogonReject( final UTPLogonReject msg ) {
-        final int now = _tzCalculator.getNowUTC();
+        final long now = _tzCalculator.getNowAsInternalTime();
         _builder.start( MSG_LogonReject );
         if ( _debug ) {
             _dump.append( "  encodeMap=" ).append( "LogonReject" ).append( "  eventType=" ).append( "UTPLogonReject" ).append( " : " );
         }
 
         if ( _debug ) _dump.append( "\nField: " ).append( "lastMsgSeqNumRcvd" ).append( " : " );
-        _builder.encodeInt( (int)msg.getLastMsgSeqNumRcvd() );
+        _builder.encodeInt( msg.getLastMsgSeqNumRcvd() );
         if ( _debug ) _dump.append( "\nField: " ).append( "lastMsgSeqNumSent" ).append( " : " );
-        _builder.encodeInt( (int)msg.getLastMsgSeqNumSent() );
+        _builder.encodeInt( msg.getLastMsgSeqNumSent() );
         if ( _debug ) _dump.append( "\nField: " ).append( "rejectCode" ).append( " : " );
         _builder.encodeByte( msg.getRejectCode().getVal() );
         if ( _debug ) _dump.append( "\nField: " ).append( "rejectText" ).append( " : " );
@@ -219,14 +261,14 @@ public final class UTPEuronextCashEncoder implements BinaryEncoder {
     }
 
     public final void encodeTradingSessionStatus( final UTPTradingSessionStatus msg ) {
-        final int now = _tzCalculator.getNowUTC();
+        final long now = _tzCalculator.getNowAsInternalTime();
         _builder.start( MSG_TradingSessionStatus );
         if ( _debug ) {
             _dump.append( "  encodeMap=" ).append( "TradingSessionStatus" ).append( "  eventType=" ).append( "UTPTradingSessionStatus" ).append( " : " );
         }
 
         if ( _debug ) _dump.append( "\nField: " ).append( "msgSeqNum" ).append( " : " );
-        _builder.encodeInt( (int)msg.getMsgSeqNum() );
+        _builder.encodeInt( msg.getMsgSeqNum() );
         if ( _debug ) _dump.append( "\nField: " ).append( "mktPhaseChgTime" ).append( " : " );
         _builder.encodeTimeUTC( msg.getMktPhaseChgTime() );
         if ( _debug ) _dump.append( "\nField: " ).append( "instClassId" ).append( " : " );
@@ -241,7 +283,7 @@ public final class UTPEuronextCashEncoder implements BinaryEncoder {
     }
 
     public final void encodeTestRequest( final TestRequest msg ) {
-        final int now = _tzCalculator.getNowUTC();
+        final long now = _tzCalculator.getNowAsInternalTime();
         _builder.start( MSG_TestRequest );
         if ( _debug ) {
             _dump.append( "  encodeMap=" ).append( "TestRequest" ).append( "  eventType=" ).append( "TestRequest" ).append( " : " );
@@ -253,7 +295,7 @@ public final class UTPEuronextCashEncoder implements BinaryEncoder {
     }
 
     public final void encodeHeartbeat( final Heartbeat msg ) {
-        final int now = _tzCalculator.getNowUTC();
+        final long now = _tzCalculator.getNowAsInternalTime();
         _builder.start( MSG_Heartbeat );
         if ( _debug ) {
             _dump.append( "  encodeMap=" ).append( "Heartbeat" ).append( "  eventType=" ).append( "Heartbeat" ).append( " : " );
@@ -265,14 +307,14 @@ public final class UTPEuronextCashEncoder implements BinaryEncoder {
     }
 
     public final void encodeNewOrder( final NewOrderSingle msg ) {
-        final int now = _tzCalculator.getNowUTC();
+        final long now = _tzCalculator.getNowAsInternalTime();
         _builder.start( MSG_NewOrder );
         if ( _debug ) {
             _dump.append( "  encodeMap=" ).append( "NewOrder" ).append( "  eventType=" ).append( "NewOrderSingle" ).append( " : " );
         }
 
         if ( _debug ) _dump.append( "\nField: " ).append( "msgSeqNum" ).append( " : " );
-        _builder.encodeInt( (int)msg.getMsgSeqNum() );
+        _builder.encodeInt( msg.getMsgSeqNum() );
         if ( _debug ) _dump.append( "\nField: " ).append( "clOrdId" ).append( " : " );
         _builder.encodeStringAsLong( msg.getClOrdId() );
         if ( _debug ) _dump.append( "\nField: " ).append( "orderQty" ).append( " : " );
@@ -319,42 +361,42 @@ public final class UTPEuronextCashEncoder implements BinaryEncoder {
         _builder.encodeFiller( 8 );    // giveUpFirm
         if ( _debug ) _dump.append( "\nField: " ).append( "filler5" ).append( " : " );
         _builder.encodeFiller( 8 );
-        if ( _debug ) _dump.append( "\nField: " ).append( "srcLinkId" ).append( " : " );
-        _builder.encodeZStringFixedWidth( msg.getSrcLinkId(), 18 );
+        if ( _debug ) _dump.append( "\nField: " ).append( "parentClOrdId" ).append( " : " );
+        _builder.encodeZStringFixedWidth( msg.getParentClOrdId(), 18 );
         if ( _debug ) _dump.append( "\nField: " ).append( "filler6" ).append( " : " );
         _builder.encodeFiller( 52 );
         _builder.end();
     }
 
     public final void encodeOrderAck( final NewOrderAck msg ) {
-        final int now = _tzCalculator.getNowUTC();
+        final long now = _tzCalculator.getNowAsInternalTime();
         _builder.start( MSG_OrderAck );
         if ( _debug ) {
             _dump.append( "  encodeMap=" ).append( "OrderAck" ).append( "  eventType=" ).append( "NewOrderAck" ).append( " : " );
         }
 
         if ( _debug ) _dump.append( "\nField: " ).append( "msgSeqNum" ).append( " : " );
-        _builder.encodeInt( (int)msg.getMsgSeqNum() );
+        _builder.encodeInt( msg.getMsgSeqNum() );
         if ( _debug ) _dump.append( "\nField: " ).append( "clOrdId" ).append( " : " );
         _builder.encodeStringAsLong( msg.getClOrdId() );
         if ( _debug ) _dump.append( "\nField: " ).append( "orderId" ).append( " : " );
         _builder.encodeStringAsLong( msg.getOrderId() );
         if ( _debug ) _dump.append( "\nField: " ).append( "transactTime" ).append( " : " );
-        _builder.encodeFiller( 4 );    // transactTime
+        _builder.encodeTimestampUTC( now );
         if ( _debug ) _dump.append( "\nField: " ).append( "filler" ).append( " : " );
         _builder.encodeFiller( 31 );
         _builder.end();
     }
 
     public final void encodeOrderCancelRequest( final CancelRequest msg ) {
-        final int now = _tzCalculator.getNowUTC();
+        final long now = _tzCalculator.getNowAsInternalTime();
         _builder.start( MSG_OrderCancelRequest );
         if ( _debug ) {
             _dump.append( "  encodeMap=" ).append( "OrderCancelRequest" ).append( "  eventType=" ).append( "CancelRequest" ).append( " : " );
         }
 
         if ( _debug ) _dump.append( "\nField: " ).append( "msgSeqNum" ).append( " : " );
-        _builder.encodeInt( (int)msg.getMsgSeqNum() );
+        _builder.encodeInt( msg.getMsgSeqNum() );
         if ( _debug ) _dump.append( "\nField: " ).append( "clOrdId" ).append( " : " );
         _builder.encodeStringAsLong( msg.getClOrdId() );
         if ( _debug ) _dump.append( "\nField: " ).append( "origClOrdId" ).append( " : " );
@@ -373,34 +415,34 @@ public final class UTPEuronextCashEncoder implements BinaryEncoder {
     }
 
     public final void encodeOrderKilled( final Cancelled msg ) {
-        final int now = _tzCalculator.getNowUTC();
+        final long now = _tzCalculator.getNowAsInternalTime();
         _builder.start( MSG_OrderKilled );
         if ( _debug ) {
             _dump.append( "  encodeMap=" ).append( "OrderKilled" ).append( "  eventType=" ).append( "Cancelled" ).append( " : " );
         }
 
         if ( _debug ) _dump.append( "\nField: " ).append( "msgSeqNum" ).append( " : " );
-        _builder.encodeInt( (int)msg.getMsgSeqNum() );
+        _builder.encodeInt( msg.getMsgSeqNum() );
         if ( _debug ) _dump.append( "\nField: " ).append( "clOrdId" ).append( " : " );
         _builder.encodeStringAsLong( msg.getClOrdId() );
         if ( _debug ) _dump.append( "\nField: " ).append( "orderId" ).append( " : " );
         _builder.encodeStringAsLong( msg.getOrderId() );
         if ( _debug ) _dump.append( "\nField: " ).append( "transactTime" ).append( " : " );
-        _builder.encodeFiller( 4 );    // transactTime
+        _builder.encodeTimestampUTC( now );
         if ( _debug ) _dump.append( "\nField: " ).append( "filler" ).append( " : " );
         _builder.encodeFiller( 31 );
         _builder.end();
     }
 
     public final void encodeOrderReplaceRequest( final CancelReplaceRequest msg ) {
-        final int now = _tzCalculator.getNowUTC();
+        final long now = _tzCalculator.getNowAsInternalTime();
         _builder.start( MSG_OrderReplaceRequest );
         if ( _debug ) {
             _dump.append( "  encodeMap=" ).append( "OrderReplaceRequest" ).append( "  eventType=" ).append( "CancelReplaceRequest" ).append( " : " );
         }
 
         if ( _debug ) _dump.append( "\nField: " ).append( "msgSeqNum" ).append( " : " );
-        _builder.encodeInt( (int)msg.getMsgSeqNum() );
+        _builder.encodeInt( msg.getMsgSeqNum() );
         if ( _debug ) _dump.append( "\nField: " ).append( "clOrdId" ).append( " : " );
         _builder.encodeStringAsLong( msg.getClOrdId() );
         if ( _debug ) _dump.append( "\nField: " ).append( "origClOrdId" ).append( " : " );
@@ -447,48 +489,48 @@ public final class UTPEuronextCashEncoder implements BinaryEncoder {
         _builder.encodeFiller( 8 );    // giveUpFirm
         if ( _debug ) _dump.append( "\nField: " ).append( "filler6" ).append( " : " );
         _builder.encodeFiller( 8 );
-        if ( _debug ) _dump.append( "\nField: " ).append( "srcLinkId" ).append( " : " );
-        _builder.encodeZStringFixedWidth( msg.getSrcLinkId(), 18 );
+        if ( _debug ) _dump.append( "\nField: " ).append( "parentClOrdId" ).append( " : " );
+        _builder.encodeZStringFixedWidth( msg.getParentClOrdId(), 18 );
         if ( _debug ) _dump.append( "\nField: " ).append( "filler7" ).append( " : " );
         _builder.encodeFiller( 4 );
         _builder.end();
     }
 
     public final void encodeOrderReplaced( final Replaced msg ) {
-        final int now = _tzCalculator.getNowUTC();
+        final long now = _tzCalculator.getNowAsInternalTime();
         _builder.start( MSG_OrderReplaced );
         if ( _debug ) {
             _dump.append( "  encodeMap=" ).append( "OrderReplaced" ).append( "  eventType=" ).append( "Replaced" ).append( " : " );
         }
 
         if ( _debug ) _dump.append( "\nField: " ).append( "msgSeqNum" ).append( " : " );
-        _builder.encodeInt( (int)msg.getMsgSeqNum() );
+        _builder.encodeInt( msg.getMsgSeqNum() );
         if ( _debug ) _dump.append( "\nField: " ).append( "clOrdId" ).append( " : " );
         _builder.encodeStringAsLong( msg.getClOrdId() );
         if ( _debug ) _dump.append( "\nField: " ).append( "orderId" ).append( " : " );
         _builder.encodeStringAsLong( msg.getOrderId() );
         if ( _debug ) _dump.append( "\nField: " ).append( "transactTime" ).append( " : " );
-        _builder.encodeFiller( 4 );    // transactTime
+        _builder.encodeTimestampUTC( now );
         if ( _debug ) _dump.append( "\nField: " ).append( "filler" ).append( " : " );
         _builder.encodeFiller( 31 );
         _builder.end();
     }
 
     public final void encodeCancelReplaceReject( final Rejected msg ) {
-        final int now = _tzCalculator.getNowUTC();
+        final long now = _tzCalculator.getNowAsInternalTime();
         _builder.start( MSG_CancelReplaceReject );
         if ( _debug ) {
             _dump.append( "  encodeMap=" ).append( "CancelReplaceReject" ).append( "  eventType=" ).append( "Rejected" ).append( " : " );
         }
 
         if ( _debug ) _dump.append( "\nField: " ).append( "msgSeqNum" ).append( " : " );
-        _builder.encodeInt( (int)msg.getMsgSeqNum() );
+        _builder.encodeInt( msg.getMsgSeqNum() );
         if ( _debug ) _dump.append( "\nField: " ).append( "clOrdId" ).append( " : " );
         _builder.encodeStringAsLong( msg.getClOrdId() );
         if ( _debug ) _dump.append( "\nField: " ).append( "origClOrdId" ).append( " : " );
         _builder.encodeStringAsLong( msg.getOrigClOrdId() );
         if ( _debug ) _dump.append( "\nField: " ).append( "transactTime" ).append( " : " );
-        _builder.encodeFiller( 4 );    // transactTime
+        _builder.encodeTimestampUTC( now );
         if ( _debug ) _dump.append( "\nField: " ).append( "collarRejPx" ).append( " : " );
         _builder.encodePrice( Constants.UNSET_DOUBLE );    // collarRejPx
         if ( _debug ) _dump.append( "\nField: " ).append( "errorCode" ).append( " : " );
@@ -505,14 +547,14 @@ public final class UTPEuronextCashEncoder implements BinaryEncoder {
     }
 
     public final void encodeOrderFill( final TradeNew msg ) {
-        final int now = _tzCalculator.getNowUTC();
+        final long now = _tzCalculator.getNowAsInternalTime();
         _builder.start( MSG_OrderFill );
         if ( _debug ) {
             _dump.append( "  encodeMap=" ).append( "OrderFill" ).append( "  eventType=" ).append( "TradeNew" ).append( " : " );
         }
 
         if ( _debug ) _dump.append( "\nField: " ).append( "msgSeqNum" ).append( " : " );
-        _builder.encodeInt( (int)msg.getMsgSeqNum() );
+        _builder.encodeInt( msg.getMsgSeqNum() );
         if ( _debug ) _dump.append( "\nField: " ).append( "clOrdId" ).append( " : " );
         _builder.encodeStringAsLong( msg.getClOrdId() );
         if ( _debug ) _dump.append( "\nField: " ).append( "orderId" ).append( " : " );
@@ -520,7 +562,7 @@ public final class UTPEuronextCashEncoder implements BinaryEncoder {
         if ( _debug ) _dump.append( "\nField: " ).append( "execId" ).append( " : " );
         _builder.encodeStringAsLong( msg.getExecId() );
         if ( _debug ) _dump.append( "\nField: " ).append( "transactTime" ).append( " : " );
-        _builder.encodeFiller( 4 );    // transactTime
+        _builder.encodeTimestampUTC( now );
         if ( _debug ) _dump.append( "\nField: " ).append( "lastQty" ).append( " : " );
         _builder.encodeInt( (int)msg.getLastQty() );
         if ( _debug ) _dump.append( "\nField: " ).append( "lastPx" ).append( " : " );
@@ -539,20 +581,20 @@ public final class UTPEuronextCashEncoder implements BinaryEncoder {
     }
 
     public final void encodeBust( final TradeCancel msg ) {
-        final int now = _tzCalculator.getNowUTC();
+        final long now = _tzCalculator.getNowAsInternalTime();
         _builder.start( MSG_BustCorrect );
         if ( _debug ) {
             _dump.append( "  encodeMap=" ).append( "BustCorrect" ).append( "  eventType=" ).append( "TradeCancel" ).append( " : " );
         }
 
         if ( _debug ) _dump.append( "\nField: " ).append( "msgSeqNum" ).append( " : " );
-        _builder.encodeInt( (int)msg.getMsgSeqNum() );
+        _builder.encodeInt( msg.getMsgSeqNum() );
         if ( _debug ) _dump.append( "\nField: " ).append( "clOrdId" ).append( " : " );
         _builder.encodeStringAsLong( msg.getClOrdId() );
         if ( _debug ) _dump.append( "\nField: " ).append( "execId" ).append( " : " );
         _builder.encodeStringAsLong( msg.getExecId() );
         if ( _debug ) _dump.append( "\nField: " ).append( "transactTime" ).append( " : " );
-        _builder.encodeFiller( 4 );    // transactTime
+        _builder.encodeTimestampUTC( now );
         if ( _debug ) _dump.append( "\nField: " ).append( "lastQty" ).append( " : " );
         _builder.encodeInt( (int)msg.getLastQty() );
         if ( _debug ) _dump.append( "\nField: " ).append( "lastPx" ).append( " : " );
@@ -567,20 +609,20 @@ public final class UTPEuronextCashEncoder implements BinaryEncoder {
     }
 
     public final void encodeCorrect( final TradeCorrect msg ) {
-        final int now = _tzCalculator.getNowUTC();
+        final long now = _tzCalculator.getNowAsInternalTime();
         _builder.start( MSG_BustCorrect );
         if ( _debug ) {
             _dump.append( "  encodeMap=" ).append( "BustCorrect" ).append( "  eventType=" ).append( "TradeCorrect" ).append( " : " );
         }
 
         if ( _debug ) _dump.append( "\nField: " ).append( "msgSeqNum" ).append( " : " );
-        _builder.encodeInt( (int)msg.getMsgSeqNum() );
+        _builder.encodeInt( msg.getMsgSeqNum() );
         if ( _debug ) _dump.append( "\nField: " ).append( "clOrdId" ).append( " : " );
         _builder.encodeStringAsLong( msg.getClOrdId() );
         if ( _debug ) _dump.append( "\nField: " ).append( "execId" ).append( " : " );
         _builder.encodeStringAsLong( msg.getExecId() );
         if ( _debug ) _dump.append( "\nField: " ).append( "transactTime" ).append( " : " );
-        _builder.encodeFiller( 4 );    // transactTime
+        _builder.encodeTimestampUTC( now );
         if ( _debug ) _dump.append( "\nField: " ).append( "lastQty" ).append( " : " );
         _builder.encodeInt( (int)msg.getLastQty() );
         if ( _debug ) _dump.append( "\nField: " ).append( "lastPx" ).append( " : " );
@@ -599,11 +641,13 @@ public final class UTPEuronextCashEncoder implements BinaryEncoder {
     }
 
     @Override
-    public final void setTimeZoneCalculator( final TimeZoneCalculator calc ) {
+    public final void setTimeUtils( final TimeUtils calc ) {
         _tzCalculator = calc;
-        _builder.setTimeZoneCalculator( calc );
+        _builder.setTimeUtils( calc );
     }
 
+
+    @Override public String getComponentId() { return _id; }
     private byte transformSide( Side val ) {
         switch( val ) {
         case Buy:  // Buy
@@ -633,8 +677,6 @@ public final class UTPEuronextCashEncoder implements BinaryEncoder {
     private byte transformOrdType( OrdType val ) {
         switch( val ) {
         case Limit:  // Limit
-            return (byte)'2';
-        case LimitOrBetter:  // LimitOrBetter
             return (byte)'2';
         default:
             break;
@@ -676,4 +718,150 @@ public final class UTPEuronextCashEncoder implements BinaryEncoder {
         return '2';
     }
 
-    /**     * PostPend  Common Encoder File     *     * expected to contain methods used in hooks from model     */         @Override    public void setNanoStats( boolean nanoTiming ) {        _nanoStats = nanoTiming;    }    private       boolean         _nanoStats    =  true;             private       int             _idx          = 1;        private final ClientCancelRejectFactory _canRejFactory   = SuperpoolManager.instance().getFactory( ClientCancelRejectFactory.class, ClientCancelRejectImpl.class );    private final ClientRejectedFactory     _rejectedFactory = SuperpoolManager.instance().getFactory( ClientRejectedFactory.class,     ClientRejectedImpl.class );     public static final ZString ENCODE_REJ              = new ViewString( "ERJ" );    public static final ZString NONE                    = new ViewString( "NON" );    @Override    public Message unableToSend( Message msg, ZString errMsg ) {        switch( msg.getReusableType().getSubId() ) {        case EventIds.ID_NEWORDERSINGLE:            return rejectNewOrderSingle( (NewOrderSingle) msg, errMsg );        case EventIds.ID_NEWORDERACK:            break;        case EventIds.ID_TRADENEW:            break;        case EventIds.ID_CANCELREPLACEREQUEST:            return rejectCancelReplaceRequest( (CancelReplaceRequest) msg, errMsg );        case EventIds.ID_CANCELREQUEST:            return rejectCancelRequest( (CancelRequest) msg, errMsg );        }                return null;    }    private Message rejectNewOrderSingle( NewOrderSingle nos, ZString errMsg ) {        final ClientRejectedImpl reject = _rejectedFactory.get();        reject.setSrcEvent( nos );        reject.getExecIdForUpdate().copy( ENCODE_REJ ).append( nos.getClOrdId() ).append( ++_idx );        reject.getOrderIdForUpdate().setValue( NONE );        reject.setOrdRejReason( OrdRejReason.Other );        reject.getTextForUpdate().setValue( errMsg );        reject.setOrdStatus( OrdStatus.Rejected );        reject.setExecType( ExecType.Rejected );        reject.setCumQty( 0 );        reject.setAvgPx( 0.0 );        reject.setMessageHandler( nos.getMessageHandler() );        return reject;    }    private Message rejectCancelReplaceRequest( CancelReplaceRequest msg, ZString errMsg ) {        final ClientCancelRejectImpl reject = _canRejFactory.get();                reject.getClOrdIdForUpdate().    setValue( msg.getClOrdId() );        reject.getOrigClOrdIdForUpdate().setValue( msg.getOrigClOrdId() );        reject.getOrderIdForUpdate().    setValue( NONE );        reject.getTextForUpdate().       setValue( errMsg );        reject.setCxlRejResponseTo( CxlRejResponseTo.CancelReplace );        reject.setCxlRejReason(     CxlRejReason.Other );        reject.setOrdStatus(        OrdStatus.Unknown );        return reject;    }    private Message rejectCancelRequest( CancelRequest msg, ZString errMsg ) {        final ClientCancelRejectImpl reject = _canRejFactory.get();                reject.getClOrdIdForUpdate().    setValue( msg.getClOrdId() );        reject.getOrigClOrdIdForUpdate().setValue( msg.getOrigClOrdId() );        reject.getOrderIdForUpdate().    setValue( NONE );        reject.getTextForUpdate().       setValue( errMsg );        reject.setCxlRejResponseTo( CxlRejResponseTo.CancelRequest );        reject.setCxlRejReason(     CxlRejReason.Other );        reject.setOrdStatus(        OrdStatus.Unknown );        return reject;    }    private static final byte[] STATS       = "     [".getBytes();    private static final byte   STAT_DELIM  = ',';    private static final byte   STAT_END    = ']';    @Override    public void addStats( final ReusableString outBuf, final Message msg, final long msgSent ) {                if ( msg.getReusableType().getId() == FullEventIds.ID_MARKET_NEWORDERSINGLE ) {            final MarketNewOrderSingleImpl nos = (MarketNewOrderSingleImpl) msg;            nos.setOrderSent( msgSent );                } else if ( msg.getReusableType().getId() == FullEventIds.ID_CLIENT_NEWORDERACK ) {            final ClientNewOrderAckImpl ack = (ClientNewOrderAckImpl) msg;            final long orderIn  = ack.getOrderReceived();            final long orderOut = ack.getOrderSent();            final long ackIn    = ack.getAckReceived();            final long ackOut   = msgSent;            final long microNOSToMKt    = (orderOut - orderIn)  >> 10;            final long microInMkt       = (ackIn    - orderOut) >> 10;            final long microAckToClient = (ackOut   - ackIn)    >> 10;                        outBuf.append( STATS      ).append( microNOSToMKt )                  .append( STAT_DELIM ).append( microInMkt )                  .append( STAT_DELIM ).append( microAckToClient ).append( STAT_END );        }    }    private final ReusableString _onBehalfOfId = new ReusableString();    private final byte           _dps          = '0' + Constants.PRICE_DP;    private final byte           _zero         = '0';    private void encodePriceScale( double price ) {        if ( price != Constants.UNSET_DOUBLE ) {            _builder.encodeByte( _dps );        } else {            _builder.encodeByte( _zero );        }    }    private void encodeOnBehalfOfCompId() {        _builder.encodeStringFixedWidth( _onBehalfOfId, SizeType.UTP_COMP_ID_LEN.getSize() );    }        public void setOnBehalfOfId( ViewString val ) {        _onBehalfOfId.copy( val );    }    private void encodeSymbol( Instrument instrument ) {        _builder.encodeStringFixedWidth( instrument.getRIC(), SizeType.UTP_SYMBOL_LEN.getSize() );    }    }
+    /**
+     * PostPend  Common Encoder File
+     *
+     * expected to contain methods used in hooks from model
+     */
+     
+    @Override
+    public void setNanoStats( boolean nanoTiming ) {
+        _nanoStats = nanoTiming;
+    }
+
+    private       boolean         _nanoStats    =  true;
+         
+    private       int             _idx          = 1;
+    
+    private final ClientCancelRejectFactory _canRejFactory   = SuperpoolManager.instance().getFactory( ClientCancelRejectFactory.class, ClientCancelRejectImpl.class );
+    private final ClientRejectedFactory     _rejectedFactory = SuperpoolManager.instance().getFactory( ClientRejectedFactory.class,     ClientRejectedImpl.class ); 
+
+    public static final ZString ENCODE_REJ              = new ViewString( "ERJ" );
+    public static final ZString NONE                    = new ViewString( "NON" );
+
+    @Override
+    public Event unableToSend( Event msg, ZString errMsg ) {
+        switch( msg.getReusableType().getSubId() ) {
+        case EventIds.ID_NEWORDERSINGLE:
+            return rejectNewOrderSingle( (NewOrderSingle) msg, errMsg );
+        case EventIds.ID_NEWORDERACK:
+            break;
+        case EventIds.ID_TRADENEW:
+            break;
+        case EventIds.ID_CANCELREPLACEREQUEST:
+            return rejectCancelReplaceRequest( (CancelReplaceRequest) msg, errMsg );
+        case EventIds.ID_CANCELREQUEST:
+            return rejectCancelRequest( (CancelRequest) msg, errMsg );
+        }
+        
+        return null;
+    }
+
+    private Event rejectNewOrderSingle( NewOrderSingle nos, ZString errMsg ) {
+        final ClientRejectedImpl reject = _rejectedFactory.get();
+
+        reject.setSrcEvent( nos );
+        reject.getExecIdForUpdate().copy( ENCODE_REJ ).append( nos.getClOrdId() ).append( ++_idx );
+        reject.getOrderIdForUpdate().setValue( NONE );
+        reject.setOrdRejReason( OrdRejReason.Other );
+        reject.getTextForUpdate().setValue( errMsg );
+        reject.setOrdStatus( OrdStatus.Rejected );
+        reject.setExecType( ExecType.Rejected );
+
+        reject.setCumQty( 0 );
+        reject.setAvgPx( 0.0 );
+
+        reject.setEventHandler( nos.getEventHandler() );
+        return reject;
+    }
+
+    private Event rejectCancelReplaceRequest( CancelReplaceRequest msg, ZString errMsg ) {
+        final ClientCancelRejectImpl reject = _canRejFactory.get();
+        
+        reject.getClOrdIdForUpdate().    setValue( msg.getClOrdId() );
+        reject.getOrigClOrdIdForUpdate().setValue( msg.getOrigClOrdId() );
+        reject.getOrderIdForUpdate().    setValue( NONE );
+        reject.getTextForUpdate().       setValue( errMsg );
+
+        reject.setCxlRejResponseTo( CxlRejResponseTo.CancelReplace );
+        reject.setCxlRejReason(     CxlRejReason.Other );
+        reject.setOrdStatus(        OrdStatus.Unknown );
+
+        return reject;
+    }
+
+    private Event rejectCancelRequest( CancelRequest msg, ZString errMsg ) {
+        final ClientCancelRejectImpl reject = _canRejFactory.get();
+        
+        reject.getClOrdIdForUpdate().    setValue( msg.getClOrdId() );
+        reject.getOrigClOrdIdForUpdate().setValue( msg.getOrigClOrdId() );
+        reject.getOrderIdForUpdate().    setValue( NONE );
+        reject.getTextForUpdate().       setValue( errMsg );
+
+        reject.setCxlRejResponseTo( CxlRejResponseTo.CancelRequest );
+        reject.setCxlRejReason(     CxlRejReason.Other );
+        reject.setOrdStatus(        OrdStatus.Unknown );
+
+        return reject;
+    }
+
+    private static final byte[] STATS       = "     [".getBytes();
+    private static final byte   STAT_DELIM  = ',';
+    private static final byte   STAT_END    = ']';
+
+
+
+
+    @Override
+    public void addStats( final ReusableString outBuf, final Event msg, final long msgSent ) {
+        
+        if ( msg.getReusableType().getId() == FullEventIds.ID_MARKET_NEWORDERSINGLE ) {
+            final MarketNewOrderSingleImpl nos = (MarketNewOrderSingleImpl) msg;
+            nos.setOrderSent( msgSent );        
+        } else if ( msg.getReusableType().getId() == FullEventIds.ID_CLIENT_NEWORDERACK ) {
+            final ClientNewOrderAckImpl ack = (ClientNewOrderAckImpl) msg;
+
+            final long orderIn  = ack.getOrderReceived();
+            final long orderOut = ack.getOrderSent();
+            final long ackIn    = ack.getAckReceived();
+            final long ackOut   = msgSent;
+
+            final long microNOSToMKt    = (orderOut - orderIn)  >> 10;
+            final long microInMkt       = (ackIn    - orderOut) >> 10;
+            final long microAckToClient = (ackOut   - ackIn)    >> 10;
+            
+            outBuf.append( STATS      ).append( microNOSToMKt )
+                  .append( STAT_DELIM ).append( microInMkt )
+                  .append( STAT_DELIM ).append( microAckToClient ).append( STAT_END );
+        }
+    }
+
+
+    private static final int MAX_PRICE_DP = 6;
+
+    private final ReusableString _onBehalfOfId = new ReusableString();
+    private final byte           _dps          = '0' + MAX_PRICE_DP;
+    private final byte           _zero         = '0';
+
+    private void encodePriceScale( double price ) {
+        if ( Utils.hasVal( price ) ) {
+            _builder.encodeByte( _dps );
+        } else {
+            _builder.encodeByte( _zero );
+        }
+    }
+
+    private void encodeOnBehalfOfCompId() {
+        _builder.encodeStringFixedWidth( _onBehalfOfId, SizeType.UTP_COMP_ID_LEN.getSize() );
+    }
+    
+    public void setOnBehalfOfId( ViewString val ) {
+        _onBehalfOfId.copy( val );
+    }
+
+    private void encodeSymbol( Instrument instrument ) {
+        _builder.encodeStringFixedWidth( ((ExchangeInstrument)instrument).getExchangeSymbol(), SizeType.UTP_SYMBOL_LEN.getSize() );
+    }
+    
+
+}

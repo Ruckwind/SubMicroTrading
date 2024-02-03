@@ -1,42 +1,35 @@
-/*******************************************************************************
- * Copyright (c) 2015 Low Latency Trading Limited  :  Author Richard Rose
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at	http://www.apache.org/licenses/LICENSE-2.0
- * Unless required by applicable law or agreed to in writing,  software distributed under the License 
- * is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and limitations under the License.
- *******************************************************************************/
 package com.rr.model.generated.internal.events.impl;
 
-import com.rr.core.model.SecurityIDSource;
+/*
+Copyright 2015 Low Latency Trading Limited
+Author Richard Rose
+*/
+
 import com.rr.model.generated.internal.type.SecurityTradingStatus;
-import com.rr.core.lang.ViewString;
-import com.rr.core.lang.ReusableString;
-import com.rr.core.model.MsgFlag;
-import com.rr.core.lang.ReusableType;
-import com.rr.core.lang.Reusable;
-import com.rr.core.model.Message;
-import com.rr.core.model.MessageHandler;
+import com.rr.core.utils.Utils;
+import com.rr.core.lang.*;
+import com.rr.core.model.*;
+import com.rr.core.annotations.*;
 import com.rr.model.internal.type.*;
 import com.rr.model.generated.internal.core.ModelReusableTypes;
 import com.rr.model.generated.internal.core.SizeType;
 import com.rr.model.generated.internal.core.EventIds;
 import com.rr.model.generated.internal.events.interfaces.*;
 
-@SuppressWarnings( "unused" )
+@SuppressWarnings( { "unused", "override"  })
 
-public final class SecMassStatGrpImpl implements SecMassStatGrp, Reusable<SecMassStatGrpImpl> {
+public final class SecMassStatGrpImpl implements SecMassStatGrp, Reusable<SecMassStatGrpImpl>, Copyable<SecMassStatGrp> {
 
    // Attrs
 
-    private          SecMassStatGrpImpl _next = null;
+    private transient          SecMassStatGrpImpl _next = null;
     private final ReusableString _securityId = new ReusableString( SizeType.SECURITYID_LENGTH.getSize() );
     private boolean _securityStatus = false;
 
     private SecurityIDSource _securityIDSource;
     private SecurityTradingStatus _securityTradingStatus;
 
-    private byte           _flags          = 0;
+    private int           _flags          = 0;
 
    // Getters and Setters
     @Override public final ViewString getSecurityId() { return _securityId; }
@@ -85,19 +78,49 @@ public final class SecMassStatGrpImpl implements SecMassStatGrp, Reusable<SecMas
    // Helper methods
     @Override
     public String toString() {
-        ReusableString buf = new ReusableString();
+        ReusableString buf = TLC.instance().pop();
         dump( buf );
-        return buf.toString();
+        String rs = buf.toString();
+        TLC.instance().pushback( buf );
+        return rs;
     }
 
     @Override
-    public final void dump( ReusableString out ) {
+    public final void dump( final ReusableString out ) {
         out.append( "SecMassStatGrpImpl" ).append( ' ' );
-        out.append( ", securityId=" ).append( getSecurityId() );
-        out.append( ", securityIDSource=" );
-        if ( getSecurityIDSource() != null ) getSecurityIDSource().id( out );
-        out.append( ", securityTradingStatus=" ).append( getSecurityTradingStatus() );
+        if ( getSecurityId().length() > 0 )             out.append( ", securityId=" ).append( getSecurityId() );
+        if ( getSecurityIDSource() != null )             out.append( ", securityIDSource=" );
+        if ( getSecurityIDSource() != null ) out.append( getSecurityIDSource().id() );
+        if ( getSecurityTradingStatus() != null )             out.append( ", securityTradingStatus=" ).append( getSecurityTradingStatus() );
         out.append( ", securityStatus=" ).append( getSecurityStatus() );
+    }
+
+    @Override public final void snapTo( SecMassStatGrp dest ) {
+        ((SecMassStatGrpImpl)dest).deepCopyFrom( this );
+    }
+
+    /** DEEP copy all members ... INCLUDING subEvents : WARNING CREATES NEW OBJECTS SO MONITOR FOR GC */
+    @Override public final void deepCopyFrom( SecMassStatGrp src ) {
+        getSecurityIdForUpdate().copy( src.getSecurityId() );
+        setSecurityIDSource( src.getSecurityIDSource() );
+        setSecurityTradingStatus( src.getSecurityTradingStatus() );
+        setSecurityStatus( src.getSecurityStatus() );
+    }
+
+    /** shallow copy all primitive members ... EXCLUDING subEvents */
+    @Override public final void shallowCopyFrom( SecMassStatGrp src ) {
+        getSecurityIdForUpdate().copy( src.getSecurityId() );
+        setSecurityIDSource( src.getSecurityIDSource() );
+        setSecurityTradingStatus( src.getSecurityTradingStatus() );
+        setSecurityStatus( src.getSecurityStatus() );
+    }
+
+    /** shallow copy all primitive members ... EXCLUDING subEvents */
+    @Override public final void shallowMergeFrom( SecMassStatGrp src ) {
+        if ( src.getSecurityId().length() > 0 ) getSecurityIdForUpdate().copy( src.getSecurityId() );
+        if ( getSecurityIDSource() != null )  setSecurityIDSource( src.getSecurityIDSource() );
+        setSecurityTradingStatus( src.getSecurityTradingStatus() );
+        setSecurityStatus( src.getSecurityStatus() );
     }
 
 }

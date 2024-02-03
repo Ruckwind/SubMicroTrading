@@ -1,62 +1,70 @@
-/*******************************************************************************
- * Copyright (c) 2015 Low Latency Trading Limited  :  Author Richard Rose
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at	http://www.apache.org/licenses/LICENSE-2.0
- * Unless required by applicable law or agreed to in writing,  software distributed under the License 
- * is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and limitations under the License.
- *******************************************************************************/
 package com.rr.model.generated.internal.events.interfaces;
 
+/*
+Copyright 2015 Low Latency Trading Limited
+Author Richard Rose
+*/
+
+import com.rr.model.generated.internal.type.RefPriceType;
 import com.rr.model.generated.internal.type.ExecInst;
 import com.rr.model.generated.internal.type.HandlInst;
 import com.rr.model.generated.internal.type.OrderCapacity;
 import com.rr.model.generated.internal.type.OrdType;
-import com.rr.core.model.SecurityType;
-import com.rr.core.model.SecurityIDSource;
 import com.rr.model.generated.internal.type.TimeInForce;
 import com.rr.model.generated.internal.type.BookingType;
-import com.rr.core.lang.ViewString;
-import com.rr.core.lang.ReusableString;
-import com.rr.core.model.Message;
+import com.rr.model.generated.internal.type.TargetStrategy;
+import com.rr.core.utils.Utils;
+import com.rr.core.lang.*;
+import com.rr.core.model.*;
+import com.rr.core.annotations.*;
 
-public interface OrderRequest extends BaseOrderRequest, Message {
+@SuppressWarnings( { "unused", "override"  })
+
+public interface OrderRequest extends BaseOrderRequest, Event {
 
    // Getters and Setters
-    public ViewString getAccount();
+    ViewString getAccount();
 
-    public ViewString getText();
+    ViewString getText();
 
-    public ViewString getExDest();
+    double getPrice();
 
-    public ViewString getSecurityExchange();
+    double getOrderQty();
 
-    public double getPrice();
+    RefPriceType getRefPriceType();
 
-    public int getOrderQty();
+    /**
+     *optional offset for limit price generation
+     */
+    int getTickOffset();
 
-    public ExecInst getExecInst();
+    ExecInst getExecInst();
 
-    public HandlInst getHandlInst();
+    HandlInst getHandlInst();
 
-    public OrderCapacity getOrderCapacity();
+    OrderCapacity getOrderCapacity();
 
-    public OrdType getOrdType();
+    OrdType getOrdType();
 
-    public SecurityType getSecurityType();
+    SecurityType getSecurityType();
 
-    public SecurityIDSource getSecurityIDSource();
+    TimeInForce getTimeInForce();
 
-    public TimeInForce getTimeInForce();
+    BookingType getBookingType();
 
-    public BookingType getBookingType();
+    TargetStrategy getTargetStrategy();
 
-    public long getOrderReceived();
+    ViewString getStratParams();
 
-    public void setOrderSent( long val );
-    public long getOrderSent();
+    long getEffectiveTime();
 
-    @Override
-    public void dump( ReusableString out );
+    long getExpireTime();
+
+    long getOrderReceived();
+
+    void setOrderSent( long val );
+    long getOrderSent();
+
+    @Override void dump( ReusableString out );
 
 }

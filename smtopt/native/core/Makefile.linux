@@ -35,6 +35,9 @@ BindSocket: ${BIN_PATH}/BindSocket
 
 lib: ${BIN_PATH}/${DLL_NAME}
 
+./src/LinuxSocket_jni.h:
+	javah -force -classpath ../../../out/production/smtopt -o src/LinuxSocket_jni.h com.rr.core.socket.LinuxSocketImpl
+
 # Executable
 ${BIN_PATH}/${DLL_NAME}: ${TMP_PATH}/LinuxSocket_jni.o
 	${LD} ${LDFLAGS} -LD ${LIBS} -shared -o ${TMP_PATH}/${DLL_NAME} ${TMP_PATH}/LinuxSocket_jni.o

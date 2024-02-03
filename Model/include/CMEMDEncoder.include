@@ -1,0 +1,26 @@
+@INCLUDE MDEncoder44.include
+
+/*
+ * CME HANDCODED ENCODER METHDOS
+ */
+
+    final ReusableString _tmpTime = new ReusableString(22);
+    final ReusableString _tmpTime2 = new ReusableString(22);
+
+    private void writeDateTime( int tag, long dateTime ) {
+        _tmpTime.reset();
+        _tmpTime.append( dateTime );
+        _tmpTime2.reset();
+
+        _tmpTime2.append( _tmpTime, 0, 8 );
+        _tmpTime2.append( '-' );
+        _tmpTime2.append( _tmpTime, 8, 2 );
+        _tmpTime2.append( ':' );
+        _tmpTime2.append( _tmpTime, 10, 2 );
+        _tmpTime2.append( ':' );
+        _tmpTime2.append( _tmpTime, 12, 2 );
+        _tmpTime2.append( '.' );
+        _tmpTime2.append( _tmpTime, 14, 3 );
+
+        _builder.encodeString( tag, _tmpTime2 );
+    }

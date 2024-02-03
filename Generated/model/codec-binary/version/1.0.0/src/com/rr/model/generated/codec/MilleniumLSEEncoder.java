@@ -1,16 +1,14 @@
-/*******************************************************************************
- * Copyright (c) 2015 Low Latency Trading Limited  :  Author Richard Rose
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at	http://www.apache.org/licenses/LICENSE-2.0
- * Unless required by applicable law or agreed to in writing,  software distributed under the License 
- * is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and limitations under the License.
- *******************************************************************************/
 package com.rr.model.generated.codec;
+
+/*
+Copyright 2015 Low Latency Trading Limited
+Author Richard Rose
+*/
 
 import java.util.HashMap;
 import java.util.Map;
 import com.rr.core.lang.*;
+import com.rr.core.utils.*;
 import com.rr.core.model.*;
 import com.rr.core.pool.SuperpoolManager;
 import com.rr.core.pool.SuperPool;
@@ -52,12 +50,13 @@ public final class MilleniumLSEEncoder implements BinaryEncoder {
     private static final byte      DEFAULT_OrderCapacity = (byte)'2';
 
     private final byte[]                  _buf;
+    private final String                  _id;
     private final int                     _offset;
     private final ZString                 _binaryVersion;
 
     private BinaryEncodeBuilder     _builder;
 
-    private       TimeZoneCalculator      _tzCalculator = new TimeZoneCalculator();
+    private       TimeUtils               _tzCalculator = TimeUtilsFactory.createTimeUtils();
     private       SingleByteLookup        _sv;
     private       TwoByteLookup           _tv;
     private       MultiByteLookup         _mv;
@@ -66,10 +65,13 @@ public final class MilleniumLSEEncoder implements BinaryEncoder {
     private boolean                 _debug = false;
 
    // Constructors
-    public MilleniumLSEEncoder( byte[] buf, int offset ) {
+    public MilleniumLSEEncoder( byte[] buf, int offset ) { this( null, buf, offset ); }
+
+    public MilleniumLSEEncoder( String id, byte[] buf, int offset ) {
         if ( buf.length < SizeType.MIN_ENCODE_BUFFER.getSize() ) {
             throw new RuntimeException( "Encode buffer too small only " + buf.length + ", min=" + SizeType.MIN_ENCODE_BUFFER.getSize() );
         }
+        _id = id;
         _buf = buf;
         _offset = offset;
         _binaryVersion   = new ViewString( "2");
@@ -80,7 +82,7 @@ public final class MilleniumLSEEncoder implements BinaryEncoder {
    // encode methods
 
     @Override
-    public final void encode( final Message msg ) {
+    public final void encode( final Event msg ) {
         switch( msg.getReusableType().getSubId() ) {
         case EventIds.ID_MILLENIUMLOGON:
             encodeLogon( (MilleniumLogon) msg );
@@ -151,20 +153,20 @@ public final class MilleniumLSEEncoder implements BinaryEncoder {
         case EventIds.ID_SUSPENDED:
             encodeSuspended( (Suspended) msg );
             break;
+        case 2:
+        case 3:
         case 4:
+        case 5:
+        case 6:
+        case 8:
+        case 9:
+        case 10:
+        case 11:
         case 12:
         case 13:
-        case 19:
-        case 21:
-        case 22:
-        case 23:
+        case 17:
         case 25:
         case 26:
-        case 27:
-        case 28:
-        case 29:
-        case 30:
-        case 31:
         case 32:
         case 33:
         case 34:
@@ -191,6 +193,46 @@ public final class MilleniumLSEEncoder implements BinaryEncoder {
         case 55:
         case 56:
         case 57:
+        case 58:
+        case 59:
+        case 60:
+        case 61:
+        case 62:
+        case 63:
+        case 64:
+        case 65:
+        case 66:
+        case 67:
+        case 68:
+        case 69:
+        case 70:
+        case 71:
+        case 72:
+        case 73:
+        case 74:
+        case 75:
+        case 76:
+        case 77:
+        case 78:
+        case 79:
+        case 80:
+        case 81:
+        case 82:
+        case 83:
+        case 84:
+        case 85:
+        case 86:
+        case 87:
+        case 88:
+        case 89:
+        case 90:
+        case 91:
+        case 92:
+        case 93:
+        case 94:
+        case 95:
+        case 96:
+        case 97:
             _builder.start();
             break;
         default:
@@ -214,13 +256,13 @@ public final class MilleniumLSEEncoder implements BinaryEncoder {
     }
 
     private void setBuilder() {
-        _builder = (_debug) ? new DebugBinaryEncodeBuilder<com.rr.codec.emea.exchange.millenium.MilleniumEncodeBuilderImpl>( _dump, new com.rr.codec.emea.exchange.millenium.MilleniumEncodeBuilderImpl( _buf, _offset, _binaryVersion ) )
+        _builder = (_debug) ? new DebugBinaryEncodeBuilder<>( _dump, new com.rr.codec.emea.exchange.millenium.MilleniumEncodeBuilderImpl( _buf, _offset, _binaryVersion ) )
                             : new com.rr.codec.emea.exchange.millenium.MilleniumEncodeBuilderImpl( _buf, _offset, _binaryVersion );
     }
 
 
     public final void encodeLogon( final MilleniumLogon msg ) {
-        final int now = _tzCalculator.getNowUTC();
+        final long now = _tzCalculator.getNowAsInternalTime();
         _builder.start( MSG_Logon );
         if ( _debug ) {
             _dump.append( "  encodeMap=" ).append( "Logon" ).append( "  eventType=" ).append( "MilleniumLogon" ).append( " : " );
@@ -238,21 +280,21 @@ public final class MilleniumLSEEncoder implements BinaryEncoder {
     }
 
     public final void encodeLogonReply( final MilleniumLogonReply msg ) {
-        final int now = _tzCalculator.getNowUTC();
+        final long now = _tzCalculator.getNowAsInternalTime();
         _builder.start( MSG_LogonReply );
         if ( _debug ) {
             _dump.append( "  encodeMap=" ).append( "LogonReply" ).append( "  eventType=" ).append( "MilleniumLogonReply" ).append( " : " );
         }
 
         if ( _debug ) _dump.append( "\nField: " ).append( "rejectCode" ).append( " : " );
-        _builder.encodeInt( (int)msg.getRejectCode() );
+        _builder.encodeInt( msg.getRejectCode() );
         if ( _debug ) _dump.append( "\nField: " ).append( "pwdExpiryDayCount" ).append( " : " );
         _builder.encodeZStringFixedWidth( msg.getPwdExpiryDayCount(), 30 );
         _builder.end();
     }
 
     public final void encodeLogout( final MilleniumLogout msg ) {
-        final int now = _tzCalculator.getNowUTC();
+        final long now = _tzCalculator.getNowAsInternalTime();
         _builder.start( MSG_Logout );
         if ( _debug ) {
             _dump.append( "  encodeMap=" ).append( "Logout" ).append( "  eventType=" ).append( "MilleniumLogout" ).append( " : " );
@@ -264,7 +306,7 @@ public final class MilleniumLSEEncoder implements BinaryEncoder {
     }
 
     public final void encodeMissedMessageRequest( final MilleniumMissedMessageRequest msg ) {
-        final int now = _tzCalculator.getNowUTC();
+        final long now = _tzCalculator.getNowAsInternalTime();
         _builder.start( MSG_MissedMessageRequest );
         if ( _debug ) {
             _dump.append( "  encodeMap=" ).append( "MissedMessageRequest" ).append( "  eventType=" ).append( "MilleniumMissedMessageRequest" ).append( " : " );
@@ -273,12 +315,12 @@ public final class MilleniumLSEEncoder implements BinaryEncoder {
         if ( _debug ) _dump.append( "\nField: " ).append( "appId" ).append( " : " );
         _builder.encodeUByte( msg.getAppId() );
         if ( _debug ) _dump.append( "\nField: " ).append( "lastMsgSeqNum" ).append( " : " );
-        _builder.encodeInt( (int)msg.getLastMsgSeqNum() );
+        _builder.encodeInt( msg.getLastMsgSeqNum() );
         _builder.end();
     }
 
     public final void encodeMissedMsgRequestAck( final MilleniumMissedMsgRequestAck msg ) {
-        final int now = _tzCalculator.getNowUTC();
+        final long now = _tzCalculator.getNowAsInternalTime();
         _builder.start( MSG_MissedMsgRequestAck );
         if ( _debug ) {
             _dump.append( "  encodeMap=" ).append( "MissedMsgRequestAck" ).append( "  eventType=" ).append( "MilleniumMissedMsgRequestAck" ).append( " : " );
@@ -290,7 +332,7 @@ public final class MilleniumLSEEncoder implements BinaryEncoder {
     }
 
     public final void encodeMissedMsgReport( final MilleniumMissedMsgReport msg ) {
-        final int now = _tzCalculator.getNowUTC();
+        final long now = _tzCalculator.getNowAsInternalTime();
         _builder.start( MSG_MissedMsgReport );
         if ( _debug ) {
             _dump.append( "  encodeMap=" ).append( "MissedMsgReport" ).append( "  eventType=" ).append( "MilleniumMissedMsgReport" ).append( " : " );
@@ -302,7 +344,7 @@ public final class MilleniumLSEEncoder implements BinaryEncoder {
     }
 
     public final void encodeHeartbeat( final Heartbeat msg ) {
-        final int now = _tzCalculator.getNowUTC();
+        final long now = _tzCalculator.getNowAsInternalTime();
         _builder.start( MSG_Heartbeat );
         if ( _debug ) {
             _dump.append( "  encodeMap=" ).append( "Heartbeat" ).append( "  eventType=" ).append( "Heartbeat" ).append( " : " );
@@ -312,7 +354,7 @@ public final class MilleniumLSEEncoder implements BinaryEncoder {
     }
 
     public final void encodeNewOrder( final NewOrderSingle msg ) {
-        final int now = _tzCalculator.getNowUTC();
+        final long now = _tzCalculator.getNowAsInternalTime();
         _builder.start( MSG_NewOrder );
         if ( _debug ) {
             _dump.append( "  encodeMap=" ).append( "NewOrder" ).append( "  eventType=" ).append( "NewOrderSingle" ).append( " : " );
@@ -366,7 +408,7 @@ public final class MilleniumLSEEncoder implements BinaryEncoder {
     }
 
     public final void encodeOrderCancelRequest( final CancelRequest msg ) {
-        final int now = _tzCalculator.getNowUTC();
+        final long now = _tzCalculator.getNowAsInternalTime();
         _builder.start( MSG_OrderCancelRequest );
         if ( _debug ) {
             _dump.append( "  encodeMap=" ).append( "OrderCancelRequest" ).append( "  eventType=" ).append( "CancelRequest" ).append( " : " );
@@ -390,7 +432,7 @@ public final class MilleniumLSEEncoder implements BinaryEncoder {
     }
 
     public final void encodeCancelReject( final CancelReject msg ) {
-        final int now = _tzCalculator.getNowUTC();
+        final long now = _tzCalculator.getNowAsInternalTime();
         _builder.start( MSG_CancelReject );
         if ( _debug ) {
             _dump.append( "  encodeMap=" ).append( "CancelReject" ).append( "  eventType=" ).append( "CancelReject" ).append( " : " );
@@ -399,7 +441,7 @@ public final class MilleniumLSEEncoder implements BinaryEncoder {
         if ( _debug ) _dump.append( "\nHook : " ).append( "appId" ).append( " : " ).append( "encode" ).append( " : " );
         _builder.encodeByte( (byte)0 );
         if ( _debug ) _dump.append( "\nField: " ).append( "msgSeqNum" ).append( " : " );
-        _builder.encodeInt( (int)msg.getMsgSeqNum() );
+        _builder.encodeInt( msg.getMsgSeqNum() );
         if ( _debug ) _dump.append( "\nField: " ).append( "clOrdId" ).append( " : " );
         _builder.encodeZStringFixedWidth( msg.getClOrdId(), 20 );
         if ( _debug ) _dump.append( "\nField: " ).append( "orderId" ).append( " : " );
@@ -407,14 +449,14 @@ public final class MilleniumLSEEncoder implements BinaryEncoder {
         if ( _debug ) _dump.append( "\nField: " ).append( "rejectCode" ).append( " : " );
         _builder.encodeInt( Constants.UNSET_INT );    // rejectCode
         if ( _debug ) _dump.append( "\nField: " ).append( "sendingTime" ).append( " : " );
-        _builder.encodeTimestampUTC( msg.getSendingTime() );
+        _builder.encodeTimestampUTC( msg.getEventTimestamp() );
         if ( _debug ) _dump.append( "\nField: " ).append( "filler" ).append( " : " );
         _builder.encodeFiller( 8 );
         _builder.end();
     }
 
     public final void encodeReject( final SessionReject msg ) {
-        final int now = _tzCalculator.getNowUTC();
+        final long now = _tzCalculator.getNowAsInternalTime();
         _builder.start( MSG_Reject );
         if ( _debug ) {
             _dump.append( "  encodeMap=" ).append( "Reject" ).append( "  eventType=" ).append( "SessionReject" ).append( " : " );
@@ -432,7 +474,7 @@ public final class MilleniumLSEEncoder implements BinaryEncoder {
     }
 
     public final void encodeBusinessReject( final VagueOrderReject msg ) {
-        final int now = _tzCalculator.getNowUTC();
+        final long now = _tzCalculator.getNowAsInternalTime();
         _builder.start( MSG_BusinessReject );
         if ( _debug ) {
             _dump.append( "  encodeMap=" ).append( "BusinessReject" ).append( "  eventType=" ).append( "VagueOrderReject" ).append( " : " );
@@ -441,7 +483,7 @@ public final class MilleniumLSEEncoder implements BinaryEncoder {
         if ( _debug ) _dump.append( "\nHook : " ).append( "appId" ).append( " : " ).append( "encode" ).append( " : " );
         _builder.encodeByte( (byte)0 );
         if ( _debug ) _dump.append( "\nField: " ).append( "msgSeqNum" ).append( " : " );
-        _builder.encodeInt( (int)msg.getMsgSeqNum() );
+        _builder.encodeInt( msg.getMsgSeqNum() );
         if ( _debug ) _dump.append( "\nField: " ).append( "rejectCode" ).append( " : " );
         _builder.encodeStringAsInt( msg.getText() );
         if ( _debug ) _dump.append( "\nField: " ).append( "clOrdId" ).append( " : " );
@@ -449,14 +491,14 @@ public final class MilleniumLSEEncoder implements BinaryEncoder {
         if ( _debug ) _dump.append( "\nField: " ).append( "orderId" ).append( " : " );
         _builder.encodeZStringFixedWidth( msg.getOrderId(), 12 );
         if ( _debug ) _dump.append( "\nField: " ).append( "sendingTime" ).append( " : " );
-        _builder.encodeTimestampUTC( msg.getSendingTime() );
+        _builder.encodeTimestampUTC( msg.getEventTimestamp() );
         if ( _debug ) _dump.append( "\nField: " ).append( "filler" ).append( " : " );
         _builder.encodeFiller( 10 );
         _builder.end();
     }
 
     public final void encodeOrderReplaceRequest( final CancelReplaceRequest msg ) {
-        final int now = _tzCalculator.getNowUTC();
+        final long now = _tzCalculator.getNowAsInternalTime();
         _builder.start( MSG_OrderReplaceRequest );
         if ( _debug ) {
             _dump.append( "  encodeMap=" ).append( "OrderReplaceRequest" ).append( "  eventType=" ).append( "CancelReplaceRequest" ).append( " : " );
@@ -496,7 +538,7 @@ public final class MilleniumLSEEncoder implements BinaryEncoder {
     }
 
     public final void encodeOrderAck( final NewOrderAck msg ) {
-        final int now = _tzCalculator.getNowUTC();
+        final long now = _tzCalculator.getNowAsInternalTime();
         _builder.start( MSG_ExecutionReport );
         if ( _debug ) {
             _dump.append( "  encodeMap=" ).append( "ExecutionReport" ).append( "  eventType=" ).append( "NewOrderAck" ).append( " : " );
@@ -505,7 +547,7 @@ public final class MilleniumLSEEncoder implements BinaryEncoder {
         if ( _debug ) _dump.append( "\nHook : " ).append( "appId" ).append( " : " ).append( "encode" ).append( " : " );
         _builder.encodeByte( (byte)0 );
         if ( _debug ) _dump.append( "\nField: " ).append( "msgSeqNum" ).append( " : " );
-        _builder.encodeInt( (int)msg.getMsgSeqNum() );
+        _builder.encodeInt( msg.getMsgSeqNum() );
         if ( _debug ) _dump.append( "\nField: " ).append( "execId" ).append( " : " );
         _builder.encodeZStringFixedWidth( msg.getExecId(), 12 );
         if ( _debug ) _dump.append( "\nField: " ).append( "clOrdId" ).append( " : " );
@@ -549,14 +591,14 @@ public final class MilleniumLSEEncoder implements BinaryEncoder {
         if ( _debug ) _dump.append( "\nField: " ).append( "tradeMatchId" ).append( " : " );
         _builder.encodeLong( Constants.UNSET_LONG );    // tradeMatchId
         if ( _debug ) _dump.append( "\nField: " ).append( "sendingTime" ).append( " : " );
-        _builder.encodeTimestampUTC( msg.getSendingTime() );
+        _builder.encodeTimestampUTC( msg.getEventTimestamp() );
         if ( _debug ) _dump.append( "\nField: " ).append( "filler3" ).append( " : " );
         _builder.encodeFiller( 10 );
         _builder.end();
     }
 
     public final void encodeOrderCancelled( final Cancelled msg ) {
-        final int now = _tzCalculator.getNowUTC();
+        final long now = _tzCalculator.getNowAsInternalTime();
         _builder.start( MSG_ExecutionReport );
         if ( _debug ) {
             _dump.append( "  encodeMap=" ).append( "ExecutionReport" ).append( "  eventType=" ).append( "Cancelled" ).append( " : " );
@@ -565,7 +607,7 @@ public final class MilleniumLSEEncoder implements BinaryEncoder {
         if ( _debug ) _dump.append( "\nHook : " ).append( "appId" ).append( " : " ).append( "encode" ).append( " : " );
         _builder.encodeByte( (byte)0 );
         if ( _debug ) _dump.append( "\nField: " ).append( "msgSeqNum" ).append( " : " );
-        _builder.encodeInt( (int)msg.getMsgSeqNum() );
+        _builder.encodeInt( msg.getMsgSeqNum() );
         if ( _debug ) _dump.append( "\nField: " ).append( "execId" ).append( " : " );
         _builder.encodeZStringFixedWidth( msg.getExecId(), 12 );
         if ( _debug ) _dump.append( "\nField: " ).append( "clOrdId" ).append( " : " );
@@ -609,14 +651,14 @@ public final class MilleniumLSEEncoder implements BinaryEncoder {
         if ( _debug ) _dump.append( "\nField: " ).append( "tradeMatchId" ).append( " : " );
         _builder.encodeLong( Constants.UNSET_LONG );    // tradeMatchId
         if ( _debug ) _dump.append( "\nField: " ).append( "sendingTime" ).append( " : " );
-        _builder.encodeTimestampUTC( msg.getSendingTime() );
+        _builder.encodeTimestampUTC( msg.getEventTimestamp() );
         if ( _debug ) _dump.append( "\nField: " ).append( "filler3" ).append( " : " );
         _builder.encodeFiller( 10 );
         _builder.end();
     }
 
     public final void encodeOrderReplaced( final Replaced msg ) {
-        final int now = _tzCalculator.getNowUTC();
+        final long now = _tzCalculator.getNowAsInternalTime();
         _builder.start( MSG_ExecutionReport );
         if ( _debug ) {
             _dump.append( "  encodeMap=" ).append( "ExecutionReport" ).append( "  eventType=" ).append( "Replaced" ).append( " : " );
@@ -625,7 +667,7 @@ public final class MilleniumLSEEncoder implements BinaryEncoder {
         if ( _debug ) _dump.append( "\nHook : " ).append( "appId" ).append( " : " ).append( "encode" ).append( " : " );
         _builder.encodeByte( (byte)0 );
         if ( _debug ) _dump.append( "\nField: " ).append( "msgSeqNum" ).append( " : " );
-        _builder.encodeInt( (int)msg.getMsgSeqNum() );
+        _builder.encodeInt( msg.getMsgSeqNum() );
         if ( _debug ) _dump.append( "\nField: " ).append( "execId" ).append( " : " );
         _builder.encodeZStringFixedWidth( msg.getExecId(), 12 );
         if ( _debug ) _dump.append( "\nField: " ).append( "clOrdId" ).append( " : " );
@@ -669,14 +711,14 @@ public final class MilleniumLSEEncoder implements BinaryEncoder {
         if ( _debug ) _dump.append( "\nField: " ).append( "tradeMatchId" ).append( " : " );
         _builder.encodeLong( Constants.UNSET_LONG );    // tradeMatchId
         if ( _debug ) _dump.append( "\nField: " ).append( "sendingTime" ).append( " : " );
-        _builder.encodeTimestampUTC( msg.getSendingTime() );
+        _builder.encodeTimestampUTC( msg.getEventTimestamp() );
         if ( _debug ) _dump.append( "\nField: " ).append( "filler3" ).append( " : " );
         _builder.encodeFiller( 10 );
         _builder.end();
     }
 
     public final void encodeOrderRejected( final Rejected msg ) {
-        final int now = _tzCalculator.getNowUTC();
+        final long now = _tzCalculator.getNowAsInternalTime();
         _builder.start( MSG_ExecutionReport );
         if ( _debug ) {
             _dump.append( "  encodeMap=" ).append( "ExecutionReport" ).append( "  eventType=" ).append( "Rejected" ).append( " : " );
@@ -685,7 +727,7 @@ public final class MilleniumLSEEncoder implements BinaryEncoder {
         if ( _debug ) _dump.append( "\nHook : " ).append( "appId" ).append( " : " ).append( "encode" ).append( " : " );
         _builder.encodeByte( (byte)0 );
         if ( _debug ) _dump.append( "\nField: " ).append( "msgSeqNum" ).append( " : " );
-        _builder.encodeInt( (int)msg.getMsgSeqNum() );
+        _builder.encodeInt( msg.getMsgSeqNum() );
         if ( _debug ) _dump.append( "\nField: " ).append( "execId" ).append( " : " );
         _builder.encodeZStringFixedWidth( msg.getExecId(), 12 );
         if ( _debug ) _dump.append( "\nField: " ).append( "clOrdId" ).append( " : " );
@@ -729,14 +771,14 @@ public final class MilleniumLSEEncoder implements BinaryEncoder {
         if ( _debug ) _dump.append( "\nField: " ).append( "tradeMatchId" ).append( " : " );
         _builder.encodeLong( Constants.UNSET_LONG );    // tradeMatchId
         if ( _debug ) _dump.append( "\nField: " ).append( "sendingTime" ).append( " : " );
-        _builder.encodeTimestampUTC( msg.getSendingTime() );
+        _builder.encodeTimestampUTC( msg.getEventTimestamp() );
         if ( _debug ) _dump.append( "\nField: " ).append( "filler3" ).append( " : " );
         _builder.encodeFiller( 10 );
         _builder.end();
     }
 
     public final void encodeOrderExpired( final Expired msg ) {
-        final int now = _tzCalculator.getNowUTC();
+        final long now = _tzCalculator.getNowAsInternalTime();
         _builder.start( MSG_ExecutionReport );
         if ( _debug ) {
             _dump.append( "  encodeMap=" ).append( "ExecutionReport" ).append( "  eventType=" ).append( "Expired" ).append( " : " );
@@ -745,7 +787,7 @@ public final class MilleniumLSEEncoder implements BinaryEncoder {
         if ( _debug ) _dump.append( "\nHook : " ).append( "appId" ).append( " : " ).append( "encode" ).append( " : " );
         _builder.encodeByte( (byte)0 );
         if ( _debug ) _dump.append( "\nField: " ).append( "msgSeqNum" ).append( " : " );
-        _builder.encodeInt( (int)msg.getMsgSeqNum() );
+        _builder.encodeInt( msg.getMsgSeqNum() );
         if ( _debug ) _dump.append( "\nField: " ).append( "execId" ).append( " : " );
         _builder.encodeZStringFixedWidth( msg.getExecId(), 12 );
         if ( _debug ) _dump.append( "\nField: " ).append( "clOrdId" ).append( " : " );
@@ -789,14 +831,14 @@ public final class MilleniumLSEEncoder implements BinaryEncoder {
         if ( _debug ) _dump.append( "\nField: " ).append( "tradeMatchId" ).append( " : " );
         _builder.encodeLong( Constants.UNSET_LONG );    // tradeMatchId
         if ( _debug ) _dump.append( "\nField: " ).append( "sendingTime" ).append( " : " );
-        _builder.encodeTimestampUTC( msg.getSendingTime() );
+        _builder.encodeTimestampUTC( msg.getEventTimestamp() );
         if ( _debug ) _dump.append( "\nField: " ).append( "filler3" ).append( " : " );
         _builder.encodeFiller( 10 );
         _builder.end();
     }
 
     public final void encodeOrderRestated( final Restated msg ) {
-        final int now = _tzCalculator.getNowUTC();
+        final long now = _tzCalculator.getNowAsInternalTime();
         _builder.start( MSG_ExecutionReport );
         if ( _debug ) {
             _dump.append( "  encodeMap=" ).append( "ExecutionReport" ).append( "  eventType=" ).append( "Restated" ).append( " : " );
@@ -805,7 +847,7 @@ public final class MilleniumLSEEncoder implements BinaryEncoder {
         if ( _debug ) _dump.append( "\nHook : " ).append( "appId" ).append( " : " ).append( "encode" ).append( " : " );
         _builder.encodeByte( (byte)0 );
         if ( _debug ) _dump.append( "\nField: " ).append( "msgSeqNum" ).append( " : " );
-        _builder.encodeInt( (int)msg.getMsgSeqNum() );
+        _builder.encodeInt( msg.getMsgSeqNum() );
         if ( _debug ) _dump.append( "\nField: " ).append( "execId" ).append( " : " );
         _builder.encodeZStringFixedWidth( msg.getExecId(), 12 );
         if ( _debug ) _dump.append( "\nField: " ).append( "clOrdId" ).append( " : " );
@@ -849,14 +891,14 @@ public final class MilleniumLSEEncoder implements BinaryEncoder {
         if ( _debug ) _dump.append( "\nField: " ).append( "tradeMatchId" ).append( " : " );
         _builder.encodeLong( Constants.UNSET_LONG );    // tradeMatchId
         if ( _debug ) _dump.append( "\nField: " ).append( "sendingTime" ).append( " : " );
-        _builder.encodeTimestampUTC( msg.getSendingTime() );
+        _builder.encodeTimestampUTC( msg.getEventTimestamp() );
         if ( _debug ) _dump.append( "\nField: " ).append( "filler3" ).append( " : " );
         _builder.encodeFiller( 10 );
         _builder.end();
     }
 
     public final void encodeTrade( final TradeNew msg ) {
-        final int now = _tzCalculator.getNowUTC();
+        final long now = _tzCalculator.getNowAsInternalTime();
         _builder.start( MSG_ExecutionReport );
         if ( _debug ) {
             _dump.append( "  encodeMap=" ).append( "ExecutionReport" ).append( "  eventType=" ).append( "TradeNew" ).append( " : " );
@@ -865,7 +907,7 @@ public final class MilleniumLSEEncoder implements BinaryEncoder {
         if ( _debug ) _dump.append( "\nHook : " ).append( "appId" ).append( " : " ).append( "encode" ).append( " : " );
         _builder.encodeByte( (byte)0 );
         if ( _debug ) _dump.append( "\nField: " ).append( "msgSeqNum" ).append( " : " );
-        _builder.encodeInt( (int)msg.getMsgSeqNum() );
+        _builder.encodeInt( msg.getMsgSeqNum() );
         if ( _debug ) _dump.append( "\nField: " ).append( "execId" ).append( " : " );
         _builder.encodeZStringFixedWidth( msg.getExecId(), 12 );
         if ( _debug ) _dump.append( "\nField: " ).append( "clOrdId" ).append( " : " );
@@ -911,14 +953,14 @@ public final class MilleniumLSEEncoder implements BinaryEncoder {
         if ( _debug ) _dump.append( "\nField: " ).append( "tradeMatchId" ).append( " : " );
         _builder.encodeLong( Constants.UNSET_LONG );    // tradeMatchId
         if ( _debug ) _dump.append( "\nField: " ).append( "sendingTime" ).append( " : " );
-        _builder.encodeTimestampUTC( msg.getSendingTime() );
+        _builder.encodeTimestampUTC( msg.getEventTimestamp() );
         if ( _debug ) _dump.append( "\nField: " ).append( "filler3" ).append( " : " );
         _builder.encodeFiller( 10 );
         _builder.end();
     }
 
     public final void encodeTradeCorrect( final TradeCorrect msg ) {
-        final int now = _tzCalculator.getNowUTC();
+        final long now = _tzCalculator.getNowAsInternalTime();
         _builder.start( MSG_ExecutionReport );
         if ( _debug ) {
             _dump.append( "  encodeMap=" ).append( "ExecutionReport" ).append( "  eventType=" ).append( "TradeCorrect" ).append( " : " );
@@ -927,7 +969,7 @@ public final class MilleniumLSEEncoder implements BinaryEncoder {
         if ( _debug ) _dump.append( "\nHook : " ).append( "appId" ).append( " : " ).append( "encode" ).append( " : " );
         _builder.encodeByte( (byte)0 );
         if ( _debug ) _dump.append( "\nField: " ).append( "msgSeqNum" ).append( " : " );
-        _builder.encodeInt( (int)msg.getMsgSeqNum() );
+        _builder.encodeInt( msg.getMsgSeqNum() );
         if ( _debug ) _dump.append( "\nField: " ).append( "execId" ).append( " : " );
         _builder.encodeZStringFixedWidth( msg.getExecId(), 12 );
         if ( _debug ) _dump.append( "\nField: " ).append( "clOrdId" ).append( " : " );
@@ -973,14 +1015,14 @@ public final class MilleniumLSEEncoder implements BinaryEncoder {
         if ( _debug ) _dump.append( "\nField: " ).append( "tradeMatchId" ).append( " : " );
         _builder.encodeLong( Constants.UNSET_LONG );    // tradeMatchId
         if ( _debug ) _dump.append( "\nField: " ).append( "sendingTime" ).append( " : " );
-        _builder.encodeTimestampUTC( msg.getSendingTime() );
+        _builder.encodeTimestampUTC( msg.getEventTimestamp() );
         if ( _debug ) _dump.append( "\nField: " ).append( "filler3" ).append( " : " );
         _builder.encodeFiller( 10 );
         _builder.end();
     }
 
     public final void encodeTradeCancel( final TradeCancel msg ) {
-        final int now = _tzCalculator.getNowUTC();
+        final long now = _tzCalculator.getNowAsInternalTime();
         _builder.start( MSG_ExecutionReport );
         if ( _debug ) {
             _dump.append( "  encodeMap=" ).append( "ExecutionReport" ).append( "  eventType=" ).append( "TradeCancel" ).append( " : " );
@@ -989,7 +1031,7 @@ public final class MilleniumLSEEncoder implements BinaryEncoder {
         if ( _debug ) _dump.append( "\nHook : " ).append( "appId" ).append( " : " ).append( "encode" ).append( " : " );
         _builder.encodeByte( (byte)0 );
         if ( _debug ) _dump.append( "\nField: " ).append( "msgSeqNum" ).append( " : " );
-        _builder.encodeInt( (int)msg.getMsgSeqNum() );
+        _builder.encodeInt( msg.getMsgSeqNum() );
         if ( _debug ) _dump.append( "\nField: " ).append( "execId" ).append( " : " );
         _builder.encodeZStringFixedWidth( msg.getExecId(), 12 );
         if ( _debug ) _dump.append( "\nField: " ).append( "clOrdId" ).append( " : " );
@@ -1035,14 +1077,14 @@ public final class MilleniumLSEEncoder implements BinaryEncoder {
         if ( _debug ) _dump.append( "\nField: " ).append( "tradeMatchId" ).append( " : " );
         _builder.encodeLong( Constants.UNSET_LONG );    // tradeMatchId
         if ( _debug ) _dump.append( "\nField: " ).append( "sendingTime" ).append( " : " );
-        _builder.encodeTimestampUTC( msg.getSendingTime() );
+        _builder.encodeTimestampUTC( msg.getEventTimestamp() );
         if ( _debug ) _dump.append( "\nField: " ).append( "filler3" ).append( " : " );
         _builder.encodeFiller( 10 );
         _builder.end();
     }
 
     public final void encodeSuspended( final Suspended msg ) {
-        final int now = _tzCalculator.getNowUTC();
+        final long now = _tzCalculator.getNowAsInternalTime();
         _builder.start( MSG_ExecutionReport );
         if ( _debug ) {
             _dump.append( "  encodeMap=" ).append( "ExecutionReport" ).append( "  eventType=" ).append( "Suspended" ).append( " : " );
@@ -1051,7 +1093,7 @@ public final class MilleniumLSEEncoder implements BinaryEncoder {
         if ( _debug ) _dump.append( "\nHook : " ).append( "appId" ).append( " : " ).append( "encode" ).append( " : " );
         _builder.encodeByte( (byte)0 );
         if ( _debug ) _dump.append( "\nField: " ).append( "msgSeqNum" ).append( " : " );
-        _builder.encodeInt( (int)msg.getMsgSeqNum() );
+        _builder.encodeInt( msg.getMsgSeqNum() );
         if ( _debug ) _dump.append( "\nField: " ).append( "execId" ).append( " : " );
         _builder.encodeZStringFixedWidth( msg.getExecId(), 12 );
         if ( _debug ) _dump.append( "\nField: " ).append( "clOrdId" ).append( " : " );
@@ -1095,7 +1137,7 @@ public final class MilleniumLSEEncoder implements BinaryEncoder {
         if ( _debug ) _dump.append( "\nField: " ).append( "tradeMatchId" ).append( " : " );
         _builder.encodeLong( Constants.UNSET_LONG );    // tradeMatchId
         if ( _debug ) _dump.append( "\nField: " ).append( "sendingTime" ).append( " : " );
-        _builder.encodeTimestampUTC( msg.getSendingTime() );
+        _builder.encodeTimestampUTC( msg.getEventTimestamp() );
         if ( _debug ) _dump.append( "\nField: " ).append( "filler3" ).append( " : " );
         _builder.encodeFiller( 10 );
         _builder.end();
@@ -1106,11 +1148,13 @@ public final class MilleniumLSEEncoder implements BinaryEncoder {
     }
 
     @Override
-    public final void setTimeZoneCalculator( final TimeZoneCalculator calc ) {
+    public final void setTimeUtils( final TimeUtils calc ) {
         _tzCalculator = calc;
-        _builder.setTimeZoneCalculator( calc );
+        _builder.setTimeUtils( calc );
     }
 
+
+    @Override public String getComponentId() { return _id; }
     private byte transformLiquidityInd( LiquidityInd val ) {
         switch( val ) {
         case AddedLiquidity:  // AddedLiquidity
@@ -1139,4 +1183,128 @@ public final class MilleniumLSEEncoder implements BinaryEncoder {
         return '2';
     }
 
-    /**     * PostPend  Common Encoder File     *     * expected to contain methods used in hooks from model     */         @Override    public void setNanoStats( boolean nanoTiming ) {        _nanoStats = nanoTiming;    }    private       boolean         _nanoStats    =  true;             private       int             _idx          = 1;        private final ClientCancelRejectFactory _canRejFactory   = SuperpoolManager.instance().getFactory( ClientCancelRejectFactory.class, ClientCancelRejectImpl.class );    private final ClientRejectedFactory     _rejectedFactory = SuperpoolManager.instance().getFactory( ClientRejectedFactory.class,     ClientRejectedImpl.class );     public static final ZString ENCODE_REJ              = new ViewString( "ERJ" );    public static final ZString NONE                    = new ViewString( "NON" );    @Override    public Message unableToSend( Message msg, ZString errMsg ) {        switch( msg.getReusableType().getSubId() ) {        case EventIds.ID_NEWORDERSINGLE:            return rejectNewOrderSingle( (NewOrderSingle) msg, errMsg );        case EventIds.ID_NEWORDERACK:            break;        case EventIds.ID_TRADENEW:            break;        case EventIds.ID_CANCELREPLACEREQUEST:            return rejectCancelReplaceRequest( (CancelReplaceRequest) msg, errMsg );        case EventIds.ID_CANCELREQUEST:            return rejectCancelRequest( (CancelRequest) msg, errMsg );        }                return null;    }    private Message rejectNewOrderSingle( NewOrderSingle nos, ZString errMsg ) {        final ClientRejectedImpl reject = _rejectedFactory.get();        reject.setSrcEvent( nos );        reject.getExecIdForUpdate().copy( ENCODE_REJ ).append( nos.getClOrdId() ).append( ++_idx );        reject.getOrderIdForUpdate().setValue( NONE );        reject.setOrdRejReason( OrdRejReason.Other );        reject.getTextForUpdate().setValue( errMsg );        reject.setOrdStatus( OrdStatus.Rejected );        reject.setExecType( ExecType.Rejected );        reject.setCumQty( 0 );        reject.setAvgPx( 0.0 );        reject.setMessageHandler( nos.getMessageHandler() );        return reject;    }    private Message rejectCancelReplaceRequest( CancelReplaceRequest msg, ZString errMsg ) {        final ClientCancelRejectImpl reject = _canRejFactory.get();                reject.getClOrdIdForUpdate().    setValue( msg.getClOrdId() );        reject.getOrigClOrdIdForUpdate().setValue( msg.getOrigClOrdId() );        reject.getOrderIdForUpdate().    setValue( NONE );        reject.getTextForUpdate().       setValue( errMsg );        reject.setCxlRejResponseTo( CxlRejResponseTo.CancelReplace );        reject.setCxlRejReason(     CxlRejReason.Other );        reject.setOrdStatus(        OrdStatus.Unknown );        return reject;    }    private Message rejectCancelRequest( CancelRequest msg, ZString errMsg ) {        final ClientCancelRejectImpl reject = _canRejFactory.get();                reject.getClOrdIdForUpdate().    setValue( msg.getClOrdId() );        reject.getOrigClOrdIdForUpdate().setValue( msg.getOrigClOrdId() );        reject.getOrderIdForUpdate().    setValue( NONE );        reject.getTextForUpdate().       setValue( errMsg );        reject.setCxlRejResponseTo( CxlRejResponseTo.CancelRequest );        reject.setCxlRejReason(     CxlRejReason.Other );        reject.setOrdStatus(        OrdStatus.Unknown );        return reject;    }    private static final byte[] STATS       = "     [".getBytes();    private static final byte   STAT_DELIM  = ',';    private static final byte   STAT_END    = ']';    @Override    public void addStats( final ReusableString outBuf, final Message msg, final long msgSent ) {                if ( msg.getReusableType().getId() == FullEventIds.ID_MARKET_NEWORDERSINGLE ) {            final MarketNewOrderSingleImpl nos = (MarketNewOrderSingleImpl) msg;            nos.setOrderSent( msgSent );                } else if ( msg.getReusableType().getId() == FullEventIds.ID_CLIENT_NEWORDERACK ) {            final ClientNewOrderAckImpl ack = (ClientNewOrderAckImpl) msg;            final long orderIn  = ack.getOrderReceived();            final long orderOut = ack.getOrderSent();            final long ackIn    = ack.getAckReceived();            final long ackOut   = msgSent;            final long microNOSToMKt    = (orderOut - orderIn)  >> 10;            final long microInMkt       = (ackIn    - orderOut) >> 10;            final long microAckToClient = (ackOut   - ackIn)    >> 10;                        outBuf.append( STATS      ).append( microNOSToMKt )                  .append( STAT_DELIM ).append( microInMkt )                  .append( STAT_DELIM ).append( microAckToClient ).append( STAT_END );        }    }    private void encodeSymbol( Instrument instrument ) {        _builder.encodeInt( (int)instrument.getLongSymbol() );    }    }
+    /**
+     * PostPend  Common Encoder File
+     *
+     * expected to contain methods used in hooks from model
+     */
+     
+    @Override
+    public void setNanoStats( boolean nanoTiming ) {
+        _nanoStats = nanoTiming;
+    }
+
+    private       boolean         _nanoStats    =  true;
+         
+    private       int             _idx          = 1;
+    
+    private final ClientCancelRejectFactory _canRejFactory   = SuperpoolManager.instance().getFactory( ClientCancelRejectFactory.class, ClientCancelRejectImpl.class );
+    private final ClientRejectedFactory     _rejectedFactory = SuperpoolManager.instance().getFactory( ClientRejectedFactory.class,     ClientRejectedImpl.class ); 
+
+    public static final ZString ENCODE_REJ              = new ViewString( "ERJ" );
+    public static final ZString NONE                    = new ViewString( "NON" );
+
+    @Override
+    public Event unableToSend( Event msg, ZString errMsg ) {
+        switch( msg.getReusableType().getSubId() ) {
+        case EventIds.ID_NEWORDERSINGLE:
+            return rejectNewOrderSingle( (NewOrderSingle) msg, errMsg );
+        case EventIds.ID_NEWORDERACK:
+            break;
+        case EventIds.ID_TRADENEW:
+            break;
+        case EventIds.ID_CANCELREPLACEREQUEST:
+            return rejectCancelReplaceRequest( (CancelReplaceRequest) msg, errMsg );
+        case EventIds.ID_CANCELREQUEST:
+            return rejectCancelRequest( (CancelRequest) msg, errMsg );
+        }
+        
+        return null;
+    }
+
+    private Event rejectNewOrderSingle( NewOrderSingle nos, ZString errMsg ) {
+        final ClientRejectedImpl reject = _rejectedFactory.get();
+
+        reject.setSrcEvent( nos );
+        reject.getExecIdForUpdate().copy( ENCODE_REJ ).append( nos.getClOrdId() ).append( ++_idx );
+        reject.getOrderIdForUpdate().setValue( NONE );
+        reject.setOrdRejReason( OrdRejReason.Other );
+        reject.getTextForUpdate().setValue( errMsg );
+        reject.setOrdStatus( OrdStatus.Rejected );
+        reject.setExecType( ExecType.Rejected );
+
+        reject.setCumQty( 0 );
+        reject.setAvgPx( 0.0 );
+
+        reject.setEventHandler( nos.getEventHandler() );
+        return reject;
+    }
+
+    private Event rejectCancelReplaceRequest( CancelReplaceRequest msg, ZString errMsg ) {
+        final ClientCancelRejectImpl reject = _canRejFactory.get();
+        
+        reject.getClOrdIdForUpdate().    setValue( msg.getClOrdId() );
+        reject.getOrigClOrdIdForUpdate().setValue( msg.getOrigClOrdId() );
+        reject.getOrderIdForUpdate().    setValue( NONE );
+        reject.getTextForUpdate().       setValue( errMsg );
+
+        reject.setCxlRejResponseTo( CxlRejResponseTo.CancelReplace );
+        reject.setCxlRejReason(     CxlRejReason.Other );
+        reject.setOrdStatus(        OrdStatus.Unknown );
+
+        return reject;
+    }
+
+    private Event rejectCancelRequest( CancelRequest msg, ZString errMsg ) {
+        final ClientCancelRejectImpl reject = _canRejFactory.get();
+        
+        reject.getClOrdIdForUpdate().    setValue( msg.getClOrdId() );
+        reject.getOrigClOrdIdForUpdate().setValue( msg.getOrigClOrdId() );
+        reject.getOrderIdForUpdate().    setValue( NONE );
+        reject.getTextForUpdate().       setValue( errMsg );
+
+        reject.setCxlRejResponseTo( CxlRejResponseTo.CancelRequest );
+        reject.setCxlRejReason(     CxlRejReason.Other );
+        reject.setOrdStatus(        OrdStatus.Unknown );
+
+        return reject;
+    }
+
+    private static final byte[] STATS       = "     [".getBytes();
+    private static final byte   STAT_DELIM  = ',';
+    private static final byte   STAT_END    = ']';
+
+
+
+
+    @Override
+    public void addStats( final ReusableString outBuf, final Event msg, final long msgSent ) {
+        
+        if ( msg.getReusableType().getId() == FullEventIds.ID_MARKET_NEWORDERSINGLE ) {
+            final MarketNewOrderSingleImpl nos = (MarketNewOrderSingleImpl) msg;
+            nos.setOrderSent( msgSent );        
+        } else if ( msg.getReusableType().getId() == FullEventIds.ID_CLIENT_NEWORDERACK ) {
+            final ClientNewOrderAckImpl ack = (ClientNewOrderAckImpl) msg;
+
+            final long orderIn  = ack.getOrderReceived();
+            final long orderOut = ack.getOrderSent();
+            final long ackIn    = ack.getAckReceived();
+            final long ackOut   = msgSent;
+
+            final long microNOSToMKt    = (orderOut - orderIn)  >> 10;
+            final long microInMkt       = (ackIn    - orderOut) >> 10;
+            final long microAckToClient = (ackOut   - ackIn)    >> 10;
+            
+            outBuf.append( STATS      ).append( microNOSToMKt )
+                  .append( STAT_DELIM ).append( microInMkt )
+                  .append( STAT_DELIM ).append( microAckToClient ).append( STAT_END );
+        }
+    }
+
+
+    private void encodeSymbol( Instrument instrument ) {
+        _builder.encodeInt( (int)((ExchangeInstrument)instrument).getExchangeLongId() );
+    }
+    
+
+}

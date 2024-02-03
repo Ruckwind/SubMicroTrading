@@ -1,0 +1,10 @@
+@INCLUDE FixEncoder.include
+
+@INCLUDE ClientToMarketOrderStats.include
+
+@INCLUDE Fix42ExtraEncoder.include
+
+/*
+ * HANDCODED ENCODER METHDOS
+ */
+

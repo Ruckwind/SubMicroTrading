@@ -1,0 +1,48 @@
+
+    private Decoder _dataDecoder;
+
+    @Override
+    public final int parseHeader( final byte[] msg, final int offset, final int bytesRead ) {
+
+        _binaryMsg = msg;
+        _maxIdx = bytesRead + offset; // temp assign maxIdx to last data bytes in bufferMap
+        _offset = offset;
+        _builder.start( msg, offset, _maxIdx );
+
+        if ( bytesRead < 2 ) {
+            ReusableString copy = TLC.instance().getString();
+            if ( bytesRead == 0 )  {
+                copy.setValue( "{empty}" );
+            } else{
+                copy.setValue( msg, offset, bytesRead );
+            }
+            throw new RuntimeDecodingException( "SOAP Messsage too small, len=" + bytesRead, copy );
+        }
+
+        _msgType = _builder.decodeByte();
+
+        return bytesRead;
+    }
+
+    private Event doDecodeSequencedDataPacket() {
+
+        int offset = _builder.getCurrentIndex() + 1;
+        int bytesRead = _maxIdx - offset;
+        int maxIdx = _maxIdx - 1;
+
+        _dataDecoder.parseHeader( _binaryMsg, offset, bytesRead - 1 );
+
+        return _dataDecoder.postHeaderDecode();
+    }
+
+    private Event doDecodeUnsequencedDataPacket() {
+
+        int offset = _builder.getCurrentIndex() + 1;
+        int bytesRead = _maxIdx - offset;
+        int maxIdx = _maxIdx - 1;
+
+        _dataDecoder.parseHeader( _binaryMsg, offset, bytesRead - 1 );
+
+        return _dataDecoder.postHeaderDecode();
+    }
+

@@ -1,0 +1,116 @@
+EVGA Classified SR-2 (Super Record 2)PART NUMBER: 270-WS-W555-A1
+
+SATA bottleneck in system
+
+OCZ RevoDrive (MLC)  120GB £250, 240GB £460       
+    http://www.ocztechnology.com/products/solid-state-drives/pci-express/revodrive/ocz-revodrive-pci-express-ssd-.html
+
+Z-Drive p84 PCI-Express SSD 500GB £1,738.85  
+    http://www.ocztechnology.com/products/solid_state_drives/ocz_z_drive_p84_pci_express_ssd
+
+OCZ Z-Drive R2 e88 PCI-Express SSD  (SLC 8 lane PCI)
+
+OCZ Technology 250 GB Z Drive 2 Series m84 PCI Express Solid State Drive (SSD) OCZSSDPX-ZD2M84256G  , 1000 dollars US only 
+    
+
+Red Hat Enterprise Linux 5 (Tikanga), 
+2007-03-14 (Beta 1 released 2006-09-07, Beta 2 released 2006-11-16). Uses Linux 2.6.18 (Release notes) 
+5.5, also known as Update 5, 2010-03-30 (Beta released 2010-02-10) (Release Notes)
+
+Red Hat Enterprise Linux 6 Beta 1 (Santiago), released 2010-04-21. Uses Linux 2.6.32 (Release notes)
+
+
+
+FPGA
+
+JOP             http://www.jopdesign.com/
+picoJava
+lightfoot
+aJile JEMCore
+Cjip
+PSC1000
+JStar java processor
+Jazelle java processor
+Vulcan ASIC’s Moon processor is an implementation of the JVM to run in an FPGA
+LavaCORE
+Komodo
+FemtoJava
+
+
+SDP - socket data protocol, RDMA over TCP (iWarp)
+http://www.rdmaconsortium.org/home/draft-pinkerton-iwarp-sdp-v1.0.pdf
+
+
+
+
+Install the real time patch
+ 
+https://www.osadl.org/Realtime-Preempt-Kernel.kernel-rt.0.html
+ 
+ 
+OFED - support for infiniband verbs over ethernet, 10Ge / 40Ge
+http://www.openfabrics.org/
+http://www.mellanox.com/content/pages.php?pg=products_dyn&product_family=26&menu_section=34#tab-three
+ 
+
+
+
+Web Site
+24*7
+inflexible and difficult to debug versus fast quality turn around times.
+
+
+
+
+
+Thank you for contacting Mellanox Technologies Customer Support. Your new login
+information for the Support Help Desk is listed below. 
+
+Please click on the link below to login to the Help Desk:
+http://mellanox.com/content/pages.php?pg=customer_support
+
+Customer Portal Quick Start Guide:
+http://www.mellanox.com/pdf/support/Mellanox_Self_Service_Portal.pdf
+
+Thank You, 
+Mellanox Customer Support
+
+Username: richard@submicrotrading.com
+Password: C9
+
+
+
+Thermalright HR-01 3U with NT-H1 & two 8cm TB-Silence
+--------------------------------
+With case closed SIM server CPU0 reaching 87, CPU1 67 (note temps may be reversed, not convinced reported correctly in O/S)
+
+CASE OPEN - NO O/C
+
+-> Socket1  removed, using Indigo Extreme, no fans, HR-013U installed, OCCT at 54 mins max 88degrees, initial temps 32-38
+-> Socket1  replaced, using Noctua NT-H1, no fans, HR-013U installed, OCCT at 57 mins max 88degrees, initial temps 30-37 and 37-40
+
+-> all Magma fans plus two 6cm exchaust fans at back
+-> Socket1  using Noctua NT-H1, Magma fans, HR-013U installed, OCCT at 57 mins max 88degrees, initial temps 28-31 and 22-33
+    after 10mins OCCT socket0 stable at 56max active 49-52, socket1 stable max=64, active=47-59
+    after 15mins OCCT socket0 stable at 56max active 46-53, socket1 stable max=64, active=46-57
+    
+-> Socket0 replaced using Noctua NT-H1 (both CPU now same)
+    on startup 24-27 and 17 to 27 (colder room)
+    after 5  mins 47-50 and 43 to 49 (max)
+    after 10 mins 49-51 and 45 to 50 (max)
+    
+CASE OPEN - O/C 4Ghz    (both sockets with Magma fans and NT-H1 TIM)
+
+-> on startup 35-39 and 26 to 34 high
+    after 5  mins 64-67 and 56-62 (max)
+    after 10 mins 65-69 and 57-62 (max)
+
+CASE CLOSED - O/C 4Ghz
+
+-> on startup 37-40 and 28 to 39 high
+    after 5  mins 67-71 and 59-64 (max)
+    after 10 mins 71-75 and 60-66 (max)
+    after 15 mins 71-75 and 60-66 (max)
+
+
+

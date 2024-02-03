@@ -1,0 +1,31 @@
+@INCLUDE Encoder.include
+
+@INCLUDE ClientToMarketOrderStats.include
+
+    private static final int MAX_PRICE_DP = 6;
+
+    private final ReusableString _onBehalfOfId = new ReusableString();
+    private final byte           _dps          = '0' + MAX_PRICE_DP;
+    private final byte           _zero         = '0';
+
+    private void encodePriceScale( double price ) {
+        if ( Utils.hasVal( price ) ) {
+            _builder.encodeByte( _dps );
+        } else {
+            _builder.encodeByte( _zero );
+        }
+    }
+
+    private void encodeOnBehalfOfCompId() {
+        _builder.encodeStringFixedWidth( _onBehalfOfId, SizeType.UTP_COMP_ID_LEN.getSize() );
+    }
+    
+    public void setOnBehalfOfId( ViewString val ) {
+        _onBehalfOfId.copy( val );
+    }
+
+    private void encodeSymbol( Instrument instrument ) {
+        _builder.encodeStringFixedWidth( ((ExchangeInstrument)instrument).getExchangeSymbol(), SizeType.UTP_SYMBOL_LEN.getSize() );
+    }
+    
+

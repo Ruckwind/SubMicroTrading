@@ -1,0 +1,148 @@
+<!--suppress ALL -->
+
+
+@SECTION SOUP_CONSTANTS START
+        <!-- CME SBE constants -->
+            <DefaultSize id="SOUP_USERNAME_LEN"  val="6"/>
+            <DefaultSize id="SOUP_PASSWORD_LEN"  val="10"/>
+            <DefaultSize id="SOUP_SESSION_LEN"   val="10"/>
+@SECTION SOUP_CONSTANTS END
+
+
+@SECTION SOUP_TYPES START
+
+            <Type id="SoupRejectCode">
+                <Description>Soup Reject Code</Description>
+                <Entry name="NotAuthorised"           value="A"/>
+                <Entry name="SessionNotAvailable"     value="S"/>
+                <Entry name="Other"                   value="Z"/>
+            </Type>
+
+@SECTION SOUP_TYPES END
+
+
+@SECTION SOUP_EVENTS START
+
+            <Base id="BaseSoup" src="both">
+                <!-- msgSeqNum and possBupFlag are required to allow Millenium events to be treated as Message -->
+                <Attribute typeId="int"                            name="msgSeqNum"         mandatory="N"     outbound="seperate"/>
+                <Attribute typeId="boolean"                        name="possDupFlag"       mandatory="N"     outbound="seperate"/>
+                <Attribute typeId="UTCTimestamp"                   name="eventTimestamp"    mandatory="N"     outbound="seperate"/>
+            </Base>
+
+            <Event id="SoupDebugPacket" extends="BaseSoup" src="both">
+                <Attribute typeId="viewstring[TEXT_LENGTH]"        name="text"              mandatory="N"     outbound="seperate"/>
+            </Event>
+
+            <Event id="SoupLogInAccepted" extends="BaseSoup" src="both">
+                <Attribute typeId="viewstring[SOUP_SESSION_LEN]"   name="sessionId"         mandatory="Y"     outbound="seperate"/>
+            </Event>
+
+            <Event id="SoupLogInRejected" extends="BaseSoup" src="both">
+                <Attribute typeId="SoupRejectCode"                 name="rejectReasonCode"  mandatory="Y"     outbound="seperate"/>
+            </Event>
+
+            <Event id="SoupLogInRequest" extends="BaseSoup" src="both">
+                <Attribute typeId="viewstring[SOUP_USERNAME_LEN]"  name="userName"          mandatory="Y"     outbound="seperate"/>
+                <Attribute typeId="viewstring[SOUP_PASSWORD_LEN]"  name="password"          mandatory="Y"     outbound="seperate"/>
+                <Attribute typeId="viewstring[SOUP_SESSION_LEN]"   name="requestedSession"  mandatory="Y"     outbound="seperate"/>
+                <Attribute typeId="long"                           name="requestedSeqNum"   mandatory="Y"     outbound="seperate"/>
+            </Event>
+
+            <Event id="UnsequencedDataPacket" extends="BaseSoup" src="both">
+                <Attribute typeId="viewstring[TEXT_LENGTH]"        name="message"           mandatory="N"     outbound="seperate"/>
+            </Event>
+
+@SECTION SOUP_EVENTS END
+
+
+@SECTION SOUP_MODEL START
+            <Model id="SOUP" modelVersionNumber="2.0">
+
+                <Attribute name="BinaryVersion" value="1"/>
+
+                <Dictionary>
+                    <!-- certain tags are special and have specific optimised codec code eg fixVersion.msgType -->
+                    <!--  type should be external facing not internal type mapping -->
+                    <!--  for name try and use the internal event field name so it can be auto matched to the event -->
+                    <!-- valid types zstr(fixed len str)|str(with len as max)|ch|price|sByte|sShort|sInt|sLong|bool|timestampLocal|timestampUTC|timeLocal|timeUTC -->
+
+                    <Field id="msgType"                 type="uByte"/>
+                    <Field id="message"                 type="zstr" len="4"/>
+                    <Field id="password"                type="zstr" len="SOUP_PASSWORD_LEN"/>
+                    <Field id="rejectReasonCode"        type="uByte"/>
+                    <Field id="requestedSeqNum"         type="uInt"/>
+                    <Field id="requestedSession"        type="zstr" len="SOUP_SESSION_LEN"/>
+                    <Field id="sessionId"               type="zstr" len="SOUP_SESSION_LEN"/>
+                    <Field id="seqNum"                  type="uInt"/>
+                    <Field id="userName"                type="zstr" len="SOUP_USERNAME_LEN"/>
+
+                </Dictionary>
+
+                <StandardHeader>
+                    <Field id="msgType"           mand="N"/>
+                </StandardHeader>
+
+                <StandardTrailer>
+                </StandardTrailer>
+
+                <Message id="DebugPacket" msgType="+">
+                    <Field id="text" mand="N"/>
+                </Message>
+
+                <Message id="LogInAccepted" msgType="A">
+                    <Field id="sessionId" mand="N"/>
+                    <Field id="seqNum" mand="N"/>
+                </Message>
+
+                <Message id="LogInRejected" msgType="J">
+                    <Field id="rejectReasonCode" mand="N"/>
+                </Message>
+
+                <Message id="SequencedDataPacket" msgType="S">
+                </Message>
+
+                <Message id="ServerHeartbeat" msgType="H">
+                </Message>
+
+                <Message id="LogInRequest" msgType="L">
+                    <Field id="userName" mand="N"/>
+                    <Field id="password" mand="N"/>
+                    <Field id="requestedSession" mand="N"/>
+                    <Field id="requestedSeqNum" mand="N"/>
+                </Message>
+
+                <Message id="UnsequencedDataPacket" msgType="U">
+                </Message>
+
+                <Message id="ClientHeartbeat" msgType="R">
+                </Message>
+
+            </Model>
+
+            @INCLUDE ./xml/model.soupbin.xml SOUPBIN_MODEL
+
+@SECTION SOUP_MODEL END
+
+@SECTION SOUP_CODEC START
+            <BinaryCodec id="SOUP2"
+                         model="SOUP"
+                         decodeInclude="./soup/SOUP2Decoder.include"
+                         encodeInclude="./soup/SOUP2Encoder.include"
+                         decodeGenerator="com.rr.model.generator.soup.SOUP2DecoderGenerator"
+                         encodeGenerator="com.rr.model.generator.soup.SOUP2EncoderGenerator">
+
+
+                <MessageMap id="SequencedDataPacket"   messageId="SequencedDataPacket"  ignore="true">
+                    <Hook type="decode" code="msg = doDecodeSequencedDataPacket()"/>
+                </MessageMap>
+
+                <MessageMap id="UnsequencedDataPacket"   messageId="UnsequencedDataPacket"  ignore="true">
+                    <Hook type="decode" code="msg = doDecodeUnsequencedDataPacket()"/>
+                </MessageMap>
+
+            </BinaryCodec>
+
+            @INCLUDE ./xml/model.soupbin.xml SOUPBIN_CODEC
+
+@SECTION SOUP_CODEC END

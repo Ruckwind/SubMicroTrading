@@ -1,18 +1,16 @@
-/*******************************************************************************
- * Copyright (c) 2015 Low Latency Trading Limited  :  Author Richard Rose
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at	http://www.apache.org/licenses/LICENSE-2.0
- * Unless required by applicable law or agreed to in writing,  software distributed under the License 
- * is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and limitations under the License.
- *******************************************************************************/
 package com.rr.model.generated.internal.events.recycle;
+
+/*
+Copyright 2015 Low Latency Trading Limited
+Author Richard Rose
+*/
 
 import com.rr.model.generated.internal.events.impl.SecurityDefinitionUpdateImpl;
 import com.rr.core.pool.Recycler;
 import com.rr.core.pool.SuperPool;
+import com.rr.core.lang.Constants;
 import com.rr.core.pool.RuntimePoolingException;
-import com.rr.model.generated.internal.events.impl.SecDefEventsImpl;
+import com.rr.model.generated.internal.events.impl.SecDefEventImpl;
 import com.rr.model.generated.internal.events.impl.SecDefLegImpl;
 import com.rr.model.generated.internal.events.impl.SecurityAltIDImpl;
 import com.rr.model.generated.internal.events.impl.SDFeedTypeImpl;
@@ -23,7 +21,7 @@ public class SecurityDefinitionUpdateRecycler implements Recycler<SecurityDefini
     private SuperPool<SecurityDefinitionUpdateImpl> _superPool;
 
 
-    private SecDefEventsRecycler _eventsRecycler = SuperpoolManager.instance().getRecycler( SecDefEventsRecycler.class, SecDefEventsImpl.class );
+    private SecDefEventRecycler _eventsRecycler = SuperpoolManager.instance().getRecycler( SecDefEventRecycler.class, SecDefEventImpl.class );
 
 
     private SecDefLegRecycler _legsRecycler = SuperpoolManager.instance().getRecycler( SecDefLegRecycler.class, SecDefLegImpl.class );
@@ -50,10 +48,12 @@ public class SecurityDefinitionUpdateRecycler implements Recycler<SecurityDefini
 
 
     @Override public void recycle( SecurityDefinitionUpdateImpl obj ) {
+        if ( Constants.DISABLE_RECYCLING ) return;
+        if ( obj == null ) return;
         if ( obj.getNext() == null ) {
-            SecDefEventsImpl events = (SecDefEventsImpl) obj.getEvents();
+            SecDefEventImpl events = (SecDefEventImpl) obj.getEvents();
             while ( events != null ) {
-                SecDefEventsImpl t = events;
+                SecDefEventImpl t = events;
                 events = events.getNext();
                 t.setNext( null );
                 _eventsRecycler.recycle( t );

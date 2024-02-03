@@ -1,68 +1,73 @@
-/*******************************************************************************
- * Copyright (c) 2015 Low Latency Trading Limited  :  Author Richard Rose
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at	http://www.apache.org/licenses/LICENSE-2.0
- * Unless required by applicable law or agreed to in writing,  software distributed under the License 
- * is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and limitations under the License.
- *******************************************************************************/
 package com.rr.model.generated.internal.events.interfaces;
 
-import com.rr.core.model.SecurityIDSource;
+/*
+Copyright 2015 Low Latency Trading Limited
+Author Richard Rose
+*/
+
 import com.rr.model.generated.internal.type.MDUpdateAction;
 import com.rr.model.generated.internal.type.MDEntryType;
 import com.rr.model.generated.internal.type.TradingSessionID;
-import com.rr.core.lang.ReusableString;
+import com.rr.core.utils.Utils;
+import com.rr.core.lang.*;
+import com.rr.core.model.*;
+import com.rr.core.annotations.*;
 import com.rr.model.internal.type.SubEvent;
+
+@SuppressWarnings( { "unused", "override"  })
 
 public interface MDEntry extends SubEvent {
 
    // Getters and Setters
-    public SecurityIDSource getSecurityIDSource();
+    SecurityIDSource getSecurityIDSource();
 
-    public long getSecurityID();
+    ViewString getSecurityID();
 
-    public MDUpdateAction getMdUpdateAction();
+    ExchangeCode getSecurityExchange();
 
-    public int getRepeatSeq();
+    MDUpdateAction getMdUpdateAction();
 
-    public int getNumberOfOrders();
+    int getRepeatSeq();
 
-    public int getMdPriceLevel();
+    int getNumberOfOrders();
 
-    public MDEntryType getMdEntryType();
+    int getMdPriceLevel();
 
-    public double getMdEntryPx();
+    MDEntryType getMdEntryType();
 
-    public int getMdEntrySize();
+    double getMdEntryPx();
 
-    public int getMdEntryTime();
+    int getMdEntrySize();
 
-    public TradingSessionID getTradingSessionID();
+    int getMdEntryTime();
 
-    @Override
-    public void dump( ReusableString out );
+    TradingSessionID getTradingSessionID();
 
-    public void setSecurityIDSource( SecurityIDSource val );
+    @Override void dump( ReusableString out );
 
-    public void setSecurityID( long val );
+    void setSecurityIDSource( SecurityIDSource val );
 
-    public void setMdUpdateAction( MDUpdateAction val );
+    void setSecurityID( byte[] buf, int offset, int len );
+    ReusableString getSecurityIDForUpdate();
 
-    public void setRepeatSeq( int val );
+    void setSecurityExchange( ExchangeCode val );
 
-    public void setNumberOfOrders( int val );
+    void setMdUpdateAction( MDUpdateAction val );
 
-    public void setMdPriceLevel( int val );
+    void setRepeatSeq( int val );
 
-    public void setMdEntryType( MDEntryType val );
+    void setNumberOfOrders( int val );
 
-    public void setMdEntryPx( double val );
+    void setMdPriceLevel( int val );
 
-    public void setMdEntrySize( int val );
+    void setMdEntryType( MDEntryType val );
 
-    public void setMdEntryTime( int val );
+    void setMdEntryPx( double val );
 
-    public void setTradingSessionID( TradingSessionID val );
+    void setMdEntrySize( int val );
+
+    void setMdEntryTime( int val );
+
+    void setTradingSessionID( TradingSessionID val );
 
 }

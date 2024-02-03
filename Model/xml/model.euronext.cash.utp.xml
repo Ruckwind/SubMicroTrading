@@ -1,0 +1,442 @@
+<!--suppress ALL -->
+
+
+
+@SECTION EURONEXT_CASH_UTP_CONSTANTS START
+        <!-- UTP constants -->
+
+            <DefaultSize id="UTP_TEXT_LENGTH"            val="11"/>
+            <DefaultSize id="UTP_REJECT_TEXT_LENGTH"     val="40"/>
+            <DefaultSize id="UTP_MIC_LEN"                val="4"/>
+            <DefaultSize id="UTP_CCY_LEN"                val="3"/>
+            <DefaultSize id="UTP_SYMBOL_LEN"             val="12"/>
+            <DefaultSize id="UTP_COMP_ID_LEN"            val="11"/>
+            <DefaultSize id="UTP_GIVE_UP_FIRM_LEN"       val="8"/>
+            <DefaultSize id="UTP_ACCOUNT_LEN"            val="12"/>
+            <DefaultSize id="UTP_NOS_FREE_TEXT1_LEN"     val="18"/>
+            <DefaultSize id="UTP_INST_CLASS_LEN"         val="2"/>
+            <DefaultSize id="UTP_INST_CLASS_STATUS_LEN"  val="4"/>
+            <DefaultSize id="UTP_TRADING_SESSION_ID_LEN" val="4"/>
+@SECTION EURONEXT_CASH_UTP_CONSTANTS END
+
+@SECTION EURONEXT_CASH_UTP_EVENTS START
+        <!-- UTP Events -->
+            <Base id="BaseUTP" src="both">
+                <!-- msgSeqNum and possBupFlag are required to allow UTP events to be treated as Message -->
+                <Attribute typeId="int"                            name="msgSeqNum"     mandatory="N"  outbound="seperate"/>
+                <Attribute typeId="boolean"                        name="possDupFlag"   mandatory="N"  outbound="seperate"/>
+                <Attribute typeId="UTCTimestamp"                   name="eventTimestamp"    mandatory="Y"  outbound="seperate"/>
+            </Base>
+
+            <Event id="UTPLogon" extends="BaseUTP" src="both">
+                <Attribute typeId="int"                            name="lastMsgSeqNum"  mandatory="Y"        outbound="seperate"/>
+                <Attribute typeId="string[UTP_TEXT_LENGTH]"        name="userName"       mandatory="Y"        outbound="seperate"/>
+            </Event>
+
+            <Event id="UTPLogonReject" extends="BaseUTP" src="both">
+                <Attribute typeId="int"                            name="lastMsgSeqNumRcvd"  mandatory="Y"        outbound="seperate"/>
+                <Attribute typeId="int"                            name="lastMsgSeqNumSent"  mandatory="Y"        outbound="seperate"/>
+                <Attribute typeId="UTPRejCode"                     name="rejectCode"         mandatory="Y"        outbound="seperate"/>
+                <Attribute typeId="string[UTP_REJECT_TEXT_LENGTH]" name="rejectText"         mandatory="Y"        outbound="seperate"/>
+            </Event>
+
+            <Event id="UTPTradingSessionStatus" extends="BaseUTP" src="both">
+                <Attribute typeId="UTCTimestamp"                       name="mktPhaseChgTime"    mandatory="Y"        outbound="seperate"/>
+                <Attribute typeId="string[UTP_INST_CLASS_LEN]"         name="instClassId"        mandatory="Y"        outbound="seperate"/>
+                <Attribute typeId="string[UTP_INST_CLASS_STATUS_LEN]"  name="instClassStatus"    mandatory="Y"        outbound="seperate"/>
+                <Attribute typeId="boolean"                            name="orderEntryAllowed"  mandatory="Y"        outbound="seperate"/>
+                <Attribute typeId="string[UTP_TRADING_SESSION_ID_LEN]" name="tradingSessionId"   mandatory="Y"        outbound="seperate"/>
+            </Event>
+@SECTION EURONEXT_CASH_UTP_EVENTS END
+
+
+@SECTION EURONEXT_CASH_UTP_TYPES START
+        <!-- UTP Types -->
+
+            <Type id="UTPRejCode">
+                <Description>UTP Code to identify reason for a logon Reject</Description>
+                <Entry name="Success"                       value="0"/>
+                <Entry name="SystemUnavailable"             value="1"/>
+                <Entry name="InvalidSequenceNumber"         value="2"/>
+                <Entry name="ClientSessionAlreadyExists"    value="3"/>
+                <Entry name="ClientSessionDisabled"         value="4"/>
+                <Entry name="ConnectionTypeMismatch"        value="5"/>
+            </Type>
+@SECTION EURONEXT_CASH_UTP_TYPES END
+
+
+@SECTION EURONEXT_CASH_UTP_MODEL START
+
+            <Model id="UTPEuronextCash" modelVersionNumber="1.0">
+                <Attribute name="BinaryVersion" value="2"/> <!-- protocol version is 2 for ENX, extendedClOrdId -->
+
+                <Dictionary>
+                    <!-- certain tags are special and have specific optimised codec code eg fixVersion.msgType -->
+                    <!--  type should be external facing not internal type mapping -->
+                    <!--  for name try and use the internal event field name so it can be auto matched to the event -->
+                    <!-- valid types zstr(fixed len str)|str(with len as max)|ch|price|uByte|sShort|sInt|sLong|
+                                     timestampLocal|timestampUTC|timeLocal|timeUTC -->
+
+
+                    <Field id="msgType"             type="uByte"            comment="message type"/>
+                    <Field id="protocolVersion"     type="uByte"            comment="CCG binary protocol version"/>
+                    <Field id="msgLen"              type="sShort"           comment="total message length"/>
+                    <Field id="etx"                 type="uByte"            comment="end of message marker"/>
+
+                    <!-- Logon only -->
+                    <Field id="lastMsgSeqNum"       type="sInt"             comment="last message sequence number"/>
+                    <Field id="userName"            type="zstr" len="UTP_TEXT_LENGTH"/>
+
+                    <!-- LogonReject only -->
+                    <Field id="lastMsgSeqNumRcvd"   type="sInt"             comment="last received message sequence number"/>
+                    <Field id="lastMsgSeqNumSent"   type="sInt"             comment="last sent message sequence number"/>
+                    <Field id="rejectCode"          type="uByte"            comment="logon reject code"/>
+                    <Field id="rejectText"          type="zstr" len="UTP_REJECT_TEXT_LENGTH"    comment="logon reject text"/>
+
+                    <!-- Order Request Fields -->
+                    <Field id="msgSeqNum"         type="sInt"/>
+                    <Field id="clOrdId"           type="sLong"/>
+                    <Field id="origClOrdId"       type="sLong"/>
+                    <Field id="orderQty"          type="sInt"/>
+                    <Field id="price"             type="price"/>
+                    <Field id="priceScale"        type="uByte"/>
+                    <Field id="currency"          type="fstr" len="UTP_CCY_LEN"/>
+                    <Field id="mic"               type="fstr" len="UTP_MIC_LEN"/>
+                    <Field id="symbol"            type="zstr" len="UTP_SYMBOL_LEN"/>
+                    <Field id="onBehalfOfCompId"  type="zstr" len="UTP_COMP_ID_LEN"/>
+                    <Field id="side"              type="uByte"/>
+                    <Field id="ordType"           type="uByte"/>
+                    <Field id="timeInForce"       type="uByte"/>
+                    <Field id="orderCapacity"     type="uByte"/>
+                    <Field id="account"           type="zstr" len="UTP_ACCOUNT_LEN"/>
+                    <Field id="confirmFlag"       type="uByte"/>
+                    <Field id="giveUpFirm"        type="zstr" len="UTP_GIVE_UP_FIRM_LEN"/>
+                    <Field id="parentClOrdId"     type="zstr" len="UTP_NOS_FREE_TEXT1_LEN"/>
+
+
+                    <!-- Order Reply Fields -->
+                    <Field id="orderId"           type="sLong"/>
+                    <Field id="transactTime"      type="nowUTC"/>
+                    <Field id="deliverToCompId"   type="zstr" len="UTP_COMP_ID_LEN"/>
+                    <Field id="execId"            type="sLong"/>                       <!-- UTPExID  -->
+                    <Field id="lastQty"           type="sInt"/>
+                    <Field id="lastPx"            type="price"/>
+                    <Field id="liquidityInd"      type="uByte"/>
+
+                    <!-- reject & bust -->
+                    <Field id="collarRejPx"       type="price"/>
+                    <Field id="errorCode"         type="sShort"/>
+                    <Field id="collarRejType"     type="uByte"/>
+                    <Field id="collarRejPxScale"  type="uByte"/>
+                    <Field id="tradeChangeType"   type="uByte"/>
+
+                    <!-- trading status -->
+                    <Field id="mktPhaseChgTime"   type="timeUTC"/>
+                    <Field id="instClassId"       type="fstr" len="UTP_INST_CLASS_LEN"/>
+                    <Field id="instClassStatus"   type="fstr" len="UTP_INST_CLASS_STATUS_LEN"/>
+                    <Field id="orderEntryAllowed" type="bool"/>
+                    <Field id="tradingSessionId"  type="fstr" len="UTP_TRADING_SESSION_ID_LEN"/>
+
+                </Dictionary>
+
+                <!-- NOTE mandatory field indicates the field MUST be present in the internal event ! -->
+
+                <StandardHeader>
+                    <!-- these special header fields are deemed not mandatory in the sense that they dont need to be populated by events -->
+                    <Field id="msgType"           mand="N"/>
+                    <Field id="protocolVersion"   mand="N"/>
+                    <Field id="msgLen"            mand="N"/>
+                </StandardHeader>
+
+                <StandardTrailer>
+                    <Field id="etx"               mand="N"/>
+                </StandardTrailer>
+
+                <!-- any id starting with filler will form a fixed width field of specified len, multiple fillers per msg allowed but must have unique ids -->
+                <Message id="Logon"               msgType="A">
+                    <Field id="lastMsgSeqNum"     mand="Y"/>
+                    <Field id="userName"          mand="Y"/>
+                    <Field id="filler"            len="4"/>
+                </Message>
+
+                <Message id="LogonReject"         msgType="l">
+                    <Field id="lastMsgSeqNumRcvd" mand="Y"/>
+                    <Field id="lastMsgSeqNumSent" mand="Y"/>
+                    <Field id="rejectCode"        mand="Y"/>
+                    <Field id="rejectText"        mand="Y"/>
+                    <Field id="filler"            len="1"/>
+                </Message>
+
+                <Message id="TestRequest"         msgType="1">
+                    <Field id="filler"            len="3"/>
+                </Message>
+
+                <Message id="Heartbeat"           msgType="0">
+                    <Field id="filler"            len="3"/>
+                </Message>
+
+                <Message id="NewOrder"            msgType="D">
+                    <Field id="msgSeqNum"         mand="Y"/>
+                    <Field id="clOrdId"           mand="Y"/>
+                    <Field id="orderQty"          mand="Y"/>
+                    <Field id="price"             mand="N"/>
+                    <Field id="filler1"           len="24"/> <!-- maxfloor(4) + disOffset(4) + stopPx(4) + pegDif(4) + dispRange(4) + minQty(4) -->
+                    <Field id="priceScale"        mand="N"/>
+                    <Field id="symbol"            mand="Y"/>
+                    <Field id="onBehalfOfCompId"  mand="N"/>
+                    <Field id="filler2"           len="1"/> <!-- execInst(1) -->
+                    <Field id="side"              mand="Y"/>
+                    <Field id="ordType"           mand="Y"/>
+                    <Field id="timeInForce"       mand="N"/>
+                    <Field id="orderCapacity"     mand="N"/>
+                    <Field id="filler3"           len="4"/> <!-- tradSessId(4) -->
+                    <Field id="account"           mand="N"/>
+                    <Field id="filler4"           len="12"/> <!-- discInst(1)+disPriceScale(1)+stopPxScale(1)+pegDiffScale(1)+expTimeFlag(1)+expTime(6)+techOrdType(1) -->
+                    <Field id="confirmFlag"       mand="N"/>
+                    <Field id="mic"               mand="N"/>
+                    <Field id="currency"          mand="N"/>
+                    <Field id="giveUpFirm"        mand="N"/>
+                    <Field id="filler5"           len="8"/> <!-- clientID -->
+                    <Field id="parentClOrdId"         mand="N"/>
+                    <Field id="filler6"           len="52"/> <!-- all remaining fields -->
+                </Message>
+
+                <Message id="OrderAck"            msgType="a">
+                    <Field id="msgSeqNum"         mand="Y"/>
+                    <Field id="clOrdId"           mand="Y"/>
+                    <Field id="orderId"           mand="Y"/>
+                    <Field id="transactTime"      mand="N"/>
+                    <Field id="filler"            len="31"/>
+                </Message>
+
+                <Message id="OrderCancelRequest"  msgType="F">
+                    <Field id="msgSeqNum"         mand="Y"/>
+                    <Field id="clOrdId"           mand="Y"/>
+                    <Field id="origClOrdId"       mand="Y"/>
+                    <Field id="orderId"           mand="Y"/>
+                    <Field id="onBehalfOfCompId"  mand="N"/>
+                    <Field id="symbol"            mand="Y"/>
+                    <Field id="side"              mand="Y"/>
+                    <Field id="filler1"           len="23"/>   <!-- techOrdType(1)+classId(2)+mic(4)+ccy(3)+canLocId(11)+OrdCap(1)+filler(1) -->
+                </Message>
+
+                <Message id="CancelReqAck"        msgType="6">
+                    <Field id="msgSeqNum"         mand="N"/>
+                    <Field id="clOrdId"           mand="N"/>
+                    <Field id="orderId"           mand="N"/>
+                    <Field id="transactTime"      mand="N"/>
+                    <Field id="filler"            len="31"/>
+                </Message>
+
+                <Message id="OrderKilled"         msgType="4">
+                    <Field id="msgSeqNum"         mand="Y"/>
+                    <Field id="clOrdId"           mand="Y"/>
+                    <Field id="orderId"           mand="Y"/>
+                    <Field id="transactTime"      mand="N"/>
+                    <Field id="filler"            len="31"/>
+                </Message>
+
+                <Message id="OrderReplaceRequest" msgType="G">
+                    <Field id="msgSeqNum"         mand="Y"/>
+                    <Field id="clOrdId"           mand="Y"/>
+                    <Field id="origClOrdId"       mand="Y"/>
+                    <Field id="orderId"           mand="Y"/>
+                    <Field id="orderQty"          mand="Y"/>
+                    <Field id="price"             mand="N"/>
+                    <Field id="filler1"           len="24"/> <!-- maxfloor(4) + disOffset(4) + stopPx(4) + pegDif(4) + dispRange(4) + filler(4) -->
+                    <Field id="priceScale"        mand="N"/>
+                    <Field id="onBehalfOfCompId"  mand="N"/>
+                    <Field id="symbol"            mand="Y"/>
+                    <Field id="filler2"           len="1"/> <!-- execInst(1) -->
+                    <Field id="side"              mand="Y"/>
+                    <Field id="ordType"           mand="Y"/>
+                    <Field id="timeInForce"       mand="N"/>
+                    <Field id="orderCapacity"     mand="N"/>
+                    <Field id="filler3"           len="4"/> <!-- tradSessId(4) -->
+                    <Field id="account"           mand="N"/>
+                    <Field id="filler4"           len="5"/> <!-- discInst(1)+disPriceScale(1)+stopPxScale(1)+pegDiffScale(1)+techOrdType(1) -->
+                    <Field id="confirmFlag"       mand="N"/>
+                    <Field id="filler5"           len="14"/> <!-- mic(4)+ccy(3)+expireTimeFlag(1)+expireTime(6) -->
+                    <Field id="giveUpFirm"        mand="N"/>
+                    <Field id="filler6"           len="8"/> <!-- clientID -->
+                    <Field id="parentClOrdId"         mand="N"/>
+                    <Field id="filler7"           len="4"/> <!-- all remaining fields -->
+                </Message>
+
+                <Message id="ReplaceReqAck"       msgType="E">
+                    <Field id="msgSeqNum"         mand="N"/>
+                    <Field id="clOrdId"           mand="N"/>
+                    <Field id="orderId"           mand="N"/>
+                    <Field id="transactTime"      mand="N"/>
+                    <Field id="filler"            len="31"/>   <!-- mic(4)+ccy(3)+filler(1) -->
+                </Message>
+
+                <Message id="OrderReplaced"       msgType="5">
+                    <Field id="msgSeqNum"         mand="Y"/>
+                    <Field id="clOrdId"           mand="Y"/>
+                    <Field id="orderId"           mand="Y"/>
+                    <Field id="transactTime"      mand="N"/>
+                    <Field id="filler"            len="31"/>   <!-- mic(4)+ccy(3)+filler(1) -->
+                </Message>
+
+                <Message id="CancelReplaceReject" msgType="8">
+                    <Field id="msgSeqNum"         mand="Y"/>
+                    <Field id="clOrdId"           mand="Y"/>
+                    <Field id="origClOrdId"       mand="Y"/>
+                    <Field id="transactTime"      mand="N"/>
+                    <Field id="collarRejPx"       mand="N"/>
+                    <Field id="errorCode"         mand="N"/>
+                    <Field id="rejectText"        mand="Y"/>
+                    <Field id="collarRejType"     mand="N"/>
+                    <Field id="collarRejPxScale"  mand="N"/>
+                    <Field id="filler"            len="33"/>
+                </Message>
+
+                <Message id="OrderFill"           msgType="2">
+                    <Field id="msgSeqNum"         mand="Y"/>
+                    <Field id="clOrdId"           mand="Y"/>
+                    <Field id="orderId"           mand="Y"/>
+                    <Field id="execId"            mand="Y"/>
+                    <Field id="transactTime"      mand="N"/>
+                    <Field id="lastQty"           mand="Y"/>
+                    <Field id="lastPx"            mand="Y"/>
+                    <Field id="filler1"           len="11"/>  <!-- IMSCompID(11) -->
+                    <Field id="priceScale"        mand="N"/>
+                    <Field id="liquidityInd"      mand="Y"/>
+                    <Field id="side"              mand="Y"/>
+                    <Field id="filler2"           len="33"/>
+                </Message>
+
+                <Message id="BustCorrect"         msgType="C">
+                    <Field id="msgSeqNum"         mand="Y"/>
+                    <Field id="clOrdId"           mand="Y"/>
+                    <Field id="execId"            mand="Y"/>
+                    <Field id="transactTime"      mand="N"/>
+                    <Field id="lastQty"           mand="Y"/>
+                    <Field id="lastPx"            mand="Y"/>
+                    <Field id="priceScale"        mand="N"/>
+                    <Field id="tradeChangeType"   mand="N"/>
+                    <Field id="filler2"           len="33"/>
+                </Message>
+
+                <Message id="TradingSessionStatus"  msgType="h">
+                    <Field id="msgSeqNum"         mand="Y"/>
+                    <Field id="mktPhaseChgTime"   mand="N"/>
+                    <Field id="instClassId"       mand="N"/>
+                    <Field id="instClassStatus"   mand="N"/>
+                    <Field id="orderEntryAllowed" mand="N"/>
+                    <Field id="tradingSessionId"  mand="N"/>
+                </Message>
+
+            </Model>
+@SECTION EURONEXT_CASH_UTP_MODEL END
+
+
+
+@SECTION EURONEXT_CASH_UTP_BINARY_CODEC START
+
+            <BinaryCodec id="UTPEuronextCash"
+                         model="UTPEuronextCash"
+                         decodeInclude="./utp/ENXDecoder.include"
+                         encodeInclude="./utp/ENXEncoder.include"
+                         decodeGenerator="com.rr.model.generator.emea.utp.UTPDecoderGenerator"
+                         encodeGenerator="com.rr.model.generator.emea.utp.UTPEncoderGenerator">
+
+                <!-- precendence in TypeTransform is important, decoding from an external val to internal val with mult matches will
+                     match LAST entry -->
+
+                <TypeTransform typeId="OrdType" transform="map" nonMatchedEncode="reject" nonMatchedDecode="reject">
+                    <!-- currently only limit orders supported on ENX -->
+                    <Map internal="2" external="2" comment="Limit"            decodePriority="Y"/>
+                </TypeTransform>
+
+                <TypeTransform typeId="Side" transform="map" nonMatchedEncode="reject" nonMatchedDecode="reject">
+                    <Map internal="1" external="1" comment="Buy"/>
+                    <Map internal="2" external="2" comment="Sell"/>
+                </TypeTransform>
+
+                <TypeTransform typeId="TimeInForce" transform="map" nonMatchedEncode="reject" nonMatchedDecode="reject">
+                    <Map internal="0" external="0" comment="Day"/>
+                    <Map internal="3" external="3" comment="IOC"/>
+                    <Map internal="4" external="4" comment="FOK"/>
+                    <Map internal="7" external="7" comment="Closing Auction"/>
+                </TypeTransform>
+
+                <TypeTransform typeId="OrderCapacity" transform="map" nonMatchedEncode="2" nonMatchedDecode="P">
+                    <Map internal="G" external="6" comment="Proprietary/LiquidityProvider"/>
+                    <Map internal="I" external="1" comment="Individual/Client"/>
+                    <Map internal="P" external="2" comment="Principal/House"/>
+                    <Map internal="R" external="8" comment="Riskless Principle"/>
+                    <Map internal="W" external="7" comment="AgentForOtherMember/RelatedParty"/>
+                </TypeTransform>
+
+                <TypeTransform typeId="LiquidityInd" transform="map" nonMatchedEncode="reject" nonMatchedDecode="reject">
+                    <Map internal="1" external="A" comment="AddedLiquidity"/>
+                    <Map internal="2" external="R" comment="RemovedLiquidity"/>
+                    <Map internal="3" external="X" comment="RoutedOut"/>
+                    <Map internal="1" external="O" comment="Opening Trade / Trade Created by MO"/>
+                </TypeTransform>
+
+                <MessageMap id="BaseResponse" messageId="" ignore="true">
+                    <Map field="sendingTime"  eventAttr="eventTimestamp"/>
+                </MessageMap>
+
+                <MessageMap id="BaseRequest" messageId="" ignore="true">
+                    <Map field="sendingTime"  eventAttr="eventTimestamp"/>
+                </MessageMap>
+
+                <MessageMap id="Logon"                  eventId="UTPLogon"                  messageId="Logon"                   extends="BaseRequest"/>
+                <MessageMap id="LogonReject"            eventId="UTPLogonReject"            messageId="LogonReject"             extends="BaseResponse"/>
+                <MessageMap id="TradingSessionStatus"   eventId="UTPTradingSessionStatus"   messageId="TradingSessionStatus"    extends="BaseResponse"/>
+                <MessageMap id="TestRequest"            eventId="TestRequest"               messageId="TestRequest"             extends="BaseResponse"/>
+                <MessageMap id="Heartbeat"              eventId="Heartbeat"                 messageId="Heartbeat"               extends="BaseResponse"/>
+
+                <MessageMap id="NewOrder"   eventId="NewOrderSingle" messageId="NewOrder"                                       extends="BaseRequest">
+                    <Map field="confirmFlag"><Hook type="encode" code="_builder.encodeByte( (byte)'1' )"/></Map>
+                    <Map field="priceScale"><Hook type="encode" code="encodePriceScale( msg.getPrice() )"/></Map>
+                    <Map field="symbol"><Hook type="encode" code="encodeSymbol( msg.getInstrument() )"/></Map>
+                    <Map field="onBehalfOfCompId"><Hook type="encode" code="encodeOnBehalfOfCompId()"/></Map>
+                </MessageMap>
+
+                <MessageMap id="OrderAck"   eventId="NewOrderAck" messageId="OrderAck"                                          extends="BaseResponse">
+                    <Hook type="preDecode" code="if ( _nanoStats ) msg.setAckReceived( _received )"/>
+                </MessageMap>
+
+                <MessageMap id="OrderCancelRequest"   eventId="CancelRequest"      messageId="OrderCancelRequest"               extends="BaseRequest"/>
+                <MessageMap id="CancelReqAck"                                      messageId="CancelReqAck" ignore="true"       extends="BaseResponse"/>
+                <MessageMap id="OrderKilled"          eventId="Cancelled"          messageId="OrderKilled"                      extends="BaseResponse"/>
+
+                <MessageMap id="OrderReplaceRequest"   eventId="CancelReplaceRequest" messageId="OrderReplaceRequest"           extends="BaseRequest">
+                    <Map field="confirmFlag"><Hook type="encode" code="_builder.encodeByte( (byte)'1' )"/></Map>
+                    <Map field="priceScale"><Hook type="encode" code="encodePriceScale( msg.getPrice() )"/></Map>
+                    <Map field="symbol"><Hook type="encode" code="encodeSymbol( msg.getInstrument() )"/></Map>
+                    <Map field="onBehalfOfCompId"><Hook type="encode" code="encodeOnBehalfOfCompId()"/></Map>
+                </MessageMap>
+
+                <MessageMap id="ReplaceReqAck"                                  messageId="ReplaceReqAck" ignore="true"         extends="BaseResponse"/>
+                <MessageMap id="OrderReplaced"          eventId="Replaced"      messageId="OrderReplaced"                       extends="BaseResponse"/>
+
+                <MessageMap id="CancelReplaceReject"    eventId="Rejected"         messageId="CancelReplaceReject"              extends="BaseResponse">
+                    <Map field="rejectText" eventAttr="text"/>
+                </MessageMap>
+
+                <MessageMap id="OrderFill"              eventId="TradeNew"         messageId="OrderFill"                        extends="BaseResponse">
+                    <Map field="lastPx"><Hook type="decode" code="_lastPx = _builder.decodeInt()"/></Map>
+                    <Map field="priceScale"><Hook type="postdecode" code="msg.setLastPx( scale( _lastPx, _priceScale ) )"/></Map>
+                </MessageMap>
+
+                <MessageMap id="Bust"                   eventId="TradeCancel"      messageId="BustCorrect" key1="tradeChangeType" val1="1"  extends="BaseResponse">
+                    <Map field="lastPx"><Hook type="decode" code="_lastPx = _builder.decodeInt()"/></Map>
+                    <Map field="priceScale"><Hook type="postdecode" code="msg.setLastPx( scale( _lastPx, _priceScale ) )"/></Map>
+                </MessageMap>
+
+                <MessageMap id="Correct"                eventId="TradeCorrect"     messageId="BustCorrect" key1="tradeChangeType" val1="2"  extends="BaseResponse">
+                    <Map field="lastPx"><Hook type="decode" code="_lastPx = _builder.decodeInt()"/></Map>
+                    <Map field="priceScale"><Hook type="postdecode" code="msg.setLastPx( scale( _lastPx, _priceScale ) )"/></Map>
+                </MessageMap>
+
+            </BinaryCodec>
+
+@SECTION EURONEXT_CASH_UTP_BINARY_CODEC END
+
+

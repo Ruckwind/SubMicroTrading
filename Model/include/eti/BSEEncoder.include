@@ -1,0 +1,105 @@
+@INCLUDE Encoder.include
+
+@INCLUDE ClientToMarketOrderStats.include
+
+    private int _senderSubID = 0;
+
+    private long _locationId = 0;
+    
+    private final ZString _account = new ReusableString( "A1" );
+    
+    private final ReusableString _uniqueClientCode = new ReusableString("1");
+
+    @Override    
+    public void setUniqueClientCode( ZString uniqueClientCode ) {
+        _uniqueClientCode.copy( uniqueClientCode );
+    }
+
+    @Override    
+    public void setLocationId( long locationId ) {
+        _locationId = locationId;
+    } 
+
+    @Override    
+    public void setSenderSubID( int newId ) {
+        _senderSubID = newId;
+    } 
+    
+    @Override    
+    public void setExchangeEmulationOn() {
+        if ( _builder instanceof DebugBinaryEncodeBuilder ) {
+            @SuppressWarnings( "unchecked" )
+            ETIEncodeBuilderImpl b = ((DebugBinaryEncodeBuilder<ETIEncodeBuilderImpl>) _builder).getBuilder();
+            
+            b.setHeaderPad( 2 );
+        } else {
+            ((ETIEncodeBuilderImpl)_builder).setHeaderPad( 2 );
+        }
+    }
+    
+    private void encodeSimpleSecurityId( Instrument instrument ) {
+        _builder.encodeStringAsInt( instrument.getExchangeSymbol() );
+    }
+    
+    private void encodeSecurityId( Instrument instrument ) {
+        // @TODO CHECK DIFFERENCE BETWEEN SimpleSecurityId and SecurityId
+        _builder.encodeStringAsLong( instrument.getExchangeSymbol() );
+    }
+    
+    protected void encodeMarketSegmentID( Instrument instrument ) {
+        _builder.encodeInt( ((ExchangeInstrument)instrument).getIntSegment() );
+    }
+
+    // ApplID encoding only used by exchange simulator 
+    
+    private long _nextApplMsgId = 0;
+    private ReusableString _nextApplMsgIdStr = new ReusableString(16);
+    
+    private ZString nextApplMsgID() {
+        byte[] bytes = _nextApplMsgIdStr.getBytes();
+        com.rr.core.codec.binary.BinaryBigEndianEncoderUtils.encodeLong( bytes, 0, 0 );
+        com.rr.core.codec.binary.BinaryBigEndianEncoderUtils.encodeLong( bytes, 8, ++_nextApplMsgId );
+        return _nextApplMsgIdStr;
+    }
+
+    private void encodeOrderLegs( final int numLegs ) {
+        for( int i=0 ; i < numLegs ; i++ ) {
+            if ( _debug ) _dump.append( "\nOrderLeg : " ).append( i ).append( " : " );
+            _builder.encodeStringFixedWidth( _account, 2 ); // account
+            _builder.encodeByte( (byte)'C' ); // positionalEffect
+            _builder.encodeFiller( 5 );       // spacer
+        }
+    }
+
+    private void encodeNOS( final NewOrderSingle msg ) {
+        if ( ((ExchDerivInstrument)msg.getInstrument()).getNumLegs() > 1 ) {
+            encodeNewOrderSingleMultiLeg( msg );
+        } else {
+            if ( msg.getOrdType() == OrdType.Limit ) {
+                encodeNewLimitOrder( msg );
+            } else {
+                encodeNewOrderSingle( msg );
+            }
+        }
+    }
+    
+    private void encodeReplace( final CancelReplaceRequest msg ) {
+        if ( ((ExchDerivInstrument)msg.getInstrument()).getNumLegs() > 1 ) {
+            encodeOrderReplaceMultiLeg( msg );
+        } else {
+            if ( msg.getOrdType() == OrdType.Limit ) {
+                encodeCancelReplaceLimitOrder( msg );
+            } else {
+                encodeOrderReplaceRequest( msg );
+            }
+        }
+    }
+
+    private void encodeCancel( final CancelRequest msg ) {
+        if ( ((ExchDerivInstrument)msg.getInstrument()).getNumLegs() > 1 ) {
+            encodeCancelMultiLeg( msg );
+        } else {
+            encodeOrderCancelRequest( msg );
+        }
+    }
+    

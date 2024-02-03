@@ -1,0 +1,25 @@
+
+    @Override
+    public void addStats( final ReusableString outBuf, final Event msg, final long msgSent ) {
+        
+        if ( msg.getReusableType().getId() == FullEventIds.ID_MARKET_NEWORDERSINGLE ) {
+            final MarketNewOrderSingleImpl nos = (MarketNewOrderSingleImpl) msg;
+            nos.setOrderSent( msgSent );        
+        } else if ( msg.getReusableType().getId() == FullEventIds.ID_CLIENT_NEWORDERACK ) {
+            final ClientNewOrderAckImpl ack = (ClientNewOrderAckImpl) msg;
+
+            final long orderIn  = ack.getOrderReceived();
+            final long orderOut = ack.getOrderSent();
+            final long ackIn    = ack.getAckReceived();
+            final long ackOut   = msgSent;
+
+            final long microNOSToMKt    = (orderOut - orderIn)  >> 10;
+            final long microInMkt       = (ackIn    - orderOut) >> 10;
+            final long microAckToClient = (ackOut   - ackIn)    >> 10;
+            
+            outBuf.append( STATS      ).append( microNOSToMKt )
+                  .append( STAT_DELIM ).append( microInMkt )
+                  .append( STAT_DELIM ).append( microAckToClient ).append( STAT_END );
+        }
+    }
+

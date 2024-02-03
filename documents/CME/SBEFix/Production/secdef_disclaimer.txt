@@ -1,0 +1,7 @@
+The secdef.dat file will contain CME Globex production instrument data and daily settlement prices.  It is provided as a convenience to users who have specific or unique Security Definition processing requirements.  This file is static and not refreshed throughout the trading day.  It should NOT BE USED as the primary source for Security Definition information.  Best practices require that CME Globex users obtain all Security Definition information from the Incremental Data channel or the Instrument Definition loop channel to ensure that intra-day instrument additions are not missed.  Once a trading day has started, the following intra-day instrument changes are not reflected in the FIX/FAST Security Definition file: 
+
+•	New products added during the day
+•	Covered options strategies that expire at the end of the trading day
+•	User-Defined Spreads (UDS) created during the trading day
+
+Note: CME Group strongly recommends the FIX/FAST Security Definition file only be used in addition to the standard Instrument Definition processing or as a limited-information back up.

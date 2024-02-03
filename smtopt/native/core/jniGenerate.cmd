@@ -1,5 +1,4 @@
 
-javah -force -classpath ..\..\bin -o src\SubMicroCore_jni.h com.rr.core.os.NativeHooksImpl
+javah -force -classpath ../../../out/production/smtopt -o src/LinuxSocket_jni.h com.rr.core.socket.LinuxSocketImpl
 
-javah -force -classpath ..\..\bin -o src\LinuxSocket_jni.h com.rr.core.socket.LinuxSocketImpl
 

@@ -1,0 +1,1090 @@
+<!--suppress ALL -->
+
+<Data>
+
+    @SECTION TYPES START
+
+    <!-- Type element has an optional attribute of valType="byte" which will use binary byte val instead of ascii value -->
+
+    <Type id="Currency" isHandCoded="true" maxValueLen="3" package="com.rr.core.model">
+        <Description>Identifies currency used for price. Absence of this field is interpreted as the default for the security. It is recommended that systems
+            provide the currency value whenever possible.
+        </Description>
+    </Type>
+
+    <Type id="PartyID" isHandCoded="true" maxValueLen="20" package="com.rr.core.model">
+        <Description>Party used in PB and Clearing</Description>
+        <Entry name="MorganStanley" value="MS"/>
+        <Entry name="Barclays" value="BA"/>
+        <Entry name="UBS" value="UB"/>
+    </Type>
+
+
+    <Type id="CountryCode" isHandCoded="true" maxValueLen="2" package="com.rr.core.model">
+        <Description>ISO 3166 Country Codes.</Description>
+    </Type>
+
+    <Type id="UnitOfMeasure" isHandCoded="true" maxValueLen="6" package="com.rr.core.model">
+        <Description>currency or for example barrel of oil</Description>
+    </Type>
+
+    <Type id="ExecType" isHandCoded="true" package="com.rr.model.internal.type">
+        <Description>Describes the specific Execution Report (8) (i.e. Pending Cancel) while OrdStatus (39) will always identify the current order status (i.e.
+            Partially Filled)
+        </Description>
+    </Type>
+
+    <Type id="Instrument" isHandCoded="true" package="com.rr.core.model">
+        <Description></Description>
+    </Type>
+
+    <Type id="ExchangeInstrument" isHandCoded="true" package="com.rr.core.model">
+        <Description></Description>
+    </Type>
+
+    <Type id="Book" isHandCoded="true" package="com.rr.core.model">
+        <Description></Description>
+    </Type>
+
+    <Type id="ClientProfile" isHandCoded="true" package="com.rr.core.model">
+        <Description></Description>
+    </Type>
+
+    <Type id="SecurityIDSource" isHandCoded="true" package="com.rr.core.model">
+        <Description>Identifies class or source of the SecurityID (48) value. Required if SecurityID (48) is specified</Description>
+        <!-- formerly named: IDSource prior to FIX 4.3 ... handcrafted as required in core -->
+    </Type>
+
+    <Type id="ProductType" isHandCoded="true" package="com.rr.core.model">
+        <Description></Description>
+    </Type>
+
+    <Type id="SecurityType" isHandCoded="true" maxValueLen="6" package="com.rr.core.model">
+        <Description>Indicates type of security. See also the Product (460) and CFICode (461) fields. It is recommended that CFICode (461) be used instead of
+            SecurityType (167) for non-Fixed Income instruments
+        </Description>
+    </Type>
+
+    <Type id="CFICode" isHandCoded="true" package="com.rr.core.model">
+        <Description>CFICode</Description>
+    </Type>
+
+    <Type id="SecDefEventType" isHandCoded="true" maxValueLen="1" package="com.rr.core.model">
+        <Description>Hand cut as in base Instrument</Description>
+    </Type>
+
+    <Type id="DataSrc" isHandCoded="true" maxValueLen="3" package="com.rr.core.model">
+        <Description>Hand cut as in base Instrument</Description>
+    </Type>
+
+    <Type id="CompanyStatusType" isHandCoded="true" maxValueLen="3" package="com.rr.core.model">
+        <Description>Hand cut as in base Instrument</Description>
+    </Type>
+
+    <Type id="SecDefSpecialType" isHandCoded="true" maxValueLen="1" package="com.rr.core.model">
+        <Description>Hand cut as in base Instrument</Description>
+    </Type>
+
+    <Type id="ExecTransType">
+        <Description>Fix 4.3 and prev : Identifies transaction type</Description>
+        <Entry name="New" value="0"/>
+        <Entry name="Cancel" value="1"/>
+        <Entry name="Correct" value="2"/>
+        <Entry name="Status" value="3"/>
+    </Type>
+
+    <Type id="BookingType">
+        <Description>Method for booking out this order. Used when notifying a broker that an order to be settled by that broker is to be booked out as an OTC
+            derivative (e.g. CFD or similar)
+        </Description>
+        <Entry name="Regular" value="0"/>
+        <Entry name="CFD" value="1"/>
+        <Entry name="TotalReturnSwap" value="2"/>
+    </Type>
+
+    <Type id="SettlementPriceType">
+        <Description>Type of settlement price</Description>
+        <Entry name="Final" value="1"/>
+        <Entry name="Theoretical" value="2"/>
+        <Entry name="Manual" value="3"/>
+        <Entry name="Unknown" value="0"/>
+    </Type>
+
+    <Type id="ClosingPriceType">
+        <Description>Type of closing price</Description>
+        <Entry name="OfficialClose" value="1"/>
+        <Entry name="OfficialIndicative" value="2"/>
+        <Entry name="OfficialCarryOver" value="3"/>
+        <Entry name="LastPrice" value="4"/>
+        <Entry name="LastEligiblePrice" value="5"/>
+        <Entry name="Manual" value="6"/>
+        <Entry name="Unknown" value="0"/>
+    </Type>
+
+    <!-- TODO REMOVE CME HACK of CxlRejReason 2045, 1003 -->
+
+    <Type id="CxlRejReason">
+        <Description>Code to identify reason for cancel rejection</Description>
+        <Entry name="TooLateToCancel" value="0"/>
+        <Entry name="UnknownOrder" value="1"/>
+        <Entry name="BrokerOption" value="2"/>
+        <Entry name="AlreadyPending" value="3"/>
+        <Entry name="UnableProcMassCancel" value="4"/>
+        <Entry name="OrigOrdModeTimeMismatch" value="5"/>
+        <Entry name="DuplicateClOrdId" value="6"/>
+        <Entry name="PriceExceedsCurrentPrice" value="7"/>
+        <Entry name="PriceExceedsCurrentPriceBand" value="8"/>
+        <Entry name="InvalidPriceIncrement" value="18"/>
+        <Entry name="CMEOrderNotInBook" value="2045"/>
+        <Entry name="MarketClosed" value="1003"/>
+        <Entry name="Other" value="99"/>
+    </Type>
+
+    <Type id="CxlRejResponseTo">
+        <Description>Identifies the type of request that a Order Cancel Reject (9) is in response to</Description>
+        <Entry name="CancelRequest" value="1"/>
+        <Entry name="CancelReplace" value="2"/>
+    </Type>
+
+    <Type id="EncryptMethod">
+        <Description>Method of encryption</Description>
+        <Entry name="NONE" value="0"/>
+        <Entry name="PKCS" value="1"/>
+        <Entry name="DES" value="2"/>
+        <Entry name="PKCS_DES" value="3"/>
+        <Entry name="PGP_DES" value="4"/>
+        <Entry name="PGP_DES_MD5" value="5"/>
+        <Entry name="PEM_DES_MD5" value="6"/>
+    </Type>
+
+    <Type id="ExecInst" multiValue="1">
+        <Description>Instructions for order handling on exchange trading floor. If more than one instruction is applicable to an order, this field can contain
+            multiple instructions separated by space
+        </Description>
+        <Entry name="NotHeld" value="1"/>
+        <Entry name="Work" value="2"/>
+        <Entry name="GoAlong" value="3"/>
+        <Entry name="OverTheDay" value="4"/>
+        <Entry name="Held" value="5"/>
+        <Entry name="PaticipateNotInitiate" value="6"/>
+        <Entry name="StrictScale" value="7"/>
+        <Entry name="TryToScale" value="8"/>
+        <Entry name="StayOnBidSide" value="9"/>
+        <Entry name="StayOnOfferSide" value="0"/>
+        <Entry name="NoCross" value="A"/>
+        <Entry name="OkToCross" value="B"/>
+        <Entry name="CallFirst" value="C"/>
+        <Entry name="PercentageOfVolume" value="D"/>
+        <Entry name="DoNotIncrease" value="E"/>
+        <Entry name="DoNotReduce" value="F"/>
+        <Entry name="AllOrNone" value="G"/>
+        <Entry name="ReinstateOnSysFail" value="H"/>
+        <Entry name="InstitutesOnly" value="I"/>
+        <Entry name="ReinstateOnTradHalt" value="J"/>
+        <Entry name="CancelOnTradeHalt" value="K"/>
+        <Entry name="LastPeg" value="L"/>
+        <Entry name="MidPricePeg" value="M"/>
+        <Entry name="NonNegotiable" value="N"/>
+        <Entry name="OpeningPeg" value="O"/>
+        <Entry name="MarketPeg" value="P"/>
+        <Entry name="CancelOnSysFail" value="Q"/>
+        <Entry name="PrimaryPeg" value="R"/>
+        <Entry name="Suspend" value="S"/>
+        <Entry name="CustDispInst" value="U"/>
+        <Entry name="Netting" value="V"/>
+        <Entry name="PegToVWAP" value="W"/>
+        <Entry name="TradeAlong" value="X"/>
+        <Entry name="TryToStop" value="Y"/>
+        <Entry name="CancelIfNotBest" value="Z"/>
+        <Entry name="TrailingStopPeg" value="a"/>
+        <Entry name="StrictLimit" value="b"/>
+        <Entry name="IgnorePriceValidCheck" value="c"/>
+        <Entry name="PegToLimitPrice" value="d"/>
+        <Entry name="WorkToTgtStrat" value="e"/>
+    </Type>
+
+    <Type id="HandlInst">
+        <Description>Instructions for order handling on Broker trading floor</Description>
+        <Entry name="AutoExecPrivate" value="1"/>
+        <Entry name="AutoExecPublic" value="2"/>
+        <Entry name="ManualBestExec" value="3"/>
+    </Type>
+
+    <Type id="TargetStrategy">
+        <Description>Target Execution Strategy</Description>
+        <Entry name="VWAP" value="1"/>
+        <Entry name="WithVolume" value="2"/>
+        <Entry name="ImplementionShortFall" value="3"/>
+        <Entry name="TWAP" value="4"/>
+        <Entry name="PEG" value="5"/>
+        <Entry name="Close" value="6"/>
+        <Entry name="OpenAuction" value="7"/>
+    </Type>
+
+    <Type id="StratParamKeys">
+        <Description>All keys that can be used in strategy params string</Description>
+        <Entry name="MaxPercentageByVolume" value="A"/>
+        <Entry name="DisplayQty" value="B"/>
+        <Entry name="DisplaySizePercentage" value="C"/>
+        <Entry name="DisplaySizeRandomPercentage" value="D"/>
+        <Entry name="RandomClipDelay" value="E"/>
+        <Entry name="TriggerPrice" value="F"/>
+        <Entry name="Urgency" value="G"/>
+        <Entry name="NearSideOnly" value="H"/>
+        <Entry name="PegType" value="I"/>
+        <Entry name="OffsetType" value="J"/>
+        <Entry name="PegOffset" value="K"/>
+        <Entry name="PreTradeMaxPercentByVolume" value="L"/>
+        <Entry name="ResidualToClose" value="M"/>
+        <Entry name="RefPriceType" value="N"/>
+        <Entry name="RefPriceOffsetType" value="O"/>
+        <Entry name="RefPriceOffset" value="P"/>
+    </Type>
+
+    <Type id="Urgency">
+        <Description>Urgency</Description>
+        <Entry name="UltraLow" value="1"/>
+        <Entry name="Low" value="2"/>
+        <Entry name="Medium" value="3"/>
+        <Entry name="High" value="4"/>
+        <Entry name="UltraHigh" value="5"/>
+    </Type>
+
+    <Type id="RefPriceType">
+        <Description>Price Reference Type</Description>
+        <Entry name="LastPrice" value="1"/>
+        <Entry name="OpenPrice" value="2"/>
+        <Entry name="ArrivalPrice" value="3"/>
+        <Entry name="VWAPDay" value="4"/>
+        <Entry name="VWAPLastTenMin" value="5"/>
+        <Entry name="Auto" value="6"/>
+        <Entry name="LastMidPrice" value="7"/>
+        <Entry name="LastBestBid" value="8"/>
+        <Entry name="LastBestAsk" value="9"/>
+    </Type>
+
+    <Type id="OrdDestType">
+        <Description>Order Detsination Type</Description>
+        <Entry name="DMA" value="1"/>
+        <Entry name="ALGO" value="2"/>
+        <Entry name="SORT_DMA" value="3"/>
+        <Entry name="SORT_DARK" value="4"/>
+    </Type>
+
+    <Type id="PegType">
+        <Description>Peg Type</Description>
+        <Entry name="MID" value="1"/>
+        <Entry name="NEAR" value="2"/>
+    </Type>
+
+    <Type id="OffsetType">
+        <Description>Offset Type</Description>
+        <Entry name="BPS" value="1"/>
+        <Entry name="PIPS" value="2"/>
+        <Entry name="TICKS" value="3"/>
+    </Type>
+
+    <Type id="OrdRejReason">
+        <Description>Code to identify reason for order rejection</Description>
+        <Entry name="UnknownSymbol" value="1"/>
+        <Entry name="ExchangeClosed" value="2"/>
+        <Entry name="OrderExceedsLimit" value="3"/>
+        <Entry name="TooLateToEnter" value="4"/>
+        <Entry name="UnknownOrder" value="5"/>
+        <Entry name="DuplicateOrder" value="6"/>
+        <Entry name="DupOfVerbalOrder" value="7"/>
+        <Entry name="StaleOrder" value="8"/>
+        <Entry name="TradeAlongReq" value="9"/>
+        <Entry name="InvalidInvestorId" value="10"/>
+        <Entry name="UnsupOrdCharacteristic" value="11"/>
+        <Entry name="SurveillenceOption" value="12"/>
+        <Entry name="IncorrectQuantity" value="13"/>
+        <Entry name="IncorrectAllocQty" value="14"/>
+        <Entry name="UnknownAccounts" value="15"/>
+        <Entry name="Other" value="99"/>
+    </Type>
+
+    <Type id="TradingStatus">
+        <Description>Trading Status</Description>
+        <Entry name="OK" value="0"/>
+        <Entry name="BlockedAsExchangeClosed" value="1"/>
+        <Entry name="BlockedAsTradingDisabled" value="2"/>
+        <Entry name="BlockedAsStrategyNotActive" value="3"/>
+        <Entry name="BlockedByTradeThrottler" value="4"/>
+        <Entry name="BlockedInvalidMktData" value="5"/>
+        <Entry name="BlockedInvalidOrdType" value="6"/>
+        <Entry name="BlockedInvalidSecType" value="7"/>
+        <Entry name="BlockedMissingInstrument" value="8"/>
+        <Entry name="BlockedInvalidQty" value="9"/>
+        <Entry name="BlockedAmendsNotSupported" value="10"/>
+        <Entry name="BlockedCancelsNotSupported" value="11"/>
+        <Entry name="BlockedMissingKeyFields" value="12"/>
+        <Entry name="BlockedAsContractRollInProgress" value="13"/>
+        <Entry name="BlockedDueToCorpAction" value="14"/>
+        <Entry name="BlockedInstrumentNotTradeable" value="15"/>
+        <Entry name="BlockedInvalidTimeInForce" value="16"/>
+        <Entry name="BlockedMissingLimits" value="17"/>
+        <Entry name="BlockedCancelRequested" value="18"/>
+        <Entry name="BlockedOrderNotActive" value="19"/>
+        <Entry name="BlockedZeroQty" value="20"/>
+        <Entry name="FailedLimitMaxGrossFactorExposure" value="21"/>
+        <Entry name="FailedLimitMaxNetFactorExposure" value="22"/>
+        <Entry name="FailedLimitMinStratOrderQty" value="24"/>
+        <Entry name="FailedLimitMaxStratOrderQty" value="25"/>
+        <Entry name="FailedLimitMaxStratOrderVal" value="26"/>
+        <Entry name="FailedLimitMinSingleOrderQty" value="27"/>
+        <Entry name="FailedLimitMaxSingleOrderQty" value="28"/>
+        <Entry name="FailedLimitMaxSingleOrderVal" value="29"/>
+        <Entry name="FailedLimitMaxNetPositionVal" value="30"/>
+        <Entry name="FailedLimitMaxGrossPositionVal" value="31"/>
+        <Entry name="FailedLimitMinSingleOrderQty" value="32"/>
+        <Entry name="FailedLimitMaxSingleOrderQty" value="33"/>
+        <Entry name="FailedLimitMaxNetPositionQty" value="34"/>
+        <Entry name="FailedLimitMaxGrossPositionQty" value="35"/>
+        <Entry name="FailedLimitMaxNetPositionVal" value="36"/>
+        <Entry name="FailedLimitMaxGrossPositionVal" value="37"/>
+        <Entry name="FailedLimitMaxPortfolioEqNetPositionVal" value="38"/>
+        <Entry name="FailedLimitMaxPortfolioEqDailyTurnoverVal" value="39"/>
+        <Entry name="BlockedInvalidOrdStratType" value="40"/>
+        <Entry name="BlockedInvalidOrdStratParams" value="41"/>
+        <Entry name="BlockedMktDataOld" value="42"/>
+        <Entry name="BlockedUnknownOrder" value="43"/>
+        <Entry name="BlockedRestrictedSecurity" value="44"/>
+        <Entry name="BlockedRestrictedSecurityNoPos" value="45"/>
+        <Entry name="BlockedRestrictedSecurityNoLongPos" value="46"/>
+        <Entry name="BlockedRestrictedSecurityNoShortPos" value="47"/>
+        <Entry name="BlockedRestrictedSecurityNoIncLongPos" value="48"/>
+        <Entry name="BlockedRestrictedSecurityNoIncShortPos" value="49"/>
+        <Entry name="BlockedBreechMaxShort" value="50"/>
+        <Entry name="BlockedCantGenLimitPx" value="51"/>
+        <Entry name="BlockedBrokerShortRestrict" value="52"/>
+        <Entry name="BlockedOther" value="53"/>
+        <Entry name="Other" value="54"/>
+    </Type>
+
+    <!-- CUSTOM denotes exec for unknown order -->
+    <!-- temp hack, CME ... H, U used in cancel amend reject -->
+
+    <Type id="OrdStatus">
+        <Description>Identifies current status of order
+            <br/>
+            In an execution report the OrdStatus is used to convey the current state of the order. If an order simultaneously exists in more than one order
+            state, the value
+            with highest precedence is the value that is reported in the OrdStatus field. The order statuses are as follows (in highest to lowest precedence):
+
+            11 - Pending Cancel
+            10 - Pending Replace
+            9 - Done for Day (Order not, or partially, filled; no further executions forthcoming for the trading day)
+            8 - Calculated (Order has been completed for the day (either filled or done for day).
+            7 - Filled (Order completely filled, no remaining quantity)
+            6 - Stopped (Order has been stopped at the exchange. Used when guranteeing or protecting a price and quantity)
+            5 - Suspended (Order has been placed in suspended state at the request of the client.)
+            4 - Canceled (Canceled order with or without executions)
+            4 - Expired (Order has been canceled in broker's system due to time in force instructions.)
+            3 - Partially Filled (Outstanding order with executions and remaining quantity)
+            2 - New (Outstanding order with no executions)
+            2 - Rejected (Order has been rejected by sell-side (broker, exchange, ECN).
+            NOTE: An order can be rejected subsequent to order acknowledgment,
+            i.e. an order can pass from New to Rejected status.
+            2 - Pending New (Order has been received by sell-side's (broker, exchange, ECN) system
+            but not yet accepted for execution. An execution message
+            with this status will only be sent in response to a Status Request message.)
+            1 - Accepted for bidding (Order has been received and is being evaluated for pricing.
+            It is anticipated that this status will only be used with the
+            "Disclosed" BidType List Order Trading model.)
+        </Description>
+
+        <Default>
+            <Attribute name="isPending" typeId="boolean" value="false"/>
+            <Attribute name="isTerminal" typeId="boolean" value="false"/>
+        </Default>
+
+        <Entry name="New" value="0"/>
+        <Entry name="PartiallyFilled" value="1"/>
+        <Entry name="Filled" value="2">
+            <Attribute name="isTerminal" typeId="boolean" value="true"/>
+        </Entry>
+        <Entry name="DoneForDay" value="3">
+            <Attribute name="isTerminal" typeId="boolean" value="true"/>
+        </Entry>
+        <Entry name="Canceled" value="4">
+            <Attribute name="isTerminal" typeId="boolean" value="true"/>
+        </Entry>
+        <Entry name="Replaced" value="5"/>
+        <Entry name="PendingCancel" value="6">
+            <Attribute name="isPending" typeId="boolean" value="true"/>
+        </Entry>
+        <Entry name="Stopped" value="7">
+            <Attribute name="isTerminal" typeId="boolean" value="true"/>
+        </Entry>
+        <Entry name="Rejected" value="8">
+            <Attribute name="isTerminal" typeId="boolean" value="true"/>
+        </Entry>
+        <Entry name="Suspended" value="9"/>
+        <Entry name="PendingNew" value="A">
+            <Attribute name="isPending" typeId="boolean" value="true"/>
+        </Entry>
+        <Entry name="Calculated" value="B"/>
+        <Entry name="Expired" value="C">
+            <Attribute name="isTerminal" typeId="boolean" value="true"/>
+        </Entry>
+        <Entry name="Restated" value="D"/>
+        <Entry name="PendingReplace" value="E">
+            <Attribute name="isPending" typeId="boolean" value="true"/>
+        </Entry>
+        <Entry name="UnseenOrder" value="F"/>
+
+        <Entry name="CMETradeCancel" value="H"/>
+        <Entry name="CMEUndefined" value="U">
+            <Attribute name="isTerminal" typeId="boolean" value="true"/>
+        </Entry>
+    </Type>
+
+    <Type id="OrderCapacity">
+        <Description>Designates the capacity of the firm placing the order</Description>
+        <!-- as of FIX 4.3, this field replaced Rule80A (tag 47) - used in conjunction with OrderRestrictions (529) field -->
+        <Entry name="Proprietary" value="G"/>
+        <Entry name="Individual" value="I"/>
+        <Entry name="Principal" value="P"/>
+        <Entry name="RisklessPrincipal" value="R"/>
+        <Entry name="AgentForOtherMember" value="W"/>
+    </Type>
+
+    <Type id="OrderRestrictions" multiValue="1">
+        <Description>Restrictions associated with an order. If more than one restriction is applicable to an order, this field can contain multiple instructions
+            separated by space
+        </Description>
+        <Entry name="ProgramTrade" value="1"/>
+        <Entry name="IndexArbitrage" value="2"/>
+        <Entry name="NonIndexArbitrage" value="3"/>
+        <Entry name="CompetingMarketMaker" value="4"/>
+        <Entry name="SpecialistInSecurity" value="5"/>
+        <Entry name="SpecialistInUnderlyingSec" value="6"/>
+        <Entry name="ForeignEntity" value="7"/>
+        <Entry name="ExtMarketParticipant" value="8"/>
+        <Entry name="ExtInterConnectMktLink" value="9"/>
+        <Entry name="RisklessArbitrage" value="A"/>
+    </Type>
+
+    <Type id="OrdType">
+        <Description></Description>
+        <Entry name="Market" value="1"/>
+        <Entry name="Limit" value="2"/>
+        <Entry name="Stop" value="3"/>
+        <Entry name="StopLimit" value="4"/>
+    </Type>
+
+    <Type id="PartyIDSource">
+        <Description>Identifies class or source of the PartyID (448) value. Required if PartyID (448) is specified. Note: applicable values depend upon
+            PartyRole (452) specified
+        </Description>
+        <!-- See "Appendix 6-G - Use of <Parties> Component Block" of FIX Specification -->
+        <Entry name="BIC" value="B"/>
+        <Entry name="MktParticipantId" value="C"/> <!-- eg NASD mnemonic -->
+        <Entry name="CustomCode" value="D"/>
+        <Entry name="ISOCountryCode" value="E"/>
+        <Entry name="SettlementEntityLoc" value="F"/>
+        <Entry name="MIC" value="G"/>
+        <Entry name="CSD" value="H"/>
+        <Entry name="KoreanInvestorId" value="1"/>
+        <Entry name="TaiQFII" value="2"/>
+        <Entry name="TaiTradingAccount" value="3"/>
+        <Entry name="MalayCentralDepNum" value="4"/>
+        <Entry name="ChineseBShare" value="5"/>
+        <Entry name="UKNationalInsNum" value="6"/>
+        <Entry name="USSocialSecNum" value="7"/>
+        <Entry name="USEmpIdNum" value="8"/>
+        <Entry name="AustralianBizNum" value="9"/>
+        <Entry name="AustralianTaxNum" value="A"/>
+        <Entry name="DirectedBrokerCore"
+               value="I"/> <!-- Directed broker three character acronym as defined in ISITC 'ETC Best Practice' guidelines document -->
+    </Type>
+
+    <Type id="PositionEffect">
+        <Description>Indicates whether the resulting position after a trade should be an opening position or closing position. Used for omnibus accounting -
+            where accounts are held on a gross basis instead of being netted together
+        </Description>
+        <!-- formerly named: OpenClose prior to FIX 4.3 -->
+        <Entry name="Open" value="O"/>
+        <Entry name="Close" value="C"/>
+        <Entry name="Rolled" value="R"/>
+        <Entry name="FIFO" value="F"/>
+    </Type>
+
+    <Type id="ProductComplex">
+        <Description>Indicates the type of product the security is associated with</Description>
+        <!-- formerly named: OpenClose prior to FIX 4.3 -->
+        <Entry name="Agency" value="1"/>
+        <Entry name="Commodity" value="2"/>
+        <Entry name="Corporate" value="3"/>
+        <Entry name="Currency" value="4"/>
+        <Entry name="Equity" value="5"/>
+        <Entry name="Government" value="6"/>
+        <Entry name="Index" value="7"/>
+        <Entry name="Loan" value="8"/>
+        <Entry name="MoneyMarket" value="9"/>
+        <Entry name="Mortgage" value="10"/>
+        <Entry name="Municipal" value="11"/>
+        <Entry name="Other" value="12"/>
+        <Entry name="Financing" value="13"/>
+        <Entry name="InterestRate" value="14"/>
+        <Entry name="FXCash" value="15"/>
+        <Entry name="Energy" value="16"/>
+        <Entry name="Metals" value="17"/>
+    </Type>
+
+
+    <!-- HAD TO MOVE TO CORE AS USED BY INSTRUMENT
+        <Type id="SecurityType">
+            <Description>Indicates type of security. See also the Product (460) and CFICode (461) fields. It is recommended that CFICode (461) be used instead of SecurityType (167) for non-Fixed Income instruments</Description>
+
+            <Default>
+                <Attribute name="prodType" typeId="ProductType" value="Other"/>
+            </Default>
+
+            <Entry name="Option" value="FUT">
+                <Attribute name="prodType" typeId="ProductType" value="Option"/>
+            </Entry>
+            <Entry name="Future" value="OPT">
+                <Attribute name="prodType" typeId="ProductType" value="Future"/>
+            </Entry>
+            <Entry name="Equity" value="EQUITY">
+                <Attribute name="prodType" typeId="ProductType" value="Equity"/>
+            </Entry>
+
+            <Entry name="Cash" value="CASH"/>
+
+            FOLLOWING ENTRIES NOT CURRENTLY USED
+
+            <Entry name="FederalGov" 				value="TREASURY"/>
+            <Entry name="StateProvince" 			value="PROVINCE"/>
+            <Entry name="FederalAgency" 			value="AGENCY"/>
+            <Entry name="MortgagePassThru" 			value="MORTGAGE"/>
+            <Entry name="ComercialPaper" 			value="CP"/>
+            <Entry name="Corporate" 				value="CORP"/>
+            <Entry name="SupraNationalAgency" 		value="SUPRA"/>
+            <Entry name="EUSupraNatCoupons" 		value="EUSUPRA"/>
+            <Entry name="FedAgencyCoupon" 			value="FAC"/>
+            <Entry name="FedAgencyDiscountNote" 	value="FADN"/>
+            <Entry name="PrivExportFunding" 		value="PEF"/>
+            <Entry name="CorporateBond" 			value="CORP"/>
+            <Entry name="DualCcy" 					value="DUAL"/>
+            <Entry name="EuroCorpBond" 				value="EUCORP"/>
+            <Entry name="IndexedLinked" 			value="XLINKD"/>
+            <Entry name="StructNotes" 				value="STRUCT"/>
+            <Entry name="YankCorpBond" 				value="YANK"/>
+            <Entry name="ForeignExContract" 		value="FOR"/>
+            <Entry name="CommonStock" 				value="CS"/>
+            <Entry name="PreferredStock" 			value="PS"/>
+            <Entry name="BradyBond" 				value="BRANDY"/>
+            <Entry name="EuroSovereigns" 			value="EUSOV"/>
+            <Entry name="USTreasuryBond" 			value="TBOND"/>
+            <Entry name="InterestStip" 				value="TINT"/>
+            <Entry name="TreasuryInflatProt" 		value="TIPS"/>
+            <Entry name="PrincipalStripCallable" 	value="TCAL"/>
+            <Entry name="PrincipleStripNonCall" 	value="TPRN"/>
+            <Entry name="USTreasNote_DEPRECATED" 	value="UST"/>
+            <Entry name="USTreasBill_DEPRECATED" 	value="USTB"/>
+            <Entry name="USTreasNote" 				value="TNOTE"/>
+            <Entry name="USTreasBill" 				value="TBILL"/>
+            <Entry name="Repurchase" 				value="REPO"/>
+            <Entry name="Forward" 					value="FORWARD"/>
+            <Entry name="BuySellback" 				value="BUYSELL"/>
+            <Entry name="SecuritiesLoan" 			value="SECLOAN"/>
+            <Entry name="SecuritiesPledge" 			value="SECPLEDGE"/>
+            <Entry name="TermLoan" 					value="TERM"/>
+            <Entry name="RevolverLoad" 				value="RVLV"/>
+            <Entry name="TermLoan" 					value="RVLVTRM"/>
+            <Entry name="BridgeLoan" 				value="BRIDGE"/>
+            <Entry name="LetterOfCredit" 			value="LOFC"/>
+            <Entry name="SwingLineFacility" 		value="SWING"/>
+            <Entry name="DebtorInPoss" 				value="DINP"/>
+            <Entry name="Defaulted" 				value="DEFLTED"/>
+            <Entry name="Withdrawn" 				value="WITHDRN"/>
+            <Entry name="Replaced" 					value="REPLACD"/>
+            <Entry name="Matured" 					value="MATURED"/>
+            <Entry name="AmendedAndRestated" 		value="AMENDED"/>
+            <Entry name="Retired" 					value="RETIRED"/>
+            <Entry name="BankersAcceptance" 		value="BA"/>
+            <Entry name="BankeNotes" 				value="BN"/>
+            <Entry name="BillOfExchanges" 			value="BOX"/>
+            <Entry name="CertOfDeposits" 			value="CD"/>
+            <Entry name="CallLoans" 				value="CL"/>
+            <Entry name="CommercialPaper" 			value="CP"/>
+            <Entry name="DepositNote" 				value="DN"/>
+            <Entry name="EuroCertDeposit" 			value="EUCD"/>
+            <Entry name="EuroCommercialPaper" 		value="EUCP"/>
+            <Entry name="LiquidityNote" 			value="LQN"/>
+            <Entry name="MedTermNote" 				value="MTN"/>
+            <Entry name="Overnight" 				value="ONITE"/>
+            <Entry name="PromissoryNote" 			value="PN"/>
+            <Entry name="PlazosFijos" 				value="PZFJ"/>
+            <Entry name="ShortTermLoanNote" 		value="STN"/>
+            <Entry name="TimeDeposit" 				value="TD"/>
+            <Entry name="ExtendedCommNote" 			value="XCN"/>
+            <Entry name="YankeeCertDeposit" 		value="YCD"/>
+            <Entry name="AssetBackedSecurity" 		value="ABS"/>
+            <Entry name="CorpMortgageBackSec" 		value="CMBS"/>
+            <Entry name="CollateralMortObligation" 	value="CMO"/>
+            <Entry name="IOETTEMortgage" 			value="IET"/>
+            <Entry name="MortgageBackedSec" 		value="MBS"/>
+            <Entry name="MortgageInterestOnly" 		value="MIO"/>
+            <Entry name="MortgagePrincipalOnly" 	value="MPO"/>
+            <Entry name="MortgagePrivatePlacement" 	value="MPP"/>
+            <Entry name="MiscPassThru" 				value="MPT"/>
+            <Entry name="Pfandbriefe" 				value="PFAND"/>
+            <Entry name="ToBeAnnounced" 			value="TBA"/>
+            <Entry name="OtherAnticipationNotes" 	value="AN"/>
+            <Entry name="CertOfObligation" 			value="COFO"/>
+            <Entry name="CertOfParticipation" 		value="COFP"/>
+            <Entry name="GeneralObligationBonds" 	value="GO"/>
+            <Entry name="MandatoryTender" 			value="MT"/>
+            <Entry name="RevenueAnticipationNote" 	value="RAN"/>
+            <Entry name="RevenueBonds" 				value="REV"/>
+            <Entry name="SpecialAssessment" 		value="SPCLA"/>
+            <Entry name="SpecialObligation" 		value="SPCLO"/>
+            <Entry name="SpecialTax" 				value="SPCLT"/>
+            <Entry name="TaxAnticipationNote" 		value="TAN"/>
+            <Entry name="TaxAllocation" 			value="TAXA"/>
+            <Entry name="TaxExempt" 				value="TECP"/>
+            <Entry name="TaxAndRevAnticipNote" 		value="TRAN"/>
+            <Entry name="VarRateDemandNote" 		value="VRDN"/>
+            <Entry name="Warrant" 					value="WAR"/>
+            <Entry name="Mutual Fund" 				value="MF"/>
+            <Entry name="MultiLeg" 					value="MLEG"/>
+            <Entry name="NoSecurityType" 			value="NONE"/>
+        </Type>
+    -->
+
+    <Type id="Side" extraInterfaces="com.rr.core.model.BasicSide">
+        <Description>Side of order</Description>
+
+        <Default>
+            <Attribute name="isBuySide" typeId="boolean" value="false"/>
+        </Default>
+
+        <Entry name="Buy" value="1">
+            <Attribute name="isBuySide" typeId="boolean" value="true"/>
+        </Entry>
+        <Entry name="Sell" value="2"/>
+        <Entry name="BuyMinus" value="3">
+            <Attribute name="isBuySide" typeId="boolean" value="true"/>
+        </Entry>
+        <Entry name="SellPlus" value="4"/>
+        <Entry name="SellShort" value="5"/>
+        <Entry name="SellShortExempt" value="6"/>
+
+        <!--
+            <Entry name="Undisc" value="7"/>
+            <Entry name="Cross" value="8"/>
+            <Entry name="CrossShort" value="9"/>
+            <Entry name="CrossShortExempt" value="A"/>
+            <Entry name="AsDefined" value="B"/>
+            <Entry name="Opposite" value="C"/>
+            <Entry name="Subscribe" value="D"/>
+            <Entry name="Redeem" value="E"/>
+            <Entry name="Lend" value="F"/>
+            <Entry name="Borrow" value="G"/>
+        -->
+    </Type>
+
+    <Type id="TimeInForce">
+        <Description>Specifies how long the order remains in effect. Absence of this field is interpreted as DAY. NOTE not applicable to CIV Orders
+        </Description>
+        <Entry name="Day" value="0"/>
+        <Entry name="GoodTillCancel" value="1"/>
+        <Entry name="AtTheOpening" value="2"/>
+        <Entry name="ImmediateOrCancel" value="3"/>
+        <Entry name="FillOrKill" value="4"/>
+        <Entry name="GoodTillCrossing" value="5"/>
+        <Entry name="GoodTillDate" value="6"/>
+        <Entry name="AtTheClose" value="7"/>
+    </Type>
+
+    <Type id="SecurityUpdateAction">
+        <Description>Specifies action of security update</Description>
+        <Entry name="Add" value="A"/>
+        <Entry name="Delete" value="D"/>
+        <Entry name="Modify" value="M"/>
+    </Type>
+
+    <Type id="LiquidityInd">
+        <Description>Indicator to identify whether this fill was a result of a liquidity provider providing or liquidity taker taking the liquidity. Applicable
+            only for OrdStatus (39) of Partial or Filled
+        </Description>
+        <Entry name="NeitherAddOrRemove" value="0"/>
+        <Entry name="AddedLiquidity" value="1"/>
+        <Entry name="RemovedLiquidity" value="2"/>
+        <Entry name="LiquidityRoutedOut" value="3"/>
+        <Entry name="Auction" value="4"/>
+        <Entry name="Conditional" value="8"/>
+        <Entry name="BlockIndicationExec" value="9"/>
+    </Type>
+
+    <Type id="MultiLegReportingType">
+        <Description>Indicates if acknowledgment message is sent for an outright, leg of spread or spread</Description>
+        <Entry name="Outright" value="1"/>
+        <Entry name="LegOfSpread" value="2"/>
+        <Entry name="Spread" value="3"/>
+    </Type>
+
+    <Type id="ExecRestatementReason">
+        <Description>Code to identify reason for an Execution Report (8) message sent with ExecType (150) =Restated or used when communicating an unsolicited
+            cancel.
+        </Description>
+        <Entry name="GTCorporateAction" value="0"/>
+        <Entry name="GTRenewalOrRestatement " value="1"/>
+        <Entry name="VerbalChange" value="2"/>
+        <Entry name="RepricingOfOrder" value="3"/>
+        <Entry name="BrokerOption" value="4"/>
+        <Entry name="PartialDeclineOfOrderQty" value="5"/>
+        <Entry name="CancelOnTradingHalt" value="6"/>
+        <Entry name="CancelOnSystemFailure" value="7"/>
+        <Entry name="MarketOption" value="8"/>
+        <Entry name="CanceledNotBest" value="9"/>
+        <Entry name="WarehouseRecap" value="10"/>
+        <Entry name="Other" value="99"/>
+    </Type>
+
+    <Type id="EncryptMethod">
+        <Description>Method of encryption</Description>
+        <Entry name="NoneOrOther" value="0"/>
+        <Entry name="PKCSProprietary" value="1"/>
+        <Entry name="DesEcbMode" value="2"/>
+        <Entry name="PkcsDes" value="3"/>
+        <Entry name="PgpDes" value="4"/>
+        <Entry name="PgpDesMd5" value="5"/>
+        <Entry name="PemDesMd5" value="6"/>
+    </Type>
+
+    <Type id="SessionRejectReason">
+        <Description>Code to identify reason for a session-level Reject (3) message.</Description>
+        <Entry name="InvalidTagNumber" value="0"/>
+        <Entry name="RequiredTagMissing" value="1"/>
+        <Entry name="TagNotForMsgType" value="2"/>
+        <Entry name="UndefinedTag" value="3"/>
+        <Entry name="TagNoValue" value="4"/>
+        <Entry name="ValueIncorrect" value="5"/>
+        <Entry name="IncorrectFormat" value="6"/>
+        <Entry name="DecryptProblem" value="7"/>
+        <Entry name="SignatureProblem" value="8"/>
+        <Entry name="CompIDProblem" value="9"/>
+        <Entry name="SendTimeAccuracy" value="10"/>
+        <Entry name="InvalidMsgType" value="11"/>
+        <Entry name="XMLValidError" value="12"/>
+        <Entry name="TagTooManyTimes" value="13"/>
+        <Entry name="TagOutOfOrder" value="14"/>
+        <Entry name="RepGroupOutOfOrder" value="15"/>
+        <Entry name="BadNumInGrp" value="16"/>
+        <Entry name="SOHInData" value="17"/>
+        <Entry name="Other" value="99"/>
+
+        <!-- added for ETI -->
+        <Entry name="ThrottleLimitExceeded" value="20"/>
+        <Entry name="ExposureLimitExceeded" value="21"/>
+        <Entry name="ServiceTemporarilyNotAvailable" value="22"/>
+        <Entry name="ServiceNotAvailable" value="23"/>
+        <Entry name="ResultOfTransactionUnknown" value="24"/>
+        <Entry name="OutboundConversionError" value="25"/>
+        <Entry name="InternalTechnicalError" value="26"/>
+        <Entry name="OrderNotFound" value="27"/>
+        <Entry name="PriceNotReasonable" value="28"/>
+
+    </Type>
+
+    <!-- MD Updates -->
+
+    <Type id="SubsReqType">
+        <Description>Market Data Subscription Type</Description>
+        <Entry name="Subscribe" value="1"/>
+        <Entry name="Unsubscribe" value="2"/>
+    </Type>
+
+    <Type id="MDEntryType">
+        <Description>Market Data Update Entry Type</Description>
+        <Entry name="Bid" value="0"/>
+        <Entry name="Offer" value="1"/>
+        <Entry name="Trade" value="2"/>
+        <Entry name="IndexValue" value="3"/>
+        <Entry name="OpeningPrice" value="4"/>
+        <Entry name="ClosingPrice" value="5"/>
+        <Entry name="SettlementPrice" value="6"/>
+        <Entry name="TradingSessionHighPrice" value="7"/>
+        <Entry name="TradingSessionLowPrice" value="8"/>
+        <Entry name="TradingSessionVWAPPrice" value="9"/>
+        <Entry name="Imbalance" value="A"/>
+        <Entry name="TradeVolume" value="B"/>
+        <Entry name="OpenInterest" value="C"/>
+        <Entry name="CompositeUnderlyingPrice" value="D"/>
+        <Entry name="SimulatedSellPrice" value="E"/>
+        <Entry name="SimulatedBuy" value="F"/>
+        <Entry name="MarginRate" value="G"/>
+        <Entry name="MidPrice" value="H"/>
+        <Entry name="EmptyBook" value="J"/>
+        <Entry name="SettleHighPrice" value="K"/>
+        <Entry name="SettleLowPrice" value="L"/>
+        <Entry name="PriorSettlePrice" value="M"/>
+        <Entry name="SessionHighBid" value="N"/>
+        <Entry name="SessionLowOffer" value="O"/>
+        <Entry name="EarlyPrices" value="P"/>
+        <Entry name="AuctionClearingPrice" value="Q"/>
+        <Entry name="FixingPrice" value="W"/>
+    </Type>
+
+    <Type id="MDUpdateAction">
+        <Description>Market Data Update Entry Type</Description>
+        <Entry name="New" value="0"/>
+        <Entry name="Change" value="1"/>
+        <Entry name="Delete" value="2"/>
+        <Entry name="DeleteThru" value="3"/>
+        <Entry name="DeleteFrom" value="4"/>
+        <Entry name="Overlay" value="5"/>
+    </Type>
+
+    <Type id="TradingSessionID">
+        <Description>Trading Session ID</Description>
+        <Entry name="Unknown" value="0"/>
+        <Entry name="Day" value="1"/>
+        <Entry name="HalfDay" value="2"/>
+        <Entry name="Morning" value="3"/>
+        <Entry name="Afternoon" value="4"/>
+        <Entry name="Evening" value="5"/>
+        <Entry name="AfterHours" value="6"/>
+    </Type>
+
+    <Type id="TradingSessionSubID">
+        <Description>Trading Session Sub ID</Description>
+        <Entry name="Unknown" value="0"/>
+        <Entry name="PreTrading" value="1"/>
+        <Entry name="OpeningAuction" value="2"/>
+        <Entry name="ContinuousTrading" value="3"/>
+        <Entry name="ClosingAuction" value="4"/>
+        <Entry name="PostTrading" value="5"/>
+        <Entry name="IntradayAuction" value="6"/>
+        <Entry name="Quiescent" value="7"/>
+    </Type>
+
+    <Type id="TradSesStatus">
+        <Description>State of the trading session</Description>
+        <Entry name="Unknown" value="0"/>
+        <Entry name="Halted" value="1"/>
+        <Entry name="Open" value="2"/>
+        <Entry name="Closed" value="3"/>
+        <Entry name="PreOpen" value="4"/>
+        <Entry name="PreClose" value="5"/>
+        <Entry name="RequestRejected" value="6"/>
+    </Type>
+
+    <Type id="TickDirection">
+        <Description>Security Trading Status</Description>
+        <Entry name="PlusTick" value="0"/>
+        <Entry name="ZeroPlusTick" value="1"/>
+        <Entry name="MinusTick" value="2"/>
+        <Entry name="ZeroMinusTick" value="3"/>
+    </Type>
+
+    <!--
+        DONT CHANGE ORDER !! The internalCode stored in DB (eg MDBar.tradingStatus) is from the ordinal !
+    -->
+    <Type id="SecurityTradingStatus">
+        <Description>Security Trading Status</Description>
+        <Entry name="OpeningDelay" value="1"/>
+        <Entry name="TradingHalt" value="2"/>
+        <Entry name="Resume" value="3"/>
+        <Entry name="NoOpenNoResume" value="4"/>
+        <Entry name="PriceIndication" value="5"/>
+        <Entry name="TradingRangeIndication" value="6"/>
+        <Entry name="MarketImbalanceBuy" value="7"/>
+        <Entry name="MarketImbalanceSell" value="8"/>
+        <Entry name="MarketOnCloseImbalanceBuy" value="9"/>
+        <Entry name="MarketOnCloseImbalanceSell" value="10"/>
+        <Entry name="Unassigned" value="11"/>
+        <Entry name="NoMarketImbalance" value="12"/>
+        <Entry name="NoMarketOnCloseImbalance" value="13"/>
+        <Entry name="ITSPreOpening" value="14"/>
+        <Entry name="NewPriceIndication" value="15"/>
+        <Entry name="TradeDisseminationTime" value="16"/>
+        <Entry name="ReadyToTrade" value="17"/>
+        <Entry name="NotAvailableForTrading" value="18"/>
+        <Entry name="NotTradedOnThisMarket" value="19"/>
+        <Entry name="Invalid" value="20"/>
+        <Entry name="PreOpen" value="21"/>
+        <Entry name="OpeningRotation" value="22"/>
+        <Entry name="FastMarket" value="23"/>
+        <Entry name="PreCross" value="24"/>
+        <Entry name="Cross" value="25"/>
+    </Type>
+
+    <Type id="ExchangeCode" isHandCoded="true" maxValueLen="4" package="com.rr.core.model">
+        <Description>Market Identification Code ISO 10383 - Codes for Exchanges and Market Identification</Description>
+    </Type>
+
+    <Type id="FutureExchangeSymbol" isHandCoded="true" maxValueLen="4" package="com.rr.core.model">
+        <Description>Market Identification Code ISO 10383 - Codes for Exchanges and Market Identification</Description>
+    </Type>
+
+
+    <Type id="RunStatus">
+        <Description>Test Status</Description>
+        <Entry name="Started" value="0"/>
+        <Entry name="Failed" value="1"/>
+        <Entry name="Completed" value="2"/>
+        <Entry name="Paused" value="3"/>
+    </Type>
+
+
+    <!-- MMT Types -->
+
+    <Type id="MMTMarketMechanism">
+        <Description>Market Mechanism</Description>
+        <Entry name="CentralLimitOrderBook" value="1"/>
+        <Entry name="QuoteDrivenMarket" value="2"/>
+        <Entry name="DarkOrderBook" value="3"/>
+        <Entry name="OffBook" value="4"/>
+        <Entry name="PeriodicAuction" value="5"/>
+        <Entry name="RequestForQuotes" value="6"/>
+        <Entry name="AnyOtherIncludingHybrid" value="7"/>
+    </Type>
+
+    <Type id="MMTTradingMode">
+        <Description>Trading Mode</Description>
+        <Entry name="UndefinedAuction" value="1"/>
+        <Entry name="ContinuousTrading" value="2"/>
+        <Entry name="AtMarketCloseTrading" value="3"/>
+        <Entry name="OutOfMainSession" value="4"/>
+        <Entry name="TradeReportingOnExchange" value="5"/>
+        <Entry name="TradeReportingOffExchange" value="6"/>
+        <Entry name="TradeReportingSystematicInternalizer" value="7"/>
+        <Entry name="ScheduledOpeningAuction" value="O"/>
+        <Entry name="ScheduledClosingAuction" value="K"/>
+        <Entry name="ScheduledIntradayAuction" value="I"/>
+        <Entry name="UnscheduledAuction" value="U"/>
+    </Type>
+
+    <Type id="MMTTransactionCategory">
+        <Description>Transaction Category</Description>
+        <Entry name="DarkTrade" value="D"/>
+        <Entry name="TradeReceivedPriceImprovement" value="R"/>
+        <Entry name="PackagedTrade" value="Z"/>
+        <Entry name="ExchangeForPhysicalsTrade" value="Y"/>
+        <Entry name="NoneOfAboveApply" value="-"/>
+    </Type>
+
+    <Type id="MMTNegotiatedTradeOrPreTradeWaiver">
+        <Description>Negotiated Trade or Pre-Trade Transparency Waiver</Description>
+        <Entry name="NegotiatedTradeInLiquidFinancialInstruments" value="1"/>
+        <Entry name="NegotiatedTradeInIlliquidFinancialInstruments" value="2"/>
+        <Entry name="NegotiatedTradeSubjectToConditionsOtherThanCurrentMarketPrice" value="3"/>
+        <Entry name="NegotiatedTradeWhereNoneOfAboveApply" value="N"/>
+        <Entry name="PreTradeTransparencyWaiverIlliquidInstrumentOnSI" value="4"/>
+        <Entry name="PreTradeTransparencyWaiverAboveStandardMarketSizeOnSI" value="5"/>
+        <Entry name="PreTradeTransparencyWaiversIlliquidAndAboveStandardMarketSizeOSI" value="6"/>
+        <Entry name="NotSpecified" value="-"/>
+    </Type>
+
+    <Type id="MMTCrossingTrade">
+        <Description>Crossing Trade</Description>
+        <Entry name="CrossingTrade" value="X"/>
+        <Entry name="NotSpecified" value="-"/>
+    </Type>
+
+    <Type id="MMTModificationIndicator">
+        <Description>Modification Indicator</Description>
+        <Entry name="TradeModification" value="A"/>
+        <Entry name="TradeCancel" value="C"/>
+        <Entry name="NotSpecified" value="-"/>
+    </Type>
+
+    <Type id="MMTReferencePriceIndicator">
+        <Description>Benchmark or Reference Price Indicator</Description>
+        <Entry name="BenchmarkTrade" value="B"/>
+        <Entry name="ReferencePriceTrade" value="S"/>
+        <Entry name="NotSpecified" value="-"/>
+    </Type>
+
+    <Type id="MMTDividend">
+        <Description>Ex/Cum Dividend</Description>
+        <Entry name="SpecialDividend" value="E"/>
+        <Entry name="NotSpecified" value="-"/>
+    </Type>
+
+    <Type id="MMTBookAutomatedIndicator">
+        <Description>Off Book Automated Indicator</Description>
+        <Entry name="Automated" value="Q"/>
+        <Entry name="Manual" value="M"/>
+        <Entry name="NotSpecified" value="-"/>
+    </Type>
+
+    <Type id="MMTPriceFormation">
+        <Description>Contribution to Price Formation or the Price Discovery Process</Description>
+        <Entry name="StandardTrade" value="P"/>
+        <Entry name="NonPriceFormingTrade" value="T"/>
+        <Entry name="NonContributing" value="J"/>
+        <Entry name="PriceNotAvailPending" value="N"/>
+    </Type>
+
+    <Type id="MMTAlgorithmicTrade">
+        <Description>Algorithmic Trade</Description>
+        <Entry name="AlgorithmicTrade" value="H"/>
+        <Entry name="NonAlgorithmicTrade" value="-"/>
+    </Type>
+
+    <Type id="MMTPostTradeDeferralReason">
+        <Description>Publication Mode / Post-Trade Deferral Reason</Description>
+        <Entry name="WithoutPermittedDeferral" value="1"/>
+        <Entry name="LargeInScale”" value="2"/>
+        <Entry name="IlliquidInstrument" value="3"/>
+        <Entry name="SizeSpecific" value="4"/>
+        <Entry name="IlliquidInstrumentSizeSpecific" value="5"/>
+        <Entry name="IlliquidInstrumentLargeInScale" value="6"/>
+        <Entry name="ImmediatePublication" value="-"/>
+    </Type>
+
+    <Type id="MMTPostTradeEnrichmentType">
+        <Description>Post-Trade Deferral or Enrichment Type</Description>
+        <Entry name="LimitedDetailsTrade" value="1"/>
+        <Entry name="DailyAggregatedTrade”" value="2"/>
+        <Entry name="VolumeOmissionTrade" value="3"/>
+        <Entry name="FourWeeksAggregationTrade" value="4"/>
+        <Entry name="IndefiniteAggregationTrade" value="5"/>
+        <Entry name="EligibleForAggregatedForm" value="6"/>
+        <Entry name="FullDetailsEarlierLimitedDetailsTrade" value="7"/>
+        <Entry name="FullDetailsEarlierDailyAggregatedTrade" value="8"/>
+        <Entry name="FullDetailsEarlierVolumeOmissionTrade" value="9"/>
+        <Entry name="FullDetailsFourWeeksAggregationTrade" value="V"/>
+        <Entry name="FullDetailsEarlierSubsequentEnrichment" value="W"/>
+        <Entry name="NotApplicable" value="-"/>
+    </Type>
+
+    <Type id="MMTDuplicativeIndicator">
+        <Description>Duplicative Indicator</Description>
+        <Entry name="DuplicativeTradeReport" value="1"/>
+        <Entry name="UniqueTradeReport" value="-"/>
+    </Type>
+
+    <Type id="CorporateActionClassification">
+        <Description>Classification for corporate action</Description>
+        <Entry name="StockSplit" value="S"/>
+        <Entry name="DividendCash" value="C"/>
+        <Entry name="OtherFlatten" value="F"/>
+        <Entry name="OtherIgnore" value="O"/>
+    </Type>
+
+    <Type id="AdjustmentType">
+        <Description>Type of adjustment to make</Description>
+        <Entry name="AmountPerShare" value="1" desc="a fixed amount per share"/>
+        <Entry name="Factor" value="2" desc="a factor to be applied to qty or price"/>
+        <Entry name="Percentage" value="3" desc="0 to 100, so 2 percent would be 2, could be represented in factor as 0.02"/>
+        <Entry name="NotApplicable" value="0"/>
+    </Type>
+
+    <Type id="LoanRateType">
+        <Description>Type loan rate</Description>
+        <Entry name="rebate" value="R"/>
+        <Entry name="fee" value="F"/>
+    </Type>
+
+
+    @SECTION TYPES END
+
+</Data>

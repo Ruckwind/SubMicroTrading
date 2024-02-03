@@ -1,0 +1,7 @@
+@INCLUDE MDDecoder50.include
+
+    private long getInternalTimeFromBSEFastFix() {
+        long msSinceEpoch = getLongVal() / 1000000; // nanos to ms
+        
+        return CommonTimeUtils.unixTimeToInternalTime( msSinceEpoch );
+    }

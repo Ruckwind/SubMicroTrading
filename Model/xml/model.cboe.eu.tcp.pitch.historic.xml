@@ -1,0 +1,352 @@
+<!--suppress ALL -->
+
+@SECTION TCP_HISTORIC_PITCH_MODEL START
+            <Model id="TCPPitchHistoric" modelVersionNumber="1">
+                <Attribute name="BinaryVersion" value="1"/>
+
+                <Dictionary>
+                    <!-- certain tags are special and have specific optimised codec code eg fixVersion.msgType -->
+                    <!--  type should be external facing not internal type mapping -->
+                    <!--  for name try and use the internal event field name so it can be auto matched to the event -->
+
+                    <!-- valid types zstr(fixed len str)|str(with len as max)|ch|price|base36(len)
+                                     sByte|sShort|sInt|sLong|uByte|uShort|uInt|uLong|
+                                     timestampLocal|timestampUTC|timeLocal|timeUTC -->
+
+                    <Field id="msgType"             type="uByte"            comment="message type"/>
+
+                    <Field id="timestampMS"         type="timeLocal"/>
+                    <Field id="timestampUS"         type="timestampLocal"/>
+                    <Field id="orderId"             type="base36"     len="12"/>
+                    <Field id="execId"              type="base36"     len="12"/>
+                    <Field id="side"                type="uByte"/>
+                    <Field id="qty6"                type="qty"        len="6"/>
+                    <Field id="qty10"               type="qty"        len="10"/>
+                    <Field id="lastQty6"            type="qty"        len="6"/>
+                    <Field id="lastQty10"           type="qty"        len="10"/>
+                    <Field id="cancelQty6"          type="qty"        len="6"/>
+                    <Field id="cancelQty10"         type="qty"        len="10"/>
+                    <Field id="price10"             type="price"      len="6"   dp="4"/>
+                    <Field id="price19"             type="price"      len="12"  dp="7"/>
+                    <Field id="symbol6"             type="zstr"       len="6"/>
+                    <Field id="symbol8"             type="zstr"       len="8"/>
+                    <Field id="participant"         type="zstr"       len="4"/>
+
+                    <Field id="typeIndic"           type="uByte"/>
+
+                    <Field id="mktMech"             type="uByte"/>
+                    <Field id="tradingMode"         type="uByte"/>
+                    <Field id="dividend"            type="uByte"/>
+                    <Field id="algoTrade"           type="uByte"/>
+                    <Field id="tranCat"             type="uByte"/>
+                    <Field id="refPriceInd"         type="uByte"/>
+
+                    <Field id="tradingStatus"       type="uByte"/>
+                    <Field id="statType"            type="uByte"/>
+                    <Field id="determination"       type="uByte"/>
+
+                    <Field id="refPrice19"          type="zstr"       len="19"/>
+                    <Field id="indicPrice19"        type="zstr"       len="19"/>
+                    <Field id="indicShares10"       type="zstr"       len="10"/>
+
+                    <Field id="priceCollarTol"      type="uByte"/>
+                    <Field id="incPrimary"          type="uByte"/>
+                    <Field id="auctionType"         type="uByte"/>
+
+                </Dictionary>
+
+                <!-- NOTE mandatory field indicates the field MUST be present in the internal event ! -->
+
+                <StandardHeader>
+                    <Field id="msgType"           mand="N"/>
+                </StandardHeader>
+
+                <StandardTrailer>
+                </StandardTrailer>
+
+                <Message id="PitchSymbolClear"    msgType="s">
+                    <Field id="symbol8"           mand="Y"/>
+                </Message>
+
+                <Message id="PitchSymbolClearMicros"    msgType="h">
+                    <Field id="symbol8"           mand="Y"/>
+                </Message>
+
+                <Message id="PitchBookAddOrder"   msgType="A">
+                    <Field id="orderId"           mand="Y"/>
+                    <Field id="side"              mand="Y"/>
+                    <Field id="qty6"              mand="N"/>
+                    <Field id="symbol6"           mand="N"/>
+                    <Field id="price10"           mand="N"/>
+                    <Field id="filler"            len="1"/>
+                </Message>
+
+                <Message id="PitchBookAddOrderMid"     msgType="a">
+                    <Field id="orderId"                 mand="Y"/>
+                    <Field id="side"                    mand="Y"/>
+                    <Field id="qty10"                   mand="N"/>
+                    <Field id="symbol6"                 mand="N"/>
+                    <Field id="price19"                 mand="N"/>
+                    <Field id="filler"                  len="1"/>
+                </Message>
+
+                <Message id="PitchBookAddOrderLong"     msgType="c">
+                    <Field id="orderId"                 mand="Y"/>
+                    <Field id="side"                    mand="Y"/>
+                    <Field id="qty10"                   mand="N"/>
+                    <Field id="symbol8"                 mand="N"/>
+                    <Field id="price19"                 mand="N"/>
+                    <Field id="filler"                  len="1"/>
+                </Message>
+
+                <Message id="PitchBookAddOrderExpanded"     msgType="t">
+                    <Field id="orderId"                     mand="Y"/>
+                    <Field id="side"                        mand="Y"/>
+                    <Field id="qty10"                       mand="N"/>
+                    <Field id="symbol8"                     mand="N"/>
+                    <Field id="price19"                     mand="N"/>
+                    <Field id="typeIndic"                   mand="N"/>
+                    <Field id="participant"                 mand="N"/>
+                </Message>
+
+                <Message id="PitchBookAddOrderMicros"   msgType="K">
+                    <Field id="orderId"           mand="Y"/>
+                    <Field id="side"              mand="Y"/>
+                    <Field id="qty6"              mand="N"/>
+                    <Field id="symbol6"           mand="N"/>
+                    <Field id="price10"           mand="N"/>
+                    <Field id="filler"            len="1"/>
+                </Message>
+
+                <Message id="PitchBookAddOrderLongMicros"     msgType="M">
+                    <Field id="orderId"                 mand="Y"/>
+                    <Field id="side"                    mand="Y"/>
+                    <Field id="qty10"                   mand="N"/>
+                    <Field id="symbol8"                 mand="N"/>
+                    <Field id="price19"                 mand="N"/>
+                    <Field id="filler"                  len="1"/>
+                </Message>
+
+                <Message id="PitchBookOrderExecuted"    msgType="E">
+                    <Field id="orderId"                 mand="Y"/>
+                    <Field id="lastQty6"                mand="N"/>
+                    <Field id="execId"                  mand="Y"/>
+                </Message>
+
+                <Message id="PitchBookOrderExecutedLong"    msgType="e">
+                    <Field id="orderId"                     mand="Y"/>
+                    <Field id="lastQty10"                   mand="N"/>
+                    <Field id="execId"                      mand="Y"/>
+                </Message>
+
+                <Message id="PitchBookOrderExecutedMicros"    msgType="N">
+                    <Field id="orderId"                       mand="Y"/>
+                    <Field id="lastQty6"                      mand="N"/>
+                    <Field id="execId"                        mand="Y"/>
+                    <Field id="mktMech"                       mand="N"/>
+                    <Field id="tradingMode"                   mand="N"/>
+                    <Field id="dividend"                      mand="N"/>
+                    <Field id="algoTrade"                     mand="N"/>
+                </Message>
+
+                <Message id="PitchBookOrderExecutedLongMicros"    msgType="g">
+                    <Field id="orderId"                           mand="Y"/>
+                    <Field id="lastQty10"                         mand="N"/>
+                    <Field id="execId"                            mand="Y"/>
+                    <Field id="mktMech"                           mand="N"/>
+                    <Field id="tradingMode"                       mand="N"/>
+                    <Field id="dividend"                          mand="N"/>
+                    <Field id="algoTrade"                         mand="N"/>
+                </Message>
+
+                <Message id="PitchBookCancelOrder"  msgType="X">
+                    <Field id="orderId"             mand="Y"/>
+                    <Field id="cancelQty6"         mand="N"/>
+                </Message>
+
+                <Message id="PitchBookCancelOrderLong"  msgType="x">
+                    <Field id="orderId"             mand="Y"/>
+                    <Field id="cancelQty10"         mand="N"/>
+                </Message>
+
+                <Message id="PitchBookCancelOrderMicros"  msgType="F">
+                    <Field id="orderId"             mand="Y"/>
+                    <Field id="cancelQty6"         mand="N"/>
+                </Message>
+
+                <Message id="PitchBookCancelOrderLongMicros"  msgType="G">
+                    <Field id="orderId"             mand="Y"/>
+                    <Field id="cancelQty10"         mand="N"/>
+                </Message>
+
+                <Message id="TradingStatus"       msgType="H">
+                    <Field id="symbol8"           mand="N"/>
+                    <Field id="tradingStatus"     mand="N"/>
+                    <Field id="filler"            len="3"/>
+                </Message>
+
+                <Message id="PriceStatistic"      msgType="Z">
+                    <Field id="symbol8"           mand="N"/>
+                    <Field id="price19"           mand="N"/>
+                    <Field id="statType"          mand="N"/>
+                    <Field id="determination"     mand="N"/>
+                </Message>
+
+                <Message id="AuctionUpdate"     msgType="l">
+                    <Field id="symbol8"         mand="N"/>
+                    <Field id="refPrice19"      mand="N"/>
+                    <Field id="indicPrice19"    mand="N"/>
+                    <Field id="indicShares10"   mand="N"/>
+                    <Field id="priceCollarTol"  mand="N"/>
+                    <Field id="incPrimary"      mand="N"/>
+                </Message>
+
+                <Message id="AuctionSummary"    msgType="j">
+                    <Field id="symbol8"         mand="N"/>
+                    <Field id="auctionType"     mand="N"/>
+                    <Field id="price19"         mand="N"/>
+                    <Field id="qty10"           mand="N"/>
+                </Message>
+
+            </Model>
+@SECTION TCP_HISTORIC_PITCH_MODEL END
+
+
+@SECTION TCP_HISTORIC_PITCH_BINARY_CODEC START
+            <BinaryCodec id="TCPHistoricPitchCHIX"
+                         model="TCPPitchHistoric"
+                         decodeInclude="./cboe/TCPHistoricPitchCHIX.Decoder.include"
+                         encodeInclude="./cboe/TCPHistoricPitchCHIX.Encoder.include"
+                         decodeGenerator="com.rr.model.generator.emea.pitch.TCPPitchDecoderGenerator"
+                         encodeGenerator="com.rr.model.generator.emea.pitch.TCPPitchEncoderGenerator">
+
+                <TypeTransform typeId="Side" transform="map" nonMatchedEncode="reject" nonMatchedDecode="reject">
+                    <Map internal="1" external="B" comment="Buy"/>
+                    <Map internal="2" external="S" comment="Sell"/>
+                </TypeTransform>
+
+                <MessageMap id="BaseResponse" messageId="" ignore="true">
+                    <Map field="eventTimestamp">
+                        <Hook type="encode" code="encodeLong( now )"/>
+                    </Map>
+                </MessageMap>
+
+                <MessageMap id="BookAddOrderA"   eventId="PitchBookAddOrder" messageId="PitchBookAddOrder"     extends="BaseResponse">
+                    <Map eventAttr="orderQty"    field="qty6"/>
+                    <Map eventAttr="securityId"  field="symbol6"/>
+                    <Map eventAttr="price"       field="price10"/>
+
+                    <Map field="securityIdSrc"> <Hook type="decode" code="msg.setSecurityIdSrc( _securityIdSrc )"/> </Map>
+                    <Map field="securityExchange"> <Hook type="decode" code="msg.setSecurityExchange( _securityExchange )"/> </Map>
+
+                    <Hook type="postDecode" code="msg.setEventTimestamp( genTimestamp( _timestampMS ) )"/>
+                </MessageMap>
+
+                <MessageMap id="BookAddOrderMid"   eventId="PitchBookAddOrder" messageId="PitchBookAddOrderMid"     extends="BaseResponse">
+                    <Map eventAttr="orderQty"    field="qty10"/>
+                    <Map eventAttr="securityId"      field="symbol6"/>
+                    <Map eventAttr="price"       field="price19"/>
+                    <Map field="securityIdSrc"> <Hook type="decode" code="msg.setSecurityIdSrc( _securityIdSrc )"/> </Map>
+                    <Map field="securityExchange"> <Hook type="decode" code="msg.setSecurityExchange( _securityExchange )"/> </Map>
+                    <Hook type="postDecode" code="msg.setEventTimestamp( genTimestamp( _timestampMS ) )"/>
+                </MessageMap>
+
+                <MessageMap id="BookAddOrderB"   eventId="PitchBookAddOrder" messageId="PitchBookAddOrderLong"     extends="BaseResponse">
+                    <Map eventAttr="orderQty"    field="qty10"/>
+                    <Map eventAttr="securityId"      field="symbol8"/>
+                    <Map eventAttr="price"       field="price19"/>
+                    <Map field="securityIdSrc"> <Hook type="decode" code="msg.setSecurityIdSrc( _securityIdSrc )"/> </Map>
+                    <Map field="securityExchange"> <Hook type="decode" code="msg.setSecurityExchange( _securityExchange )"/> </Map>
+                    <Hook type="postDecode" code="msg.setEventTimestamp( genTimestamp( _timestampMS ) )"/>
+                </MessageMap>
+
+                <MessageMap id="BookAddOrderC"   eventId="PitchBookAddOrder" messageId="PitchBookAddOrderExpanded"     extends="BaseResponse">
+                    <Map eventAttr="orderQty"    field="qty10"/>
+                    <Map eventAttr="securityId"      field="symbol8"/>
+                    <Map eventAttr="price"       field="price19"/>
+                    <Map field="securityIdSrc"> <Hook type="decode" code="msg.setSecurityIdSrc( _securityIdSrc )"/> </Map>
+                    <Map field="securityExchange"> <Hook type="decode" code="msg.setSecurityExchange( _securityExchange )"/> </Map>
+                    <Hook type="postDecode" code="msg.setEventTimestamp( genTimestamp( _timestampMS ) )"/>
+                </MessageMap>
+
+                <MessageMap id="BookOrderExecutedA"   eventId="PitchBookOrderExecuted" messageId="PitchBookOrderExecuted"     extends="BaseResponse">
+                    <Map eventAttr="lastQty"     field="lastQty6"/>
+                    <Map field="execId"> <Hook type="decode" code="procExecId( msg )"/> </Map>
+                    <Hook type="postDecode" code="msg.setEventTimestamp( genTimestamp( _timestampMS ) )"/>
+                </MessageMap>
+
+                <MessageMap id="BookOrderExecutedB"   eventId="PitchBookOrderExecuted" messageId="PitchBookOrderExecutedLong"     extends="BaseResponse">
+                    <Map eventAttr="lastQty"     field="lastQty10"/>
+                    <Map field="execId"> <Hook type="decode" code="procExecId( msg )"/> </Map>
+                    <Hook type="postDecode" code="msg.setEventTimestamp( genTimestamp( _timestampMS ) )"/>
+                </MessageMap>
+
+                <MessageMap id="BookOrderCancelA"   eventId="PitchBookCancelOrder" messageId="PitchBookCancelOrder"     extends="BaseResponse">
+                    <Map eventAttr="cancelQty"     field="cancelQty6"/>
+                    <Hook type="postDecode" code="msg.setEventTimestamp( genTimestamp( _timestampMS ) )"/>
+                </MessageMap>
+
+                <MessageMap id="BookOrderCancelB"   eventId="PitchBookCancelOrder" messageId="PitchBookCancelOrderLong"     extends="BaseResponse">
+                    <Map eventAttr="cancelQty"     field="cancelQty10"/>
+                    <Hook type="postDecode" code="msg.setEventTimestamp( genTimestamp( _timestampMS ) )"/>
+                </MessageMap>
+
+                <MessageMap id="BookClear"   eventId="PitchSymbolClear" messageId="PitchSymbolClear"     extends="BaseResponse">
+                    <Map eventAttr="securityId"      field="symbol8"/>
+                    <Map field="securityIdSrc"> <Hook type="decode" code="msg.setSecurityIdSrc( _securityIdSrc )"/> </Map>
+                    <Map field="securityExchange"> <Hook type="decode" code="msg.setSecurityExchange( _securityExchange )"/> </Map>
+                    <Hook type="postDecode" code="msg.setEventTimestamp( genTimestamp( _timestampMS ) )"/>
+                </MessageMap>
+
+                <MessageMap id="BookClearMicros"   eventId="PitchSymbolClear" messageId="PitchSymbolClearMicros"     extends="BaseResponse">
+                    <Map eventAttr="securityId"      field="symbol8"/>
+                    <Map field="securityIdSrc"> <Hook type="decode" code="msg.setSecurityIdSrc( _securityIdSrc )"/> </Map>
+                    <Map field="securityExchange"> <Hook type="decode" code="msg.setSecurityExchange( _securityExchange )"/> </Map>
+                    <Hook type="postDecode" code="msg.setEventTimestamp( genTimestamp( _timestampMS ) )"/>
+                </MessageMap>
+
+                <MessageMap id="BookAddOrderMicros"   eventId="PitchBookAddOrder" messageId="PitchBookAddOrderMicros"     extends="BaseResponse">
+                    <Map eventAttr="orderQty"    field="qty6"/>
+                    <Map eventAttr="securityId"  field="symbol6"/>
+                    <Map eventAttr="price"       field="price10"/>
+
+                    <Map field="securityIdSrc"> <Hook type="decode" code="msg.setSecurityIdSrc( _securityIdSrc )"/> </Map>
+                    <Map field="securityExchange"> <Hook type="decode" code="msg.setSecurityExchange( _securityExchange )"/> </Map>
+
+                    <Hook type="postDecode" code="msg.setEventTimestamp( genTimestamp( _timestampMS ) )"/>
+                </MessageMap>
+
+                <MessageMap id="BookAddOrderLongMicros"   eventId="PitchBookAddOrder" messageId="PitchBookAddOrderLongMicros"     extends="BaseResponse">
+                    <Map eventAttr="orderQty"    field="qty10"/>
+                    <Map eventAttr="securityId"      field="symbol8"/>
+                    <Map eventAttr="price"       field="price19"/>
+                    <Map field="securityIdSrc"> <Hook type="decode" code="msg.setSecurityIdSrc( _securityIdSrc )"/> </Map>
+                    <Map field="securityExchange"> <Hook type="decode" code="msg.setSecurityExchange( _securityExchange )"/> </Map>
+                    <Hook type="postDecode" code="msg.setEventTimestamp( genTimestamp( _timestampMS ) )"/>
+                </MessageMap>
+
+                <MessageMap id="BookOrderExecutedMicros"   eventId="PitchBookOrderExecuted" messageId="PitchBookOrderExecutedMicros"     extends="BaseResponse">
+                    <Map eventAttr="lastQty"     field="lastQty6"/>
+                    <Hook type="postDecode" code="msg.setEventTimestamp( genTimestamp( _timestampMS ) )"/>
+                </MessageMap>
+
+                <MessageMap id="BookOrderExecutedLongMicros"   eventId="PitchBookOrderExecuted" messageId="PitchBookOrderExecutedLongMicros"     extends="BaseResponse">
+                    <Map eventAttr="lastQty"     field="lastQty10"/>
+                    <Hook type="postDecode" code="msg.setEventTimestamp( genTimestamp( _timestampMS ) )"/>
+                </MessageMap>
+
+                <MessageMap id="BookOrderCancelMicros"   eventId="PitchBookCancelOrder" messageId="PitchBookCancelOrderMicros"     extends="BaseResponse">
+                    <Map eventAttr="cancelQty"     field="cancelQty6"/>
+                    <Hook type="postDecode" code="msg.setEventTimestamp( genTimestamp( _timestampMS ) )"/>
+                </MessageMap>
+
+                <MessageMap id="BookOrderCancelLongMicros"   eventId="PitchBookCancelOrder" messageId="PitchBookCancelOrderLongMicros"     extends="BaseResponse">
+                    <Map eventAttr="cancelQty"     field="cancelQty10"/>
+                    <Hook type="postDecode" code="msg.setEventTimestamp( genTimestamp( _timestampMS ) )"/>
+                </MessageMap>
+
+
+            </BinaryCodec>
+@SECTION TCP_HISTORIC_PITCH_BINARY_CODEC END
+
+

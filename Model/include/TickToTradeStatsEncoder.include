@@ -1,0 +1,15 @@
+
+    @Override
+    public void addStats( final ReusableString outBuf, final Event msg, final long msgSent ) {
+        
+        if ( msg.getReusableType().getSubId() == EventIds.ID_NEWORDERSINGLE ) {
+            final NewOrderSingle nos = (NewOrderSingle) msg;
+
+            final long tickIn   = nos.getOrderReceived();
+
+            final long microTickToTrade = (msgSent - tickIn) / 1000;
+            
+            outBuf.append( STATS ).append( microTickToTrade ).append( STAT_END );
+        }
+    }
+

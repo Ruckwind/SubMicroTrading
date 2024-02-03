@@ -1,0 +1,9 @@
+@INCLUDE Encoder.include
+
+@INCLUDE ClientToMarketOrderStats.include
+
+    private void encodeSymbol( Instrument instrument ) {
+        _builder.encodeInt( (int)((ExchangeInstrument)instrument).getExchangeLongId() );
+    }
+    
+

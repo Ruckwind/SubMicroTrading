@@ -1,0 +1,613 @@
+RED HAT SUB : df1a 3ee2 df96 743e (no space)
+Red Hat Login : denevil C9   
+
+
+Firstly, to DELETE a system that you have previously registered, please do the following:
+
+1) log in to rhn.redhat.com
+2) click on the Systems tab in the red bar
+3) click on the name of each system and this will link you to another page
+4) click on Delete System in the top right corner of this page
+5) make sure to click the Delete Profile button on the next prompted page
+
+Secondly, to re-register your system with Red Hat Network to keep your system up2date, please refer to the following link:
+
+http://www.redhat.com/apps/register/connect/
+
+===================================================
+
+1) install Windows Server (20GB on SSD)
+
+2) set BIOS settings 
+
+
+CHECK IF USING PCI3 NetworkCard the slot with the card HAS PCI3 enabled .. default is PCI2 !
+check advanced northbridge settings
+
+
+Load Optimised Defaults 
+ 
+BIOS Settings : NO OVERCLOCKING
+    Advanced BIOS Features -> SATA Configuration
+                                SATA#1 Configuration            : ENHANCED
+                                
+    Boot Settings -> Boot Settings Configuration
+                                    Bootup Screen Logo          : DISABLED
+                                    
+    Power Management Features -> ACPI -> Chipset ACPI
+                                    APIC ACPI SCI IRQ           : ENABLED
+                                    High Precision Timer        : ENABLED                                      
+
+    Frequency Voltage Control ->CPU Configuration
+                                    Hyper Threading             : Disabled
+                                    TurboMode                   : Disabled
+
+3) install red hat
+
+3a) Partitioning
+
+Remove logical volumes AND swap
+ 
+(hdX,Y) X is drive starting at 0, Y is partition starting at 1 
+  
+hdd#1  /dev/sdb
+            /dev/sdb1   /boot   ext3    101MB       1       13          (hd1,1)
+            /dev/sdb2   /usr    ext3    29,9995MB    14      38257
+                                FREE    415305
+            
+SSD#2  /dev/sdc
+            /dev/sdc1   /       ext3    29,996MB     1       3824        (hd2,1)
+            /dev/sdc2   /tmp    ext3    10,001MB     3824    5099
+            /dev/sdc3   /home   ext3    29,996MB     5100    8923
+                                FREE    45378MB                     
+ 
+ 
+3b) For Network fill in details manually from (put internet cable in RIGHT hand slot) :-
+
+Mellanox is eth0, Solarflare is eth2/eth3
+
+enable eth0 as DHCP
+
+Set Hostname to TRADE-SERVER
+
+3e) Software
+
+DESELECT virtualisation
+ENABLE Software Development
+
+3f) on install reboot
+
+    -> disable firewall
+    -> disable SELinux 
+
+permanent change in selinux mode edit the file /etc/sysconfig/selinux.
+Change the value of SELINUX=enforcing to disabled and restart the system
+
+3g) add user smt, full name smt
+groupadd -g 500 smt
+useradd -d /home/smt -n -g smt -p CHANGEME -s /bin/bash smt
+
+
+INSTALL FINISHED - REBOOT
+
+3h) enable multicast on loopback adapter
+
+ifconfig lo multicast
+
+
+4) Check network scripts setup, look at /etc/sysconfig/network-scripts/ifcfg-eth*
+        is the 10Ge adapter eth0 or eth2 ?
+        
+   eth0 is the Mellanox 
+   eth2 for Chelsio & Solarflare  
+
+DONT SETUP 10GE YET
+   
+# Marvell Technology Group Ltd. Unknown device 4380
+DEVICE=eth0
+BOOTPROTO=none
+IPADDR=192.168.1.173
+ONBOOT=yes
+TYPE=Ethernet
+NETMASK=255.255.255.0
+GATEWAY=192.168.1.1
+USERCTL=no
+IPV6INIT=no
+PEERDNS=yes
+HWADDR=???????????
+ 
+# Marvell Technology Group Ltd. Unknown device 4380
+DEVICE=eth1
+BOOTPROTO=static
+IPADDR=10.0.0.1
+ONBOOT=yes
+NETMASK=255.0.0.0
+USERCTL=no
+IPV6INIT=no
+HWADDR=?????????????
+#BOOTPROTO=dhcp
+#HWADDR=00:1F:BC:02:8F:75
+#ONBOOT=no
+#HOTPLUG=no
+#TYPE=Ethernet
+
+DEVICE=eth2
+TYPE=Ethernet
+BOOTPROTO=none
+NETMASK=255.255.255.0
+IPADDR=192.168.10.1
+ONBOOT=yes
+USERCTL=no
+IPV6INIT=no
+HWADDR=00:0f:53:07:47:50
+
+TYPE=Ethernet
+DEVICE=eth3
+BOOTPROTO=none
+NETMASK=255.255.255.0
+IPADDR=192.168.12.1
+ONBOOT=yes
+USERCTL=no
+IPV6INIT=no
+HWADDR=00:0f:53:07:47:51
+
+
+[if necessary]  /etc/init.d/network restart    --> restarts the  network but doesnt MAY not get the DNS picked up properly ... reboot if not 
+
+
+5) IF didnt connect to network on install run rhn_register
+
+User denevil, pwd=C9
+
+
+6) ISOLCPU & relabel the root partition so its not confused with any other later Unix installs
+
+ SET DEVICE LABEL READY FOR GRUB  (** DONT FORGET UPDATE fstab OR IT WONT BOOT **)
+    e2label /dev/sda7 RH_ROOT
+   edit /etc/fstab
+    LABEL=RH_ROOT          /                       ext3    defaults        1 1
+
+ Also edit the /boot/grub/grub.conf
+         kernel /vmlinuz-2.6.18-194.el5 ro root=LABEL=RH_ROOT    nohz=off  isolcpus=1,6,7,8,9,10,11    rhgb
+         
+         or for hex core
+         
+         kernel /vmlinuz-2.6.18-194.el5 ro root=LABEL=RH_ROOT    nohz=off  isolcpus=1,2,3    rhgb
+ 
+ 
+ NEW KERNEL PARAMS
+     cat /sys/devices/system/cpu/cpuidle/current_driver
+     
+         intel_idle.max_cstate=0   idle=poll   transparent_hugepage=never processor.max_cstate=0
+  
+ 
+ 
+ro 
+root=LABEL=/
+transparent_hugepages=never
+intel_idle.max_cstate=0
+nohz=off
+nosoftlockup
+idle=poll
+=============
+ 
+ro
+root=/dev/mapper/vg_xldn0798nap-lv_root
+rd_NO_LUKS 
+KEYBOARDTYPE=pc
+KEYTABLE=uk
+rd_LVM_LV=vg_xldn0798nap/lv_root
+rd_LVM_LV=vg_xldn0798nap/lv_swap
+rd_NO_MD
+SYSFONT=latarcyrheb-sun16
+crashkernel=auto
+LANG=C
+vga=773
+pci=bfsort
+rd_NO_DM
+transparent_hugepages=never
+intel_idle.max_cstate=0
+nohz=off
+nosoftlockup
+idle=poll
+ 
+6) Upload dist.zip, tools.zip
+ 
+7) create setup.sh and invoke from .bashrc
+
+typeset -x JAVA_HOME=/home/smt/tools/jdk1.6.0_21
+typeset -x HWLOC_HOME=/home/smt/tools/hwloc
+typeset -x PATH=$JAVA_HOME/bin:$PATH:$HWLOC_HOME/bin
+typeset -x LD_LIBRARY_PATH=$JAVA_HOME/lib:$PATH:$HWLOC_HOME/lib:$HOME/dist/lib
+
+8) Disable unwanted services
+
+ /sbin/chkconfig --list | grep "5:on"
+  
+chkconfig irqbalance off
+chkconfig anacron off
+chkconfig atd off
+chkconfig avahi-daemon off 
+chkconfig bluetooth off 
+chkconfig cups off       
+chkconfig hidd off       
+chkconfig isdn off       
+chkconfig pand off       
+chkconfig rhnsd off      
+chkconfig sendmail off   
+chkconfig cpuspeed off   
+chkconfig NetworkManager off
+chkconfig iptables off
+chkconfig ip6tables off
+chkconfig libvirt-guests off
+
+
+9) change /etc/inittab default run lvl from 5 to 3    
+        id:3:initdefault
+
+                                    
+A) add /etc/hosts
+
+10.0.0.2        SIM-SERVER
+192.168.0.2     SIM-SERVER-10GE-A
+192.168.2.2     SIM-SERVER-10GE-B
+127.0.0.1       TRADE-SERVER localhost.localdomain localhost 
+
+
+B) 
+
+echo performance >/sys/devices/system/cpu/cpu0/cpufreq/scaling_governor
+echo performance >/sys/devices/system/cpu/cpu10/cpufreq/scaling_governor
+echo performance >/sys/devices/system/cpu/cpu11/cpufreq/scaling_governor
+echo performance >/sys/devices/system/cpu/cpu1/cpufreq/scaling_governor
+echo performance >/sys/devices/system/cpu/cpu2/cpufreq/scaling_governor
+echo performance >/sys/devices/system/cpu/cpu3/cpufreq/scaling_governor
+echo performance >/sys/devices/system/cpu/cpu4/cpufreq/scaling_governor
+echo performance >/sys/devices/system/cpu/cpu5/cpufreq/scaling_governor
+echo performance >/sys/devices/system/cpu/cpu6/cpufreq/scaling_governor
+echo performance >/sys/devices/system/cpu/cpu7/cpufreq/scaling_governor
+echo performance >/sys/devices/system/cpu/cpu8/cpufreq/scaling_governor
+echo performance >/sys/devices/system/cpu/cpu9/cpufreq/scaling_governor
+
+
+C)setup system files
+
+===> /etc/rc.local 
+
+#!/bin/sh
+#
+# This script will be executed *after* all the other init scripts.
+# You can put your own initialization stuff in here if you don't
+# want to do the full Sys V style init stuff.
+
+touch /var/lock/subsys/local
+
+#sfcaffinity_config auto
+
+ethtool -C eth2 adaptive-rx off
+ethtool -C eth2 rx-usecs 0 rx-frames 0 rx-usecs-high 0 rx-usecs-low 0 pkt-rate-low 0 pkt-rate-high 0
+ethtool -C eth2 rx-usecs-irq 60
+#ethtool -A eth2 rx off tx off 
+
+ethtool -C eth3 adaptive-rx off
+ethtool -C eth3 rx-usecs 0 rx-frames 0 rx-usecs-high 0 rx-usecs-low 0 pkt-rate-low 0 pkt-rate-high 0
+ethtool -C eth2 rx-usecs-irq 60
+#ethtool -A eth3 rx off tx off 
+
+***** only use rx irq 60  IF using openOnload
+
+
+echo 0 > /sys/class/net/eth2/device/tso
+echo 0 > /sys/class/net/eth3/device/tso
+
+echo 0 > /sys/class/net/eth2/device/lro
+echo 0 > /sys/class/net/eth3/device/lro
+
+
+===> /etc/sysctl.conf
+# Kernel sysctl configuration file for Red Hat Linux
+#
+# For binary values, 0 is disabled, 1 is enabled.  See sysctl(8) and
+# sysctl.conf(5) for more details.
+
+kernel.sysrq = 0
+kernel.core_uses_pid = 1
+
+net.ipv4.tcp_low_latency=1
+
+# Controls the maximum size of a message, in bytes
+kernel.msgmnb = 65536
+
+# Controls the default maxmimum size of a mesage queue
+kernel.msgmax = 65536
+
+# Controls the maximum shared segment size, in bytes
+kernel.shmmax = 68719476736
+
+# Controls the maximum number of shared memory segments, in pages
+kernel.shmall = 4294967296
+
+kernal.isolcpus=6,7,8,9,10,11
+kernel.vsyscall64 = 2
+
+#vm.nr_hugepages=512
+ 
+net.ipv4.tcp_mem=8388608 8388608 8388608
+net.ipv4.tcp_rmem=8388608 8388608 8388608
+net.ipv4.tcp_wmem=8388608 8388608 8388608
+net.ipv4.tcp_syncookies=0
+net.ipv4.tcp_sack=0
+net.ipv4.tcp_dsack=0
+net.ipv4.tcp_timestamps=0
+net.ipv4.tcp_window_scaling=0
+
+
+===> IF using Mellanox and RDMA 
+    /etc/security/limits.conf 
+        add following to end
+    * soft memlock unlimited
+    * hard memlock unlimited
+ 
+DONT REBOOT
+
+E) add to .bashrc
+
+. ./setup.sh
+
+ENSURE have the SOCKET_FACTORY_CLASS env var set to   com.rr.core.socket.LinuxSocketFactory
+
+
+REBOOT
+
+install i7z-0.26.tar  i7z monitors core temp
+IF coretemp not loaded try modprobe coretemp .... if still not found 
+     rpm -Uvh http://elrepo.org/elrepo-release-0.1-1.el5.elrepo.noarch.rpm #rpm --import http://elrepo.org/RPM-GPG-KEY-elrepo.org
+     yum --enablerepo=elrepo install kmod-coretemp
+     modprobe coretemp
+
+
+
+F) Copy the tools and install and dist and *sh from another box or see instructions in linux.txt
+
+
+G) Overclock .. additional BIOS settings
+
+    2Ghz Memory A50 BIOS
+    --------------------------------------
+    base clock 180
+    cpu multiplier x22
+    QPI 4.8
+    memory 1333
+    MCH_STRAP=1333Mhz
+    uncore multiplier x20
+    Memory Settings all Auto
+    
+    ==> Memory will run at (1333/origBase) * 180 = 1800 Mhz
+    ==> Uncore at 3.6Ghz
+    ==> QPI at (4800 / origBase) * 180 = 36 * 180 = 6400 
+
+    SiS Sandra : 
+        Mem Latency Benchmark   
+            Mem latency  (low best)             64ns
+            Speed Factor (low best)             63
+        Cache Memory
+            Cache/Mem Bandwidth (high best)     258GB/s
+            Speed Factor (low best)             34
+            
+        Memory Bandwidth (higher)               39
+        
+        Processor Arithmetic                    
+            Aggregate (higher)                  234
+            Drystone (higher)                   316
+            Whetstone (higher)                  152
+            
+        Multi Core Efficiency
+            Inter Core Bandwidth (higher)       46 GB/s
+            Inter Core Latency (lower)          37ns        
+            
+
+
+===================================================
+
+UBUNTU 10.10
+
+hostname  : TRADE-SERVER
+
+hdd#1  /dev/sdb
+            /dev/sdb5   /usr    ext4    100000MB    
+            
+SSD#2  /dev/sdc
+            /dev/sdc5   /       ext4    10000MB             
+            /dev/sdc6   /tmp    ext4    10000MB     
+            /dev/sdc7   /home   ext4    27600MB     
+                                FREE    ZERO                     
+
+User : smt
+
+Device for boot loader install : /dev/sda
+
+F) Install patches UBUNTU
+
+sudo apt-get install chkconfig
+sudo apt-get install openssh-server openssh-client
+sudo apt-get install ethtool
+sudo apt-get install build-essential linux-headers-`uname -r`
+sudo apt-get install gawk
+sudo apt-get install rpmbuild
+
+
+a) add entry for redhat to the grub 2 config and rebuild config  
+
+sudo -i
+vi /etc/grub.d/40*
+  add after comment
+    menuentry 'REDHAT 5.5' --class gnu-linux --class gnu --class os {
+        insmod ext3
+        set root='(hd1,1)'
+        linux (hd1,1)/vmlinuz-2.6.18-194.el5 ro root=LABEL=RH_ROOT isolcpus=6,7,8,9,10,11 rhgb 
+        initrd (hd1,1)/initrd-2.6.18-194.el5.img
+    }
+
+The (hd1,1) should be the BOOT device not the root device, using root=/dev/sd.. doesnt work
+
+vi /etc/default/grub and change GRUB_DEFAULT from 0 to 7 or whatever is appropriate !
+
+cd /boot/grub
+update-grub
+
+
+
+G) Upload dist.zip, jdk, hwloc, put hwloc in ./install/hwloc
+./configure --prefix=/home/smt/tools/hwloc
+make
+make install
+
+
+
+==================================================================
+
+Install intel microcode under /etc/firmware .... just backup the old .dat file
+
+
+=============================================================================
+
+install tuned
+
+ 244  rpmbuild --rebuild /INSTALL/tuned-0.2.19-11.el6.1.src.rpm
+  245  rpm -ivh /root/rpmbuild/RPMS/noarch/tuned-0.2.19-11.el6.1.noarch.rpm
+  246  rpm -ivh /root/rpmbuild/RPMS/noarch/tuned-utils-0.2.19-11.el6.1.noarch.rpm
+
+tuned-adm profile latency-performance
+
+==> turn ktune and tuned daemons off
+
+tuned-adm off
+
+
+chkconfig acpid off
+chkconfig blk-availability off
+chkconfig certmonger off
+chkconfig mcelogd off
+chkconfig portreserve off
+chkconfig postfix off
+chkconfig rpcbind off
+chkconfig rsyslog off
+chkconfig sysstat off
+
+
+=============================================================================
+
+
+INSTALL SOLARFLARE (requires linux install to have dev env)
+
+copy the SolarFlare drivers to /INSTALL/SOLARFLARE
+
+s1) rpmbuild --rebuild /INSTALL/SOLARFLARE/sfc-3.0.6.2199-1.src.rpm 
+
+==> CREATES  /usr/src/redhat/RPMS/x86_64/kernel-module-sfc-RHEL5-2.6.18-194.el5-3.0.6.2199-1.x86_64.rpm
+
+s2) Install the RPM
+
+rpm -ivh /usr/src/redhat/RPMS/x86_64/kernel-module-sfc-RHEL5-2.6.18-194.el5-3.0.6.2199-1.x86_64.rpm
+
+==> this installs the hw and eth2 and eth3 are now available
+==> use rpm -e if old version around
+
+s3) install OpenOnLoad
+
+    tar -xvf openonload-20100923.tar 
+    ./scripts/onload_install
+    modprobe -r sfc
+    modprobe sfc
+
+    to utilise openonload simply run onload and pass in prog args eg  "onload java ...."
+
+s4) install BIOS update tools
+    
+    gunzip SF-104451-LS-4_Solarstorm_Linux_and_VMware_ESX_Utilities_RPM.tgz
+    tar -xvf SF-104451-LS-4_Solarstorm_Linux_and_VMware_ESX_Utilities_RPM.tar 
+    ==> creates ==> sfutils-3.0.8.2216-1.rpm
+    rpm -ivh /INSTALL/SOLARFLARE/sfutils-3.0.8.2216-1.rpm
+    
+    (if get clash with  previous version use rpm -e {oldRpm} 
+    
+s5) check is BIOS update is required and update
+    
+    sfupdate
+    sfupdate --write
+    
+    onload_tool disable_cstates persist
+    
+    
+s6a) tweak driver settings  
+
+cd /sys/module/sfc/parameters
+[root@SIM-SERVER parameters]# cat rx_irq_mod_usec
+60
+[root@SIM-SERVER parameters]# cat tx_irq_mod_usec
+150
+[root@SIM-SERVER parameters]# cat interrupt_mode
+0
+[root@SIM-SERVER parameters]# cat separate_tx_channels
+0
+[root@SIM-SERVER parameters]# cat irq_adapt_enable
+1
+[root@SIM-SERVER parameters]# pwd
+
+    add to /etc/modprobe.conf
+        alias eth2 sfc
+        alias eth3 sfc
+        
+        options sfc rss_cpus=12
+        options sfc rx_irq_mod_usec=0
+        options sfc tx_irq_mod_usec=0
+        options sfc separate_tx_channels=0
+        options sfc irq_adapt_enable=0
+    
+    
+s6b) configure sfc_affinity  
+    
+    add to rc.local
+        sfcaffinity_config auto     
+
+    on reboot use -> sfcaffinity_config  check | show    to checkloaded 
+    
+s7) configure sfcaffinity_tool
+
+(
+      # exchange in CPU5
+      echo "tcp ${OM_HOST_FOR_CLIENT}:${OM_CLIENT_SERVER_PORT} rxq 7"
+      echo "tcp ${OM_HOST_FOR_EXCHANGE}:${OM_TO_EX_SIM_LOCAL_PORT} rxq 8"
+
+) | sfcaffinity_tool --exit-on-eof
+    
+  this should be placed in the network setup script for solarFlare, different scripts required for sim server          
+
+s8) use NEAT to add eth2, eth3
+
+-------------------------------------
+
+FORCE SFC VERSION OVER OPENONLOADS VERSION
+
+modinfo sfc  | less
+rpmbuild --rebuild /INSTALL/SOLARFLARE/sfc-3.1.0.4047-1.src.rpm 
+rpm --force -ivh /usr/src/redhat/RPMS/x86_64/kernel-module-sfc-RHEL5-2.6.18-194.el5-3.1.0.4047-1.x86_64.rpm
+
+
+--------------------------------------
+
+latest onload tuning
+
+echo 0 > /sys/class/net/eth2/device/lro 
+echo 0 > /sys/class/net/eth3/device/lro 
+
+/etc/modprobe.conf
+alias eth2 sfc
+alias eth3 sfc
+options sfc rx_alloc_method=1
+options sfc_tune idle_enable=2
+
+
+
+
+

@@ -1,0 +1,11 @@
+@INCLUDE Encoder.include
+
+    @Override public void addStats( final ReusableString outBuf, final Event msg, final long time ) { /* nothing */ }
+
+    @Override public SoupBinEncoder newInstance() {
+        final byte[] buf = new byte[ _builder.getBuffer().length ];
+        final int offset = _builder.getOffset();
+        SoupBinEncoder e = new SoupBin3Encoder( getComponentId(), buf, offset );
+        return e;
+    }
+

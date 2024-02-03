@@ -1,0 +1,63 @@
+
+    @Override
+    public final int parseHeader( final byte[] msg, final int offset, final int bytesRead ) {
+
+        _appId = -1;       
+        _binaryMsg = msg;
+        _maxIdx = bytesRead + offset; // temp assign maxIdx to last data bytes in bufferMap
+        _offset = offset;
+        _builder.start( msg, offset, _maxIdx );
+        
+        if ( bytesRead < 4 ) {
+            ReusableString copy = TLC.instance().getString();
+            if ( bytesRead == 0 )  {
+                copy.setValue( "{empty}" );
+            } else{
+                copy.setValue( msg, offset, bytesRead );
+            }
+            throw new RuntimeDecodingException( "Millenium Messsage too small, len=" + bytesRead, copy );
+        } else if ( msg.length < _maxIdx ){
+            throwDecodeException( "Buffer too small for specified bytesRead=" + bytesRead + ",offset=" + offset + ", bufLen=" + msg.length );
+        }
+        
+        final byte version = _builder.decodeByte();
+        
+        if ( version != _protocolVersion ) {
+            throwDecodeException( "Expected version="  + _protocolVersion + " not " + version );
+        }
+
+        _msgStatedLen = _builder.decodeShort() + 3; // add 3 to pass protoVer and length
+
+        _msgType = _builder.decodeByte();
+        
+        _maxIdx = _msgStatedLen + _offset;  // correctly assign maxIdx as last bytes of current message 
+
+        if ( _maxIdx > _binaryMsg.length )  _maxIdx  = _binaryMsg.length;
+        
+        return _msgStatedLen;
+    }
+    
+    public final byte getAppId() {
+        return _appId;
+    }
+    
+    // enrich of NOS only used by exchange emulator
+    
+    private static final ViewString _lseREC = new ViewString( "L" );
+
+    private void enrich( NewOrderSingleImpl nos ) {
+        
+        ExchangeInstrument instr = null;
+        
+        if ( _instrumentId > 0 ) {
+            instr = _instrumentLocator.getExchInstByExchangeLong( ExchangeCode.XLON, _instrumentId );
+        }
+
+        if ( instr != null ) {
+            nos.setCurrency( instr.getCurrency() );
+            nos.getSymbolForUpdate().setValue( ((ExchangeInstrument)instr).getExchangeSymbol() );
+        }
+        
+        nos.setInstrument( instr );
+    }
+    

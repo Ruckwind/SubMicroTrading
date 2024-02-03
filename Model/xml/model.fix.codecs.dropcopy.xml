@@ -1,0 +1,61 @@
+<!--suppress ALL -->
+
+@SECTION FIX_DROP_COPY_CODECS START
+
+            <Codec id="DropCopy44" fix="DC4.4" decodeInclude="DropCopy44Decoder.include" encodeInclude="DropCopy44Encoder.include" extends="Standard44">
+                <MessageMap id="BaseExecRpt" fixMessageId="BaseExecRpt" ignore="true">
+                    <!-- senderCompId (49), senderSubId(50), targetCompId(56), targetSubId(57) -->
+                    <Map fixTag="49"><Hook type="decode" code="execCheckSenderCompID()"/><Hook type="encode" code="_builder.encodeString( FixDictionaryDC44.SenderCompID, _senderCompId ); // tag49"/></Map>
+                    <Map fixTag="56"><Hook type="decode" code="execCheckTargetCompID()"/><Hook type="encode" code="_builder.encodeString( FixDictionaryDC44.TargetCompID, _targetCompId ); // tag56"/></Map>
+                    <Map fixTag="50"><Hook type="decode" code="execCheckSenderSubID()"/><Hook type="encode" code="_builder.encodeString( FixDictionaryDC44.SenderSubID, _senderSubId ); // tag50"/></Map>
+                    <Map fixTag="57"><Hook type="decode" code="execCheckTargetSubID()"/><Hook type="encode" code="_builder.encodeString( FixDictionaryDC44.TargetSubID, _targetSubId ); // tag57"/></Map>
+                    <Map fixTag="52" eventAttr="eventTimestamp"/>
+                </MessageMap>
+                <MessageMap id="FullCompIDCheck" fixMessageId="FullCompIDCheck" ignore="true">
+                    <!-- senderCompId (49), senderSubId(50), targetCompId(56), targetSubId(57) -->
+                    <Map fixTag="49"><Hook type="decode" code="decodeSenderCompID()"/><Hook type="encode" code="_builder.encodeString( FixDictionaryDC44.SenderCompID, _senderCompId ); // tag49"/></Map>
+                    <Map fixTag="56"><Hook type="decode" code="decodeTargetCompID()"/><Hook type="encode" code="_builder.encodeString( FixDictionaryDC44.TargetCompID, _targetCompId ); // tag56"/></Map>
+                    <Map fixTag="50"><Hook type="decode" code="decodeSenderSubID()"/><Hook type="encode" code="_builder.encodeString( FixDictionaryDC44.SenderSubID, _senderSubId ); // tag50"/></Map>
+                    <Map fixTag="57"><Hook type="decode" code="decodeTargetSubID()"/><Hook type="encode" code="_builder.encodeString( FixDictionaryDC44.TargetSubID, _targetSubId ); // tag57"/></Map>
+                    <Map fixTag="52" eventAttr="eventTimestamp"/>
+                </MessageMap>
+                <MessageMap id="LightCompIDCheck" fixMessageId="LightCompIDCheck" ignore="true">
+                    <!-- senderCompId (49), senderSubId(50), targetCompId(56), targetSubId(57) -->
+                    <Map fixTag="49"><Hook type="decode" code="getValLength()"/><Hook type="encode" code="_builder.encodeString( FixDictionaryDC44.SenderCompID, _senderCompId ); // tag49"/></Map>
+                    <Map fixTag="56"><Hook type="decode" code="getValLength()"/><Hook type="encode" code="_builder.encodeString( FixDictionaryDC44.TargetCompID, _targetCompId ); // tag56"/></Map>
+                    <Map fixTag="50"><Hook type="decode" code="getValLength()"/><Hook type="encode" code="_builder.encodeString( FixDictionaryDC44.SenderSubID, _senderSubId ); // tag50"/></Map>
+                    <Map fixTag="57"><Hook type="decode" code="getValLength()"/><Hook type="encode" code="_builder.encodeString( FixDictionaryDC44.TargetSubID, _targetSubId ); // tag57"/></Map>
+                    <Map fixTag="52" eventAttr="eventTimestamp"/>
+                </MessageMap>
+
+                <MessageMap id="StratInstrument"        eventId="StratInstrument"           fixMessageId="StratInstrument">
+                    <Map fixTag="207">
+                        <Hook type="postDecode" code="msg.setInstrument( lookupInst() )"/>
+                        <Hook type="encode"     code="encodeInstrument( tmpStratInstrument.getInstrument() )"/>
+                    </Map>
+                </MessageMap>
+
+                <MessageMap id="StratInstrumentState"   eventId="StratInstrumentState"      fixMessageId="StratInstrumentState">
+                    <Map fixTag="207">
+                        <Hook type="postDecode" code="msg.setInstrument( lookupInst() )"/>
+                        <Hook type="encode"     code="encodeInstrument( tmpStratInstrumentState.getInstrument() )"/>
+                    </Map>
+                </MessageMap>
+
+                <MessageMap id="TradeCorrect"           eventId="TradeCorrect"              fixMessageId="TradeCorrect"     extends="BaseExecRpt"/>
+
+                <MessageMap id="TradeCancel"            eventId="TradeCancel"               fixMessageId="TradeCancel"      extends="BaseExecRpt"/>
+
+                <MessageMap id="AppRun"            eventId="AppRun"               fixMessageId="AppRun"      extends="FullCompIDCheck"/>
+
+                <MessageMap id="StrategyRun"            eventId="StrategyRun"               fixMessageId="StrategyRun"      extends="FullCompIDCheck"/>
+
+                <MessageMap id="StrategyState"          eventId="StrategyState"             fixMessageId="StrategyState"    extends="FullCompIDCheck"/>
+
+                <MessageMap id="TradeNew"  eventId="TradeNew"      fixMessageId="PartialFill"        extends="BaseExecRpt">
+                    <Map fixTag="150"><Hook type="encode" code="_builder.encodeByte( 150, (byte)'F' )"/></Map>
+                </MessageMap>
+
+            </Codec>
+
+@SECTION FIX_DROP_COPY_CODECS END

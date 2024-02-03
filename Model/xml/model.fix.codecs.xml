@@ -1,0 +1,371 @@
+<!--suppress ALL -->
+
+
+@SECTION FIX_CODECS START
+
+            <Codec id="MD44" fix="MD4.4"
+                   decodeInclude="MDDecoder44.include"
+                   encodeInclude="MDEncoder44.include"
+                   encodeBuilder="com.rr.core.codec.ReadableMDFastFixEncoder">
+
+                <!-- following entries map complex types to fix tags -->
+
+                <ComplexType typeId="EncryptMethod" tag="98"/>
+                <ComplexType typeId="Side" tag="54"/>
+                <ComplexType typeId="SecurityIDSource" tag="22"/>
+                <ComplexType typeId="MDUpdateAction" tag="279"/>
+                <ComplexType typeId="MDEntryType" tag="269"/>
+                <ComplexType typeId="Side" tag="54"/>
+                <ComplexType typeId="SecurityType" tag="167"/>
+                <ComplexType typeId="CountryCode" tag="421"/>
+                <ComplexType typeId="DataSrc" tag="9818"/>
+                <ComplexType typeId="SecDefSpecialType" tag="9819"/>
+                <ComplexType typeId="CompanyStatusType" tag="9820"/>
+
+                <MessageMap id="LightCompIDCheck" fixMessageId="LightCompIDCheck" ignore="true">
+                    <!-- senderCompId (49), senderSubId(50), targetCompId(56), targetSubId(57) -->
+                    <Map fixTag="49"><Hook type="decode" code="getValLength()"/><Hook type="encode" code="_builder.encodeString( FixDictionaryMD44.SenderCompID, _senderCompId ); // tag49"/></Map>
+                    <Map fixTag="56"><Hook type="decode" code="getValLength()"/><Hook type="encode" code="_builder.encodeString( FixDictionaryMD44.TargetCompID, _targetCompId ); // tag56"/></Map>
+                    <Map fixTag="50"><Hook type="decode" code="getValLength()"/><Hook type="encode" code="_builder.encodeString( FixDictionaryMD44.SenderSubID, _senderSubId ); // tag50"/></Map>
+                    <Map fixTag="57"><Hook type="decode" code="getValLength()"/><Hook type="encode" code="_builder.encodeString( FixDictionaryMD44.TargetSubID, _targetSubId ); // tag57"/></Map>
+                    <Map fixTag="52" eventAttr="eventTimestamp"/>
+                </MessageMap>
+
+                <MessageMap id="BaseRequest" fixMessageId="BaseRequest" ignore="true" extends="LightCompIDCheck"/>
+                <MessageMap id="BaseReply" fixMessageId="BaseRequest" ignore="true" extends="LightCompIDCheck"/>
+
+                <MessageMap id="Heartbeat" eventId="Heartbeat" fixMessageId="Heartbeat" extends="LightCompIDCheck"/>
+                <MessageMap id="Logon" eventId="Logon" fixMessageId="Logon">
+                    <!-- senderCompId (49), senderSubId(50), targetCompId(56), targetSubId(57) -->
+                </MessageMap>
+                <MessageMap id="Logout" eventId="Logout" fixMessageId="Logout">
+                    <!-- senderCompId (49), senderSubId(50), targetCompId(56), targetSubId(57) -->
+                </MessageMap>
+
+                <MessageMap id="SessionReject" eventId="SessionReject" fixMessageId="SessionReject" extends="LightCompIDCheck"/>
+                <MessageMap id="ResendRequest" eventId="ResendRequest" fixMessageId="ResendRequest" extends="LightCompIDCheck"/>
+                <MessageMap id="SequenceReset" eventId="SequenceReset" fixMessageId="SequenceReset" extends="LightCompIDCheck"/>
+                <MessageMap id="TestRequest" eventId="TestRequest" fixMessageId="TestRequest" extends="LightCompIDCheck"/>
+                <MessageMap id="TradingSessionStatus" eventId="TradingSessionStatus" fixMessageId="TradingSessionStatus" extends="LightCompIDCheck"/>
+
+                <MessageMap id="MDRequest" eventId="MDRequest" fixMessageId="MDRequest" extends="LightCompIDCheck"/>
+
+                <MessageMap id="MassInstrumentStateChange" eventId="MassInstrumentStateChange" fixMessageId="MassInstrumentStateChange" extends="LightCompIDCheck"/>
+
+                <MessageMap id="SecurityStatus" eventId="SecurityStatus" fixMessageId="SecurityStatus" extends="LightCompIDCheck">
+                    <Hook type="postDecode" code="if ( msg.getSecurityExchange() == ExchangeCode.UNKNOWN ) msg.setSecurityExchange( _defaultExchange )"/>
+                </MessageMap>
+
+                <MessageMap id="SecurityDefinition" eventId="SecurityDefinition" fixMessageId="SecurityDefinition" extends="LightCompIDCheck">
+                    <Map fixTag="52" eventAttr="eventTimestamp">
+                        <Hook type="encode" code="_builder.encodeUTCTimestamp( FixDictionaryMD44.SendingTime, msg.getEventTimestamp() ); // tag52"/>
+                    </Map>
+                </MessageMap>
+
+                <!-- the maps required for repeating groups for SecurityDefinition -->
+                <MessageMap id="SecDefEvent" eventId="SecDefEvent" fixMessageId="SecDefEvent"/>
+                <MessageMap id="SecDefLeg" eventId="SecDefLeg" fixMessageId="SecDefLeg"/>
+                <MessageMap id="SecurityAltID" eventId="SecurityAltID" fixMessageId="SecurityAltID"/>
+                <MessageMap id="SDFeedType" eventId="SDFeedType" fixMessageId="SDFeedType"/>
+
+                <MessageMap id="MDIncRefresh" eventId="MDIncRefresh" fixMessageId="MDIncRefresh" extends="LightCompIDCheck" maxForceTableSwitch="512" maxSubBand="512" minSubSwitchPackSize="8"/>
+                <MessageMap id="MDEntry" eventId="MDEntry" fixMessageId="MDEntry" maxForceTableSwitch="512" maxSubBand="512" minSubSwitchPackSize="8"/>
+
+                <MessageMap id="MDSnapshotFullRefresh" eventId="MDSnapshotFullRefresh" fixMessageId="MDSnapshotFullRefresh" extends="LightCompIDCheck" maxForceTableSwitch="512" maxSubBand="256" minSubSwitchPackSize="4"/>
+                <MessageMap id="MDSnapEntry" eventId="MDSnapEntry" fixMessageId="MDSnapEntry" maxForceTableSwitch="512" maxSubBand="256" minSubSwitchPackSize="4"/>
+
+            </Codec>
+
+            <Codec id="MD50" fix="MD5.0" extends="MD44" decodeInclude="MDDecoder50.include" encodeInclude="MDEncoder50.include" encodeBuilder="com.rr.core.codec.ReadableMDFastFixEncoder">
+
+                <MessageMap id="LightCompIDCheck" fixMessageId="LightCompIDCheck" ignore="true">
+                    <!-- senderCompId (49), senderSubId(50), targetCompId(56), targetSubId(57) -->
+                    <Map fixTag="49"><Hook type="decode" code="getValLength()"/><Hook type="encode" code="_builder.encodeString( FixDictionaryMD50.SenderCompID, _senderCompId ); // tag49"/></Map>
+                    <Map fixTag="56"><Hook type="decode" code="getValLength()"/><Hook type="encode" code="_builder.encodeString( FixDictionaryMD50.TargetCompID, _targetCompId ); // tag56"/></Map>
+                    <Map fixTag="50"><Hook type="decode" code="getValLength()"/><Hook type="encode" code="_builder.encodeString( FixDictionaryMD50.SenderSubID, _senderSubId ); // tag50"/></Map>
+                    <Map fixTag="57"><Hook type="decode" code="getValLength()"/><Hook type="encode" code="_builder.encodeString( FixDictionaryMD50.TargetSubID, _targetSubId ); // tag57"/></Map>
+                    <Map fixTag="52" eventAttr="eventTimestamp"/>
+                </MessageMap>
+
+                <MessageMap id="SecurityDefinition" eventId="SecurityDefinition" fixMessageId="SecurityDefinition" extends="LightCompIDCheck">
+                    <Map fixTag="52" eventAttr="eventTimestamp">
+                        <Hook type="encode" code="_builder.encodeUTCTimestamp( FixDictionaryMD50.SendingTime, msg.getEventTimestamp() ); // tag52"/>
+                    </Map>
+                </MessageMap>
+
+                <MessageMap id="SecurityDefinitionUpdate" eventId="SecurityDefinitionUpdate" fixMessageId="SecurityDefinitionUpdate" extends="LightCompIDCheck">
+                    <Map fixTag="52" eventAttr="eventTimestamp">
+                        <Hook type="encode" code="_builder.encodeUTCTimestamp( FixDictionaryMD50.SendingTime, msg.getEventTimestamp() ); // tag52"/>
+                    </Map>
+                </MessageMap>
+
+                <MessageMap id="ProductSnapshot"          eventId="ProductSnapshot"          fixMessageId="ProductSnapshot"          extends="LightCompIDCheck"/>
+
+            </Codec>
+
+            <Codec id="Standard44" fix="4.4" decodeInclude="StandardDecoder44.include" encodeInclude="StandardEncoder44.include">
+
+                <!-- following entries map complex types to fix tags -->
+
+                <ComplexType typeId="BookingType" tag="775"/>
+                <ComplexType typeId="CxlRejReason" tag="102"/>
+                <ComplexType typeId="CxlRejResponseTo" tag="434"/>
+                <ComplexType typeId="EncryptMethod" tag="98"/>
+                <ComplexType typeId="ExecInst" tag="18"/>
+                <ComplexType typeId="ExecRestatementReason" tag="378"/>
+                <ComplexType typeId="ExecType" tag="150"/>
+                <ComplexType typeId="HandlInst" tag="21"/>
+                <ComplexType typeId="LiquidityInd" tag="851"/>
+                <ComplexType typeId="MultiLegReportingType" tag="442"/>
+                <ComplexType typeId="SubsReqType" tag="263"/>
+                <ComplexType typeId="OrderCapacity" tag="528"/>
+                <ComplexType typeId="OrderRestrictions" tag="529"/>
+                <ComplexType typeId="OrdRejReason" tag="103"/>
+                <ComplexType typeId="OrdStatus" tag="39"/>
+                <ComplexType typeId="OrdType" tag="40"/>
+                <ComplexType typeId="PartyIDSource" tag="447"/>
+                <ComplexType typeId="PositionEffect" tag="77"/>
+                <ComplexType typeId="SecurityType" tag="167"/>
+                <ComplexType typeId="SecurityIDSource" tag="22"/>
+                <ComplexType typeId="SessionRejectReason" tag="373"/>
+                <ComplexType typeId="Side" tag="54"/>
+                <ComplexType typeId="TimeInForce" tag="59"/>
+                <ComplexType typeId="TargetStrategy" tag="847"/>
+
+                <MessageMap id="FullCompIDCheck" fixMessageId="FullCompIDCheck" ignore="true">
+                    <!-- senderCompId (49), senderSubId(50), targetCompId(56), targetSubId(57) -->
+                    <Map fixTag="49"><Hook type="decode" code="decodeSenderCompID()"/><Hook type="encode" code="_builder.encodeString( FixDictionary44.SenderCompID, _senderCompId ); // tag49"/></Map>
+                    <Map fixTag="56"><Hook type="decode" code="decodeTargetCompID()"/><Hook type="encode" code="_builder.encodeString( FixDictionary44.TargetCompID, _targetCompId ); // tag56"/></Map>
+                    <Map fixTag="50"><Hook type="decode" code="decodeSenderSubID()"/><Hook type="encode" code="_builder.encodeString( FixDictionary44.SenderSubID, _senderSubId ); // tag50"/></Map>
+                    <Map fixTag="57"><Hook type="decode" code="decodeTargetSubID()"/><Hook type="encode" code="_builder.encodeString( FixDictionary44.TargetSubID, _targetSubId ); // tag57"/></Map>
+                    <Map fixTag="52" eventAttr="eventTimestamp"/>
+                </MessageMap>
+                <MessageMap id="LightCompIDCheck" fixMessageId="LightCompIDCheck" ignore="true">
+                    <!-- senderCompId (49), senderSubId(50), targetCompId(56), targetSubId(57) -->
+                    <Map fixTag="49"><Hook type="decode" code="getValLength()"/><Hook type="encode" code="_builder.encodeString( FixDictionary44.SenderCompID, _senderCompId ); // tag49"/></Map>
+                    <Map fixTag="56"><Hook type="decode" code="getValLength()"/><Hook type="encode" code="_builder.encodeString( FixDictionary44.TargetCompID, _targetCompId ); // tag56"/></Map>
+                    <Map fixTag="50"><Hook type="decode" code="getValLength()"/><Hook type="encode" code="_builder.encodeString( FixDictionary44.SenderSubID, _senderSubId ); // tag50"/></Map>
+                    <Map fixTag="57"><Hook type="decode" code="getValLength()"/><Hook type="encode" code="_builder.encodeString( FixDictionary44.TargetSubID, _targetSubId ); // tag57"/></Map>
+                    <Map fixTag="52" eventAttr="eventTimestamp"/>
+                </MessageMap>
+                <MessageMap id="BaseRequest" fixMessageId="BaseRequest" ignore="true" extends="FullCompIDCheck"/>
+                <MessageMap id="NOS" eventId="NewOrderSingle" fixMessageId="NewOrderSingle" extends="BaseRequest">
+                    <!-- any tags present on decoding from RejectIfPresent will cause message to be rejected -->
+                    <RejectIfPresent fixTag="211"/>
+                    <RejectIfPresent fixTag="210"/>
+                    <RejectIfPresent fixTag="111"/>
+
+                    <!-- as all attributes of NewOrderSingle event match the fix dictionary no more mappings required -->
+                    <Map eventAttr="clOrdId" fixTag="11" maxOccurs="1" retainSrc="false">
+                        <Hook type="preEncode" code=""/>
+                        <Hook type="postEncode" code=""/>
+                    </Map>
+
+                    <!--  Hook type  preEncode / postEncode / preDecode / postDecode / encode / decode -->
+                    <Hook type="preDecode" code="if ( _nanoStats ) msg.setOrderReceived( getReceived() )"/>
+                    <Hook type="postDecode" code="enrich( msg )"/>
+                    <Hook type="preEncode" code=""/>
+
+                </MessageMap>
+                <MessageMap id="CancelReplaceRequest" eventId="CancelReplaceRequest" fixMessageId="CancelReplaceRequest" extends="BaseRequest">
+                    <Hook type="postDecode" code="enrich( msg )"/>
+                </MessageMap>
+                <MessageMap id="CancelRequest" eventId="CancelRequest" fixMessageId="CancelRequest" extends="BaseRequest">
+                    <Hook type="postDecode" code="enrich( msg )"/>
+                </MessageMap>
+                <MessageMap id="CancelReject" eventId="CancelReject" fixMessageId="CancelReject" extends="FullCompIDCheck"/>
+                <MessageMap id="BaseExecRpt" fixMessageId="BaseExecRpt" ignore="true">
+                    <!-- senderCompId (49), senderSubId(50), targetCompId(56), targetSubId(57) -->
+                    <Map fixTag="49"><Hook type="decode" code="execCheckSenderCompID()"/><Hook type="encode" code="_builder.encodeString( FixDictionary44.SenderCompID, _senderCompId ); // tag49"/></Map>
+                    <Map fixTag="56"><Hook type="decode" code="execCheckTargetCompID()"/><Hook type="encode" code="_builder.encodeString( FixDictionary44.TargetCompID, _targetCompId ); // tag56"/></Map>
+                    <Map fixTag="50"><Hook type="decode" code="execCheckSenderSubID()"/><Hook type="encode" code="_builder.encodeString( FixDictionary44.SenderSubID, _senderSubId ); // tag50"/></Map>
+                    <Map fixTag="57"><Hook type="decode" code="execCheckTargetSubID()"/><Hook type="encode" code="_builder.encodeString( FixDictionary44.TargetSubID, _targetSubId ); // tag57"/></Map>
+                    <Map fixTag="52" eventAttr="eventTimestamp"/>
+                </MessageMap>
+
+                <MessageMap id="ACK"            eventId="NewOrderAck"   fixMessageId="NewOrderAck"  extends="BaseExecRpt">
+                    <Hook type="preDecode" code="if ( _nanoStats ) msg.setAckReceived( _received )"/>
+                    <!--  DONT ENCODE ANYMORE - NOW JUST LOGGED -->
+                    <!--  <Hook type="postEncode" code="if ( _nanoStats ) _builder.encodeAckStats( msg.getOrderReceived(), msg.getOrderSent(), msg.getAckReceived(), Utils.nanoTime() )"/> -->
+                </MessageMap>
+
+                <MessageMap id="TradeNew"       eventId="TradeNew"      fixMessageId="Trade"        extends="BaseExecRpt"/>
+                <MessageMap id="Rejected"       eventId="Rejected"      fixMessageId="Rejected"     extends="BaseExecRpt"/>
+                <MessageMap id="Cancelled"      eventId="Cancelled"     fixMessageId="Cancelled"    extends="BaseExecRpt"/>
+                <MessageMap id="Replaced"       eventId="Replaced"      fixMessageId="Replaced"     extends="BaseExecRpt"/>
+                <MessageMap id="DoneForDay"     eventId="DoneForDay"    fixMessageId="DoneForDay"   extends="BaseExecRpt"/>
+                <MessageMap id="Stopped"        eventId="Stopped"       fixMessageId="Stopped"      extends="BaseExecRpt"/>
+                <MessageMap id="Expired"        eventId="Expired"       fixMessageId="Expired"      extends="BaseExecRpt"/>
+                <MessageMap id="Suspended"      eventId="Suspended"     fixMessageId="Suspended"    extends="BaseExecRpt"/>
+                <MessageMap id="Restated"       eventId="Restated"      fixMessageId="Restated"     extends="BaseExecRpt"/>
+                <MessageMap id="TradeCorrect"   eventId="TradeCorrect"  fixMessageId="TradeCorrect" extends="BaseExecRpt"/>
+                <MessageMap id="TradeCancel"    eventId="TradeCancel"   fixMessageId="TradeCancel"  extends="BaseExecRpt"/>
+                <MessageMap id="OrderStatus"    eventId="OrderStatus"   fixMessageId="OrderStatus"  extends="BaseExecRpt"/>
+
+                <MessageMap id="PendingNew"     eventId="PendingNew"     fixMessageId="PendingNew"      extends="BaseExecRpt"/>
+                <MessageMap id="PendingCancel"  eventId="PendingCancel"  fixMessageId="PendingCancel"   extends="BaseExecRpt"/>
+                <MessageMap id="PendingReplace" eventId="PendingReplace" fixMessageId="PendingReplace"  extends="BaseExecRpt"/>
+                <MessageMap id="Calculated"     eventId="Calculated"     fixMessageId="Calculated"      extends="BaseExecRpt"/>
+
+                <MessageMap id="Heartbeat" eventId="Heartbeat" fixMessageId="Heartbeat" extends="LightCompIDCheck"/>
+                <MessageMap id="Logon" eventId="Logon" fixMessageId="Logon">
+                    <!-- senderCompId (49), senderSubId(50), targetCompId(56), targetSubId(57) -->
+                </MessageMap>
+                <MessageMap id="Logout" eventId="Logout" fixMessageId="Logout">
+                    <!-- senderCompId (49), senderSubId(50), targetCompId(56), targetSubId(57) -->
+                </MessageMap>
+                <MessageMap id="SessionReject" eventId="SessionReject" fixMessageId="SessionReject" extends="LightCompIDCheck"/>
+                <MessageMap id="ResendRequest" eventId="ResendRequest" fixMessageId="ResendRequest" extends="LightCompIDCheck"/>
+                <MessageMap id="SequenceReset" eventId="SequenceReset" fixMessageId="SequenceReset" extends="LightCompIDCheck"/>
+                <MessageMap id="TestRequest" eventId="TestRequest" fixMessageId="TestRequest" extends="LightCompIDCheck"/>
+
+            </Codec>
+
+            <Codec id="Standard50" fix="5.0" decodeInclude="StandardDecoder50.include" encodeInclude="StandardEncoder50.include" extends="Standard44">
+
+                <MessageMap id="FullCompIDCheck" fixMessageId="FullCompIDCheck" ignore="true">
+                    <!-- senderCompId (49), senderSubId(50), targetCompId(56), targetSubId(57) -->
+                    <Map fixTag="49"><Hook type="decode" code="decodeSenderCompID()"/><Hook type="encode" code="_builder.encodeString( FixDictionary50.SenderCompID, _senderCompId ); // tag49"/></Map>
+                    <Map fixTag="56"><Hook type="decode" code="decodeTargetCompID()"/><Hook type="encode" code="_builder.encodeString( FixDictionary50.TargetCompID, _targetCompId ); // tag56"/></Map>
+                    <Map fixTag="50"><Hook type="decode" code="decodeSenderSubID()"/><Hook type="encode" code="_builder.encodeString( FixDictionary50.SenderSubID, _senderSubId ); // tag50"/></Map>
+                    <Map fixTag="57"><Hook type="decode" code="decodeTargetSubID()"/><Hook type="encode" code="_builder.encodeString( FixDictionary50.TargetSubID, _targetSubId ); // tag57"/></Map>
+                    <Map fixTag="52" eventAttr="eventTimestamp"/>
+                </MessageMap>
+                <MessageMap id="LightCompIDCheck" fixMessageId="LightCompIDCheck" ignore="true">
+                    <!-- senderCompId (49), senderSubId(50), targetCompId(56), targetSubId(57) -->
+                    <Map fixTag="49"><Hook type="decode" code="getValLength()"/><Hook type="encode" code="_builder.encodeString( FixDictionary50.SenderCompID, _senderCompId ); // tag49"/></Map>
+                    <Map fixTag="56"><Hook type="decode" code="getValLength()"/><Hook type="encode" code="_builder.encodeString( FixDictionary50.TargetCompID, _targetCompId ); // tag56"/></Map>
+                    <Map fixTag="50"><Hook type="decode" code="getValLength()"/><Hook type="encode" code="_builder.encodeString( FixDictionary50.SenderSubID, _senderSubId ); // tag50"/></Map>
+                    <Map fixTag="57"><Hook type="decode" code="getValLength()"/><Hook type="encode" code="_builder.encodeString( FixDictionary50.TargetSubID, _targetSubId ); // tag57"/></Map>
+                    <Map fixTag="52" eventAttr="eventTimestamp"/>
+                </MessageMap>
+                <MessageMap id="BaseExecRpt" fixMessageId="BaseExecRpt" ignore="true">
+                    <!-- senderCompId (49), senderSubId(50), targetCompId(56), targetSubId(57) -->
+                    <Map fixTag="49"><Hook type="decode" code="execCheckSenderCompID()"/><Hook type="encode" code="_builder.encodeString( FixDictionary50.SenderCompID, _senderCompId ); // tag49"/></Map>
+                    <Map fixTag="56"><Hook type="decode" code="execCheckTargetCompID()"/><Hook type="encode" code="_builder.encodeString( FixDictionary50.TargetCompID, _targetCompId ); // tag56"/></Map>
+                    <Map fixTag="50"><Hook type="decode" code="execCheckSenderSubID()"/><Hook type="encode" code="_builder.encodeString( FixDictionary50.SenderSubID, _senderSubId ); // tag50"/></Map>
+                    <Map fixTag="57"><Hook type="decode" code="execCheckTargetSubID()"/><Hook type="encode" code="_builder.encodeString( FixDictionary50.TargetSubID, _targetSubId ); // tag57"/></Map>
+                    <Map fixTag="52" eventAttr="eventTimestamp"/>
+                </MessageMap>
+
+            </Codec>
+
+            <Codec id="Standard42" fix="4.2" decodeInclude="StandardDecoder42.include" encodeInclude="StandardEncoder42.include" extends="Standard44">
+
+                <ComplexType typeId="ExecTransType" tag="20"/>
+
+                <MessageMap id="BaseRequest" fixMessageId="BaseRequest" ignore="true" extends="FullCompIDCheck">
+                    <Map fixTag="47"><Hook type="decode" code="msg.setOrderCapacity( decodeRule47A( _fixMsg[_idx++] ) )"/><Hook type="encode" code="_builder.encodeByte( FixDictionary42.Rule80A, encodeRule47A( msg.getOrderCapacity() ) )"/></Map>
+                </MessageMap>
+
+                <MessageMap id="FullCompIDCheck" fixMessageId="FullCompIDCheck" ignore="true">
+                    <!-- senderCompId (49), senderSubId(50), targetCompId(56), targetSubId(57) -->
+                    <Map fixTag="49"><Hook type="decode" code="decodeSenderCompID()"/><Hook type="encode" code="_builder.encodeString( FixDictionary42.SenderCompID, _senderCompId ); // tag49"/></Map>
+                    <Map fixTag="56"><Hook type="decode" code="decodeTargetCompID()"/><Hook type="encode" code="_builder.encodeString( FixDictionary42.TargetCompID, _targetCompId ); // tag56"/></Map>
+                    <Map fixTag="50"><Hook type="decode" code="decodeSenderSubID()"/><Hook type="encode" code="_builder.encodeString( FixDictionary42.SenderSubID, _senderSubId ); // tag50"/></Map>
+                    <Map fixTag="57"><Hook type="decode" code="decodeTargetSubID()"/><Hook type="encode" code="_builder.encodeString( FixDictionary42.TargetSubID, _targetSubId ); // tag57"/></Map>
+                    <Map fixTag="52" eventAttr="eventTimestamp"/>
+                </MessageMap>
+                <MessageMap id="LightCompIDCheck" fixMessageId="LightCompIDCheck" ignore="true">
+                    <!-- senderCompId (49), senderSubId(50), targetCompId(56), targetSubId(57) -->
+                    <Map fixTag="49"><Hook type="decode" code="getValLength()"/><Hook type="encode" code="_builder.encodeString( FixDictionary42.SenderCompID, _senderCompId ); // tag49"/></Map>
+                    <Map fixTag="56"><Hook type="decode" code="getValLength()"/><Hook type="encode" code="_builder.encodeString( FixDictionary42.TargetCompID, _targetCompId ); // tag56"/></Map>
+                    <Map fixTag="50"><Hook type="decode" code="getValLength()"/><Hook type="encode" code="_builder.encodeString( FixDictionary42.SenderSubID, _senderSubId ); // tag50"/></Map>
+                    <Map fixTag="57"><Hook type="decode" code="getValLength()"/><Hook type="encode" code="_builder.encodeString( FixDictionary42.TargetSubID, _targetSubId ); // tag57"/></Map>
+                    <Map fixTag="52" eventAttr="eventTimestamp"/>
+                </MessageMap>
+                <MessageMap id="BaseExecRpt" fixMessageId="BaseExecRpt" ignore="true">
+                    <Map fixTag="20"><Hook type="decode" code="// ignore 20"/><Hook type="encode" code="_builder.encodeByte( FixDictionary42.ExecTransType, (byte)'0' )"/></Map>
+                    <Map fixTag="32"><Hook type="decode" code="// ignore 32"/><Hook type="encode" code="_builder.encodeByte( FixDictionary42.LastQty, (byte)'0' )"/></Map>
+                    <Map fixTag="31"><Hook type="decode" code="// ignore 31"/><Hook type="encode" code="_builder.encodeByte( FixDictionary42.LastPx, (byte)'0' )"/></Map>
+                    <Map fixTag="47"><Hook type="decode" code="// ignore 47"/><Hook type="encode" code="_builder.encodeByte( FixDictionary42.Rule80A, encodeRule47A( msg.getOrderCapacity() ) )"/></Map>
+                    <!-- senderCompId (49), senderSubId(50), targetCompId(56), targetSubId(57) -->
+                    <Map fixTag="49"><Hook type="decode" code="execCheckSenderCompID()"/><Hook type="encode" code="_builder.encodeString( FixDictionary42.SenderCompID, _senderCompId ); // tag49"/></Map>
+                    <Map fixTag="56"><Hook type="decode" code="execCheckTargetCompID()"/><Hook type="encode" code="_builder.encodeString( FixDictionary42.TargetCompID, _targetCompId ); // tag56"/></Map>
+                    <Map fixTag="50"><Hook type="decode" code="execCheckSenderSubID()"/><Hook type="encode" code="_builder.encodeString( FixDictionary42.SenderSubID, _senderSubId ); // tag50"/></Map>
+                    <Map fixTag="57"><Hook type="decode" code="execCheckTargetSubID()"/><Hook type="encode" code="_builder.encodeString( FixDictionary42.TargetSubID, _targetSubId ); // tag57"/></Map>
+                    <Map fixTag="52" eventAttr="eventTimestamp"/>
+                </MessageMap>
+
+                <MessageMap id="CancelReject" eventId="CancelReject" fixMessageId="CancelReject" extends="FullCompIDCheck">
+                    <Map fixTag="58" eventAttr="text" maxOccurs="1" retainSrc="false"/>
+                </MessageMap>
+                <MessageMap id="Rejected"       eventId="Rejected"      fixMessageId="Rejected"     extends="BaseExecRpt">
+                    <Map fixTag="58" eventAttr="text" maxOccurs="1" retainSrc="false"/>
+                </MessageMap>
+                <MessageMap id="SessionReject" eventId="SessionReject" fixMessageId="SessionReject" extends="LightCompIDCheck">
+                    <Map fixTag="58" eventAttr="text" maxOccurs="1" retainSrc="false"/>
+                </MessageMap>
+
+                <MessageMap id="Replaced"       eventId="Replaced"      fixMessageId="Replaced"     extends="BaseExecRpt">
+                    <Map fixTag="32"/>
+                    <Map fixTag="31"/>
+                    <Map fixTag="39"><Hook type="encode" code="encodeReplacedOrdStatus( msg )"/></Map>
+                </MessageMap>
+                <MessageMap id="PartialFill"  eventId="TradeNew"      fixMessageId="PartialFill"        extends="BaseExecRpt">
+                    <Map fixTag="32"/>
+                    <Map fixTag="31"/>
+                    <Map fixTag="150"><Hook type="encode" code="_builder.encodeByte( (byte)'1' )"/></Map>
+                </MessageMap>
+                <MessageMap id="Fill"  eventId="TradeNew"      fixMessageId="Fill"        extends="BaseExecRpt">
+                    <Map fixTag="32"/>
+                    <Map fixTag="31"/>
+                    <Map fixTag="150"><Hook type="encode" code="_builder.encodeByte( (byte)'2' )"/></Map>
+                </MessageMap>
+                <MessageMap id="TradeNew"       eventId="TradeNew"      fixMessageId="Trade"        extends="BaseExecRpt">
+                    <Map fixTag="32"/>
+                    <Map fixTag="31"/>
+                    <Map fixTag="150"><Hook type="encode" code="_builder.encodeByte( FixDictionary42.ExecType, msg.getOrderQty() - msg.getCumQty() > 0 ? (byte)'1' : (byte)'2' )"/></Map>
+                </MessageMap>
+                <MessageMap id="TradeCorrect"   eventId="TradeCorrect"  fixMessageId="TradeCorrect" extends="BaseExecRpt">
+                    <Map fixTag="20"><Hook type="decode" code="// ignore 20"/><Hook type="encode" code="_builder.encodeByte( FixDictionary42.ExecTransType, (byte)'2' )"/></Map>
+                    <Map fixTag="32"/>
+                    <Map fixTag="31"/>
+                    <Map fixTag="150"><Hook type="encode" code="_builder.encodeByte( FixDictionary42.ExecType, msg.getOrderQty() - msg.getCumQty() > 0 ? (byte)'1' : (byte)'2' )"/></Map>
+                </MessageMap>
+                <MessageMap id="TradeCancel"    eventId="TradeCancel"   fixMessageId="TradeCancel"  extends="BaseExecRpt">
+                    <Map fixTag="20"><Hook type="decode" code="// ignore 20"/><Hook type="encode" code="_builder.encodeByte( FixDictionary42.ExecTransType, (byte)'1' )"/></Map>
+                    <Map fixTag="150"><Hook type="encode" code="_builder.encodeByte( FixDictionary42.ExecType, msg.getOrderQty() - msg.getCumQty() > 0 ? (byte)'1' : (byte)'2' )"/></Map>
+                </MessageMap>
+                <MessageMap id="OrderStatus"    eventId="OrderStatus"   fixMessageId="OrderStatus"  extends="BaseExecRpt">
+                    <Map fixTag="20"><Hook type="decode" code="// ignore 20"/><Hook type="encode" code="_builder.encodeByte( FixDictionary42.ExecTransType, (byte)'3' )"/></Map>
+                </MessageMap>
+            </Codec>
+
+            <Codec id="SampleBroker1Fix44" fix="4.4" extends="Standard44">
+
+                <!--
+                    <TypeTransform typeId="OrdType" transform="map" nonMatchedEncode="null" nonMatchedDecode="reject">
+                        <Map internal="1" external="1" comment="Market"/>
+                        <Map internal="2" external="2" comment="Limit"/>
+                        <Map internal="3" external="3" comment="Stop"/>
+                        <Map internal="4" external="4" comment="StopLimit"/>
+                        <Map internal="P" external="P" comment="Pegged"/>
+                    </TypeTransform>
+                -->
+
+            </Codec>
+
+            <Codec id="StratInternalFix44" fix="4.4" extends="Standard44">
+                <MessageMap id="BaseRequest" fixMessageId="BaseRequest" ignore="true" extends="FullCompIDCheck">
+                    <Map fixTag="1601" eventAttr="stratId" maxOccurs="1" retainSrc="false"/>
+                    <Map fixTag="1602" eventAttr="origStratId" maxOccurs="1" retainSrc="false"/>
+
+                    <!-- <Hook type="postEncode" code="postEncodeOrderReq( msg )"/> -->
+
+                </MessageMap>
+                <MessageMap id="BaseExecRpt" fixMessageId="BaseExecRpt" ignore="true">
+                    <Map fixTag="526" eventAttr="parentClOrdId" maxOccurs="1" retainSrc="false"/>
+                    <Map fixTag="1601" eventAttr="stratId" maxOccurs="1" retainSrc="false"/>
+                    <Map fixTag="1602" eventAttr="origStratId" maxOccurs="1" retainSrc="false"/>
+
+                    <Map fixTag="49"><Hook type="decode" code="execCheckSenderCompID()"/><Hook type="encode" code="_builder.encodeString( FixDictionary44.SenderCompID, _senderCompId ); // tag49"/></Map>
+                    <Map fixTag="56"><Hook type="decode" code="execCheckTargetCompID()"/><Hook type="encode" code="_builder.encodeString( FixDictionary44.TargetCompID, _targetCompId ); // tag56"/></Map>
+                    <Map fixTag="50"><Hook type="decode" code="execCheckSenderSubID()"/><Hook type="encode" code="_builder.encodeString( FixDictionary44.SenderSubID, _senderSubId ); // tag50"/></Map>
+                    <Map fixTag="57"><Hook type="decode" code="execCheckTargetSubID()"/><Hook type="encode" code="_builder.encodeString( FixDictionary44.TargetSubID, _targetSubId ); // tag57"/></Map>
+                    <Map fixTag="52" eventAttr="eventTimestamp"/>
+                </MessageMap>
+            </Codec>
+
+
+    @SECTION FIX_CODECS END

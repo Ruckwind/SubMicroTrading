@@ -1,0 +1,15 @@
+
+    private byte encodeRule47A( OrderCapacity orderCapacity ) {
+        if ( orderCapacity == OrderCapacity.Principal ) return 'P'; 
+        if ( orderCapacity == OrderCapacity.AgentForOtherMember ) return 'A'; 
+        return 'P';
+    }
+
+    private void encodeReplacedOrdStatus( Replaced msg ) {
+        if ( msg.getCumQty() == 0 ) {
+            _builder.encodeByte( FixDictionary42.OrdStatus, (byte) '5' );        // tag39 = REPLACED
+        } else{
+            _builder.encodeByte( FixDictionary42.OrdStatus, msg.getOrdStatus().getVal() );        // tag39
+        }
+    }
+

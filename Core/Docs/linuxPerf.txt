@@ -1,0 +1,475 @@
+===================================================================
+ TEST PerfGeneratedDecoder
+1517 [main] INFO com.rr.om.events.perf.PerfGeneratedDecoder  - Run 0, NO recycling, poolSize=100, extra=10, duration=269312000, aveNano=2693
+1894 [main] INFO com.rr.om.events.perf.PerfGeneratedDecoder  - Run 1, NO recycling, poolSize=100, extra=10, duration=91380000, aveNano=913
+2155 [main] INFO com.rr.om.events.perf.PerfGeneratedDecoder  - Run 2, NO recycling, poolSize=100, extra=10, duration=68852000, aveNano=688
+2418 [main] INFO com.rr.om.events.perf.PerfGeneratedDecoder  - Run 3, NO recycling, poolSize=100, extra=10, duration=68657000, aveNano=686
+
+===================================================================
+ TEST PerfTestByteBuffer
+Run 0 heap=138, direct=163, byteArr=60
+Run 1 heap=99, direct=144, byteArr=60
+Run 2 heap=99, direct=144, byteArr=59
+Run 3 heap=99, direct=145, byteArr=60
+Run 4 heap=99, direct=144, byteArr=60
+
+===================================================================
+ TEST PerfTestCodec
+RERUN
+
+===================================================================
+ TEST PerfTestCodecLong
+2441 [main] INFO com.rr.om.events.perf.PerfTestCodecLong  - START TEST ==================
+DECODE INT 1, cnt=1000000, time=78
+DECODE LONG 1, cnt=1000000, time=78
+ENCODE INT 1, cnt=1000000, time=195
+ENCODE LONG, cnt=1000000, time=222
+5733 [main] INFO com.rr.om.events.perf.PerfTestCodecLong  - START TEST ==================
+DECODE INT 100, cnt=1000000, time=81
+DECODE LONG 100, cnt=1000000, time=82
+ENCODE INT 100, cnt=1000000, time=243
+ENCODE LONG, cnt=1000000, time=272
+9469 [main] INFO com.rr.om.events.perf.PerfTestCodecLong  - START TEST ==================
+DECODE INT 54321, cnt=1000000, time=85
+DECODE LONG 54321, cnt=1000000, time=86
+ENCODE INT 54321, cnt=1000000, time=256
+ENCODE LONG, cnt=1000000, time=330
+14533 [main] INFO com.rr.om.events.perf.PerfTestCodecLong  - START TEST ==================
+DECODE INT 987654321, cnt=1000000, time=93
+DECODE LONG 987654321, cnt=1000000, time=93
+ENCODE INT 987654321, cnt=1000000, time=411
+ENCODE LONG, cnt=1000000, time=476
+
+===================================================================
+ TEST PerfTestCodecSingleThread
+JUnit version 4.8.1
+
+[HASHMAP: TO_MARKET]  ROUND TRIP NanoSecond stats  count=10000, med=4000, ave=5861, min=3000, max=20973000 , p99=4000, p95=4000, p90=4000, p80=4000, p70=4000, p50=4000
+
+[HASHMAP: TO_MARKET]  ROUND TRIP NanoSecond stats  count=10000, med=4000, ave=3594, min=3000, max=42000 , p99=4000, p95=4000, p90=4000, p80=4000, p70=4000, p50=4000
+
+
+===================================================================
+ TEST PerfTestDateDecode
+Run 0 mult=408, table=572
+Run 1 mult=232, table=287
+Run 2 mult=232, table=287
+Run 3 mult=232, table=286
+Run 4 mult=233, table=286
+
+
+===================================================================
+ TEST PerfTestDecode
+597 [main] INFO com.rr.om.events.perf.PerfTestDecode  - Run 0, NO recycling, poolSize=100, extra=10, duration=173145000, aveNano=1731
+887 [main] INFO com.rr.om.events.perf.PerfTestDecode  - Run 1, NO recycling, poolSize=100, extra=10, duration=54109000, aveNano=541
+1130 [main] INFO com.rr.om.events.perf.PerfTestDecode  - Run 2, NO recycling, poolSize=100, extra=10, duration=55029000, aveNano=550
+1373 [main] INFO com.rr.om.events.perf.PerfTestDecode  - Run 3, NO recycling, poolSize=100, extra=10, duration=54391000, aveNano=543
+
+===================================================================
+ TEST PerfTestDiv100
+JUnit version 4.8.1
+Run 4 /100=5, reciprical=5, base=1
+Run 4 /1000=5, reciprical=5, base=1
+Run 4 /100=5, reciprical=5, base=100
+Run 4 /1000=5, reciprical=5, base=100
+Run 4 /100=5, reciprical=5, base=1000
+Run 4 /1000=5, reciprical=5, base=1000
+Run 4 /100=5, reciprical=5, base=500000
+Run 4 /1000=5, reciprical=5, base=500000
+Run 4 /100=5, reciprical=5, base=1
+Run 4 /1000=5, reciprical=5, base=1
+
+
+===================================================================
+ TEST PerfTestEncode
+
+RERUN
+
+===================================================================
+ TEST PerfTestEnumLookup
+JUnit version 4.8.1
+Run 4 switchDuration=0, arrayDuration=0 hitPosition=1
+Run 4 switchDuration=0, arrayDuration=0 hitPosition=2
+Run 4 switchDuration=0, arrayDuration=0 hitPosition=3
+Run 4 switchDuration=16, arrayDuration=0 hitPosition=9
+Run 4 switchDuration=0, arrayDuration=0 hitPosition=0
+
+===================================================================
+ TEST PerfTestGenericEnum
+JUnit version 4.8.1
+Run 4GET reusableType=0, enumGen=0, explicit=0
+Run 4SWITCH reusableType=405, enumGen=481, explicit=482
+
+
+===================================================================
+ TEST PerfTestGenericsForMaps
+Run 0 GET generic=249, genFinalAccessor=247, explicit=185, expFinalAccessor=203, wrapped=234
+Run 1 GET generic=236, genFinalAccessor=236, explicit=178, expFinalAccessor=178, wrapped=230
+Run 2 GET generic=235, genFinalAccessor=236, explicit=178, expFinalAccessor=178, wrapped=230
+Run 3 GET generic=236, genFinalAccessor=236, explicit=178, expFinalAccessor=178, wrapped=230
+
+Run 0 SET generic=777, genFinalAccessor=773, explicit=772, expFinalAccessor=774, wrapped=775
+Run 1 SET generic=773, genFinalAccessor=773, explicit=771, expFinalAccessor=778, wrapped=777
+Run 2 SET generic=773, genFinalAccessor=776, explicit=767, expFinalAccessor=772, wrapped=775
+Run 3 SET generic=774, genFinalAccessor=770, explicit=774, expFinalAccessor=770, wrapped=773
+
+
+===================================================================
+ TEST PerfTestGenericsForPooling
+Run 0 generics=844, cast=640, explicit=104, arr=9
+Run 1 generics=733, cast=556, explicit=101, arr=3
+Run 2 generics=732, cast=657, explicit=101, arr=4
+Run 3 generics=732, cast=557, explicit=101, arr=3
+Run 4 generics=732, cast=557, explicit=101, arr=3
+
+jre1.6.22
+Run 0 batch=100, generics=289, cast=289, explicit=170, arr=256
+Run 1 batch=100, generics=267, cast=269, explicit=167, arr=226
+Run 2 batch=100, generics=292, cast=270, explicit=208, arr=242
+Run 0 batch=1000, generics=292, cast=280, explicit=210, arr=215
+Run 1 batch=1000, generics=282, cast=255, explicit=195, arr=212
+Run 2 batch=1000, generics=297, cast=271, explicit=210, arr=211
+Run 0 batch=10000, generics=298, cast=271, explicit=196, arr=201
+Run 1 batch=10000, generics=281, cast=264, explicit=209, arr=198
+Run 2 batch=10000, generics=288, cast=278, explicit=194, arr=191
+
+jdk1.8.77
+Run 0 batch=100, generics=291, cast=272, explicit=180, arr=412
+Run 1 batch=100, generics=309, cast=315, explicit=215, arr=439
+Run 2 batch=100, generics=209, cast=216, explicit=143, arr=144
+Run 0 batch=1000, generics=216, cast=197, explicit=150, arr=140
+Run 1 batch=1000, generics=208, cast=210, explicit=140, arr=148
+Run 2 batch=1000, generics=208, cast=199, explicit=150, arr=141
+Run 0 batch=10000, generics=212, cast=193, explicit=154, arr=139
+Run 1 batch=10000, generics=206, cast=198, explicit=157, arr=139
+Run 2 batch=10000, generics=204, cast=193, explicit=153, arr=146
+
+jdk.1.8.121
+
+
+
+
+
+===================================================================
+ TEST PerfTestInterfaceVsConcrete
+JUnit version 4.8.1
+Run 3 concrete=2773, interface=2974
+Run 4 concrete=2786, interface=2946
+
+
+===================================================================
+ TEST PerfTestMemcpy
+JUnit version 4.8.1
+Run 4 loop=88, memcp=48, len=20
+Run 4 loop=73, memcp=38, len=10
+Run 4 loop=51, memcp=33, len=5
+Run 4 loop=46, memcp=37, len=4
+Run 4 loop=40, memcp=36, len=3
+Run 4 loop=38, memcp=35, len=2
+Run 4 loop=30, memcp=35, len=1
+
+Run 4 loop=121, memcp=55, len=20, off=2
+Run 4 loop=73, memcp=46, len=10, off=2
+Run 4 loop=71, memcp=41, len=5, off=2
+Run 4 loop=63, memcp=45, len=4, off=2
+
+Run 4 loop=121, memcp=55, len=20, off=400
+Run 4 loop=73, memcp=46, len=10, off=400
+Run 4 loop=71, memcp=41, len=5, off=400
+Run 4 loop=63, memcp=45, len=4, off=400
+
+
+===================================================================
+ TEST PerfTestMethodPosition
+Run 0 short=2356, long=2834, firstMethod=TRUE
+Run 0 short=2895, long=2890, firstMethod=FALSE
+Run 1 short=2795, long=2808, firstMethod=TRUE
+Run 1 short=2915, long=2901, firstMethod=FALSE
+Run 2 short=2772, long=2813, firstMethod=TRUE
+Run 2 short=2888, long=2931, firstMethod=FALSE
+Run 3 short=2814, long=2803, firstMethod=TRUE
+Run 3 short=2887, long=2899, firstMethod=FALSE
+Run 4 short=2787, long=2805, firstMethod=TRUE
+Run 4 short=2894, long=2893, firstMethod=FALSE
+
+
+===================================================================
+ TEST PerfTestNextPointer
+Run 0 NEXT by METHOD, generics=252, cast=251, explicit=260
+Run 0 NEXT by DIRECT, generics=245, cast=248, explicit=257
+Run 1 NEXT by METHOD, generics=249, cast=248, explicit=260
+Run 1 NEXT by DIRECT, generics=250, cast=250, explicit=260
+Run 2 NEXT by METHOD, generics=251, cast=249, explicit=257
+Run 2 NEXT by DIRECT, generics=247, cast=250, explicit=257
+Run 3 NEXT by METHOD, generics=248, cast=247, explicit=257
+Run 3 NEXT by DIRECT, generics=248, cast=248, explicit=257
+Run 4 NEXT by METHOD, generics=247, cast=247, explicit=257
+Run 4 NEXT by DIRECT, generics=247, cast=248, explicit=256
+
+
+===================================================================
+ TEST PerfTestNums
+Run 0 *10=29, shiftAndAdd=28, dblShift=29, base=10
+Run 1 *10=29, shiftAndAdd=28, dblShift=29, base=10
+Run 2 *10=28, shiftAndAdd=29, dblShift=28, base=10
+Run 3 *10=29, shiftAndAdd=28, dblShift=28, base=10
+Run 4 *10=29, shiftAndAdd=28, dblShift=29, base=10
+Run 0 *10=28, shiftAndAdd=28, dblShift=29, base=100
+Run 1 *10=28, shiftAndAdd=29, dblShift=28, base=100
+Run 2 *10=29, shiftAndAdd=28, dblShift=28, base=100
+Run 3 *10=29, shiftAndAdd=28, dblShift=29, base=100
+Run 4 *10=28, shiftAndAdd=29, dblShift=28, base=100
+Run 0 *10=28, shiftAndAdd=29, dblShift=28, base=1000
+Run 1 *10=29, shiftAndAdd=28, dblShift=29, base=1000
+Run 2 *10=28, shiftAndAdd=28, dblShift=29, base=1000
+Run 3 *10=28, shiftAndAdd=29, dblShift=28, base=1000
+Run 4 *10=28, shiftAndAdd=29, dblShift=28, base=1000
+Run 0 *10=29, shiftAndAdd=28, dblShift=29, base=5000
+Run 1 *10=28, shiftAndAdd=28, dblShift=29, base=5000
+Run 2 *10=28, shiftAndAdd=29, dblShift=28, base=5000
+Run 3 *10=29, shiftAndAdd=28, dblShift=28, base=5000
+Run 4 *10=29, shiftAndAdd=28, dblShift=29, base=5000
+Run 0 *10=28, shiftAndAdd=29, dblShift=28, base=1
+Run 1 *10=28, shiftAndAdd=29, dblShift=28, base=1
+Run 2 *10=29, shiftAndAdd=28, dblShift=29, base=1
+Run 3 *10=28, shiftAndAdd=28, dblShift=29, base=1
+Run 4 *10=28, shiftAndAdd=29, dblShift=28, base=1
+Run INC 0 pre=38, post=36
+Run INC 1 pre=39, post=36
+Run INC 2 pre=39, post=36
+Run INC 3 pre=39, post=36
+Run INC 4 pre=39, post=36
+
+
+===================================================================
+ TEST PerfTestOrderMapSingleThread
+
+
+[HASHMAP: TO_MARKET]  ROUND TRIP NanoSecond stats  count=10000, genDelayMS=0, acckDelayMS=1, med=6000, ave=6268, min=5000, max=76000 , p99=8000, p95=7000, p90=7000, p80=7000, p70=6000, p50=6000
+
+[HASHMAP: ROUNDTRIP]  ROUND TRIP NanoSecond stats  count=10000, genDelayMS=0, acckDelayMS=1, med=11000, ave=11016, min=9000, max=107000 , p99=13000, p95=12000, p90=12000, p80=11000, p70=11000, p50=11000
+
+
+===================================================================
+ TEST PerfTestQueue
+
+CONCURRENT LINKED QUEUE tot=5000000
+[SUN]  NanoSecond stats  count=5000000, delay=0, med=2000, ave=2286, min=2000, max=178000 , p99=3000, p95=3000, p90=3000, p80=3000, p70=2000, p50=2000
+
+NEW LINKED QUEUE tot=5000000
+[RRCAS]  NanoSecond stats  count=5000000, delay=0, med=2000, ave=2328, min=2000, max=2284000 , p99=3000, p95=3000, p90=3000, p80=3000, p70=3000, p50=2000
+
+NEW SYNC LINKED QUEUE tot=5000000
+[RRSYNC]  NanoSecond stats  count=5000000, delay=0, med=2000, ave=2328, min=2000, max=194000 , p99=3000, p95=3000, p90=3000, p80=3000, p70=3000, p50=2000
+
+NEW BLOCK LINKED QUEUE tot=5000000
+[RRBLOCK]  NanoSecond stats  count=5000000, delay=0, med=2000, ave=2424, min=2000, max=1215000 , p99=3000, p95=3000, p90=3000, p80=3000, p70=3000, p50=2000
+
+-------------------------------------------------------------
+
+CONCURRENT LINKED QUEUE tot=1000
+[SUN]  NanoSecond stats  count=1000, delay=0, med=2000, ave=2244, min=2000, max=25000 , p99=3000, p95=3000, p90=3000, p80=3000, p70=2000, p50=2000
+
+NEW LINKED QUEUE tot=1000
+[RRCAS]  NanoSecond stats  count=1000, delay=0, med=2000, ave=2363, min=2000, max=41000 , p99=3000, p95=3000, p90=3000, p80=3000, p70=3000, p50=2000
+
+NEW SYNC LINKED QUEUE tot=1000
+[RRSYNC]  NanoSecond stats  count=1000, delay=0, med=2000, ave=2326, min=2000, max=23000 , p99=3000, p95=3000, p90=3000, p80=3000, p70=2000, p50=2000
+
+NEW BLOCK LINKED QUEUE tot=1000
+[RRBLOCK]  NanoSecond stats  count=1000, delay=0, med=2000, ave=2340, min=2000, max=28000 , p99=3000, p95=3000, p90=3000, p80=3000, p70=3000, p50=2000
+
+-------------------------------------------------------------
+
+CONCURRENT LINKED QUEUE tot=4000
+[SUN]  NanoSecond stats  count=4000, delay=10, med=3000, ave=2744, min=2000, max=23000 , p99=3000, p95=3000, p90=3000, p80=3000, p70=3000, p50=3000
+
+NEW LINKED QUEUE tot=4000
+[RRCAS]  NanoSecond stats  count=4000, delay=10, med=3000, ave=2877, min=2000, max=57000 , p99=5000, p95=3000, p90=3000, p80=3000, p70=3000, p50=3000
+
+NEW SYNC LINKED QUEUE tot=4000
+[RRSYNC]  NanoSecond stats  count=4000, delay=10, med=3000, ave=2869, min=2000, max=23000 , p99=4000, p95=4000, p90=3000, p80=3000, p70=3000, p50=3000
+
+NEW BLOCK LINKED QUEUE tot=4000
+[RRBLOCK]  NanoSecond stats  count=4000, delay=10, med=3000, ave=2813, min=2000, max=28000 , p99=4000, p95=3000, p90=3000, p80=3000, p70=3000, p50=3000
+
+-------------------------------------------------------------
+
+CONCURRENT LINKED QUEUE tot=400
+[SUN]  NanoSecond stats  count=400, delay=100, med=3000, ave=2987, min=2000, max=22000 , p99=7000, p95=5000, p90=3000, p80=3000, p70=3000, p50=3000
+
+NEW LINKED QUEUE tot=400
+[RRCAS]  NanoSecond stats  count=400, delay=100, med=3000, ave=3077, min=2000, max=26000 , p99=5000, p95=4000, p90=4000, p80=3000, p70=3000, p50=3000
+
+NEW SYNC LINKED QUEUE tot=400
+[RRSYNC]  NanoSecond stats  count=400, delay=100, med=3000, ave=3042, min=2000, max=22000 , p99=5000, p95=4000, p90=4000, p80=3000, p70=3000, p50=3000
+
+NEW BLOCK LINKED QUEUE tot=400
+[RRBLOCK]  NanoSecond stats  count=400, delay=100, med=3000, ave=2875, min=2000, max=27000 , p99=4000, p95=4000, p90=3000, p80=3000, p70=3000, p50=3000
+
+-------------------------------------------------------------
+
+CONCURRENT LINKED QUEUE tot=400
+[SUN]  NanoSecond stats  count=400, delay=100, med=3000, ave=2857, min=2000, max=22000 , p99=4000, p95=3000, p90=3000, p80=3000, p70=3000, p50=3000
+
+NEW LINKED QUEUE tot=400
+[RRCAS]  NanoSecond stats  count=400, delay=100, med=3000, ave=2807, min=2000, max=28000 , p99=4000, p95=3000, p90=3000, p80=3000, p70=3000, p50=3000
+
+NEW SYNC LINKED QUEUE tot=400
+[RRSYNC]  NanoSecond stats  count=400, delay=100, med=3000, ave=2902, min=2000, max=23000 , p99=4000, p95=3000, p90=3000, p80=3000, p70=3000, p50=3000
+
+NEW BLOCK LINKED QUEUE tot=400
+[RRBLOCK]  NanoSecond stats  count=400, delay=100, med=3000, ave=2880, min=2000, max=28000 , p99=5000, p95=3000, p90=3000, p80=3000, p70=3000, p50=3000
+
+-------------------------------------------------------------
+
+CONCURRENT LINKED QUEUE tot=800
+[SUN]  NanoSecond stats  count=800, delay=100, med=3000, ave=2795, min=2000, max=21000 , p99=4000, p95=3000, p90=3000, p80=3000, p70=3000, p50=3000
+
+NEW LINKED QUEUE tot=800
+[RRCAS]  NanoSecond stats  count=800, delay=100, med=3000, ave=2781, min=2000, max=28000 , p99=5000, p95=3000, p90=3000, p80=3000, p70=3000, p50=3000
+
+NEW SYNC LINKED QUEUE tot=800
+[RRSYNC]  NanoSecond stats  count=800, delay=100, med=3000, ave=2905, min=2000, max=22000 , p99=6000, p95=4000, p90=3000, p80=3000, p70=3000, p50=3000
+
+NEW BLOCK LINKED QUEUE tot=800
+[RRBLOCK]  NanoSecond stats  count=800, delay=100, med=3000, ave=2883, min=2000, max=28000 , p99=6000, p95=4000, p90=3000, p80=3000, p70=3000, p50=3000
+
+-------------------------------------------------------------
+
+CONCURRENT LINKED QUEUE tot=200
+[SUN]  NanoSecond stats  count=200, delay=500, med=3000, ave=2955, min=2000, max=25000 , p99=7000, p95=4000, p90=4000, p80=3000, p70=3000, p50=3000
+
+NEW LINKED QUEUE tot=200
+[RRCAS]  NanoSecond stats  count=200, delay=500, med=3000, ave=3080, min=2000, max=29000 , p99=8000, p95=5000, p90=4000, p80=3000, p70=3000, p50=3000
+
+NEW SYNC LINKED QUEUE tot=200
+[RRSYNC]  NanoSecond stats  count=200, delay=500, med=3000, ave=6725, min=2000, max=756000 , p99=12000, p95=4000, p90=3000, p80=3000, p70=3000, p50=3000
+
+NEW BLOCK LINKED QUEUE tot=200
+[RRBLOCK]  NanoSecond stats  count=200, delay=500, med=3000, ave=3655, min=2000, max=32000 , p99=13000, p95=6000, p90=5000, p80=4000, p70=3000, p50=3000
+
+-------------------------------------------------------------
+
+CONCURRENT LINKED QUEUE tot=400
+[SUN]  NanoSecond stats  count=400, delay=500, med=3000, ave=3362, min=2000, max=24000 , p99=11000, p95=5000, p90=5000, p80=4000, p70=3000, p50=3000
+
+NEW LINKED QUEUE tot=400
+[RRCAS]  NanoSecond stats  count=400, delay=500, med=3000, ave=3680, min=2000, max=31000 , p99=13000, p95=6000, p90=5000, p80=4000, p70=4000, p50=3000
+
+NEW SYNC LINKED QUEUE tot=400
+[RRSYNC]  NanoSecond stats  count=400, delay=500, med=3000, ave=3392, min=2000, max=31000 , p99=11000, p95=6000, p90=5000, p80=4000, p70=3000, p50=3000
+
+NEW BLOCK LINKED QUEUE tot=400
+[RRBLOCK]  NanoSecond stats  count=400, delay=500, med=3000, ave=3092, min=2000, max=28000 , p99=9000, p95=5000, p90=4000, p80=3000, p70=3000, p50=3000
+
+-------------------------------------------------------------
+
+CONCURRENT LINKED QUEUE tot=200000
+[SUN]  NanoSecond stats  count=200000, delay=0, med=2000, ave=2265, min=2000, max=23000 , p99=3000, p95=3000, p90=3000, p80=3000, p70=2000, p50=2000
+
+NEW LINKED QUEUE tot=200000
+[RRCAS]  NanoSecond stats  count=200000, delay=0, med=2000, ave=2312, min=2000, max=32000 , p99=3000, p95=3000, p90=3000, p80=3000, p70=3000, p50=2000
+
+NEW SYNC LINKED QUEUE tot=200000
+[RRSYNC]  NanoSecond stats  count=200000, delay=0, med=2000, ave=2363, min=2000, max=36000 , p99=3000, p95=3000, p90=3000, p80=3000, p70=3000, p50=2000
+
+[RRBLOCK]  NanoSecond stats  count=200000, delay=0, med=2000, ave=2470, min=2000, max=27000 , p99=3000, p95=3000, p90=3000, p80=3000, p70=3000, p50=2000
+
+-------------------------------------------------------------
+
+CONCURRENT LINKED QUEUE tot=200000
+[SUN]  NanoSecond stats  count=200000, delay=0, med=2000, ave=2386, min=2000, max=21000 , p99=3000, p95=3000, p90=3000, p80=3000, p70=3000, p50=2000
+
+NEW LINKED QUEUE tot=200000
+[RRCAS]  NanoSecond stats  count=200000, delay=0, med=2000, ave=2384, min=2000, max=32000 , p99=3000, p95=3000, p90=3000, p80=3000, p70=3000, p50=2000
+
+NEW SYNC LINKED QUEUE tot=200000
+[RRSYNC]  NanoSecond stats  count=200000, delay=0, med=2000, ave=2400, min=2000, max=28000 , p99=3000, p95=3000, p90=3000, p80=3000, p70=3000, p50=2000
+
+NEW BLOCK LINKED QUEUE tot=200000
+[RRBLOCK]  NanoSecond stats  count=200000, delay=0, med=2000, ave=2458, min=2000, max=28000 , p99=3000, p95=3000, p90=3000, p80=3000, p70=3000, p50=2000
+
+-------------------------------------------------------------
+
+CONCURRENT LINKED QUEUE tot=800000
+[SUN]  NanoSecond stats  count=800000, delay=0, med=3000, ave=2535, min=2000, max=192000 , p99=3000, p95=3000, p90=3000, p80=3000, p70=3000, p50=3000
+
+NEW LINKED QUEUE tot=800000
+[RRCAS]  NanoSecond stats  count=800000, delay=0, med=3000, ave=2694, min=2000, max=157000 , p99=4000, p95=3000, p90=3000, p80=3000, p70=3000, p50=3000
+
+NEW SYNC LINKED QUEUE tot=800000
+[RRSYNC]  NanoSecond stats  count=800000, delay=0, med=3000, ave=2822, min=2000, max=209000 , p99=4000, p95=3000, p90=3000, p80=3000, p70=3000, p50=3000
+
+NEW BLOCK LINKED QUEUE tot=800000
+[RRBLOCK]  NanoSecond stats  count=800000, delay=0, med=3000, ave=3324, min=2000, max=261994000 , p99=4000, p95=4000, p90=3000, p80=3000, p70=3000, p50=3000
+
+-------------------------------------------------------------
+
+CONCURRENT LINKED QUEUE tot=800000
+[SUN]  NanoSecond stats  count=800000, delay=0, med=3000, ave=2714, min=2000, max=73000 , p99=4000, p95=3000, p90=3000, p80=3000, p70=3000, p50=3000
+
+NEW LINKED QUEUE tot=800000
+[RRCAS]  NanoSecond stats  count=800000, delay=0, med=3000, ave=2791, min=2000, max=82000 , p99=4000, p95=3000, p90=3000, p80=3000, p70=3000, p50=3000
+
+NEW SYNC LINKED QUEUE tot=800000
+[RRSYNC]  NanoSecond stats  count=800000, delay=0, med=3000, ave=18190, min=2000, max=88679000 , p99=20000, p95=4000, p90=3000, p80=3000, p70=3000, p50=3000
+
+NEW BLOCK LINKED QUEUE tot=800000
+[RRBLOCK]  NanoSecond stats  count=800000, delay=0, med=3000, ave=3275, min=2000, max=66379000 , p99=4000, p95=4000, p90=3000, p80=3000, p70=3000, p50=3000
+
+
+===================================================================
+ TEST PerfTestRoundTrip
+
+[TO_MARKET]  ROUND TRIP NanoSecond stats  count=20000, genDelayMS=0, acckDelayMS=0, med=6000, ave=21730, min=5000, max=281720000 , p99=8000, p95=7000, p90=7000, p80=6000, p70=6000, p50=6000
+
+[ROUNDTRIP]  ROUND TRIP NanoSecond stats  count=20000, genDelayMS=0, acckDelayMS=0, med=11000, ave=29601, min=10000, max=337698000 , p99=15000, p95=13000, p90=12000, p80=11000, p70=11000, p50=11000
+
+---------------------
+
+[TO_MARKET]  ROUND TRIP NanoSecond stats  count=10000, genDelayMS=0, acckDelayMS=0, med=6000, ave=6071, min=5000, max=68000 , p99=8000, p95=7000, p90=6000, p80=6000, p70=6000, p50=6000
+
+[ROUNDTRIP]  ROUND TRIP NanoSecond stats  count=10000, genDelayMS=0, acckDelayMS=0, med=11000, ave=10772, min=10000, max=106000 , p99=15000, p95=12000, p90=11000, p80=11000, p70=11000, p50=11000
+
+------------------------
+
+[TO_MARKET]  ROUND TRIP NanoSecond stats  count=10000, genDelayMS=0, acckDelayMS=0, med=6000, ave=6079, min=5000, max=50000 , p99=8000, p95=7000, p90=6000, p80=6000, p70=6000, p50=6000
+
+[ROUNDTRIP]  ROUND TRIP NanoSecond stats  count=10000, genDelayMS=0, acckDelayMS=0, med=11000, ave=10796, min=10000, max=61000 , p99=15000, p95=12000, p90=11000, p80=11000, p70=11000, p50=11000
+
+
+===================================================================
+ TEST PerfTestStrings
+Run 0 reusableStringDuration=104, viewStringDuration=48
+Run 1 reusableStringDuration=63, viewStringDuration=19
+Run 2 reusableStringDuration=64, viewStringDuration=18
+Run 3 reusableStringDuration=63, viewStringDuration=18
+Run 4 reusableStringDuration=63, viewStringDuration=18
+
+===================================================================
+ TEST PerfTestTime
+JUnit version 4.8.1
+Run 0 nano=209003, milli=40507
+Run 1 nano=209220, milli=40544
+Run 2 nano=209214, milli=40545
+Run 3 nano=209213, milli=40549
+Run 4 nano=209197, milli=40542
+
+
+===================================================================
+ TEST PerfTestUnexpectedLatency
+JUnit version 4.8.1
+.1 [main] INFO com.rr.om.events.perf.PerfTestUnexpectedLatency  - typeId via interface                  =15666000
+25 [main] INFO com.rr.om.events.perf.PerfTestUnexpectedLatency  - typeId via reusable type and final var=15663000
+
+
+===================================================================
+ TEST PerfTestVolatileNextPointer
+Run 0 processor Q, array=5, queue=585
+Run 1 processor Q, array=5, queue=531
+Run 2 processor Q, array=5, queue=530
+Run 3 processor Q, array=4, queue=531
+Run 4 processor Q, array=5, queue=531
+
+

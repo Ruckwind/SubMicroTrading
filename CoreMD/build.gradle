@@ -1,0 +1,11 @@
+
+dependencies {
+    api project( ':Core' )
+    testImplementation project( ':Core' ).sourceSets.test.output
+}
+
+sourceSets {
+    test {
+        runtimeClasspath += project(':Core').sourceSets.main.output
+    }
+}

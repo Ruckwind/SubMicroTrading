@@ -1,16 +1,14 @@
-/*******************************************************************************
- * Copyright (c) 2015 Low Latency Trading Limited  :  Author Richard Rose
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at	http://www.apache.org/licenses/LICENSE-2.0
- * Unless required by applicable law or agreed to in writing,  software distributed under the License 
- * is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and limitations under the License.
- *******************************************************************************/
 package com.rr.model.generated.codec;
+
+/*
+Copyright 2015 Low Latency Trading Limited
+Author Richard Rose
+*/
 
 import java.util.HashMap;
 import java.util.Map;
 import com.rr.core.lang.*;
+import com.rr.core.utils.*;
 import com.rr.core.model.*;
 import com.rr.core.pool.SuperpoolManager;
 import com.rr.core.pool.SuperPool;
@@ -82,12 +80,13 @@ public final class ETIBSEEncoder implements com.rr.codec.emea.exchange.eti.ETIEn
     private static final byte      DEFAULT_ExecInst = (byte)2;
 
     private final byte[]                  _buf;
+    private final String                  _id;
     private final int                     _offset;
     private final ZString                 _binaryVersion;
 
     private BinaryEncodeBuilder     _builder;
 
-    private       TimeZoneCalculator      _tzCalculator = new TimeZoneCalculator();
+    private       TimeUtils               _tzCalculator = TimeUtilsFactory.createTimeUtils();
     private       SingleByteLookup        _sv;
     private       TwoByteLookup           _tv;
     private       MultiByteLookup         _mv;
@@ -96,10 +95,13 @@ public final class ETIBSEEncoder implements com.rr.codec.emea.exchange.eti.ETIEn
     private boolean                 _debug = false;
 
    // Constructors
-    public ETIBSEEncoder( byte[] buf, int offset ) {
+    public ETIBSEEncoder( byte[] buf, int offset ) { this( null, buf, offset ); }
+
+    public ETIBSEEncoder( String id, byte[] buf, int offset ) {
         if ( buf.length < SizeType.MIN_ENCODE_BUFFER.getSize() ) {
             throw new RuntimeException( "Encode buffer too small only " + buf.length + ", min=" + SizeType.MIN_ENCODE_BUFFER.getSize() );
         }
+        _id = id;
         _buf = buf;
         _offset = offset;
         _binaryVersion   = new ViewString( "1");
@@ -110,7 +112,7 @@ public final class ETIBSEEncoder implements com.rr.codec.emea.exchange.eti.ETIEn
    // encode methods
 
     @Override
-    public final void encode( final Message msg ) {
+    public final void encode( final Event msg ) {
         switch( msg.getReusableType().getSubId() ) {
         case EventIds.ID_ETICONNECTIONGATEWAYREQUEST:
             encodeConnectionGatewayRequest( (ETIConnectionGatewayRequest) msg );
@@ -202,24 +204,24 @@ public final class ETIBSEEncoder implements com.rr.codec.emea.exchange.eti.ETIEn
         case EventIds.ID_REPLACED:
             encodeReplaceLeanResponseAck( (Replaced) msg );
             break;
+        case 2:
+        case 3:
         case 4:
         case 5:
         case 6:
+        case 8:
         case 9:
+        case 10:
+        case 11:
         case 12:
         case 13:
-        case 14:
-        case 16:
         case 17:
         case 18:
         case 19:
-        case 21:
         case 22:
-        case 23:
         case 25:
         case 26:
         case 27:
-        case 28:
         case 29:
         case 30:
         case 31:
@@ -229,6 +231,46 @@ public final class ETIBSEEncoder implements com.rr.codec.emea.exchange.eti.ETIEn
         case 35:
         case 36:
         case 37:
+        case 38:
+        case 39:
+        case 40:
+        case 41:
+        case 42:
+        case 43:
+        case 44:
+        case 45:
+        case 46:
+        case 47:
+        case 48:
+        case 49:
+        case 50:
+        case 51:
+        case 52:
+        case 53:
+        case 54:
+        case 55:
+        case 56:
+        case 57:
+        case 58:
+        case 59:
+        case 60:
+        case 61:
+        case 62:
+        case 63:
+        case 64:
+        case 65:
+        case 66:
+        case 67:
+        case 68:
+        case 69:
+        case 70:
+        case 71:
+        case 72:
+        case 73:
+        case 74:
+        case 75:
+        case 76:
+        case 77:
             _builder.start();
             break;
         default:
@@ -252,24 +294,24 @@ public final class ETIBSEEncoder implements com.rr.codec.emea.exchange.eti.ETIEn
     }
 
     private void setBuilder() {
-        _builder = (_debug) ? new DebugBinaryEncodeBuilder<com.rr.codec.emea.exchange.eti.ETIEncodeBuilderImpl>( _dump, new com.rr.codec.emea.exchange.eti.ETIEncodeBuilderImpl( _buf, _offset, _binaryVersion ) )
+        _builder = (_debug) ? new DebugBinaryEncodeBuilder<>( _dump, new com.rr.codec.emea.exchange.eti.ETIEncodeBuilderImpl( _buf, _offset, _binaryVersion ) )
                             : new com.rr.codec.emea.exchange.eti.ETIEncodeBuilderImpl( _buf, _offset, _binaryVersion );
     }
 
 
     public final void encodeConnectionGatewayRequest( final ETIConnectionGatewayRequest msg ) {
-        final int now = _tzCalculator.getNowUTC();
+        final long now = _tzCalculator.getNowAsInternalTime();
         _builder.start( MSG_ConnectionGatewayRequest );
         if ( _debug ) {
             _dump.append( "  encodeMap=" ).append( "ConnectionGatewayRequest" ).append( "  eventType=" ).append( "ETIConnectionGatewayRequest" ).append( " : " );
         }
 
         if ( _debug ) _dump.append( "\nField: " ).append( "msgSeqNum" ).append( " : " );
-        _builder.encodeUInt( (int)msg.getMsgSeqNum() );
+        _builder.encodeUInt( msg.getMsgSeqNum() );
         if ( _debug ) _dump.append( "\nHook : " ).append( "senderSubID" ).append( " : " ).append( "encode" ).append( " : " );
         _builder.encodeUInt( _senderSubID ); // senderSubID;
         if ( _debug ) _dump.append( "\nField: " ).append( "partyIDSessionID" ).append( " : " );
-        _builder.encodeUInt( (int)msg.getPartyIDSessionID() );
+        _builder.encodeUInt( msg.getPartyIDSessionID() );
         if ( _debug ) _dump.append( "\nField: " ).append( "password" ).append( " : " );
         _builder.encodeZStringFixedWidth( msg.getPassword(), 32 );
         if ( _debug ) _dump.append( "\nField: " ).append( "filler2" ).append( " : " );
@@ -278,7 +320,7 @@ public final class ETIBSEEncoder implements com.rr.codec.emea.exchange.eti.ETIEn
     }
 
     public final void encodeConnectionGatewayResponse( final ETIConnectionGatewayResponse msg ) {
-        final int now = _tzCalculator.getNowUTC();
+        final long now = _tzCalculator.getNowAsInternalTime();
         _builder.start( MSG_ConnectionGatewayResponse );
         if ( _debug ) {
             _dump.append( "  encodeMap=" ).append( "ConnectionGatewayResponse" ).append( "  eventType=" ).append( "ETIConnectionGatewayResponse" ).append( " : " );
@@ -287,15 +329,15 @@ public final class ETIBSEEncoder implements com.rr.codec.emea.exchange.eti.ETIEn
         if ( _debug ) _dump.append( "\nField: " ).append( "requestTime" ).append( " : " );
         _builder.encodeTimestampUTC( msg.getRequestTime() );
         if ( _debug ) _dump.append( "\nField: " ).append( "sendingTime" ).append( " : " );
-        _builder.encodeTimestampUTC( msg.getSendingTime() );
+        _builder.encodeTimestampUTC( msg.getEventTimestamp() );
         if ( _debug ) _dump.append( "\nField: " ).append( "msgSeqNum" ).append( " : " );
-        _builder.encodeUInt( (int)msg.getMsgSeqNum() );
+        _builder.encodeUInt( msg.getMsgSeqNum() );
         if ( _debug ) _dump.append( "\nField: " ).append( "filler1" ).append( " : " );
         _builder.encodeFiller( 4 );
         if ( _debug ) _dump.append( "\nField: " ).append( "gatewayID" ).append( " : " );
-        _builder.encodeUInt( (int)msg.getGatewayID() );
+        _builder.encodeUInt( msg.getGatewayID() );
         if ( _debug ) _dump.append( "\nField: " ).append( "gatewaySubID" ).append( " : " );
-        _builder.encodeUInt( (int)msg.getGatewaySubID() );
+        _builder.encodeUInt( msg.getGatewaySubID() );
         if ( _debug ) _dump.append( "\nField: " ).append( "secondaryGatewayID" ).append( " : " );
         _builder.encodeUInt( Constants.UNSET_INT );    // secondaryGatewayID
         if ( _debug ) _dump.append( "\nField: " ).append( "secondaryGatewaySubID" ).append( " : " );
@@ -310,20 +352,20 @@ public final class ETIBSEEncoder implements com.rr.codec.emea.exchange.eti.ETIEn
     }
 
     public final void encodeSessionLogonRequest( final ETISessionLogonRequest msg ) {
-        final int now = _tzCalculator.getNowUTC();
+        final long now = _tzCalculator.getNowAsInternalTime();
         _builder.start( MSG_SessionLogonRequest );
         if ( _debug ) {
             _dump.append( "  encodeMap=" ).append( "SessionLogonRequest" ).append( "  eventType=" ).append( "ETISessionLogonRequest" ).append( " : " );
         }
 
         if ( _debug ) _dump.append( "\nField: " ).append( "msgSeqNum" ).append( " : " );
-        _builder.encodeUInt( (int)msg.getMsgSeqNum() );
+        _builder.encodeUInt( msg.getMsgSeqNum() );
         if ( _debug ) _dump.append( "\nHook : " ).append( "senderSubID" ).append( " : " ).append( "encode" ).append( " : " );
         _builder.encodeUInt( _senderSubID ); // senderSubID;
         if ( _debug ) _dump.append( "\nField: " ).append( "heartBtIntMS" ).append( " : " );
-        _builder.encodeUInt( (int)msg.getHeartBtIntMS() );
+        _builder.encodeUInt( msg.getHeartBtIntMS() );
         if ( _debug ) _dump.append( "\nField: " ).append( "partyIDSessionID" ).append( " : " );
-        _builder.encodeUInt( (int)msg.getPartyIDSessionID() );
+        _builder.encodeUInt( msg.getPartyIDSessionID() );
         if ( _debug ) _dump.append( "\nField: " ).append( "defaultCstmApplVerID" ).append( " : " );
         _builder.encodeZStringFixedWidth( msg.getDefaultCstmApplVerID(), 30 );
         if ( _debug ) _dump.append( "\nField: " ).append( "password" ).append( " : " );
@@ -352,7 +394,7 @@ public final class ETIBSEEncoder implements com.rr.codec.emea.exchange.eti.ETIEn
     }
 
     public final void encodeSessionLogonResponse( final ETISessionLogonResponse msg ) {
-        final int now = _tzCalculator.getNowUTC();
+        final long now = _tzCalculator.getNowAsInternalTime();
         _builder.start( MSG_SessionLogonResponse );
         if ( _debug ) {
             _dump.append( "  encodeMap=" ).append( "SessionLogonResponse" ).append( "  eventType=" ).append( "ETISessionLogonResponse" ).append( " : " );
@@ -361,21 +403,21 @@ public final class ETIBSEEncoder implements com.rr.codec.emea.exchange.eti.ETIEn
         if ( _debug ) _dump.append( "\nField: " ).append( "requestTime" ).append( " : " );
         _builder.encodeTimestampUTC( msg.getRequestTime() );
         if ( _debug ) _dump.append( "\nField: " ).append( "sendingTime" ).append( " : " );
-        _builder.encodeTimestampUTC( msg.getSendingTime() );
+        _builder.encodeTimestampUTC( msg.getEventTimestamp() );
         if ( _debug ) _dump.append( "\nField: " ).append( "msgSeqNum" ).append( " : " );
-        _builder.encodeUInt( (int)msg.getMsgSeqNum() );
+        _builder.encodeUInt( msg.getMsgSeqNum() );
         if ( _debug ) _dump.append( "\nField: " ).append( "filler1" ).append( " : " );
         _builder.encodeFiller( 4 );
         if ( _debug ) _dump.append( "\nField: " ).append( "throttleTimeIntervalMS" ).append( " : " );
-        _builder.encodeLong( (long)msg.getThrottleTimeIntervalMS() );
+        _builder.encodeLong( msg.getThrottleTimeIntervalMS() );
         if ( _debug ) _dump.append( "\nField: " ).append( "throttleNoMsgs" ).append( " : " );
-        _builder.encodeUInt( (int)msg.getThrottleNoMsgs() );
+        _builder.encodeUInt( msg.getThrottleNoMsgs() );
         if ( _debug ) _dump.append( "\nField: " ).append( "throttleDisconnectLimit" ).append( " : " );
-        _builder.encodeUInt( (int)msg.getThrottleDisconnectLimit() );
+        _builder.encodeUInt( msg.getThrottleDisconnectLimit() );
         if ( _debug ) _dump.append( "\nField: " ).append( "heartBtIntMS" ).append( " : " );
-        _builder.encodeUInt( (int)msg.getHeartBtIntMS() );
+        _builder.encodeUInt( msg.getHeartBtIntMS() );
         if ( _debug ) _dump.append( "\nField: " ).append( "sessionInstanceID" ).append( " : " );
-        _builder.encodeUInt( (int)msg.getSessionInstanceID() );
+        _builder.encodeUInt( msg.getSessionInstanceID() );
         if ( _debug ) _dump.append( "\nField: " ).append( "tradSesMode" ).append( " : " );
         _builder.encodeByte( msg.getTradSesMode().getVal() );
         if ( _debug ) _dump.append( "\nField: " ).append( "defaultCstmApplVerID" ).append( " : " );
@@ -386,21 +428,21 @@ public final class ETIBSEEncoder implements com.rr.codec.emea.exchange.eti.ETIEn
     }
 
     public final void encodeSessionLogoutRequest( final ETISessionLogoutRequest msg ) {
-        final int now = _tzCalculator.getNowUTC();
+        final long now = _tzCalculator.getNowAsInternalTime();
         _builder.start( MSG_SessionLogoutRequest );
         if ( _debug ) {
             _dump.append( "  encodeMap=" ).append( "SessionLogoutRequest" ).append( "  eventType=" ).append( "ETISessionLogoutRequest" ).append( " : " );
         }
 
         if ( _debug ) _dump.append( "\nField: " ).append( "msgSeqNum" ).append( " : " );
-        _builder.encodeUInt( (int)msg.getMsgSeqNum() );
+        _builder.encodeUInt( msg.getMsgSeqNum() );
         if ( _debug ) _dump.append( "\nHook : " ).append( "senderSubID" ).append( " : " ).append( "encode" ).append( " : " );
         _builder.encodeUInt( _senderSubID ); // senderSubID;
         _builder.end();
     }
 
     public final void encodeSessionLogoutResponse( final ETISessionLogoutResponse msg ) {
-        final int now = _tzCalculator.getNowUTC();
+        final long now = _tzCalculator.getNowAsInternalTime();
         _builder.start( MSG_SessionLogoutResponse );
         if ( _debug ) {
             _dump.append( "  encodeMap=" ).append( "SessionLogoutResponse" ).append( "  eventType=" ).append( "ETISessionLogoutResponse" ).append( " : " );
@@ -409,27 +451,27 @@ public final class ETIBSEEncoder implements com.rr.codec.emea.exchange.eti.ETIEn
         if ( _debug ) _dump.append( "\nField: " ).append( "requestTime" ).append( " : " );
         _builder.encodeTimestampUTC( msg.getRequestTime() );
         if ( _debug ) _dump.append( "\nField: " ).append( "sendingTime" ).append( " : " );
-        _builder.encodeTimestampUTC( msg.getSendingTime() );
+        _builder.encodeTimestampUTC( msg.getEventTimestamp() );
         if ( _debug ) _dump.append( "\nField: " ).append( "msgSeqNum" ).append( " : " );
-        _builder.encodeUInt( (int)msg.getMsgSeqNum() );
+        _builder.encodeUInt( msg.getMsgSeqNum() );
         if ( _debug ) _dump.append( "\nField: " ).append( "filler" ).append( " : " );
         _builder.encodeFiller( 4 );
         _builder.end();
     }
 
     public final void encodeUserLogonRequest( final ETIUserLogonRequest msg ) {
-        final int now = _tzCalculator.getNowUTC();
+        final long now = _tzCalculator.getNowAsInternalTime();
         _builder.start( MSG_UserLogonRequest );
         if ( _debug ) {
             _dump.append( "  encodeMap=" ).append( "UserLogonRequest" ).append( "  eventType=" ).append( "ETIUserLogonRequest" ).append( " : " );
         }
 
         if ( _debug ) _dump.append( "\nField: " ).append( "msgSeqNum" ).append( " : " );
-        _builder.encodeUInt( (int)msg.getMsgSeqNum() );
+        _builder.encodeUInt( msg.getMsgSeqNum() );
         if ( _debug ) _dump.append( "\nHook : " ).append( "senderSubID" ).append( " : " ).append( "encode" ).append( " : " );
         _builder.encodeUInt( _senderSubID ); // senderSubID;
         if ( _debug ) _dump.append( "\nField: " ).append( "userName" ).append( " : " );
-        _builder.encodeUInt( (int)msg.getUserName() );
+        _builder.encodeUInt( msg.getUserName() );
         if ( _debug ) _dump.append( "\nField: " ).append( "password" ).append( " : " );
         _builder.encodeZStringFixedWidth( msg.getPassword(), 32 );
         if ( _debug ) _dump.append( "\nField: " ).append( "filler2" ).append( " : " );
@@ -438,7 +480,7 @@ public final class ETIBSEEncoder implements com.rr.codec.emea.exchange.eti.ETIEn
     }
 
     public final void encodeUserLogonResponse( final ETIUserLogonResponse msg ) {
-        final int now = _tzCalculator.getNowUTC();
+        final long now = _tzCalculator.getNowAsInternalTime();
         _builder.start( MSG_UserLogonResponse );
         if ( _debug ) {
             _dump.append( "  encodeMap=" ).append( "UserLogonResponse" ).append( "  eventType=" ).append( "ETIUserLogonResponse" ).append( " : " );
@@ -447,34 +489,34 @@ public final class ETIBSEEncoder implements com.rr.codec.emea.exchange.eti.ETIEn
         if ( _debug ) _dump.append( "\nField: " ).append( "requestTime" ).append( " : " );
         _builder.encodeTimestampUTC( msg.getRequestTime() );
         if ( _debug ) _dump.append( "\nField: " ).append( "sendingTime" ).append( " : " );
-        _builder.encodeTimestampUTC( msg.getSendingTime() );
+        _builder.encodeTimestampUTC( msg.getEventTimestamp() );
         if ( _debug ) _dump.append( "\nField: " ).append( "msgSeqNum" ).append( " : " );
-        _builder.encodeUInt( (int)msg.getMsgSeqNum() );
+        _builder.encodeUInt( msg.getMsgSeqNum() );
         if ( _debug ) _dump.append( "\nField: " ).append( "filler" ).append( " : " );
         _builder.encodeFiller( 4 );
         _builder.end();
     }
 
     public final void encodeUserLogoutRequest( final ETIUserLogoutRequest msg ) {
-        final int now = _tzCalculator.getNowUTC();
+        final long now = _tzCalculator.getNowAsInternalTime();
         _builder.start( MSG_UserLogoutRequest );
         if ( _debug ) {
             _dump.append( "  encodeMap=" ).append( "UserLogoutRequest" ).append( "  eventType=" ).append( "ETIUserLogoutRequest" ).append( " : " );
         }
 
         if ( _debug ) _dump.append( "\nField: " ).append( "msgSeqNum" ).append( " : " );
-        _builder.encodeUInt( (int)msg.getMsgSeqNum() );
+        _builder.encodeUInt( msg.getMsgSeqNum() );
         if ( _debug ) _dump.append( "\nHook : " ).append( "senderSubID" ).append( " : " ).append( "encode" ).append( " : " );
         _builder.encodeUInt( _senderSubID ); // senderSubID;
         if ( _debug ) _dump.append( "\nField: " ).append( "userName" ).append( " : " );
-        _builder.encodeUInt( (int)msg.getUserName() );
+        _builder.encodeUInt( msg.getUserName() );
         if ( _debug ) _dump.append( "\nField: " ).append( "filler2" ).append( " : " );
         _builder.encodeFiller( 4 );
         _builder.end();
     }
 
     public final void encodeUserLogoutResponse( final ETIUserLogoutResponse msg ) {
-        final int now = _tzCalculator.getNowUTC();
+        final long now = _tzCalculator.getNowAsInternalTime();
         _builder.start( MSG_UserLogoutResponse );
         if ( _debug ) {
             _dump.append( "  encodeMap=" ).append( "UserLogoutResponse" ).append( "  eventType=" ).append( "ETIUserLogoutResponse" ).append( " : " );
@@ -483,45 +525,45 @@ public final class ETIBSEEncoder implements com.rr.codec.emea.exchange.eti.ETIEn
         if ( _debug ) _dump.append( "\nField: " ).append( "requestTime" ).append( " : " );
         _builder.encodeTimestampUTC( msg.getRequestTime() );
         if ( _debug ) _dump.append( "\nField: " ).append( "sendingTime" ).append( " : " );
-        _builder.encodeTimestampUTC( msg.getSendingTime() );
+        _builder.encodeTimestampUTC( msg.getEventTimestamp() );
         if ( _debug ) _dump.append( "\nField: " ).append( "msgSeqNum" ).append( " : " );
-        _builder.encodeUInt( (int)msg.getMsgSeqNum() );
+        _builder.encodeUInt( msg.getMsgSeqNum() );
         if ( _debug ) _dump.append( "\nField: " ).append( "filler" ).append( " : " );
         _builder.encodeFiller( 4 );
         _builder.end();
     }
 
     public final void encodeThrottleUpdateNotification( final ETIThrottleUpdateNotification msg ) {
-        final int now = _tzCalculator.getNowUTC();
+        final long now = _tzCalculator.getNowAsInternalTime();
         _builder.start( MSG_ThrottleUpdateNotification );
         if ( _debug ) {
             _dump.append( "  encodeMap=" ).append( "ThrottleUpdateNotification" ).append( "  eventType=" ).append( "ETIThrottleUpdateNotification" ).append( " : " );
         }
 
         if ( _debug ) _dump.append( "\nField: " ).append( "sendingTime" ).append( " : " );
-        _builder.encodeTimestampUTC( msg.getSendingTime() );
+        _builder.encodeTimestampUTC( msg.getEventTimestamp() );
         if ( _debug ) _dump.append( "\nField: " ).append( "throttleTimeIntervalMS" ).append( " : " );
-        _builder.encodeLong( (long)msg.getThrottleTimeIntervalMS() );
+        _builder.encodeLong( msg.getThrottleTimeIntervalMS() );
         if ( _debug ) _dump.append( "\nField: " ).append( "throttleNoMsgs" ).append( " : " );
-        _builder.encodeUInt( (int)msg.getThrottleNoMsgs() );
+        _builder.encodeUInt( msg.getThrottleNoMsgs() );
         if ( _debug ) _dump.append( "\nField: " ).append( "throttleDisconnectLimit" ).append( " : " );
-        _builder.encodeUInt( (int)msg.getThrottleDisconnectLimit() );
+        _builder.encodeUInt( msg.getThrottleDisconnectLimit() );
         _builder.end();
     }
 
     public final void encodeSubscribe( final ETISubscribe msg ) {
-        final int now = _tzCalculator.getNowUTC();
+        final long now = _tzCalculator.getNowAsInternalTime();
         _builder.start( MSG_Subscribe );
         if ( _debug ) {
             _dump.append( "  encodeMap=" ).append( "Subscribe" ).append( "  eventType=" ).append( "ETISubscribe" ).append( " : " );
         }
 
         if ( _debug ) _dump.append( "\nField: " ).append( "msgSeqNum" ).append( " : " );
-        _builder.encodeUInt( (int)msg.getMsgSeqNum() );
+        _builder.encodeUInt( msg.getMsgSeqNum() );
         if ( _debug ) _dump.append( "\nHook : " ).append( "senderSubID" ).append( " : " ).append( "encode" ).append( " : " );
         _builder.encodeUInt( _senderSubID ); // senderSubID;
         if ( _debug ) _dump.append( "\nField: " ).append( "subscriptionScope" ).append( " : " );
-        _builder.encodeUInt( (int)msg.getSubscriptionScope() );
+        _builder.encodeUInt( msg.getSubscriptionScope() );
         if ( _debug ) _dump.append( "\nField: " ).append( "refApplID" ).append( " : " );
         _builder.encodeByte( msg.getRefApplID().getVal() );
         if ( _debug ) _dump.append( "\nField: " ).append( "filler2" ).append( " : " );
@@ -530,7 +572,7 @@ public final class ETIBSEEncoder implements com.rr.codec.emea.exchange.eti.ETIEn
     }
 
     public final void encodeSubscribeResponse( final ETISubscribeResponse msg ) {
-        final int now = _tzCalculator.getNowUTC();
+        final long now = _tzCalculator.getNowAsInternalTime();
         _builder.start( MSG_SubscribeResponse );
         if ( _debug ) {
             _dump.append( "  encodeMap=" ).append( "SubscribeResponse" ).append( "  eventType=" ).append( "ETISubscribeResponse" ).append( " : " );
@@ -539,38 +581,38 @@ public final class ETIBSEEncoder implements com.rr.codec.emea.exchange.eti.ETIEn
         if ( _debug ) _dump.append( "\nField: " ).append( "requestTime" ).append( " : " );
         _builder.encodeTimestampUTC( msg.getRequestTime() );
         if ( _debug ) _dump.append( "\nField: " ).append( "sendingTime" ).append( " : " );
-        _builder.encodeTimestampUTC( msg.getSendingTime() );
+        _builder.encodeTimestampUTC( msg.getEventTimestamp() );
         if ( _debug ) _dump.append( "\nField: " ).append( "msgSeqNum" ).append( " : " );
-        _builder.encodeUInt( (int)msg.getMsgSeqNum() );
+        _builder.encodeUInt( msg.getMsgSeqNum() );
         if ( _debug ) _dump.append( "\nField: " ).append( "filler1" ).append( " : " );
         _builder.encodeFiller( 4 );
         if ( _debug ) _dump.append( "\nField: " ).append( "applSubID" ).append( " : " );
-        _builder.encodeUInt( (int)msg.getApplSubID() );
+        _builder.encodeUInt( msg.getApplSubID() );
         if ( _debug ) _dump.append( "\nField: " ).append( "filler2" ).append( " : " );
         _builder.encodeFiller( 4 );
         _builder.end();
     }
 
     public final void encodeUnsubscribe( final ETIUnsubscribe msg ) {
-        final int now = _tzCalculator.getNowUTC();
+        final long now = _tzCalculator.getNowAsInternalTime();
         _builder.start( MSG_Unsubscribe );
         if ( _debug ) {
             _dump.append( "  encodeMap=" ).append( "Unsubscribe" ).append( "  eventType=" ).append( "ETIUnsubscribe" ).append( " : " );
         }
 
         if ( _debug ) _dump.append( "\nField: " ).append( "msgSeqNum" ).append( " : " );
-        _builder.encodeUInt( (int)msg.getMsgSeqNum() );
+        _builder.encodeUInt( msg.getMsgSeqNum() );
         if ( _debug ) _dump.append( "\nHook : " ).append( "senderSubID" ).append( " : " ).append( "encode" ).append( " : " );
         _builder.encodeUInt( _senderSubID ); // senderSubID;
         if ( _debug ) _dump.append( "\nField: " ).append( "refApplSubID" ).append( " : " );
-        _builder.encodeUInt( (int)msg.getRefApplSubID() );
+        _builder.encodeUInt( msg.getRefApplSubID() );
         if ( _debug ) _dump.append( "\nField: " ).append( "filler2" ).append( " : " );
         _builder.encodeFiller( 4 );
         _builder.end();
     }
 
     public final void encodeUnsubscribeResponse( final ETIUnsubscribeResponse msg ) {
-        final int now = _tzCalculator.getNowUTC();
+        final long now = _tzCalculator.getNowAsInternalTime();
         _builder.start( MSG_UnsubscribeResponse );
         if ( _debug ) {
             _dump.append( "  encodeMap=" ).append( "UnsubscribeResponse" ).append( "  eventType=" ).append( "ETIUnsubscribeResponse" ).append( " : " );
@@ -579,33 +621,33 @@ public final class ETIBSEEncoder implements com.rr.codec.emea.exchange.eti.ETIEn
         if ( _debug ) _dump.append( "\nField: " ).append( "requestTime" ).append( " : " );
         _builder.encodeTimestampUTC( msg.getRequestTime() );
         if ( _debug ) _dump.append( "\nField: " ).append( "sendingTime" ).append( " : " );
-        _builder.encodeTimestampUTC( msg.getSendingTime() );
+        _builder.encodeTimestampUTC( msg.getEventTimestamp() );
         if ( _debug ) _dump.append( "\nField: " ).append( "msgSeqNum" ).append( " : " );
-        _builder.encodeUInt( (int)msg.getMsgSeqNum() );
+        _builder.encodeUInt( msg.getMsgSeqNum() );
         if ( _debug ) _dump.append( "\nField: " ).append( "filler" ).append( " : " );
         _builder.encodeFiller( 4 );
         _builder.end();
     }
 
     public final void encodeRetransmit( final ETIRetransmit msg ) {
-        final int now = _tzCalculator.getNowUTC();
+        final long now = _tzCalculator.getNowAsInternalTime();
         _builder.start( MSG_Retransmit );
         if ( _debug ) {
             _dump.append( "  encodeMap=" ).append( "Retransmit" ).append( "  eventType=" ).append( "ETIRetransmit" ).append( " : " );
         }
 
         if ( _debug ) _dump.append( "\nField: " ).append( "msgSeqNum" ).append( " : " );
-        _builder.encodeUInt( (int)msg.getMsgSeqNum() );
+        _builder.encodeUInt( msg.getMsgSeqNum() );
         if ( _debug ) _dump.append( "\nHook : " ).append( "senderSubID" ).append( " : " ).append( "encode" ).append( " : " );
         _builder.encodeUInt( _senderSubID ); // senderSubID;
         if ( _debug ) _dump.append( "\nField: " ).append( "applBegSeqNum" ).append( " : " );
-        _builder.encodeULong( (long)msg.getApplBegSeqNum() );
+        _builder.encodeULong( msg.getApplBegSeqNum() );
         if ( _debug ) _dump.append( "\nField: " ).append( "applEndSeqNum" ).append( " : " );
-        _builder.encodeULong( (long)msg.getApplEndSeqNum() );
+        _builder.encodeULong( msg.getApplEndSeqNum() );
         if ( _debug ) _dump.append( "\nField: " ).append( "subscriptionScope" ).append( " : " );
-        _builder.encodeUInt( (int)msg.getSubscriptionScope() );
+        _builder.encodeUInt( msg.getSubscriptionScope() );
         if ( _debug ) _dump.append( "\nField: " ).append( "partitionID" ).append( " : " );
-        _builder.encodeUShort( (short)msg.getPartitionID() );
+        _builder.encodeUShort( msg.getPartitionID() );
         if ( _debug ) _dump.append( "\nField: " ).append( "refApplID" ).append( " : " );
         _builder.encodeByte( msg.getRefApplID().getVal() );
         if ( _debug ) _dump.append( "\nField: " ).append( "filler2" ).append( " : " );
@@ -614,7 +656,7 @@ public final class ETIBSEEncoder implements com.rr.codec.emea.exchange.eti.ETIEn
     }
 
     public final void encodeRetransmitResponse( final ETIRetransmitResponse msg ) {
-        final int now = _tzCalculator.getNowUTC();
+        final long now = _tzCalculator.getNowAsInternalTime();
         _builder.start( MSG_RetransmitResponse );
         if ( _debug ) {
             _dump.append( "  encodeMap=" ).append( "RetransmitResponse" ).append( "  eventType=" ).append( "ETIRetransmitResponse" ).append( " : " );
@@ -623,37 +665,37 @@ public final class ETIBSEEncoder implements com.rr.codec.emea.exchange.eti.ETIEn
         if ( _debug ) _dump.append( "\nField: " ).append( "requestTime" ).append( " : " );
         _builder.encodeTimestampUTC( msg.getRequestTime() );
         if ( _debug ) _dump.append( "\nField: " ).append( "sendingTime" ).append( " : " );
-        _builder.encodeTimestampUTC( msg.getSendingTime() );
+        _builder.encodeTimestampUTC( msg.getEventTimestamp() );
         if ( _debug ) _dump.append( "\nField: " ).append( "msgSeqNum" ).append( " : " );
-        _builder.encodeUInt( (int)msg.getMsgSeqNum() );
+        _builder.encodeUInt( msg.getMsgSeqNum() );
         if ( _debug ) _dump.append( "\nField: " ).append( "filler1" ).append( " : " );
         _builder.encodeFiller( 4 );
         if ( _debug ) _dump.append( "\nField: " ).append( "applEndSeqNum" ).append( " : " );
-        _builder.encodeULong( (long)msg.getApplEndSeqNum() );
+        _builder.encodeULong( msg.getApplEndSeqNum() );
         if ( _debug ) _dump.append( "\nField: " ).append( "refApplLastSeqNum" ).append( " : " );
-        _builder.encodeULong( (long)msg.getRefApplLastSeqNum() );
+        _builder.encodeULong( msg.getRefApplLastSeqNum() );
         if ( _debug ) _dump.append( "\nField: " ).append( "applTotalMessageCount" ).append( " : " );
-        _builder.encodeUShort( (short)msg.getApplTotalMessageCount() );
+        _builder.encodeUShort( msg.getApplTotalMessageCount() );
         if ( _debug ) _dump.append( "\nField: " ).append( "filler2" ).append( " : " );
         _builder.encodeFiller( 6 );
         _builder.end();
     }
 
     public final void encodeRetransmitOrderEvents( final ETIRetransmitOrderEvents msg ) {
-        final int now = _tzCalculator.getNowUTC();
+        final long now = _tzCalculator.getNowAsInternalTime();
         _builder.start( MSG_RetransmitOrderEvents );
         if ( _debug ) {
             _dump.append( "  encodeMap=" ).append( "RetransmitOrderEvents" ).append( "  eventType=" ).append( "ETIRetransmitOrderEvents" ).append( " : " );
         }
 
         if ( _debug ) _dump.append( "\nField: " ).append( "msgSeqNum" ).append( " : " );
-        _builder.encodeUInt( (int)msg.getMsgSeqNum() );
+        _builder.encodeUInt( msg.getMsgSeqNum() );
         if ( _debug ) _dump.append( "\nHook : " ).append( "senderSubID" ).append( " : " ).append( "encode" ).append( " : " );
         _builder.encodeUInt( _senderSubID ); // senderSubID;
         if ( _debug ) _dump.append( "\nField: " ).append( "subscriptionScope" ).append( " : " );
-        _builder.encodeUInt( (int)msg.getSubscriptionScope() );
+        _builder.encodeUInt( msg.getSubscriptionScope() );
         if ( _debug ) _dump.append( "\nField: " ).append( "partitionID" ).append( " : " );
-        _builder.encodeUShort( (short)msg.getPartitionID() );
+        _builder.encodeUShort( msg.getPartitionID() );
         if ( _debug ) _dump.append( "\nField: " ).append( "refApplID" ).append( " : " );
         _builder.encodeByte( msg.getRefApplID().getVal() );
         if ( _debug ) _dump.append( "\nField: " ).append( "applBegMsgID" ).append( " : " );
@@ -666,7 +708,7 @@ public final class ETIBSEEncoder implements com.rr.codec.emea.exchange.eti.ETIEn
     }
 
     public final void encodeRetranOrderEventsResponse( final ETIRetransmitOrderEventsResponse msg ) {
-        final int now = _tzCalculator.getNowUTC();
+        final long now = _tzCalculator.getNowAsInternalTime();
         _builder.start( MSG_RetransmitOrderEventsResponse );
         if ( _debug ) {
             _dump.append( "  encodeMap=" ).append( "RetransmitOrderEventsResponse" ).append( "  eventType=" ).append( "ETIRetransmitOrderEventsResponse" ).append( " : " );
@@ -675,13 +717,13 @@ public final class ETIBSEEncoder implements com.rr.codec.emea.exchange.eti.ETIEn
         if ( _debug ) _dump.append( "\nField: " ).append( "requestTime" ).append( " : " );
         _builder.encodeTimestampUTC( msg.getRequestTime() );
         if ( _debug ) _dump.append( "\nField: " ).append( "sendingTime" ).append( " : " );
-        _builder.encodeTimestampUTC( msg.getSendingTime() );
+        _builder.encodeTimestampUTC( msg.getEventTimestamp() );
         if ( _debug ) _dump.append( "\nField: " ).append( "msgSeqNum" ).append( " : " );
-        _builder.encodeUInt( (int)msg.getMsgSeqNum() );
+        _builder.encodeUInt( msg.getMsgSeqNum() );
         if ( _debug ) _dump.append( "\nField: " ).append( "filler1" ).append( " : " );
         _builder.encodeFiller( 4 );
         if ( _debug ) _dump.append( "\nField: " ).append( "applTotalMessageCount" ).append( " : " );
-        _builder.encodeUShort( (short)msg.getApplTotalMessageCount() );
+        _builder.encodeUShort( msg.getApplTotalMessageCount() );
         if ( _debug ) _dump.append( "\nField: " ).append( "applEndMsgID" ).append( " : " );
         _builder.encodeZStringFixedWidth( msg.getApplEndMsgID(), 16 );
         if ( _debug ) _dump.append( "\nField: " ).append( "refApplLastMsgID" ).append( " : " );
@@ -692,7 +734,7 @@ public final class ETIBSEEncoder implements com.rr.codec.emea.exchange.eti.ETIEn
     }
 
     public final void encodeHeartbeat( final Heartbeat msg ) {
-        final int now = _tzCalculator.getNowUTC();
+        final long now = _tzCalculator.getNowAsInternalTime();
         _builder.start( MSG_Heartbeat );
         if ( _debug ) {
             _dump.append( "  encodeMap=" ).append( "Heartbeat" ).append( "  eventType=" ).append( "Heartbeat" ).append( " : " );
@@ -702,7 +744,7 @@ public final class ETIBSEEncoder implements com.rr.codec.emea.exchange.eti.ETIEn
     }
 
     public final void encodeHeartbeatNotification( final Heartbeat msg ) {
-        final int now = _tzCalculator.getNowUTC();
+        final long now = _tzCalculator.getNowAsInternalTime();
         _builder.start( MSG_HeartbeatNotification );
         if ( _debug ) {
             _dump.append( "  encodeMap=" ).append( "HeartbeatNotification" ).append( "  eventType=" ).append( "Heartbeat" ).append( " : " );
@@ -714,14 +756,14 @@ public final class ETIBSEEncoder implements com.rr.codec.emea.exchange.eti.ETIEn
     }
 
     public final void encodeSessionLogoutNotification( final ETISessionLogoutNotification msg ) {
-        final int now = _tzCalculator.getNowUTC();
+        final long now = _tzCalculator.getNowAsInternalTime();
         _builder.start( MSG_SessionLogoutNotification );
         if ( _debug ) {
             _dump.append( "  encodeMap=" ).append( "SessionLogoutNotification" ).append( "  eventType=" ).append( "ETISessionLogoutNotification" ).append( " : " );
         }
 
         if ( _debug ) _dump.append( "\nField: " ).append( "sendingTime" ).append( " : " );
-        _builder.encodeTimestampUTC( msg.getSendingTime() );
+        _builder.encodeTimestampUTC( msg.getEventTimestamp() );
         if ( _debug ) _dump.append( "\nHook : " ).append( "varTextLen" ).append( " : " ).append( "encode" ).append( " : " );
         _builder.encodeShort( msg.getReason().length() );
         if ( _debug ) _dump.append( "\nField: " ).append( "filler" ).append( " : " );
@@ -732,14 +774,14 @@ public final class ETIBSEEncoder implements com.rr.codec.emea.exchange.eti.ETIEn
     }
 
     public final void encodeOrderCancelRequest( final CancelRequest msg ) {
-        final int now = _tzCalculator.getNowUTC();
+        final long now = _tzCalculator.getNowAsInternalTime();
         _builder.start( MSG_CancelOrderSingleRequest );
         if ( _debug ) {
             _dump.append( "  encodeMap=" ).append( "CancelOrderSingleRequest" ).append( "  eventType=" ).append( "CancelRequest" ).append( " : " );
         }
 
         if ( _debug ) _dump.append( "\nField: " ).append( "msgSeqNum" ).append( " : " );
-        _builder.encodeUInt( (int)msg.getMsgSeqNum() );
+        _builder.encodeUInt( msg.getMsgSeqNum() );
         if ( _debug ) _dump.append( "\nHook : " ).append( "senderSubID" ).append( " : " ).append( "encode" ).append( " : " );
         _builder.encodeUInt( _senderSubID ); // senderSubID;
         if ( _debug ) _dump.append( "\nField: " ).append( "orderId" ).append( " : " );
@@ -760,7 +802,7 @@ public final class ETIBSEEncoder implements com.rr.codec.emea.exchange.eti.ETIEn
     }
 
     public final void encodeUnsolOrderCancelled( final Cancelled msg ) {
-        final int now = _tzCalculator.getNowUTC();
+        final long now = _tzCalculator.getNowAsInternalTime();
         _builder.start( MSG_CancelOrderNotification );
         if ( _debug ) {
             _dump.append( "  encodeMap=" ).append( "CancelOrderNotification" ).append( "  eventType=" ).append( "Cancelled" ).append( " : " );
@@ -769,7 +811,7 @@ public final class ETIBSEEncoder implements com.rr.codec.emea.exchange.eti.ETIEn
         if ( _debug ) _dump.append( "\nField: " ).append( "trdRegTSTimeOut" ).append( " : " );
         _builder.encodeFiller( 8 );    // trdRegTSTimeOut
         if ( _debug ) _dump.append( "\nField: " ).append( "sendingTime" ).append( " : " );
-        _builder.encodeTimestampUTC( msg.getSendingTime() );
+        _builder.encodeTimestampUTC( msg.getEventTimestamp() );
         if ( _debug ) _dump.append( "\nField: " ).append( "applSubID" ).append( " : " );
         _builder.encodeUInt( Constants.UNSET_INT );    // applSubID
         if ( _debug ) _dump.append( "\nField: " ).append( "partitionID" ).append( " : " );
@@ -818,7 +860,7 @@ public final class ETIBSEEncoder implements com.rr.codec.emea.exchange.eti.ETIEn
     }
 
     public final void encodeImmediateExecResponse( final TradeNew msg ) {
-        final int now = _tzCalculator.getNowUTC();
+        final long now = _tzCalculator.getNowAsInternalTime();
         _builder.start( MSG_ImmediateExecResponse );
         if ( _debug ) {
             _dump.append( "  encodeMap=" ).append( "ImmediateExecResponse" ).append( "  eventType=" ).append( "TradeNew" ).append( " : " );
@@ -831,9 +873,9 @@ public final class ETIBSEEncoder implements com.rr.codec.emea.exchange.eti.ETIEn
         if ( _debug ) _dump.append( "\nField: " ).append( "trdRegTSTimeOut" ).append( " : " );
         _builder.encodeFiller( 8 );    // trdRegTSTimeOut
         if ( _debug ) _dump.append( "\nField: " ).append( "sendingTime" ).append( " : " );
-        _builder.encodeTimestampUTC( msg.getSendingTime() );
+        _builder.encodeTimestampUTC( msg.getEventTimestamp() );
         if ( _debug ) _dump.append( "\nField: " ).append( "msgSeqNum" ).append( " : " );
-        _builder.encodeUInt( (int)msg.getMsgSeqNum() );
+        _builder.encodeUInt( msg.getMsgSeqNum() );
         if ( _debug ) _dump.append( "\nField: " ).append( "partitionID" ).append( " : " );
         _builder.encodeUShort( Constants.UNSET_SHORT );    // partitionID
         if ( _debug ) _dump.append( "\nHook : " ).append( "applID" ).append( " : " ).append( "encode" ).append( " : " );
@@ -912,7 +954,7 @@ public final class ETIBSEEncoder implements com.rr.codec.emea.exchange.eti.ETIEn
     }
 
     public final void encodeBookOrderExecution( final TradeNew msg ) {
-        final int now = _tzCalculator.getNowUTC();
+        final long now = _tzCalculator.getNowAsInternalTime();
         _builder.start( MSG_BookOrderExecution );
         if ( _debug ) {
             _dump.append( "  encodeMap=" ).append( "BookOrderExecution" ).append( "  eventType=" ).append( "TradeNew" ).append( " : " );
@@ -921,7 +963,7 @@ public final class ETIBSEEncoder implements com.rr.codec.emea.exchange.eti.ETIEn
         if ( _debug ) _dump.append( "\nField: " ).append( "trdRegTSTimeOut" ).append( " : " );
         _builder.encodeFiller( 8 );    // trdRegTSTimeOut
         if ( _debug ) _dump.append( "\nField: " ).append( "sendingTime" ).append( " : " );
-        _builder.encodeTimestampUTC( msg.getSendingTime() );
+        _builder.encodeTimestampUTC( msg.getEventTimestamp() );
         if ( _debug ) _dump.append( "\nField: " ).append( "applSubID" ).append( " : " );
         _builder.encodeUInt( Constants.UNSET_INT );    // applSubID
         if ( _debug ) _dump.append( "\nField: " ).append( "partitionID" ).append( " : " );
@@ -1012,7 +1054,7 @@ public final class ETIBSEEncoder implements com.rr.codec.emea.exchange.eti.ETIEn
     }
 
     public final void encodeReject( final SessionReject msg ) {
-        final int now = _tzCalculator.getNowUTC();
+        final long now = _tzCalculator.getNowAsInternalTime();
         _builder.start( MSG_Reject );
         if ( _debug ) {
             _dump.append( "  encodeMap=" ).append( "Reject" ).append( "  eventType=" ).append( "SessionReject" ).append( " : " );
@@ -1021,9 +1063,9 @@ public final class ETIBSEEncoder implements com.rr.codec.emea.exchange.eti.ETIEn
         if ( _debug ) _dump.append( "\nField: " ).append( "requestTime" ).append( " : " );
         _builder.encodeFiller( 8 );    // requestTime
         if ( _debug ) _dump.append( "\nField: " ).append( "sendingTime" ).append( " : " );
-        _builder.encodeTimestampUTC( msg.getSendingTime() );
+        _builder.encodeTimestampUTC( msg.getEventTimestamp() );
         if ( _debug ) _dump.append( "\nField: " ).append( "msgSeqNum" ).append( " : " );
-        _builder.encodeUInt( (int)msg.getRefSeqNum() );
+        _builder.encodeUInt( msg.getRefSeqNum() );
         if ( _debug ) _dump.append( "\nField: " ).append( "filler1" ).append( " : " );
         _builder.encodeFiller( 4 );
         if ( _debug ) _dump.append( "\nField: " ).append( "sessionRejectReason" ).append( " : " );
@@ -1042,14 +1084,14 @@ public final class ETIBSEEncoder implements com.rr.codec.emea.exchange.eti.ETIEn
     }
 
     public final void encodeNewLimitOrder( final NewOrderSingle msg ) {
-        final int now = _tzCalculator.getNowUTC();
+        final long now = _tzCalculator.getNowAsInternalTime();
         _builder.start( MSG_NewOrderRequestSimple );
         if ( _debug ) {
             _dump.append( "  encodeMap=" ).append( "NewOrderRequestSimple" ).append( "  eventType=" ).append( "NewOrderSingle" ).append( " : " );
         }
 
         if ( _debug ) _dump.append( "\nField: " ).append( "msgSeqNum" ).append( " : " );
-        _builder.encodeUInt( (int)msg.getMsgSeqNum() );
+        _builder.encodeUInt( msg.getMsgSeqNum() );
         if ( _debug ) _dump.append( "\nHook : " ).append( "senderSubID" ).append( " : " ).append( "encode" ).append( " : " );
         _builder.encodeUInt( _senderSubID ); // senderSubID;
         if ( _debug ) _dump.append( "\nField: " ).append( "price" ).append( " : " );
@@ -1084,14 +1126,14 @@ public final class ETIBSEEncoder implements com.rr.codec.emea.exchange.eti.ETIEn
     }
 
     public final void encodeCancelReplaceLimitOrder( final CancelReplaceRequest msg ) {
-        final int now = _tzCalculator.getNowUTC();
+        final long now = _tzCalculator.getNowAsInternalTime();
         _builder.start( MSG_ReplaceOrderSingleShortRequest );
         if ( _debug ) {
             _dump.append( "  encodeMap=" ).append( "ReplaceOrderSingleShortRequest" ).append( "  eventType=" ).append( "CancelReplaceRequest" ).append( " : " );
         }
 
         if ( _debug ) _dump.append( "\nField: " ).append( "msgSeqNum" ).append( " : " );
-        _builder.encodeUInt( (int)msg.getMsgSeqNum() );
+        _builder.encodeUInt( msg.getMsgSeqNum() );
         if ( _debug ) _dump.append( "\nHook : " ).append( "senderSubID" ).append( " : " ).append( "encode" ).append( " : " );
         _builder.encodeUInt( _senderSubID ); // senderSubID;
         if ( _debug ) _dump.append( "\nField: " ).append( "orderId" ).append( " : " );
@@ -1130,7 +1172,7 @@ public final class ETIBSEEncoder implements com.rr.codec.emea.exchange.eti.ETIEn
     }
 
     public final void encodeOrderAckLean( final NewOrderAck msg ) {
-        final int now = _tzCalculator.getNowUTC();
+        final long now = _tzCalculator.getNowAsInternalTime();
         _builder.start( MSG_NewOrderLeanResponse );
         if ( _debug ) {
             _dump.append( "  encodeMap=" ).append( "NewOrderLeanResponse" ).append( "  eventType=" ).append( "NewOrderAck" ).append( " : " );
@@ -1143,9 +1185,9 @@ public final class ETIBSEEncoder implements com.rr.codec.emea.exchange.eti.ETIEn
         if ( _debug ) _dump.append( "\nField: " ).append( "trdRegTSTimeOut" ).append( " : " );
         _builder.encodeFiller( 8 );    // trdRegTSTimeOut
         if ( _debug ) _dump.append( "\nField: " ).append( "sendingTime" ).append( " : " );
-        _builder.encodeTimestampUTC( msg.getSendingTime() );
+        _builder.encodeTimestampUTC( msg.getEventTimestamp() );
         if ( _debug ) _dump.append( "\nField: " ).append( "msgSeqNum" ).append( " : " );
-        _builder.encodeUInt( (int)msg.getMsgSeqNum() );
+        _builder.encodeUInt( msg.getMsgSeqNum() );
         if ( _debug ) _dump.append( "\nHook : " ).append( "lastFragment" ).append( " : " ).append( "encode" ).append( " : " );
         _builder.encodeByte( (byte)1 );
         if ( _debug ) _dump.append( "\nField: " ).append( "filler1" ).append( " : " );
@@ -1174,7 +1216,7 @@ public final class ETIBSEEncoder implements com.rr.codec.emea.exchange.eti.ETIEn
     }
 
     public final void encodeOrderAckLeanCancel( final Cancelled msg ) {
-        final int now = _tzCalculator.getNowUTC();
+        final long now = _tzCalculator.getNowAsInternalTime();
         _builder.start( MSG_NewOrderLeanResponse );
         if ( _debug ) {
             _dump.append( "  encodeMap=" ).append( "NewOrderLeanResponse" ).append( "  eventType=" ).append( "Cancelled" ).append( " : " );
@@ -1187,9 +1229,9 @@ public final class ETIBSEEncoder implements com.rr.codec.emea.exchange.eti.ETIEn
         if ( _debug ) _dump.append( "\nField: " ).append( "trdRegTSTimeOut" ).append( " : " );
         _builder.encodeFiller( 8 );    // trdRegTSTimeOut
         if ( _debug ) _dump.append( "\nField: " ).append( "sendingTime" ).append( " : " );
-        _builder.encodeTimestampUTC( msg.getSendingTime() );
+        _builder.encodeTimestampUTC( msg.getEventTimestamp() );
         if ( _debug ) _dump.append( "\nField: " ).append( "msgSeqNum" ).append( " : " );
-        _builder.encodeUInt( (int)msg.getMsgSeqNum() );
+        _builder.encodeUInt( msg.getMsgSeqNum() );
         if ( _debug ) _dump.append( "\nHook : " ).append( "lastFragment" ).append( " : " ).append( "encode" ).append( " : " );
         _builder.encodeByte( (byte)1 );
         if ( _debug ) _dump.append( "\nField: " ).append( "filler1" ).append( " : " );
@@ -1218,7 +1260,7 @@ public final class ETIBSEEncoder implements com.rr.codec.emea.exchange.eti.ETIEn
     }
 
     public final void encodeOrderAckLeanSuspend( final Suspended msg ) {
-        final int now = _tzCalculator.getNowUTC();
+        final long now = _tzCalculator.getNowAsInternalTime();
         _builder.start( MSG_NewOrderLeanResponse );
         if ( _debug ) {
             _dump.append( "  encodeMap=" ).append( "NewOrderLeanResponse" ).append( "  eventType=" ).append( "Suspended" ).append( " : " );
@@ -1231,9 +1273,9 @@ public final class ETIBSEEncoder implements com.rr.codec.emea.exchange.eti.ETIEn
         if ( _debug ) _dump.append( "\nField: " ).append( "trdRegTSTimeOut" ).append( " : " );
         _builder.encodeFiller( 8 );    // trdRegTSTimeOut
         if ( _debug ) _dump.append( "\nField: " ).append( "sendingTime" ).append( " : " );
-        _builder.encodeTimestampUTC( msg.getSendingTime() );
+        _builder.encodeTimestampUTC( msg.getEventTimestamp() );
         if ( _debug ) _dump.append( "\nField: " ).append( "msgSeqNum" ).append( " : " );
-        _builder.encodeUInt( (int)msg.getMsgSeqNum() );
+        _builder.encodeUInt( msg.getMsgSeqNum() );
         if ( _debug ) _dump.append( "\nHook : " ).append( "lastFragment" ).append( " : " ).append( "encode" ).append( " : " );
         _builder.encodeByte( (byte)1 );
         if ( _debug ) _dump.append( "\nField: " ).append( "filler1" ).append( " : " );
@@ -1262,7 +1304,7 @@ public final class ETIBSEEncoder implements com.rr.codec.emea.exchange.eti.ETIEn
     }
 
     public final void encodeReplaceLeanResponseAck( final Replaced msg ) {
-        final int now = _tzCalculator.getNowUTC();
+        final long now = _tzCalculator.getNowAsInternalTime();
         _builder.start( MSG_ReplaceOrderLeanResponse );
         if ( _debug ) {
             _dump.append( "  encodeMap=" ).append( "ReplaceOrderLeanResponse" ).append( "  eventType=" ).append( "Replaced" ).append( " : " );
@@ -1275,9 +1317,9 @@ public final class ETIBSEEncoder implements com.rr.codec.emea.exchange.eti.ETIEn
         if ( _debug ) _dump.append( "\nField: " ).append( "trdRegTSTimeOut" ).append( " : " );
         _builder.encodeFiller( 8 );    // trdRegTSTimeOut
         if ( _debug ) _dump.append( "\nField: " ).append( "sendingTime" ).append( " : " );
-        _builder.encodeTimestampUTC( msg.getSendingTime() );
+        _builder.encodeTimestampUTC( msg.getEventTimestamp() );
         if ( _debug ) _dump.append( "\nField: " ).append( "msgSeqNum" ).append( " : " );
-        _builder.encodeUInt( (int)msg.getMsgSeqNum() );
+        _builder.encodeUInt( msg.getMsgSeqNum() );
         if ( _debug ) _dump.append( "\nHook : " ).append( "lastFragment" ).append( " : " ).append( "encode" ).append( " : " );
         _builder.encodeByte( (byte)1 );
         if ( _debug ) _dump.append( "\nField: " ).append( "filler1" ).append( " : " );
@@ -1314,7 +1356,7 @@ public final class ETIBSEEncoder implements com.rr.codec.emea.exchange.eti.ETIEn
     }
 
     public final void encodeReplaceLeanResponsePartial( final Replaced msg ) {
-        final int now = _tzCalculator.getNowUTC();
+        final long now = _tzCalculator.getNowAsInternalTime();
         _builder.start( MSG_ReplaceOrderLeanResponse );
         if ( _debug ) {
             _dump.append( "  encodeMap=" ).append( "ReplaceOrderLeanResponse" ).append( "  eventType=" ).append( "Replaced" ).append( " : " );
@@ -1327,9 +1369,9 @@ public final class ETIBSEEncoder implements com.rr.codec.emea.exchange.eti.ETIEn
         if ( _debug ) _dump.append( "\nField: " ).append( "trdRegTSTimeOut" ).append( " : " );
         _builder.encodeFiller( 8 );    // trdRegTSTimeOut
         if ( _debug ) _dump.append( "\nField: " ).append( "sendingTime" ).append( " : " );
-        _builder.encodeTimestampUTC( msg.getSendingTime() );
+        _builder.encodeTimestampUTC( msg.getEventTimestamp() );
         if ( _debug ) _dump.append( "\nField: " ).append( "msgSeqNum" ).append( " : " );
-        _builder.encodeUInt( (int)msg.getMsgSeqNum() );
+        _builder.encodeUInt( msg.getMsgSeqNum() );
         if ( _debug ) _dump.append( "\nHook : " ).append( "lastFragment" ).append( " : " ).append( "encode" ).append( " : " );
         _builder.encodeByte( (byte)1 );
         if ( _debug ) _dump.append( "\nField: " ).append( "filler1" ).append( " : " );
@@ -1366,7 +1408,7 @@ public final class ETIBSEEncoder implements com.rr.codec.emea.exchange.eti.ETIEn
     }
 
     public final void encodeReplaceLeanResponseCancelled( final Cancelled msg ) {
-        final int now = _tzCalculator.getNowUTC();
+        final long now = _tzCalculator.getNowAsInternalTime();
         _builder.start( MSG_ReplaceOrderLeanResponse );
         if ( _debug ) {
             _dump.append( "  encodeMap=" ).append( "ReplaceOrderLeanResponse" ).append( "  eventType=" ).append( "Cancelled" ).append( " : " );
@@ -1379,9 +1421,9 @@ public final class ETIBSEEncoder implements com.rr.codec.emea.exchange.eti.ETIEn
         if ( _debug ) _dump.append( "\nField: " ).append( "trdRegTSTimeOut" ).append( " : " );
         _builder.encodeFiller( 8 );    // trdRegTSTimeOut
         if ( _debug ) _dump.append( "\nField: " ).append( "sendingTime" ).append( " : " );
-        _builder.encodeTimestampUTC( msg.getSendingTime() );
+        _builder.encodeTimestampUTC( msg.getEventTimestamp() );
         if ( _debug ) _dump.append( "\nField: " ).append( "msgSeqNum" ).append( " : " );
-        _builder.encodeUInt( (int)msg.getMsgSeqNum() );
+        _builder.encodeUInt( msg.getMsgSeqNum() );
         if ( _debug ) _dump.append( "\nHook : " ).append( "lastFragment" ).append( " : " ).append( "encode" ).append( " : " );
         _builder.encodeByte( (byte)1 );
         if ( _debug ) _dump.append( "\nField: " ).append( "filler1" ).append( " : " );
@@ -1418,7 +1460,7 @@ public final class ETIBSEEncoder implements com.rr.codec.emea.exchange.eti.ETIEn
     }
 
     public final void encodeReplaceLeanResponseSuspended( final Suspended msg ) {
-        final int now = _tzCalculator.getNowUTC();
+        final long now = _tzCalculator.getNowAsInternalTime();
         _builder.start( MSG_ReplaceOrderLeanResponse );
         if ( _debug ) {
             _dump.append( "  encodeMap=" ).append( "ReplaceOrderLeanResponse" ).append( "  eventType=" ).append( "Suspended" ).append( " : " );
@@ -1431,9 +1473,9 @@ public final class ETIBSEEncoder implements com.rr.codec.emea.exchange.eti.ETIEn
         if ( _debug ) _dump.append( "\nField: " ).append( "trdRegTSTimeOut" ).append( " : " );
         _builder.encodeFiller( 8 );    // trdRegTSTimeOut
         if ( _debug ) _dump.append( "\nField: " ).append( "sendingTime" ).append( " : " );
-        _builder.encodeTimestampUTC( msg.getSendingTime() );
+        _builder.encodeTimestampUTC( msg.getEventTimestamp() );
         if ( _debug ) _dump.append( "\nField: " ).append( "msgSeqNum" ).append( " : " );
-        _builder.encodeUInt( (int)msg.getMsgSeqNum() );
+        _builder.encodeUInt( msg.getMsgSeqNum() );
         if ( _debug ) _dump.append( "\nHook : " ).append( "lastFragment" ).append( " : " ).append( "encode" ).append( " : " );
         _builder.encodeByte( (byte)1 );
         if ( _debug ) _dump.append( "\nField: " ).append( "filler1" ).append( " : " );
@@ -1470,7 +1512,7 @@ public final class ETIBSEEncoder implements com.rr.codec.emea.exchange.eti.ETIEn
     }
 
     public final void encodeOrderCancelledLean( final Cancelled msg ) {
-        final int now = _tzCalculator.getNowUTC();
+        final long now = _tzCalculator.getNowAsInternalTime();
         _builder.start( MSG_CancelOrderLeanResponse );
         if ( _debug ) {
             _dump.append( "  encodeMap=" ).append( "CancelOrderLeanResponse" ).append( "  eventType=" ).append( "Cancelled" ).append( " : " );
@@ -1483,9 +1525,9 @@ public final class ETIBSEEncoder implements com.rr.codec.emea.exchange.eti.ETIEn
         if ( _debug ) _dump.append( "\nField: " ).append( "trdRegTSTimeOut" ).append( " : " );
         _builder.encodeFiller( 8 );    // trdRegTSTimeOut
         if ( _debug ) _dump.append( "\nField: " ).append( "sendingTime" ).append( " : " );
-        _builder.encodeTimestampUTC( msg.getSendingTime() );
+        _builder.encodeTimestampUTC( msg.getEventTimestamp() );
         if ( _debug ) _dump.append( "\nField: " ).append( "msgSeqNum" ).append( " : " );
-        _builder.encodeUInt( (int)msg.getMsgSeqNum() );
+        _builder.encodeUInt( msg.getMsgSeqNum() );
         if ( _debug ) _dump.append( "\nHook : " ).append( "lastFragment" ).append( " : " ).append( "encode" ).append( " : " );
         _builder.encodeByte( (byte)1 );
         if ( _debug ) _dump.append( "\nField: " ).append( "filler1" ).append( " : " );
@@ -1518,7 +1560,7 @@ public final class ETIBSEEncoder implements com.rr.codec.emea.exchange.eti.ETIEn
     }
 
     public final void encodeOrderCancelSuspendLean( final Suspended msg ) {
-        final int now = _tzCalculator.getNowUTC();
+        final long now = _tzCalculator.getNowAsInternalTime();
         _builder.start( MSG_CancelOrderLeanResponse );
         if ( _debug ) {
             _dump.append( "  encodeMap=" ).append( "CancelOrderLeanResponse" ).append( "  eventType=" ).append( "Suspended" ).append( " : " );
@@ -1531,9 +1573,9 @@ public final class ETIBSEEncoder implements com.rr.codec.emea.exchange.eti.ETIEn
         if ( _debug ) _dump.append( "\nField: " ).append( "trdRegTSTimeOut" ).append( " : " );
         _builder.encodeFiller( 8 );    // trdRegTSTimeOut
         if ( _debug ) _dump.append( "\nField: " ).append( "sendingTime" ).append( " : " );
-        _builder.encodeTimestampUTC( msg.getSendingTime() );
+        _builder.encodeTimestampUTC( msg.getEventTimestamp() );
         if ( _debug ) _dump.append( "\nField: " ).append( "msgSeqNum" ).append( " : " );
-        _builder.encodeUInt( (int)msg.getMsgSeqNum() );
+        _builder.encodeUInt( msg.getMsgSeqNum() );
         if ( _debug ) _dump.append( "\nHook : " ).append( "lastFragment" ).append( " : " ).append( "encode" ).append( " : " );
         _builder.encodeByte( (byte)1 );
         if ( _debug ) _dump.append( "\nField: " ).append( "filler1" ).append( " : " );
@@ -1566,14 +1608,14 @@ public final class ETIBSEEncoder implements com.rr.codec.emea.exchange.eti.ETIEn
     }
 
     public final void encodeNewOrderSingle( final NewOrderSingle msg ) {
-        final int now = _tzCalculator.getNowUTC();
+        final long now = _tzCalculator.getNowAsInternalTime();
         _builder.start( MSG_NewOrderRequest );
         if ( _debug ) {
             _dump.append( "  encodeMap=" ).append( "NewOrderRequest" ).append( "  eventType=" ).append( "NewOrderSingle" ).append( " : " );
         }
 
         if ( _debug ) _dump.append( "\nField: " ).append( "msgSeqNum" ).append( " : " );
-        _builder.encodeUInt( (int)msg.getMsgSeqNum() );
+        _builder.encodeUInt( msg.getMsgSeqNum() );
         if ( _debug ) _dump.append( "\nHook : " ).append( "senderSubID" ).append( " : " ).append( "encode" ).append( " : " );
         _builder.encodeUInt( _senderSubID ); // senderSubID;
         if ( _debug ) _dump.append( "\nField: " ).append( "price" ).append( " : " );
@@ -1632,22 +1674,22 @@ public final class ETIBSEEncoder implements com.rr.codec.emea.exchange.eti.ETIEn
         _builder.encodeFiller( 20 );
         if ( _debug ) _dump.append( "\nHook : " ).append( "uniqueClientCode" ).append( " : " ).append( "encode" ).append( " : " );
         _builder.encodeStringFixedWidth( _uniqueClientCode, 12 );
-        if ( _debug ) _dump.append( "\nField: " ).append( "srcLinkId" ).append( " : " );
-        _builder.encodeZStringFixedWidth( msg.getSrcLinkId(), 24 );
+        if ( _debug ) _dump.append( "\nField: " ).append( "parentClOrdId" ).append( " : " );
+        _builder.encodeZStringFixedWidth( msg.getParentClOrdId(), 24 );
         if ( _debug ) _dump.append( "\nField: " ).append( "filler8" ).append( " : " );
         _builder.encodeFiller( 3 );
         _builder.end();
     }
 
     public final void encodeOrderReplaceRequest( final CancelReplaceRequest msg ) {
-        final int now = _tzCalculator.getNowUTC();
+        final long now = _tzCalculator.getNowAsInternalTime();
         _builder.start( MSG_ReplaceOrderSingleRequest );
         if ( _debug ) {
             _dump.append( "  encodeMap=" ).append( "ReplaceOrderSingleRequest" ).append( "  eventType=" ).append( "CancelReplaceRequest" ).append( " : " );
         }
 
         if ( _debug ) _dump.append( "\nField: " ).append( "msgSeqNum" ).append( " : " );
-        _builder.encodeUInt( (int)msg.getMsgSeqNum() );
+        _builder.encodeUInt( msg.getMsgSeqNum() );
         if ( _debug ) _dump.append( "\nHook : " ).append( "senderSubID" ).append( " : " ).append( "encode" ).append( " : " );
         _builder.encodeUInt( _senderSubID ); // senderSubID;
         if ( _debug ) _dump.append( "\nField: " ).append( "orderId" ).append( " : " );
@@ -1712,15 +1754,15 @@ public final class ETIBSEEncoder implements com.rr.codec.emea.exchange.eti.ETIEn
         _builder.encodeByte( (byte)'C' );
         if ( _debug ) _dump.append( "\nField: " ).append( "filler6" ).append( " : " );
         _builder.encodeFiller( 20 );
-        if ( _debug ) _dump.append( "\nField: " ).append( "srcLinkId" ).append( " : " );
-        _builder.encodeZStringFixedWidth( msg.getSrcLinkId(), 24 );
+        if ( _debug ) _dump.append( "\nField: " ).append( "parentClOrdId" ).append( " : " );
+        _builder.encodeZStringFixedWidth( msg.getParentClOrdId(), 24 );
         if ( _debug ) _dump.append( "\nField: " ).append( "filler7" ).append( " : " );
         _builder.encodeFiller( 18 );
         _builder.end();
     }
 
     public final void encodeOrderAck( final NewOrderAck msg ) {
-        final int now = _tzCalculator.getNowUTC();
+        final long now = _tzCalculator.getNowAsInternalTime();
         _builder.start( MSG_NewOrderStandardResponse );
         if ( _debug ) {
             _dump.append( "  encodeMap=" ).append( "NewOrderStandardResponse" ).append( "  eventType=" ).append( "NewOrderAck" ).append( " : " );
@@ -1733,9 +1775,9 @@ public final class ETIBSEEncoder implements com.rr.codec.emea.exchange.eti.ETIEn
         if ( _debug ) _dump.append( "\nField: " ).append( "trdRegTSTimeOut" ).append( " : " );
         _builder.encodeFiller( 8 );    // trdRegTSTimeOut
         if ( _debug ) _dump.append( "\nField: " ).append( "sendingTime" ).append( " : " );
-        _builder.encodeTimestampUTC( msg.getSendingTime() );
+        _builder.encodeTimestampUTC( msg.getEventTimestamp() );
         if ( _debug ) _dump.append( "\nField: " ).append( "msgSeqNum" ).append( " : " );
-        _builder.encodeUInt( (int)msg.getMsgSeqNum() );
+        _builder.encodeUInt( msg.getMsgSeqNum() );
         if ( _debug ) _dump.append( "\nField: " ).append( "partitionID" ).append( " : " );
         _builder.encodeUShort( Constants.UNSET_SHORT );    // partitionID
         if ( _debug ) _dump.append( "\nHook : " ).append( "applID" ).append( " : " ).append( "encode" ).append( " : " );
@@ -1770,7 +1812,7 @@ public final class ETIBSEEncoder implements com.rr.codec.emea.exchange.eti.ETIEn
     }
 
     public final void encodeOrderAckCancel( final Cancelled msg ) {
-        final int now = _tzCalculator.getNowUTC();
+        final long now = _tzCalculator.getNowAsInternalTime();
         _builder.start( MSG_NewOrderStandardResponse );
         if ( _debug ) {
             _dump.append( "  encodeMap=" ).append( "NewOrderStandardResponse" ).append( "  eventType=" ).append( "Cancelled" ).append( " : " );
@@ -1783,9 +1825,9 @@ public final class ETIBSEEncoder implements com.rr.codec.emea.exchange.eti.ETIEn
         if ( _debug ) _dump.append( "\nField: " ).append( "trdRegTSTimeOut" ).append( " : " );
         _builder.encodeFiller( 8 );    // trdRegTSTimeOut
         if ( _debug ) _dump.append( "\nField: " ).append( "sendingTime" ).append( " : " );
-        _builder.encodeTimestampUTC( msg.getSendingTime() );
+        _builder.encodeTimestampUTC( msg.getEventTimestamp() );
         if ( _debug ) _dump.append( "\nField: " ).append( "msgSeqNum" ).append( " : " );
-        _builder.encodeUInt( (int)msg.getMsgSeqNum() );
+        _builder.encodeUInt( msg.getMsgSeqNum() );
         if ( _debug ) _dump.append( "\nField: " ).append( "partitionID" ).append( " : " );
         _builder.encodeUShort( Constants.UNSET_SHORT );    // partitionID
         if ( _debug ) _dump.append( "\nHook : " ).append( "applID" ).append( " : " ).append( "encode" ).append( " : " );
@@ -1820,7 +1862,7 @@ public final class ETIBSEEncoder implements com.rr.codec.emea.exchange.eti.ETIEn
     }
 
     public final void encodeOrderAckSuspend( final Suspended msg ) {
-        final int now = _tzCalculator.getNowUTC();
+        final long now = _tzCalculator.getNowAsInternalTime();
         _builder.start( MSG_NewOrderStandardResponse );
         if ( _debug ) {
             _dump.append( "  encodeMap=" ).append( "NewOrderStandardResponse" ).append( "  eventType=" ).append( "Suspended" ).append( " : " );
@@ -1833,9 +1875,9 @@ public final class ETIBSEEncoder implements com.rr.codec.emea.exchange.eti.ETIEn
         if ( _debug ) _dump.append( "\nField: " ).append( "trdRegTSTimeOut" ).append( " : " );
         _builder.encodeFiller( 8 );    // trdRegTSTimeOut
         if ( _debug ) _dump.append( "\nField: " ).append( "sendingTime" ).append( " : " );
-        _builder.encodeTimestampUTC( msg.getSendingTime() );
+        _builder.encodeTimestampUTC( msg.getEventTimestamp() );
         if ( _debug ) _dump.append( "\nField: " ).append( "msgSeqNum" ).append( " : " );
-        _builder.encodeUInt( (int)msg.getMsgSeqNum() );
+        _builder.encodeUInt( msg.getMsgSeqNum() );
         if ( _debug ) _dump.append( "\nField: " ).append( "partitionID" ).append( " : " );
         _builder.encodeUShort( Constants.UNSET_SHORT );    // partitionID
         if ( _debug ) _dump.append( "\nHook : " ).append( "applID" ).append( " : " ).append( "encode" ).append( " : " );
@@ -1870,7 +1912,7 @@ public final class ETIBSEEncoder implements com.rr.codec.emea.exchange.eti.ETIEn
     }
 
     public final void encodeReplaceResponseAck( final Replaced msg ) {
-        final int now = _tzCalculator.getNowUTC();
+        final long now = _tzCalculator.getNowAsInternalTime();
         _builder.start( MSG_ReplaceOrderStandardResponse );
         if ( _debug ) {
             _dump.append( "  encodeMap=" ).append( "ReplaceOrderStandardResponse" ).append( "  eventType=" ).append( "Replaced" ).append( " : " );
@@ -1883,9 +1925,9 @@ public final class ETIBSEEncoder implements com.rr.codec.emea.exchange.eti.ETIEn
         if ( _debug ) _dump.append( "\nField: " ).append( "trdRegTSTimeOut" ).append( " : " );
         _builder.encodeFiller( 8 );    // trdRegTSTimeOut
         if ( _debug ) _dump.append( "\nField: " ).append( "sendingTime" ).append( " : " );
-        _builder.encodeTimestampUTC( msg.getSendingTime() );
+        _builder.encodeTimestampUTC( msg.getEventTimestamp() );
         if ( _debug ) _dump.append( "\nField: " ).append( "msgSeqNum" ).append( " : " );
-        _builder.encodeUInt( (int)msg.getMsgSeqNum() );
+        _builder.encodeUInt( msg.getMsgSeqNum() );
         if ( _debug ) _dump.append( "\nField: " ).append( "partitionID" ).append( " : " );
         _builder.encodeUShort( Constants.UNSET_SHORT );    // partitionID
         if ( _debug ) _dump.append( "\nHook : " ).append( "applID" ).append( " : " ).append( "encode" ).append( " : " );
@@ -1926,7 +1968,7 @@ public final class ETIBSEEncoder implements com.rr.codec.emea.exchange.eti.ETIEn
     }
 
     public final void encodeReplaceResponsePartial( final Replaced msg ) {
-        final int now = _tzCalculator.getNowUTC();
+        final long now = _tzCalculator.getNowAsInternalTime();
         _builder.start( MSG_ReplaceOrderStandardResponse );
         if ( _debug ) {
             _dump.append( "  encodeMap=" ).append( "ReplaceOrderStandardResponse" ).append( "  eventType=" ).append( "Replaced" ).append( " : " );
@@ -1939,9 +1981,9 @@ public final class ETIBSEEncoder implements com.rr.codec.emea.exchange.eti.ETIEn
         if ( _debug ) _dump.append( "\nField: " ).append( "trdRegTSTimeOut" ).append( " : " );
         _builder.encodeFiller( 8 );    // trdRegTSTimeOut
         if ( _debug ) _dump.append( "\nField: " ).append( "sendingTime" ).append( " : " );
-        _builder.encodeTimestampUTC( msg.getSendingTime() );
+        _builder.encodeTimestampUTC( msg.getEventTimestamp() );
         if ( _debug ) _dump.append( "\nField: " ).append( "msgSeqNum" ).append( " : " );
-        _builder.encodeUInt( (int)msg.getMsgSeqNum() );
+        _builder.encodeUInt( msg.getMsgSeqNum() );
         if ( _debug ) _dump.append( "\nField: " ).append( "partitionID" ).append( " : " );
         _builder.encodeUShort( Constants.UNSET_SHORT );    // partitionID
         if ( _debug ) _dump.append( "\nHook : " ).append( "applID" ).append( " : " ).append( "encode" ).append( " : " );
@@ -1982,7 +2024,7 @@ public final class ETIBSEEncoder implements com.rr.codec.emea.exchange.eti.ETIEn
     }
 
     public final void encodeReplaceResponseCancelled( final Cancelled msg ) {
-        final int now = _tzCalculator.getNowUTC();
+        final long now = _tzCalculator.getNowAsInternalTime();
         _builder.start( MSG_ReplaceOrderStandardResponse );
         if ( _debug ) {
             _dump.append( "  encodeMap=" ).append( "ReplaceOrderStandardResponse" ).append( "  eventType=" ).append( "Cancelled" ).append( " : " );
@@ -1995,9 +2037,9 @@ public final class ETIBSEEncoder implements com.rr.codec.emea.exchange.eti.ETIEn
         if ( _debug ) _dump.append( "\nField: " ).append( "trdRegTSTimeOut" ).append( " : " );
         _builder.encodeFiller( 8 );    // trdRegTSTimeOut
         if ( _debug ) _dump.append( "\nField: " ).append( "sendingTime" ).append( " : " );
-        _builder.encodeTimestampUTC( msg.getSendingTime() );
+        _builder.encodeTimestampUTC( msg.getEventTimestamp() );
         if ( _debug ) _dump.append( "\nField: " ).append( "msgSeqNum" ).append( " : " );
-        _builder.encodeUInt( (int)msg.getMsgSeqNum() );
+        _builder.encodeUInt( msg.getMsgSeqNum() );
         if ( _debug ) _dump.append( "\nField: " ).append( "partitionID" ).append( " : " );
         _builder.encodeUShort( Constants.UNSET_SHORT );    // partitionID
         if ( _debug ) _dump.append( "\nHook : " ).append( "applID" ).append( " : " ).append( "encode" ).append( " : " );
@@ -2038,7 +2080,7 @@ public final class ETIBSEEncoder implements com.rr.codec.emea.exchange.eti.ETIEn
     }
 
     public final void encodeReplaceResponseSuspended( final Suspended msg ) {
-        final int now = _tzCalculator.getNowUTC();
+        final long now = _tzCalculator.getNowAsInternalTime();
         _builder.start( MSG_ReplaceOrderStandardResponse );
         if ( _debug ) {
             _dump.append( "  encodeMap=" ).append( "ReplaceOrderStandardResponse" ).append( "  eventType=" ).append( "Suspended" ).append( " : " );
@@ -2051,9 +2093,9 @@ public final class ETIBSEEncoder implements com.rr.codec.emea.exchange.eti.ETIEn
         if ( _debug ) _dump.append( "\nField: " ).append( "trdRegTSTimeOut" ).append( " : " );
         _builder.encodeFiller( 8 );    // trdRegTSTimeOut
         if ( _debug ) _dump.append( "\nField: " ).append( "sendingTime" ).append( " : " );
-        _builder.encodeTimestampUTC( msg.getSendingTime() );
+        _builder.encodeTimestampUTC( msg.getEventTimestamp() );
         if ( _debug ) _dump.append( "\nField: " ).append( "msgSeqNum" ).append( " : " );
-        _builder.encodeUInt( (int)msg.getMsgSeqNum() );
+        _builder.encodeUInt( msg.getMsgSeqNum() );
         if ( _debug ) _dump.append( "\nField: " ).append( "partitionID" ).append( " : " );
         _builder.encodeUShort( Constants.UNSET_SHORT );    // partitionID
         if ( _debug ) _dump.append( "\nHook : " ).append( "applID" ).append( " : " ).append( "encode" ).append( " : " );
@@ -2094,7 +2136,7 @@ public final class ETIBSEEncoder implements com.rr.codec.emea.exchange.eti.ETIEn
     }
 
     public final void encodeOrderCancelled( final Cancelled msg ) {
-        final int now = _tzCalculator.getNowUTC();
+        final long now = _tzCalculator.getNowAsInternalTime();
         _builder.start( MSG_CancelOrderStandardResponse );
         if ( _debug ) {
             _dump.append( "  encodeMap=" ).append( "CancelOrderStandardResponse" ).append( "  eventType=" ).append( "Cancelled" ).append( " : " );
@@ -2107,9 +2149,9 @@ public final class ETIBSEEncoder implements com.rr.codec.emea.exchange.eti.ETIEn
         if ( _debug ) _dump.append( "\nField: " ).append( "trdRegTSTimeOut" ).append( " : " );
         _builder.encodeFiller( 8 );    // trdRegTSTimeOut
         if ( _debug ) _dump.append( "\nField: " ).append( "sendingTime" ).append( " : " );
-        _builder.encodeTimestampUTC( msg.getSendingTime() );
+        _builder.encodeTimestampUTC( msg.getEventTimestamp() );
         if ( _debug ) _dump.append( "\nField: " ).append( "msgSeqNum" ).append( " : " );
-        _builder.encodeUInt( (int)msg.getMsgSeqNum() );
+        _builder.encodeUInt( msg.getMsgSeqNum() );
         if ( _debug ) _dump.append( "\nField: " ).append( "partitionID" ).append( " : " );
         _builder.encodeUShort( Constants.UNSET_SHORT );    // partitionID
         if ( _debug ) _dump.append( "\nHook : " ).append( "applID" ).append( " : " ).append( "encode" ).append( " : " );
@@ -2146,7 +2188,7 @@ public final class ETIBSEEncoder implements com.rr.codec.emea.exchange.eti.ETIEn
     }
 
     public final void encodeOrderCancelSuspended( final Suspended msg ) {
-        final int now = _tzCalculator.getNowUTC();
+        final long now = _tzCalculator.getNowAsInternalTime();
         _builder.start( MSG_CancelOrderStandardResponse );
         if ( _debug ) {
             _dump.append( "  encodeMap=" ).append( "CancelOrderStandardResponse" ).append( "  eventType=" ).append( "Suspended" ).append( " : " );
@@ -2159,9 +2201,9 @@ public final class ETIBSEEncoder implements com.rr.codec.emea.exchange.eti.ETIEn
         if ( _debug ) _dump.append( "\nField: " ).append( "trdRegTSTimeOut" ).append( " : " );
         _builder.encodeFiller( 8 );    // trdRegTSTimeOut
         if ( _debug ) _dump.append( "\nField: " ).append( "sendingTime" ).append( " : " );
-        _builder.encodeTimestampUTC( msg.getSendingTime() );
+        _builder.encodeTimestampUTC( msg.getEventTimestamp() );
         if ( _debug ) _dump.append( "\nField: " ).append( "msgSeqNum" ).append( " : " );
-        _builder.encodeUInt( (int)msg.getMsgSeqNum() );
+        _builder.encodeUInt( msg.getMsgSeqNum() );
         if ( _debug ) _dump.append( "\nField: " ).append( "partitionID" ).append( " : " );
         _builder.encodeUShort( Constants.UNSET_SHORT );    // partitionID
         if ( _debug ) _dump.append( "\nHook : " ).append( "applID" ).append( " : " ).append( "encode" ).append( " : " );
@@ -2198,14 +2240,14 @@ public final class ETIBSEEncoder implements com.rr.codec.emea.exchange.eti.ETIEn
     }
 
     public final void encodeNewOrderSingleMultiLeg( final NewOrderSingle msg ) {
-        final int now = _tzCalculator.getNowUTC();
+        final long now = _tzCalculator.getNowAsInternalTime();
         _builder.start( MSG_NewOrderRequestMultiLeg );
         if ( _debug ) {
             _dump.append( "  encodeMap=" ).append( "NewOrderRequestMultiLeg" ).append( "  eventType=" ).append( "NewOrderSingle" ).append( " : " );
         }
 
         if ( _debug ) _dump.append( "\nField: " ).append( "msgSeqNum" ).append( " : " );
-        _builder.encodeUInt( (int)msg.getMsgSeqNum() );
+        _builder.encodeUInt( msg.getMsgSeqNum() );
         if ( _debug ) _dump.append( "\nHook : " ).append( "senderSubID" ).append( " : " ).append( "encode" ).append( " : " );
         _builder.encodeUInt( _senderSubID ); // senderSubID;
         if ( _debug ) _dump.append( "\nField: " ).append( "clOrdId" ).append( " : " );
@@ -2258,10 +2300,10 @@ public final class ETIBSEEncoder implements com.rr.codec.emea.exchange.eti.ETIEn
         _builder.encodeFiller( 20 );
         if ( _debug ) _dump.append( "\nHook : " ).append( "uniqueClientCode" ).append( " : " ).append( "encode" ).append( " : " );
         _builder.encodeStringFixedWidth( _uniqueClientCode, 12 );
-        if ( _debug ) _dump.append( "\nField: " ).append( "srcLinkId" ).append( " : " );
-        _builder.encodeZStringFixedWidth( msg.getSrcLinkId(), 24 );
+        if ( _debug ) _dump.append( "\nField: " ).append( "parentClOrdId" ).append( " : " );
+        _builder.encodeZStringFixedWidth( msg.getParentClOrdId(), 24 );
         if ( _debug ) _dump.append( "\nHook : " ).append( "noLegs" ).append( " : " ).append( "encode" ).append( " : " );
-        final int numLegs = msg.getInstrument().getNumLegs() ; _builder.encodeUByte( (byte)numLegs );
+        final int numLegs = ((ExchDerivInstrument)msg.getInstrument()).getNumLegs() ; _builder.encodeUByte( (byte)numLegs );
         if ( _debug ) _dump.append( "\nField: " ).append( "filler8" ).append( " : " );
         _builder.encodeFiller( 1 );
         if ( _debug ) _dump.append( "\nHook : " ).append( "OrderLegsGrp" ).append( " : " ).append( "encode" ).append( " : " );
@@ -2270,14 +2312,14 @@ public final class ETIBSEEncoder implements com.rr.codec.emea.exchange.eti.ETIEn
     }
 
     public final void encodeOrderReplaceMultiLeg( final CancelReplaceRequest msg ) {
-        final int now = _tzCalculator.getNowUTC();
+        final long now = _tzCalculator.getNowAsInternalTime();
         _builder.start( MSG_ReplaceOrderMultiLeg );
         if ( _debug ) {
             _dump.append( "  encodeMap=" ).append( "ReplaceOrderMultiLeg" ).append( "  eventType=" ).append( "CancelReplaceRequest" ).append( " : " );
         }
 
         if ( _debug ) _dump.append( "\nField: " ).append( "msgSeqNum" ).append( " : " );
-        _builder.encodeUInt( (int)msg.getMsgSeqNum() );
+        _builder.encodeUInt( msg.getMsgSeqNum() );
         if ( _debug ) _dump.append( "\nHook : " ).append( "senderSubID" ).append( " : " ).append( "encode" ).append( " : " );
         _builder.encodeUInt( _senderSubID ); // senderSubID;
         if ( _debug ) _dump.append( "\nField: " ).append( "orderId" ).append( " : " );
@@ -2336,10 +2378,10 @@ public final class ETIBSEEncoder implements com.rr.codec.emea.exchange.eti.ETIEn
         _builder.encodeFiller( 21 );
         if ( _debug ) _dump.append( "\nHook : " ).append( "uniqueClientCode" ).append( " : " ).append( "encode" ).append( " : " );
         _builder.encodeStringFixedWidth( _uniqueClientCode, 12 );
-        if ( _debug ) _dump.append( "\nField: " ).append( "srcLinkId" ).append( " : " );
-        _builder.encodeZStringFixedWidth( msg.getSrcLinkId(), 24 );
+        if ( _debug ) _dump.append( "\nField: " ).append( "parentClOrdId" ).append( " : " );
+        _builder.encodeZStringFixedWidth( msg.getParentClOrdId(), 24 );
         if ( _debug ) _dump.append( "\nHook : " ).append( "noLegs" ).append( " : " ).append( "encode" ).append( " : " );
-        final int numLegs = msg.getInstrument().getNumLegs() ; _builder.encodeUByte( (byte)numLegs );
+        final int numLegs = ((ExchDerivInstrument)msg.getInstrument()).getNumLegs() ; _builder.encodeUByte( (byte)numLegs );
         if ( _debug ) _dump.append( "\nField: " ).append( "filler8" ).append( " : " );
         _builder.encodeFiller( 4 );
         if ( _debug ) _dump.append( "\nHook : " ).append( "OrderLegsGrp" ).append( " : " ).append( "encode" ).append( " : " );
@@ -2348,14 +2390,14 @@ public final class ETIBSEEncoder implements com.rr.codec.emea.exchange.eti.ETIEn
     }
 
     public final void encodeCancelMultiLeg( final CancelRequest msg ) {
-        final int now = _tzCalculator.getNowUTC();
+        final long now = _tzCalculator.getNowAsInternalTime();
         _builder.start( MSG_CancelOrderMultiLeg );
         if ( _debug ) {
             _dump.append( "  encodeMap=" ).append( "CancelOrderMultiLeg" ).append( "  eventType=" ).append( "CancelRequest" ).append( " : " );
         }
 
         if ( _debug ) _dump.append( "\nField: " ).append( "msgSeqNum" ).append( " : " );
-        _builder.encodeUInt( (int)msg.getMsgSeqNum() );
+        _builder.encodeUInt( msg.getMsgSeqNum() );
         if ( _debug ) _dump.append( "\nHook : " ).append( "senderSubID" ).append( " : " ).append( "encode" ).append( " : " );
         _builder.encodeUInt( _senderSubID ); // senderSubID;
         if ( _debug ) _dump.append( "\nField: " ).append( "orderId" ).append( " : " );
@@ -2382,11 +2424,13 @@ public final class ETIBSEEncoder implements com.rr.codec.emea.exchange.eti.ETIEn
     }
 
     @Override
-    public final void setTimeZoneCalculator( final TimeZoneCalculator calc ) {
+    public final void setTimeUtils( final TimeUtils calc ) {
         _tzCalculator = calc;
-        _builder.setTimeZoneCalculator( calc );
+        _builder.setTimeUtils( calc );
     }
 
+
+    @Override public String getComponentId() { return _id; }
     private byte transformSide( Side val ) {
         switch( val ) {
         case Buy:  // Buy
@@ -2465,7 +2509,7 @@ public final class ETIBSEEncoder implements com.rr.codec.emea.exchange.eti.ETIEn
         return 2;
     }
 
-    private static final Map<SessionRejectReason, ViewString> _sessionRejectReasonMap = new HashMap<SessionRejectReason, ViewString>( 60 );
+    private static final Map<SessionRejectReason, ViewString> _sessionRejectReasonMap = new HashMap<>( 60 );
     private static final ViewString _sessionRejectReasonDefault = new ViewString( "99" );
 
     static {
@@ -2494,4 +2538,224 @@ public final class ETIBSEEncoder implements com.rr.codec.emea.exchange.eti.ETIEn
         return extVal;
     }
 
-    /**     * PostPend  Common Encoder File     *     * expected to contain methods used in hooks from model     */         @Override    public void setNanoStats( boolean nanoTiming ) {        _nanoStats = nanoTiming;    }    private       boolean         _nanoStats    =  true;             private       int             _idx          = 1;        private final ClientCancelRejectFactory _canRejFactory   = SuperpoolManager.instance().getFactory( ClientCancelRejectFactory.class, ClientCancelRejectImpl.class );    private final ClientRejectedFactory     _rejectedFactory = SuperpoolManager.instance().getFactory( ClientRejectedFactory.class,     ClientRejectedImpl.class );     public static final ZString ENCODE_REJ              = new ViewString( "ERJ" );    public static final ZString NONE                    = new ViewString( "NON" );    @Override    public Message unableToSend( Message msg, ZString errMsg ) {        switch( msg.getReusableType().getSubId() ) {        case EventIds.ID_NEWORDERSINGLE:            return rejectNewOrderSingle( (NewOrderSingle) msg, errMsg );        case EventIds.ID_NEWORDERACK:            break;        case EventIds.ID_TRADENEW:            break;        case EventIds.ID_CANCELREPLACEREQUEST:            return rejectCancelReplaceRequest( (CancelReplaceRequest) msg, errMsg );        case EventIds.ID_CANCELREQUEST:            return rejectCancelRequest( (CancelRequest) msg, errMsg );        }                return null;    }    private Message rejectNewOrderSingle( NewOrderSingle nos, ZString errMsg ) {        final ClientRejectedImpl reject = _rejectedFactory.get();        reject.setSrcEvent( nos );        reject.getExecIdForUpdate().copy( ENCODE_REJ ).append( nos.getClOrdId() ).append( ++_idx );        reject.getOrderIdForUpdate().setValue( NONE );        reject.setOrdRejReason( OrdRejReason.Other );        reject.getTextForUpdate().setValue( errMsg );        reject.setOrdStatus( OrdStatus.Rejected );        reject.setExecType( ExecType.Rejected );        reject.setCumQty( 0 );        reject.setAvgPx( 0.0 );        reject.setMessageHandler( nos.getMessageHandler() );        return reject;    }    private Message rejectCancelReplaceRequest( CancelReplaceRequest msg, ZString errMsg ) {        final ClientCancelRejectImpl reject = _canRejFactory.get();                reject.getClOrdIdForUpdate().    setValue( msg.getClOrdId() );        reject.getOrigClOrdIdForUpdate().setValue( msg.getOrigClOrdId() );        reject.getOrderIdForUpdate().    setValue( NONE );        reject.getTextForUpdate().       setValue( errMsg );        reject.setCxlRejResponseTo( CxlRejResponseTo.CancelReplace );        reject.setCxlRejReason(     CxlRejReason.Other );        reject.setOrdStatus(        OrdStatus.Unknown );        return reject;    }    private Message rejectCancelRequest( CancelRequest msg, ZString errMsg ) {        final ClientCancelRejectImpl reject = _canRejFactory.get();                reject.getClOrdIdForUpdate().    setValue( msg.getClOrdId() );        reject.getOrigClOrdIdForUpdate().setValue( msg.getOrigClOrdId() );        reject.getOrderIdForUpdate().    setValue( NONE );        reject.getTextForUpdate().       setValue( errMsg );        reject.setCxlRejResponseTo( CxlRejResponseTo.CancelRequest );        reject.setCxlRejReason(     CxlRejReason.Other );        reject.setOrdStatus(        OrdStatus.Unknown );        return reject;    }    private static final byte[] STATS       = "     [".getBytes();    private static final byte   STAT_DELIM  = ',';    private static final byte   STAT_END    = ']';    @Override    public void addStats( final ReusableString outBuf, final Message msg, final long msgSent ) {                if ( msg.getReusableType().getId() == FullEventIds.ID_MARKET_NEWORDERSINGLE ) {            final MarketNewOrderSingleImpl nos = (MarketNewOrderSingleImpl) msg;            nos.setOrderSent( msgSent );                } else if ( msg.getReusableType().getId() == FullEventIds.ID_CLIENT_NEWORDERACK ) {            final ClientNewOrderAckImpl ack = (ClientNewOrderAckImpl) msg;            final long orderIn  = ack.getOrderReceived();            final long orderOut = ack.getOrderSent();            final long ackIn    = ack.getAckReceived();            final long ackOut   = msgSent;            final long microNOSToMKt    = (orderOut - orderIn)  >> 10;            final long microInMkt       = (ackIn    - orderOut) >> 10;            final long microAckToClient = (ackOut   - ackIn)    >> 10;                        outBuf.append( STATS      ).append( microNOSToMKt )                  .append( STAT_DELIM ).append( microInMkt )                  .append( STAT_DELIM ).append( microAckToClient ).append( STAT_END );        }    }    private int _senderSubID = 0;    private long _locationId = 0;        private final ZString _account = new ReusableString( "A1" );        private final ReusableString _uniqueClientCode = new ReusableString("1");    @Override        public void setUniqueClientCode( ZString uniqueClientCode ) {        _uniqueClientCode.copy( uniqueClientCode );    }    @Override        public void setLocationId( long locationId ) {        _locationId = locationId;    }     @Override        public void setSenderSubID( int newId ) {        _senderSubID = newId;    }         @Override        public void setExchangeEmulationOn() {        if ( _builder instanceof DebugBinaryEncodeBuilder ) {            @SuppressWarnings( "unchecked" )            ETIEncodeBuilderImpl b = ((DebugBinaryEncodeBuilder<ETIEncodeBuilderImpl>) _builder).getBuilder();                        b.setHeaderPad( 2 );        } else {            ((ETIEncodeBuilderImpl)_builder).setHeaderPad( 2 );        }    }        private void encodeSimpleSecurityId( Instrument instrument ) {        _builder.encodeInt( (int)instrument.getLongSymbol() );    }        private void encodeSecurityId( Instrument instrument ) {        _builder.encodeLong( instrument.getLongSymbol() );    }        protected void encodeMarketSegmentID( Instrument instrument ) {        _builder.encodeInt( instrument.getIntSegment() );    }    // ApplID encoding only used by exchange simulator         private long _nextApplMsgId = 0;    private ReusableString _nextApplMsgIdStr = new ReusableString(16);        private ZString nextApplMsgID() {        byte[] bytes = _nextApplMsgIdStr.getBytes();        com.rr.core.codec.binary.BinaryBigEndianEncoderUtils.encodeLong( bytes, 0, 0 );        com.rr.core.codec.binary.BinaryBigEndianEncoderUtils.encodeLong( bytes, 8, ++_nextApplMsgId );        return _nextApplMsgIdStr;    }    private void encodeOrderLegs( final int numLegs ) {        for( int i=0 ; i < numLegs ; i++ ) {            if ( _debug ) _dump.append( "\nOrderLeg : " ).append( i ).append( " : " );            _builder.encodeStringFixedWidth( _account, 2 ); // account            _builder.encodeByte( (byte)'C' ); // positionalEffect            _builder.encodeFiller( 5 );       // spacer        }    }    private void encodeNOS( final NewOrderSingle msg ) {        if ( msg.getInstrument().getNumLegs() > 1 ) {            encodeNewOrderSingleMultiLeg( msg );        } else {            if ( msg.getOrdType() == OrdType.Limit ) {                encodeNewLimitOrder( msg );            } else {                encodeNewOrderSingle( msg );            }        }    }        private final void encodeReplace( final CancelReplaceRequest msg ) {        if ( msg.getInstrument().getNumLegs() > 1 ) {            encodeOrderReplaceMultiLeg( msg );        } else {            if ( msg.getOrdType() == OrdType.Limit ) {                encodeCancelReplaceLimitOrder( msg );            } else {                encodeOrderReplaceRequest( msg );            }        }    }    private final void encodeCancel( final CancelRequest msg ) {        if ( msg.getInstrument().getNumLegs() > 1 ) {            encodeCancelMultiLeg( msg );        } else {            encodeOrderCancelRequest( msg );        }    }    }
+    /**
+     * PostPend  Common Encoder File
+     *
+     * expected to contain methods used in hooks from model
+     */
+     
+    @Override
+    public void setNanoStats( boolean nanoTiming ) {
+        _nanoStats = nanoTiming;
+    }
+
+    private       boolean         _nanoStats    =  true;
+         
+    private       int             _idx          = 1;
+    
+    private final ClientCancelRejectFactory _canRejFactory   = SuperpoolManager.instance().getFactory( ClientCancelRejectFactory.class, ClientCancelRejectImpl.class );
+    private final ClientRejectedFactory     _rejectedFactory = SuperpoolManager.instance().getFactory( ClientRejectedFactory.class,     ClientRejectedImpl.class ); 
+
+    public static final ZString ENCODE_REJ              = new ViewString( "ERJ" );
+    public static final ZString NONE                    = new ViewString( "NON" );
+
+    @Override
+    public Event unableToSend( Event msg, ZString errMsg ) {
+        switch( msg.getReusableType().getSubId() ) {
+        case EventIds.ID_NEWORDERSINGLE:
+            return rejectNewOrderSingle( (NewOrderSingle) msg, errMsg );
+        case EventIds.ID_NEWORDERACK:
+            break;
+        case EventIds.ID_TRADENEW:
+            break;
+        case EventIds.ID_CANCELREPLACEREQUEST:
+            return rejectCancelReplaceRequest( (CancelReplaceRequest) msg, errMsg );
+        case EventIds.ID_CANCELREQUEST:
+            return rejectCancelRequest( (CancelRequest) msg, errMsg );
+        }
+        
+        return null;
+    }
+
+    private Event rejectNewOrderSingle( NewOrderSingle nos, ZString errMsg ) {
+        final ClientRejectedImpl reject = _rejectedFactory.get();
+
+        reject.setSrcEvent( nos );
+        reject.getExecIdForUpdate().copy( ENCODE_REJ ).append( nos.getClOrdId() ).append( ++_idx );
+        reject.getOrderIdForUpdate().setValue( NONE );
+        reject.setOrdRejReason( OrdRejReason.Other );
+        reject.getTextForUpdate().setValue( errMsg );
+        reject.setOrdStatus( OrdStatus.Rejected );
+        reject.setExecType( ExecType.Rejected );
+
+        reject.setCumQty( 0 );
+        reject.setAvgPx( 0.0 );
+
+        reject.setEventHandler( nos.getEventHandler() );
+        return reject;
+    }
+
+    private Event rejectCancelReplaceRequest( CancelReplaceRequest msg, ZString errMsg ) {
+        final ClientCancelRejectImpl reject = _canRejFactory.get();
+        
+        reject.getClOrdIdForUpdate().    setValue( msg.getClOrdId() );
+        reject.getOrigClOrdIdForUpdate().setValue( msg.getOrigClOrdId() );
+        reject.getOrderIdForUpdate().    setValue( NONE );
+        reject.getTextForUpdate().       setValue( errMsg );
+
+        reject.setCxlRejResponseTo( CxlRejResponseTo.CancelReplace );
+        reject.setCxlRejReason(     CxlRejReason.Other );
+        reject.setOrdStatus(        OrdStatus.Unknown );
+
+        return reject;
+    }
+
+    private Event rejectCancelRequest( CancelRequest msg, ZString errMsg ) {
+        final ClientCancelRejectImpl reject = _canRejFactory.get();
+        
+        reject.getClOrdIdForUpdate().    setValue( msg.getClOrdId() );
+        reject.getOrigClOrdIdForUpdate().setValue( msg.getOrigClOrdId() );
+        reject.getOrderIdForUpdate().    setValue( NONE );
+        reject.getTextForUpdate().       setValue( errMsg );
+
+        reject.setCxlRejResponseTo( CxlRejResponseTo.CancelRequest );
+        reject.setCxlRejReason(     CxlRejReason.Other );
+        reject.setOrdStatus(        OrdStatus.Unknown );
+
+        return reject;
+    }
+
+    private static final byte[] STATS       = "     [".getBytes();
+    private static final byte   STAT_DELIM  = ',';
+    private static final byte   STAT_END    = ']';
+
+
+
+
+    @Override
+    public void addStats( final ReusableString outBuf, final Event msg, final long msgSent ) {
+        
+        if ( msg.getReusableType().getId() == FullEventIds.ID_MARKET_NEWORDERSINGLE ) {
+            final MarketNewOrderSingleImpl nos = (MarketNewOrderSingleImpl) msg;
+            nos.setOrderSent( msgSent );        
+        } else if ( msg.getReusableType().getId() == FullEventIds.ID_CLIENT_NEWORDERACK ) {
+            final ClientNewOrderAckImpl ack = (ClientNewOrderAckImpl) msg;
+
+            final long orderIn  = ack.getOrderReceived();
+            final long orderOut = ack.getOrderSent();
+            final long ackIn    = ack.getAckReceived();
+            final long ackOut   = msgSent;
+
+            final long microNOSToMKt    = (orderOut - orderIn)  >> 10;
+            final long microInMkt       = (ackIn    - orderOut) >> 10;
+            final long microAckToClient = (ackOut   - ackIn)    >> 10;
+            
+            outBuf.append( STATS      ).append( microNOSToMKt )
+                  .append( STAT_DELIM ).append( microInMkt )
+                  .append( STAT_DELIM ).append( microAckToClient ).append( STAT_END );
+        }
+    }
+
+
+    private int _senderSubID = 0;
+
+    private long _locationId = 0;
+    
+    private final ZString _account = new ReusableString( "A1" );
+    
+    private final ReusableString _uniqueClientCode = new ReusableString("1");
+
+    @Override    
+    public void setUniqueClientCode( ZString uniqueClientCode ) {
+        _uniqueClientCode.copy( uniqueClientCode );
+    }
+
+    @Override    
+    public void setLocationId( long locationId ) {
+        _locationId = locationId;
+    } 
+
+    @Override    
+    public void setSenderSubID( int newId ) {
+        _senderSubID = newId;
+    } 
+    
+    @Override    
+    public void setExchangeEmulationOn() {
+        if ( _builder instanceof DebugBinaryEncodeBuilder ) {
+            @SuppressWarnings( "unchecked" )
+            ETIEncodeBuilderImpl b = ((DebugBinaryEncodeBuilder<ETIEncodeBuilderImpl>) _builder).getBuilder();
+            
+            b.setHeaderPad( 2 );
+        } else {
+            ((ETIEncodeBuilderImpl)_builder).setHeaderPad( 2 );
+        }
+    }
+    
+    private void encodeSimpleSecurityId( Instrument instrument ) {
+        _builder.encodeStringAsInt( instrument.getExchangeSymbol() );
+    }
+    
+    private void encodeSecurityId( Instrument instrument ) {
+        // @TODO CHECK DIFFERENCE BETWEEN SimpleSecurityId and SecurityId
+        _builder.encodeStringAsLong( instrument.getExchangeSymbol() );
+    }
+    
+    protected void encodeMarketSegmentID( Instrument instrument ) {
+        _builder.encodeInt( ((ExchangeInstrument)instrument).getIntSegment() );
+    }
+
+    // ApplID encoding only used by exchange simulator 
+    
+    private long _nextApplMsgId = 0;
+    private ReusableString _nextApplMsgIdStr = new ReusableString(16);
+    
+    private ZString nextApplMsgID() {
+        byte[] bytes = _nextApplMsgIdStr.getBytes();
+        com.rr.core.codec.binary.BinaryBigEndianEncoderUtils.encodeLong( bytes, 0, 0 );
+        com.rr.core.codec.binary.BinaryBigEndianEncoderUtils.encodeLong( bytes, 8, ++_nextApplMsgId );
+        return _nextApplMsgIdStr;
+    }
+
+    private void encodeOrderLegs( final int numLegs ) {
+        for( int i=0 ; i < numLegs ; i++ ) {
+            if ( _debug ) _dump.append( "\nOrderLeg : " ).append( i ).append( " : " );
+            _builder.encodeStringFixedWidth( _account, 2 ); // account
+            _builder.encodeByte( (byte)'C' ); // positionalEffect
+            _builder.encodeFiller( 5 );       // spacer
+        }
+    }
+
+    private void encodeNOS( final NewOrderSingle msg ) {
+        if ( ((ExchDerivInstrument)msg.getInstrument()).getNumLegs() > 1 ) {
+            encodeNewOrderSingleMultiLeg( msg );
+        } else {
+            if ( msg.getOrdType() == OrdType.Limit ) {
+                encodeNewLimitOrder( msg );
+            } else {
+                encodeNewOrderSingle( msg );
+            }
+        }
+    }
+    
+    private void encodeReplace( final CancelReplaceRequest msg ) {
+        if ( ((ExchDerivInstrument)msg.getInstrument()).getNumLegs() > 1 ) {
+            encodeOrderReplaceMultiLeg( msg );
+        } else {
+            if ( msg.getOrdType() == OrdType.Limit ) {
+                encodeCancelReplaceLimitOrder( msg );
+            } else {
+                encodeOrderReplaceRequest( msg );
+            }
+        }
+    }
+
+    private void encodeCancel( final CancelRequest msg ) {
+        if ( ((ExchDerivInstrument)msg.getInstrument()).getNumLegs() > 1 ) {
+            encodeCancelMultiLeg( msg );
+        } else {
+            encodeOrderCancelRequest( msg );
+        }
+    }
+    
+}

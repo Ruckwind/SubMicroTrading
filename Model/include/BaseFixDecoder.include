@@ -1,0 +1,87 @@
+     
+    /**
+     * PostPend  Common Decoder File
+     */
+     
+    private void enrich( ClientNewOrderSingleImpl nos ) {
+        
+        ExchangeInstrument instr = lookupInst( nos, true );
+
+        final Currency         clientCcy = nos.getCurrency();
+        
+        if ( clientCcy == null ) {
+            nos.setCurrency( instr.getCurrency() );
+        }
+        
+        nos.setInstrument( instr );
+        nos.setClient( _clientProfile );
+    }
+
+    private void enrich( ClientCancelReplaceRequestImpl rep ) {
+        
+        final ExchangeInstrument instr = lookupInst( rep, false );
+
+        rep.setInstrument( instr );
+        rep.setClient( _clientProfile );
+    }
+
+    private void enrich( ClientCancelRequestImpl can ) {
+        
+        final ExchangeInstrument instr = lookupInst( can, false );
+
+        can.setInstrument( instr );
+        can.setClient( _clientProfile );
+    }
+
+    private void enrich( NewOrderSingleImpl nos ) {
+
+        final ExchangeInstrument instr = lookupInst( nos, true );
+
+        final Currency         clientCcy = nos.getCurrency();
+
+        if ( clientCcy == null ) {
+            nos.setCurrency( instr.getCurrency() );
+        }
+
+        nos.setInstrument( instr );
+        nos.setClient( _clientProfile );
+    }
+
+    private void enrich( CancelReplaceRequestImpl rep ) {
+
+        final ExchangeInstrument instr = lookupInst( rep, false );
+
+        rep.setInstrument( instr );
+        rep.setClient( _clientProfile );
+    }
+
+    private void enrich( CancelRequestImpl can ) {
+
+        final ExchangeInstrument instr = lookupInst( can, false );
+
+        can.setInstrument( instr );
+        can.setClient( _clientProfile );
+    }
+
+    private ExchangeInstrument lookupInst() {
+
+        ExchangeInstrument instr = null;
+
+        if ( _securityIDSourceLen > 0 && _securityExchangeLen > 0 && _securityIDStart > 0 ) {
+            final SecurityIDSource idSrc = SecurityIDSource.getVal( _fixMsg[_securityIDSourceStart] );
+
+            _tmpLookupKey.setValue( _fixMsg, _securityExchangeStart, _securityExchangeLen );
+
+            final ExchangeCode exCode = ExchangeCode.getVal( _tmpLookupKey );
+
+            _tmpLookupKey.setValue( _fixMsg, _securityIDStart, _securityIDLen );
+
+            instr = _instrumentLocator.getExchInst( _tmpLookupKey, idSrc, exCode );
+        }
+
+        if ( instr == null ) {
+            throwDecodeException( "Instrument not found" );
+        }
+
+        return instr;
+    }

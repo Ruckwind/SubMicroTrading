@@ -1,0 +1,98 @@
+SAME AS TRADE SERVER BUT OVERCLOCK SETTING DIFFERENT
+
+UEFI Version P67 Extreme6 P1.5
+Intel i7-2600K CPU 3.4Ghz
+Processor Speed 5Ghz
+Cache 8MB
+
+4*4GB DDR3-1600
+
+OC Tweaker
+    CPU Ratio Setting           Manual
+        Max Ratio               50
+    Internal PLL Overvoltage    Enable
+    Intel Speedstep             Disable
+    Intel Boost Power Limit     Manual
+        Short Duration (W)      300
+        Long Duration (W)       300
+        Long Duration Maint.    1
+    Additional Turbo Voltage    +0.004V
+    Core Current Limit          300
+    
+    Host Clock Override (BCLK)  100.0 Mhz
+    Spread Spectrum             Auto
+    
+    Power Saving Mode           DISABLED *****
+    CPU Core Voltage            Fixed Mode
+        Fixed Voltage           1.500V
+    CPU Load Line Calib.        Level 1
+    DRAM Voltage                1.605V
+    PCH Voltage                 1.106V
+    CPU PLL Voltage             1.906V
+    VTT Voltage                 1.103V
+    VCCSA Voltage               1.016V                 
+        
+Advanced
+    CPU Configuration
+        Intel Hyperthreading    DISABLED **
+        Active Cores            All
+        Hardware Prefetch       Enabled
+        Adjacent cache Prefet   Enabled
+        Enhanced Halt State C1E DISABLED **
+        CPU C3 State Support    DISABLED **   
+        Package C State support DISABLED
+        CPU Thermal Throttling  Enabled
+        
+        Intel Virtualisation    Enabled
+        No-Execute mem protect  Disabled
+    North Bridge
+        Low MMIO Align          64M
+        VT-d                    Disabled
+        Primary Graphics        PCI Express
+    South Bridge
+        Restore on AC/Power     Power Off
+        Deep Sx                 Enabled in S5
+        LAN 1/ LAN 2/ 1394      Enabled
+        ACPI HPET               Enabled
+    Storage Config
+        Marvel SATA3 Op Mode    IDE
+            SATA3 Bootable      No
+        SATA Mode               IDE
+        SATA Cont. 0            Compatible
+        SATA Cont. 1            Enabled
+        Hard Disk SMART         Disabled
+        
+        SATA3_0 : OCZ-VERTEX3
+        SATA2_2 : TSSTcorp CDDVDW
+        SATA2_3 : OCZ-VERTEX2
+    ACPI Config
+        Suspend to RAM          Auto
+        Check Ready Bit         Enabled
+        PS2 Key Power On        Disabled
+        PCI Devices Power On    Disabled
+        Ring in Power On        Disabled
+        RTC Alarm Power On      By OS
+    USB Config
+        Enabled/Enabled/Enabled/Legacy USB 3.0 = Disabled
+
+H/W Monitor
+    CPU Fan 1 & 2               Full On
+    Chassis Fan 1               Full On
+    Chassis Fan 2               Level 4
+    Chassis Fan 3               Full On
+    Over Temp Protect           Enabled
+    
+Boot (use F11 to choose on startup)
+    option 1    SATA: OCZ-VERTEX3
+    option 2    Windows Boot Mgr
+    option 3    DVD
+    
+    Hard Drive  Boot priority  
+                                Vertex 3
+                                Vertex 2
+                                
+                                
+    
+    Setup Prompt Timeout        5
+    Full Screen Logo            Enabled (as has menu option eg F11)
+                

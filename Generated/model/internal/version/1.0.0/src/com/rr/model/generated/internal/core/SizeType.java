@@ -1,12 +1,9 @@
-/*******************************************************************************
- * Copyright (c) 2015 Low Latency Trading Limited  :  Author Richard Rose
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at	http://www.apache.org/licenses/LICENSE-2.0
- * Unless required by applicable law or agreed to in writing,  software distributed under the License 
- * is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and limitations under the License.
- *******************************************************************************/
 package com.rr.model.generated.internal.core;
+
+/*
+Copyright 2015 Low Latency Trading Limited
+Author Richard Rose
+*/
 
 
 import javax.annotation.Generated;
@@ -17,10 +14,9 @@ public enum SizeType {
     ACCOUNT_LENGTH( 5 ),
     CLIENTID_LENGTH( 5 ),
     CLORDID_LENGTH( 20 ),
-    SRC_LINKID_LENGTH( 20 ),
     CURRENCY_LENGTH( 3 ),
     ORDERID_LENGTH( 10 ),
-    EXDESTINATION_LENGTH( 3 ),
+    EXDESTINATION_LENGTH( 4 ),
     EXECID_LENGTH( 10 ),
     MARKETORDERREF_LENGTH( 10 ),
     SECURITYID_LENGTH( 12 ),
@@ -43,14 +39,28 @@ public enum SizeType {
     MIN_ENCODE_BUFFER( 128 ),
     TESTRECID_LENGTH( 16 ),
     USERNAME_LENGTH( 15 ),
+    STRATPARAM_LENGTH( 15 ),
     TAG_LEN( 4 ),
     MD_REQ_LEN( 9 ),
     ALGO_ID_LEN( 30 ),
+    STRAT_DEF_ID_LEN( 32 ),
+    TIMEZONE_LEN( 20 ),
     INST_FEED_TYPE_LENGTH( 9 ),
     INST_SEC_GRP_LEN( 9 ),
     INST_SEC_DESC_LENGTH( 9 ),
     INST_CFI_CODE_LENGTH( 9 ),
     INST_APPL_ID_LENGTH( 9 ),
+    INST_SEC_LDESC_LENGTH( 20 ),
+    COMPANY_NAME_LEN( 20 ),
+    INST_INSTRUCTION_LEN( 4 ),
+    HOLIDAY_NAME_LEN( 12 ),
+    MARKET_LEN( 9 ),
+    SUBJECT_LEN( 40 ),
+    INFO_LEN( 40 ),
+    SHORT_NEWS_LEN( 40 ),
+    LONG_NEWS_LEN( 100 ),
+    CODE_LEN( 50 ),
+    LOAN_RESPONSE_LEN( 15 ),
     UTP_TEXT_LENGTH( 11 ),
     UTP_REJECT_TEXT_LENGTH( 40 ),
     UTP_MIC_LEN( 4 ),
@@ -93,7 +103,11 @@ public enum SizeType {
     CME_SBE_SECURITYTYPE_LENGTH( 6 ),
     CME_SBE_CURRENCY_LENGTH( 3 ),
     CME_SBE_SYMBOL_LENGTH( 20 ),
-    CME_SBE_UNITOFMEASURE_LENGTH( 30 );
+    CME_SBE_UNITOFMEASURE_LENGTH( 30 ),
+    CBOE_EUTP_SYMBOL( 8 ),
+    SOUP_USERNAME_LEN( 6 ),
+    SOUP_PASSWORD_LEN( 10 ),
+    SOUP_SESSION_LEN( 10 );
 
     private int _size;
 

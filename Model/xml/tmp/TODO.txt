@@ -1,0 +1,76 @@
+
+write com.rr.model.generator.fastfix.CMEFastFixEncoderGenerator extends BaseFix generator ... get working. ... specialise the protected getBUilder
+
+--> write unit test to prove encoding decoding works using ETI SessionRejectReason
+
+1) need allow transform from byte to char eg SessionRejectReason
+
+    review all ETI reject codes ... should probably swap 
+
+
+1) need generated transformers to be able to have byte val not char val
+
+2) missing all message types from ETI decoder
+
+1) add validation that in event the counter field exists
+
+1) add repeating groups in messages 
+                <RepeatingGroup id="LegOrdGrp" counter="noLegs">
+
+2) add codec support for repeating groups
+
+3) add codec support for decoding repeating group into multiple messages
+
+3) need conditional encode based on ordType being limit and ??
+
+4) check how ExecRestatementReason in ACK used
+
+2) how to model TradeConfirmation .... fix message ??
+
+3) add extends to Types, add Base to Type (equates to an interface which can be used in the Event to allow abstraction in Events
+
+eg instrGrp
+
+6.4.2 InstrGrp
+
+The Instrument Group element serves as a placeholder for any tradeable object (e.g.
+
+option).
+
+Encoding ID 5030
+
+Concrete Instances StrategyIdGrp
+
+SingleLegIdGrp
+
+DoubleLegIdGrp
+
+
+
+
+6) Fix 5.0
+
+com.rr.fix.codec.helper.FixCodecHelper50
+
+
+
+ETI Questions
+
+1) what is the point of the Session Logoff Response message, pretty standard to disconnect socket immediately from client side before waiting 
+   for reply from exchange. What happens when this happens and reconnect ... will reconnected session then get the disconnect for previous session
+   thus potentially disconnecting the new session ?
+   
+2) Why is VarTextLen seperate to VarText ... why doesnt VarText simply have first two bytes as the length ?
+   The fact that they are seperate and can have other fields in between merely complicates the decoding 
+   
+3) Why are SessionRejectReasons not continuous to allow efficient decoding   
+
+4) why have the danger and risk of incorrect NULL for signed/unsigned byte/short/int/long ...
+   why not just simplify the model and have signed byte/short/int/long as other exchanges ?
+    
+5) why not have fixed strings all null padded, not null followed by spaces .. want to be able to concatenate optional fixed strs into single logical field fully null padded
+   also want to be able to concatenate FreeText1 and FreeText2 to allow for bigger linkageID as 12 too small
+   
+6) LastFragment .. why is this needed, just send the message and if its split across two physical packets so what ... like other exchanges
+
+

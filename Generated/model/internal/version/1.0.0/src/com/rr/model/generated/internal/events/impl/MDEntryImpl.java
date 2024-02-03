@@ -1,39 +1,31 @@
-/*******************************************************************************
- * Copyright (c) 2015 Low Latency Trading Limited  :  Author Richard Rose
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at	http://www.apache.org/licenses/LICENSE-2.0
- * Unless required by applicable law or agreed to in writing,  software distributed under the License 
- * is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and limitations under the License.
- *******************************************************************************/
 package com.rr.model.generated.internal.events.impl;
 
-import com.rr.core.model.SecurityIDSource;
+/*
+Copyright 2015 Low Latency Trading Limited
+Author Richard Rose
+*/
+
 import com.rr.model.generated.internal.type.MDUpdateAction;
 import com.rr.model.generated.internal.type.MDEntryType;
 import com.rr.model.generated.internal.type.TradingSessionID;
-import com.rr.core.lang.ViewString;
-import com.rr.core.lang.ReusableString;
-import com.rr.core.lang.Constants;
-import com.rr.core.model.MsgFlag;
-import com.rr.core.lang.ReusableType;
-import com.rr.core.lang.Reusable;
-import com.rr.core.model.Message;
-import com.rr.core.model.MessageHandler;
+import com.rr.core.utils.Utils;
+import com.rr.core.lang.*;
+import com.rr.core.model.*;
+import com.rr.core.annotations.*;
 import com.rr.model.internal.type.*;
 import com.rr.model.generated.internal.core.ModelReusableTypes;
 import com.rr.model.generated.internal.core.SizeType;
 import com.rr.model.generated.internal.core.EventIds;
 import com.rr.model.generated.internal.events.interfaces.*;
 
-@SuppressWarnings( "unused" )
+@SuppressWarnings( { "unused", "override"  })
 
-public final class MDEntryImpl implements MDEntry, Reusable<MDEntryImpl> {
+public final class MDEntryImpl implements MDEntry, Reusable<MDEntryImpl>, Copyable<MDEntry> {
 
    // Attrs
 
-    private          MDEntryImpl _next = null;
-    private long _securityID = Constants.UNSET_LONG;
+    private transient          MDEntryImpl _next = null;
+    private final ReusableString _securityID = new ReusableString( SizeType.SYMBOL_LENGTH.getSize() );
     private int _repeatSeq = Constants.UNSET_INT;
     private int _numberOfOrders = Constants.UNSET_INT;
     private int _mdPriceLevel = Constants.UNSET_INT;
@@ -42,18 +34,24 @@ public final class MDEntryImpl implements MDEntry, Reusable<MDEntryImpl> {
     private int _mdEntryTime = Constants.UNSET_INT;
 
     private SecurityIDSource _securityIDSource = SecurityIDSource.ExchangeSymbol;
+    private ExchangeCode _securityExchange;
     private MDUpdateAction _mdUpdateAction;
     private MDEntryType _mdEntryType;
     private TradingSessionID _tradingSessionID;
 
-    private byte           _flags          = 0;
+    private int           _flags          = 0;
 
    // Getters and Setters
     @Override public final SecurityIDSource getSecurityIDSource() { return _securityIDSource; }
     @Override public final void setSecurityIDSource( SecurityIDSource val ) { _securityIDSource = val; }
 
-    @Override public final long getSecurityID() { return _securityID; }
-    @Override public final void setSecurityID( long val ) { _securityID = val; }
+    @Override public final ViewString getSecurityID() { return _securityID; }
+
+    @Override public final void setSecurityID( byte[] buf, int offset, int len ) { _securityID.setValue( buf, offset, len ); }
+    @Override public final ReusableString getSecurityIDForUpdate() { return _securityID; }
+
+    @Override public final ExchangeCode getSecurityExchange() { return _securityExchange; }
+    @Override public final void setSecurityExchange( ExchangeCode val ) { _securityExchange = val; }
 
     @Override public final MDUpdateAction getMdUpdateAction() { return _mdUpdateAction; }
     @Override public final void setMdUpdateAction( MDUpdateAction val ) { _mdUpdateAction = val; }
@@ -88,7 +86,8 @@ public final class MDEntryImpl implements MDEntry, Reusable<MDEntryImpl> {
     @Override
     public final void reset() {
         _securityIDSource = SecurityIDSource.ExchangeSymbol;
-        _securityID = Constants.UNSET_LONG;
+        _securityID.reset();
+        _securityExchange = null;
         _mdUpdateAction = null;
         _repeatSeq = Constants.UNSET_INT;
         _numberOfOrders = Constants.UNSET_INT;
@@ -121,26 +120,82 @@ public final class MDEntryImpl implements MDEntry, Reusable<MDEntryImpl> {
    // Helper methods
     @Override
     public String toString() {
-        ReusableString buf = new ReusableString();
+        ReusableString buf = TLC.instance().pop();
         dump( buf );
-        return buf.toString();
+        String rs = buf.toString();
+        TLC.instance().pushback( buf );
+        return rs;
     }
 
     @Override
-    public final void dump( ReusableString out ) {
+    public final void dump( final ReusableString out ) {
         out.append( "MDEntryImpl" ).append( ' ' );
-        out.append( ", securityIDSource=" );
-        if ( getSecurityIDSource() != null ) getSecurityIDSource().id( out );
-        out.append( ", securityID=" ).append( getSecurityID() );
-        out.append( ", mdUpdateAction=" ).append( getMdUpdateAction() );
-        out.append( ", repeatSeq=" ).append( getRepeatSeq() );
-        out.append( ", numberOfOrders=" ).append( getNumberOfOrders() );
-        out.append( ", mdPriceLevel=" ).append( getMdPriceLevel() );
-        out.append( ", mdEntryType=" ).append( getMdEntryType() );
-        out.append( ", mdEntryPx=" ).append( getMdEntryPx() );
-        out.append( ", mdEntrySize=" ).append( getMdEntrySize() );
-        out.append( ", mdEntryTime=" ).append( getMdEntryTime() );
-        out.append( ", tradingSessionID=" ).append( getTradingSessionID() );
+        if ( getSecurityIDSource() != null )             out.append( ", securityIDSource=" );
+        if ( getSecurityIDSource() != null ) out.append( getSecurityIDSource().id() );
+        if ( getSecurityID().length() > 0 )             out.append( ", securityID=" ).append( getSecurityID() );
+        if ( getSecurityExchange() != null )             out.append( ", securityExchange=" );
+        if ( getSecurityExchange() != null ) out.append( getSecurityExchange().id() );
+        if ( getMdUpdateAction() != null )             out.append( ", mdUpdateAction=" ).append( getMdUpdateAction() );
+        if ( Constants.UNSET_INT != getRepeatSeq() && 0 != getRepeatSeq() )             out.append( ", repeatSeq=" ).append( getRepeatSeq() );
+        if ( Constants.UNSET_INT != getNumberOfOrders() && 0 != getNumberOfOrders() )             out.append( ", numberOfOrders=" ).append( getNumberOfOrders() );
+        if ( Constants.UNSET_INT != getMdPriceLevel() && 0 != getMdPriceLevel() )             out.append( ", mdPriceLevel=" ).append( getMdPriceLevel() );
+        if ( getMdEntryType() != null )             out.append( ", mdEntryType=" ).append( getMdEntryType() );
+        if ( Utils.hasVal( getMdEntryPx() ) ) out.append( ", mdEntryPx=" ).append( getMdEntryPx() );
+        if ( Constants.UNSET_INT != getMdEntrySize() && 0 != getMdEntrySize() )             out.append( ", mdEntrySize=" ).append( getMdEntrySize() );
+        if ( Constants.UNSET_INT != getMdEntryTime() && 0 != getMdEntryTime() )             out.append( ", mdEntryTime=" ).append( getMdEntryTime() );
+        if ( getTradingSessionID() != null )             out.append( ", tradingSessionID=" ).append( getTradingSessionID() );
+    }
+
+    @Override public final void snapTo( MDEntry dest ) {
+        ((MDEntryImpl)dest).deepCopyFrom( this );
+    }
+
+    /** DEEP copy all members ... INCLUDING subEvents : WARNING CREATES NEW OBJECTS SO MONITOR FOR GC */
+    @Override public final void deepCopyFrom( MDEntry src ) {
+        setSecurityIDSource( src.getSecurityIDSource() );
+        getSecurityIDForUpdate().copy( src.getSecurityID() );
+        setSecurityExchange( src.getSecurityExchange() );
+        setMdUpdateAction( src.getMdUpdateAction() );
+        setRepeatSeq( src.getRepeatSeq() );
+        setNumberOfOrders( src.getNumberOfOrders() );
+        setMdPriceLevel( src.getMdPriceLevel() );
+        setMdEntryType( src.getMdEntryType() );
+        setMdEntryPx( src.getMdEntryPx() );
+        setMdEntrySize( src.getMdEntrySize() );
+        setMdEntryTime( src.getMdEntryTime() );
+        setTradingSessionID( src.getTradingSessionID() );
+    }
+
+    /** shallow copy all primitive members ... EXCLUDING subEvents */
+    @Override public final void shallowCopyFrom( MDEntry src ) {
+        setSecurityIDSource( src.getSecurityIDSource() );
+        getSecurityIDForUpdate().copy( src.getSecurityID() );
+        setSecurityExchange( src.getSecurityExchange() );
+        setMdUpdateAction( src.getMdUpdateAction() );
+        setRepeatSeq( src.getRepeatSeq() );
+        setNumberOfOrders( src.getNumberOfOrders() );
+        setMdPriceLevel( src.getMdPriceLevel() );
+        setMdEntryType( src.getMdEntryType() );
+        setMdEntryPx( src.getMdEntryPx() );
+        setMdEntrySize( src.getMdEntrySize() );
+        setMdEntryTime( src.getMdEntryTime() );
+        setTradingSessionID( src.getTradingSessionID() );
+    }
+
+    /** shallow copy all primitive members ... EXCLUDING subEvents */
+    @Override public final void shallowMergeFrom( MDEntry src ) {
+        if ( getSecurityIDSource() != null )  setSecurityIDSource( src.getSecurityIDSource() );
+        if ( src.getSecurityID().length() > 0 ) getSecurityIDForUpdate().copy( src.getSecurityID() );
+        if ( getSecurityExchange() != null )  setSecurityExchange( src.getSecurityExchange() );
+        setMdUpdateAction( src.getMdUpdateAction() );
+        if ( Constants.UNSET_INT != src.getRepeatSeq() ) setRepeatSeq( src.getRepeatSeq() );
+        if ( Constants.UNSET_INT != src.getNumberOfOrders() ) setNumberOfOrders( src.getNumberOfOrders() );
+        if ( Constants.UNSET_INT != src.getMdPriceLevel() ) setMdPriceLevel( src.getMdPriceLevel() );
+        setMdEntryType( src.getMdEntryType() );
+        if ( Utils.hasVal( src.getMdEntryPx() ) ) setMdEntryPx( src.getMdEntryPx() );
+        if ( Constants.UNSET_INT != src.getMdEntrySize() ) setMdEntrySize( src.getMdEntrySize() );
+        if ( Constants.UNSET_INT != src.getMdEntryTime() ) setMdEntryTime( src.getMdEntryTime() );
+        setTradingSessionID( src.getTradingSessionID() );
     }
 
 }

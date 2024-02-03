@@ -1,0 +1,156 @@
+<!--suppress ALL -->
+
+@SECTION CME_EXCHANGE_CODEC START
+
+            <Codec id="CMEMD" fix="MD4.4" extends="MD44" decodeInclude="CMEMDDecoder.include" encodeInclude="CMEMDEncoder.include" encodeBuilder="com.rr.core.codec.ReadableMDFastFixEncoder">
+
+                <MessageMap id="MDIncRefresh" eventId="MDIncRefresh" fixMessageId="MDIncRefresh" extends="LightCompIDCheck" maxForceTableSwitch="512" maxSubBand="512" minSubSwitchPackSize="8">
+                    <Hook type="encodeheader" code="_builder.startNoLenOrChecksum();"/>
+                    <Map fixTag="52">
+                        <Hook type="decode" code="msg.setEventTimestamp( getCMETime() );"/>
+                        <Hook type="encode" code="writeDateTime( FixDictionaryMD44.SendingTime, msg.getEventTimestamp() ); // tag52"/>
+                    </Map>
+                    <Hook type="encodetrailer" code="_builder.encodeEnvelopeNoLenOrChecksum();"/>
+                </MessageMap>
+
+                <MessageMap id="SecurityDefinition" eventId="SecurityDefinition" fixMessageId="SecurityDefinition" extends="LightCompIDCheck">
+                    <Map fixTag="52"><Hook type="decode" code="getValLength()"/><Hook type="encode" code="// skip"/></Map>
+                    <Map fixTag="779"><Hook type="decode" code="msg.setLastUpdateTime( getLongVal() );"/>
+                        <Hook type="encode" code="_builder.encodeLong( FixDictionaryMD44.lastUpdateTime, msg.getLastUpdateTime() );"/></Map>
+                    <Hook type="postDecode" code="msg.getSymbolForUpdate().copy( msg.getSecurityDesc() );"/>
+                </MessageMap>
+
+            </Codec>
+
+
+            <Codec id="CME" fix="4.2" type="Exchange" decodeInclude="CMEDecoder42.include" encodeInclude="CMEEncoder42.include" extends="Standard42">
+
+                <TypeTransform typeId="TimeInForce" transform="map" nonMatchedEncode="0" nonMatchedDecode="reject">
+                    <Map internal="0" external="0" comment="Day"/>
+                    <Map internal="1" external="1" comment="GTC"/>
+                    <Map internal="4" external="3" comment="FOK"/>
+                    <Map internal="6" external="6" comment="GTD"/>
+                </TypeTransform>
+
+                <MessageMap id="FullCompIDCheck" fixMessageId="FullCompIDCheck" ignore="true">
+                    <Map fixTag="49"><Hook type="decode" code="decodeSenderCompID()"/><Hook type="encode" code="_builder.encodeString( FixDictionary42.SenderCompID, _senderCompId ); // tag49"/></Map>
+                    <Map fixTag="56"><Hook type="decode" code="decodeTargetCompID()"/><Hook type="encode" code="_builder.encodeString( FixDictionary42.TargetCompID, _targetCompId ); // tag56"/></Map>
+                    <Map fixTag="50"><Hook type="decode" code="decodeSenderSubID()"/><Hook type="encode" code="_builder.encodeString( FixDictionary42.SenderSubID, _senderSubId ); // tag50"/></Map>
+                    <Map fixTag="57"><Hook type="decode" code="decodeTargetSubID()"/><Hook type="encode" code="_builder.encodeString( FixDictionary42.TargetSubID, _targetSubId ); // tag57"/></Map>
+                    <Map fixTag="142"><Hook type="decode" code="getValLength()"/><Hook type="encode" code="_builder.encodeString( FixDictionary42.SenderLocationID, _senderLocationId ); // tag142"/></Map>
+                </MessageMap>
+                <MessageMap id="LightCompIDCheck" fixMessageId="LightCompIDCheck" ignore="true">
+                    <Map fixTag="49"><Hook type="decode" code="getValLength()"/><Hook type="encode" code="_builder.encodeString( FixDictionary42.SenderCompID, _senderCompId ); // tag49"/></Map>
+                    <Map fixTag="56"><Hook type="decode" code="getValLength()"/><Hook type="encode" code="_builder.encodeString( FixDictionary42.TargetCompID, _targetCompId ); // tag56"/></Map>
+                    <Map fixTag="50"><Hook type="decode" code="getValLength()"/><Hook type="encode" code="_builder.encodeString( FixDictionary42.SenderSubID, _senderSubId ); // tag50"/></Map>
+                    <Map fixTag="57"><Hook type="decode" code="getValLength()"/><Hook type="encode" code="_builder.encodeString( FixDictionary42.TargetSubID, _targetSubId ); // tag57"/></Map>
+                    <Map fixTag="142"><Hook type="decode" code="getValLength()"/><Hook type="encode" code="_builder.encodeString( FixDictionary42.SenderLocationID, _senderLocationId ); // tag142"/></Map>
+                </MessageMap>
+                <MessageMap id="Logon" eventId="Logon" fixMessageId="Logon">
+                    <Map fixTag="142"> <Hook type="decode" code="getValLength()"/><Hook type="encode" code="_builder.encodeString( FixDictionary42.SenderLocationID, _senderLocationId ); // tag142"/></Map>
+                    <Map fixTag="1603"><Hook type="decode" code="getValLength()"/><Hook type="encode" code="_builder.encodeString( FixDictionary42.TradingSystemName, _systemName )"/></Map>
+                    <Map fixTag="1604"><Hook type="decode" code="getValLength()"/><Hook type="encode" code="_builder.encodeString( FixDictionary42.TradingSystemVersion, _vendorVersion )"/></Map>
+                    <Map fixTag="1605"><Hook type="decode" code="getValLength()"/><Hook type="encode" code="_builder.encodeString( FixDictionary42.TradingSystemVendor, _vender )"/></Map>
+                    <Hook type="postEncode" code="setLastMsgSeqNumProcessed( msg )"/>
+                    <!--
+                    1603     Trading System Name     ORS
+                    1604     Trading System Version     1.0
+                    1605     Trading System Vendor     ILLUMINATI
+                    -->
+                </MessageMap>
+                <MessageMap id="Logout" eventId="Logout" fixMessageId="Logout" extends="LightCompIDCheck"/>
+
+                <MessageMap id="ResendRequest" eventId="ResendRequest" fixMessageId="ResendRequest" extends="LightCompIDCheck">
+                    <Hook type="postEncode" code="enrich(msg, now)"/>
+                </MessageMap>
+
+                <MessageMap id="SequenceReset" eventId="SequenceReset" fixMessageId="SequenceReset" extends="LightCompIDCheck">
+                    <Hook type="postEncode" code="enrich(msg, now)"/>
+                </MessageMap>
+
+                <MessageMap id="Heartbeat" eventId="Heartbeat" fixMessageId="Heartbeat" extends="LightCompIDCheck">
+                    <Hook type="postEncode" code="enrich(msg, now)"/>
+                </MessageMap>
+
+                <MessageMap id="NOS" eventId="NewOrderSingle" fixMessageId="NewOrderSingle" extends="BaseRequest">
+
+                    <!-- any tags present on decoding from RejectIfPresent will cause message to be rejected -->
+                    <RejectIfPresent fixTag="211"/>
+                    <RejectIfPresent fixTag="111"/>
+                    <RejectIfPresent fixTag="210"/>
+
+                    <!-- as all attributes of NewOrderSingle event match the fix dictionary no more mappings required -->
+                    <Map eventAttr="clOrdId" fixTag="11" maxOccurs="1" retainSrc="false">
+                        <Hook type="preEncode" code=""/>
+                        <Hook type="postEncode" code=""/>
+                    </Map>
+
+                    <!-- disable tag 22 and 48 as for autocert the insts are not in secdef -->
+
+                    <Map fixTag="22"> <Hook type="encode" code="// ignore securityIDSrc"/> </Map>
+                    <Map fixTag="48"> <Hook type="encode" code="// ignore securityID"/> </Map>
+                    <Map fixTag="15"> <Hook type="encode" code="// ignore ccy"/> </Map>
+
+                    <Map fixTag="107">
+                        <Hook type="encode" code="// tag107 secDesc, encoded in enrich method"/>
+                        <Hook type="decode" code="_securityDescStart = _idx;_securityDescLen = getValLength()"/>
+                    </Map>
+
+                    <!--  Hook type  preEncode / postEncode / preDecode / postDecode / encode / decode -->
+                    <Hook type="preDecode" code="if ( _nanoStats ) msg.setOrderReceived( getReceived() )"/>
+                    <Hook type="postDecode" code="enrich( msg )"/>
+
+                    <Hook type="preEncode" code=""/>
+                    <Hook type="postEncode" code="enrich( msg )"/>
+
+                </MessageMap>
+                <MessageMap id="CancelReplaceRequest" eventId="CancelReplaceRequest" fixMessageId="CancelReplaceRequest" extends="BaseRequest">
+                    <Hook type="postDecode" code="enrich( msg )"/>
+                    <Map fixTag="15"><Hook type="encode" code="// ignore ccy"/></Map>
+                    <Map fixTag="107">
+                        <Hook type="encode" code="// tag107 secDesc, encoded in enrich method"/>
+                        <Hook type="decode" code="_securityDescStart = _idx;_securityDescLen = getValLength()"/>
+                    </Map>
+                    <Hook type="postEncode" code="enrich( msg )"/>
+                </MessageMap>
+                <MessageMap id="CancelRequest" eventId="CancelRequest" fixMessageId="CancelRequest" extends="BaseRequest">
+                    <Map fixTag="107">
+                        <Hook type="encode" code="// tag107 secDesc, encoded in enrich method"/>
+                        <Hook type="decode" code="_securityDescStart = _idx;_securityDescLen = getValLength()"/>
+                    </Map>
+                    <Hook type="postDecode" code="enrich( msg )"/>
+                    <Hook type="postEncode" code="enrich( msg )"/>
+                </MessageMap>
+                <MessageMap id="PartialFill"  eventId="TradeNew"      fixMessageId="PartialFill"        extends="BaseExecRpt">
+                    <Map fixTag="17"><Hook type="decode" code="setTradeExecId( msg )"/></Map>
+                    <Map fixTag="32"/>
+                    <Map fixTag="31"/>
+                    <Map fixTag="150"><Hook type="encode" code="_builder.encodeByte( (byte)'1' )"/></Map>
+                </MessageMap>
+                <MessageMap id="Fill"  eventId="TradeNew"      fixMessageId="Fill"        extends="BaseExecRpt">
+                    <Map fixTag="17"><Hook type="decode" code="setTradeExecId( msg )"/></Map>
+                    <Map fixTag="32"/>
+                    <Map fixTag="31"/>
+                    <Map fixTag="150"><Hook type="encode" code="_builder.encodeByte( (byte)'2' )"/></Map>
+                </MessageMap>
+                <MessageMap id="TradeNew"       eventId="TradeNew"      fixMessageId="Trade"        extends="BaseExecRpt">
+                    <Map fixTag="32"/>
+                    <Map fixTag="31"/>
+                    <Map fixTag="17"><Hook type="decode" code="setTradeExecId( msg )"/></Map>
+                </MessageMap>
+                <MessageMap id="TradeCorrect"   eventId="TradeCorrect"  fixMessageId="TradeCorrect" extends="BaseExecRpt">
+                    <Map fixTag="32"/>
+                    <Map fixTag="31"/>
+                    <Map fixTag="17"><Hook type="decode" code="setTradeExecId( msg )"/></Map>
+                </MessageMap>
+                <MessageMap id="TradeCancel"    eventId="TradeCancel"   fixMessageId="TradeCancel"  extends="BaseExecRpt">
+                    <Map fixTag="32"/>
+                    <Map fixTag="31"/>
+                    <Map fixTag="17"><Hook type="decode" code="setTradeExecId( msg )"/></Map>
+                </MessageMap>
+            </Codec>
+
+@SECTION CME_EXCHANGE_CODEC END
+
+
+

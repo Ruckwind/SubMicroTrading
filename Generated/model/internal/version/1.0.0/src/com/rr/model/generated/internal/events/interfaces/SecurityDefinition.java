@@ -1,114 +1,166 @@
-/*******************************************************************************
- * Copyright (c) 2015 Low Latency Trading Limited  :  Author Richard Rose
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at	http://www.apache.org/licenses/LICENSE-2.0
- * Unless required by applicable law or agreed to in writing,  software distributed under the License 
- * is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and limitations under the License.
- *******************************************************************************/
 package com.rr.model.generated.internal.events.interfaces;
 
+/*
+Copyright 2015 Low Latency Trading Limited
+Author Richard Rose
+*/
+
 import com.rr.model.generated.internal.type.SecurityTradingStatus;
-import com.rr.core.model.SecurityIDSource;
-import com.rr.core.model.SecurityType;
-import com.rr.model.generated.internal.events.interfaces.SecDefEvents;
+import com.rr.model.generated.internal.events.interfaces.SecDefEvent;
 import com.rr.model.generated.internal.type.SecurityUpdateAction;
 import com.rr.model.generated.internal.events.interfaces.SecDefLeg;
+import com.rr.model.generated.internal.type.ProductComplex;
 import com.rr.model.generated.internal.events.interfaces.SecurityAltID;
-import com.rr.core.model.Currency;
 import com.rr.model.generated.internal.events.interfaces.SDFeedType;
-import com.rr.core.lang.ViewString;
-import com.rr.core.lang.ReusableString;
-import com.rr.core.model.Message;
+import com.rr.core.utils.Utils;
+import com.rr.core.lang.*;
+import com.rr.core.model.*;
+import com.rr.core.annotations.*;
 
-public interface SecurityDefinition extends BaseMDResponse, Message {
+@SuppressWarnings( { "unused", "override"  })
+
+public interface SecurityDefinition extends BaseMDResponseWrite, Event {
 
    // Getters and Setters
-    public int getTotNumReports();
+    int getTotNumReports();
 
-    public SecurityTradingStatus getSecurityTradingStatus();
+    SecurityTradingStatus getSecurityTradingStatus();
 
-    public SecurityIDSource getSecurityIDSource();
+    SecurityType getSecurityType();
 
-    public SecurityType getSecurityType();
+    long getUniqueInstId();
 
-    public long getSecurityID();
+    long getSecDefId();
 
-    public ViewString getSymbol();
+    long getExchangeLongId();
 
-    public int getNoEvents();
+    SecurityIDSource getSecurityIDSource();
 
-    public SecDefEvents getEvents();
+    ViewString getSecurityID();
 
-    public SecurityUpdateAction getSecurityUpdateAction();
+    ViewString getSymbol();
 
-    public int getNoLegs();
+    int getNoEvents();
 
-    public SecDefLeg getLegs();
+    SecDefEvent getEvents();
 
-    public double getTradingReferencePrice();
+    SecurityUpdateAction getSecurityUpdateAction();
 
-    public double getHighLimitPx();
+    int getNoLegs();
 
-    public double getLowLimitPx();
+    SecDefLeg getLegs();
 
-    public double getMinPriceIncrement();
+    double getTradingReferencePrice();
 
-    public double getMinPriceIncrementAmount();
+    double getHighLimitPx();
 
-    public ViewString getSecurityGroup();
+    double getLowLimitPx();
 
-    public ViewString getSecurityDesc();
+    double getFutPointValue();
 
-    public ViewString getCFICode();
+    double getMinPriceIncrement();
 
-    public ViewString getUnderlyingProduct();
+    double getMinPriceIncrementAmount();
 
-    public ViewString getSecurityExchange();
+    ViewString getSecurityGroup();
 
-    public int getNoSecurityAltID();
+    ViewString getSecurityDesc();
 
-    public SecurityAltID getSecurityAltIDs();
+    ViewString getSecurityLongDesc();
 
-    public double getStrikePrice();
+    ViewString getCFICode();
 
-    public Currency getStrikeCurrency();
+    ProductComplex getUnderlyingProduct();
 
-    public Currency getCurrency();
+    ExchangeCode getSecurityExchange();
 
-    public Currency getSettlCurrency();
+    SecurityIDSource getUnderlyingSecurityIDSource();
 
-    public long getMinTradeVol();
+    ViewString getUnderlyingSecurityID();
 
-    public long getMaxTradeVol();
+    ExchangeCode getUnderlyingScurityExchange();
 
-    public int getNoSDFeedTypes();
+    ExchangeCode getPrimarySecurityExchange();
 
-    public SDFeedType getSDFeedTypes();
+    int getTickRule();
 
-    public long getMaturityMonthYear();
+    int getNoSecurityAltID();
 
-    public long getLastUpdateTime();
+    SecurityAltID getSecurityAltIDs();
 
-    public ViewString getApplID();
+    double getStrikePrice();
 
-    public double getDisplayFactor();
+    Currency getStrikeCurrency();
 
-    public double getPriceRatio();
+    Currency getCurrency();
 
-    public int getContractMultiplierType();
+    Currency getSettlCurrency();
 
-    public int getContractMultiplier();
+    long getMinTradeVol();
 
-    public int getOpenInterestQty();
+    long getMaxTradeVol();
 
-    public int getTradingReferenceDate();
+    int getNoSDFeedTypes();
 
-    public int getMinQty();
+    SDFeedType getSDFeedTypes();
 
-    public double getPricePrecision();
+    /**
+     *format YYYYMMDD
+     */
+    int getMaturityMonthYear();
 
-    @Override
-    public void dump( ReusableString out );
+    ViewString getApplID();
+
+    double getDisplayFactor();
+
+    double getPriceRatio();
+
+    int getContractMultiplierType();
+
+    double getContractMultiplier();
+
+    int getOpenInterestQty();
+
+    int getTradingReferenceDate();
+
+    int getMinQty();
+
+    double getPricePrecision();
+
+    UnitOfMeasure getUnitOfMeasure();
+
+    double getUnitOfMeasureQty();
+
+    ViewString getCompanyName();
+
+    double getSharesOutstanding();
+
+    long getCommonSecurityId();
+
+    long getParentCompanyId();
+
+    long getGicsCode();
+
+    long getGetOutDate();
+
+    long getDeadTimestamp();
+
+    /**
+     *version start timestamp
+     */
+    long getStartTimestamp();
+
+    /**
+     *version end timestamp
+     */
+    long getEndTimestamp();
+
+    DataSrc getDataSrc();
+
+    SecDefSpecialType getSecDefSpecialType();
+
+    CompanyStatusType getCompanyStatusType();
+
+    @Override void dump( ReusableString out );
 
 }

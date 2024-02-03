@@ -1,60 +1,80 @@
-/*******************************************************************************
- * Copyright (c) 2015 Low Latency Trading Limited  :  Author Richard Rose
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at	http://www.apache.org/licenses/LICENSE-2.0
- * Unless required by applicable law or agreed to in writing,  software distributed under the License 
- * is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and limitations under the License.
- *******************************************************************************/
 package com.rr.model.generated.internal.events.interfaces;
 
-import com.rr.core.model.Instrument;
-import com.rr.core.model.ClientProfile;
-import com.rr.core.model.Currency;
-import com.rr.core.model.SecurityIDSource;
+/*
+Copyright 2015 Low Latency Trading Limited
+Author Richard Rose
+*/
+
 import com.rr.model.generated.internal.type.Side;
-import com.rr.core.lang.ReusableString;
-import com.rr.core.lang.AssignableString;
+import com.rr.model.generated.internal.type.OrdDestType;
+import com.rr.core.utils.Utils;
+import com.rr.core.lang.*;
+import com.rr.core.model.*;
+import com.rr.core.annotations.*;
+
+@SuppressWarnings( { "unused", "override"  })
 
 public interface ClientCancelRequestWrite extends BaseOrderRequest, CancelRequest {
 
    // Getters and Setters
-    public AssignableString getAccountForUpdate();
+    AssignableString getAccountForUpdate();
 
-    public void setClOrdId( byte[] buf, int offset, int len );
-    public ReusableString getClOrdIdForUpdate();
+    void setClOrdId( byte[] buf, int offset, int len );
+    ReusableString getClOrdIdForUpdate();
 
-    public void setOrigClOrdId( byte[] buf, int offset, int len );
-    public ReusableString getOrigClOrdIdForUpdate();
+    void setOrigClOrdId( byte[] buf, int offset, int len );
+    ReusableString getOrigClOrdIdForUpdate();
 
-    public void setOrderId( byte[] buf, int offset, int len );
-    public ReusableString getOrderIdForUpdate();
+    void setOrderId( byte[] buf, int offset, int len );
+    ReusableString getOrderIdForUpdate();
 
-    public void setSrcLinkId( byte[] buf, int offset, int len );
-    public ReusableString getSrcLinkIdForUpdate();
+    void setInstrument( Instrument val );
 
-    public void setInstrument( Instrument val );
+    void setClient( ClientProfile val );
 
-    public void setClient( ClientProfile val );
+    AssignableString getSecurityIdForUpdate();
 
-    public AssignableString getSecurityIdForUpdate();
+    AssignableString getSymbolForUpdate();
 
-    public AssignableString getSymbolForUpdate();
+    void setMaturityMonthYear( int val );
 
-    public void setCurrency( Currency val );
+    void setCurrency( Currency val );
 
-    public void setSecurityIDSource( SecurityIDSource val );
+    void setSecurityIDSource( SecurityIDSource val );
 
-    public void setTransactTime( int val );
+    void setTransactTime( long val );
 
-    public void setSendingTime( int val );
+    void setSide( Side val );
 
-    public void setSide( Side val );
+    void setCurPos( double val );
 
-    public AssignableString getOnBehalfOfIdForUpdate();
+    void setCurRefPx( double val );
 
-    public void setMsgSeqNum( int val );
+    void setTargetDest( OrdDestType val );
 
-    public void setPossDupFlag( boolean val );
+    AssignableString getExDestForUpdate();
+
+    void setSecurityExchange( ExchangeCode val );
+
+    void setBroker( PartyID val );
+
+    void setClearer( PartyID val );
+
+    AssignableString getParentClOrdIdForUpdate();
+
+    AssignableString getStratIdForUpdate();
+
+    AssignableString getOrigStratIdForUpdate();
+
+    void setSenderCompId( byte[] buf, int offset, int len );
+    ReusableString getSenderCompIdForUpdate();
+
+    AssignableString getOnBehalfOfIdForUpdate();
+
+    @Override void setMsgSeqNum( int val );
+
+    void setPossDupFlag( boolean val );
+
+    void setEventTimestamp( long val );
 
 }

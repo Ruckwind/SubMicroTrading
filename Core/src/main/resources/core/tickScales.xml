@@ -1,0 +1,43 @@
+<Root>
+    <!--
+        inBand is price >= _lower && price <= _upper
+        so cant use exact number for start and end
+    -->
+    <TickScales operatingMIC="XCME">
+        <TickScale id="1">
+            <TickRange lowerBound=""            upperBound="-500.001"   tickSize="10"/>
+            <TickRange lowerBound="-500"        upperBound="500"        tickSize="5"/>
+            <TickRange lowerBound="500.001"     upperBound=""           tickSize="10"/>
+        </TickScale>
+        <TickScale id="2">
+            <TickRange lowerBound=""            upperBound="-5.001"     tickSize="1"/>
+            <TickRange lowerBound="-5"          upperBound="5"          tickSize="0.5"/>
+            <TickRange lowerBound="5.001"       upperBound=""           tickSize="1"/>
+        </TickScale>
+        <TickScale id="3">
+            <TickRange lowerBound=""            upperBound="-10.001"    tickSize="2"/>
+            <TickRange lowerBound="-10"         upperBound="10"         tickSize="1"/>
+            <TickRange lowerBound="10.001"      upperBound=""           tickSize="2"/>
+        </TickScale>
+        <TickScale id="4">
+            <TickRange lowerBound=""            upperBound="-500.001"   tickSize="25"/>
+            <TickRange lowerBound="-500"        upperBound="500"        tickSize="5"/>
+            <TickRange lowerBound="500.001"     upperBound=""           tickSize="25"/>
+        </TickScale>
+        <TickScale id="10">
+            <TickRange lowerBound=""            upperBound="-300.001"   tickSize="25"/>
+            <TickRange lowerBound="-300"        upperBound="300"        tickSize="5"/>
+            <TickRange lowerBound="300.001"     upperBound=""           tickSize="25"/>
+        </TickScale>
+        <TickScale id="11">
+            <TickRange lowerBound=""            upperBound="-300.001"   tickSize="10"/>
+            <TickRange lowerBound="-300"        upperBound="300"        tickSize="5"/>
+            <TickRange lowerBound="300.001"     upperBound=""           tickSize="10"/>
+        </TickScale>
+        <TickScale id="12">
+            <TickRange lowerBound=""            upperBound="-5.001"     tickSize="0.5"/>
+            <TickRange lowerBound="-5"          upperBound="5"          tickSize="0.25"/>
+            <TickRange lowerBound="5.001"       upperBound=""           tickSize="0.5"/>
+        </TickScale>
+    </TickScales>
+</Root>

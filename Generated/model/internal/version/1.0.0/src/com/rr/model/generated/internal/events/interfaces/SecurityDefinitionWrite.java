@@ -1,120 +1,164 @@
-/*******************************************************************************
- * Copyright (c) 2015 Low Latency Trading Limited  :  Author Richard Rose
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at	http://www.apache.org/licenses/LICENSE-2.0
- * Unless required by applicable law or agreed to in writing,  software distributed under the License 
- * is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and limitations under the License.
- *******************************************************************************/
 package com.rr.model.generated.internal.events.interfaces;
 
+/*
+Copyright 2015 Low Latency Trading Limited
+Author Richard Rose
+*/
+
 import com.rr.model.generated.internal.type.SecurityTradingStatus;
-import com.rr.core.model.SecurityIDSource;
-import com.rr.core.model.SecurityType;
-import com.rr.model.generated.internal.events.interfaces.SecDefEvents;
+import com.rr.model.generated.internal.events.interfaces.SecDefEvent;
 import com.rr.model.generated.internal.type.SecurityUpdateAction;
 import com.rr.model.generated.internal.events.interfaces.SecDefLeg;
+import com.rr.model.generated.internal.type.ProductComplex;
 import com.rr.model.generated.internal.events.interfaces.SecurityAltID;
-import com.rr.core.model.Currency;
 import com.rr.model.generated.internal.events.interfaces.SDFeedType;
-import com.rr.core.lang.ReusableString;
+import com.rr.core.utils.Utils;
+import com.rr.core.lang.*;
+import com.rr.core.model.*;
+import com.rr.core.annotations.*;
 
-public interface SecurityDefinitionWrite extends BaseMDResponse, SecurityDefinition {
+@SuppressWarnings( { "unused", "override"  })
+
+public interface SecurityDefinitionWrite extends BaseMDResponseWrite, SecurityDefinition {
 
    // Getters and Setters
-    public void setTotNumReports( int val );
+    void setTotNumReports( int val );
 
-    public void setSecurityTradingStatus( SecurityTradingStatus val );
+    void setSecurityTradingStatus( SecurityTradingStatus val );
 
-    public void setSecurityIDSource( SecurityIDSource val );
+    void setSecurityType( SecurityType val );
 
-    public void setSecurityType( SecurityType val );
+    void setUniqueInstId( long val );
 
-    public void setSecurityID( long val );
+    void setSecDefId( long val );
 
-    public void setSymbol( byte[] buf, int offset, int len );
-    public ReusableString getSymbolForUpdate();
+    void setExchangeLongId( long val );
 
-    public void setNoEvents( int val );
+    void setSecurityIDSource( SecurityIDSource val );
 
-    public void setEvents( SecDefEvents val );
+    void setSecurityID( byte[] buf, int offset, int len );
+    ReusableString getSecurityIDForUpdate();
 
-    public void setSecurityUpdateAction( SecurityUpdateAction val );
+    void setSymbol( byte[] buf, int offset, int len );
+    ReusableString getSymbolForUpdate();
 
-    public void setNoLegs( int val );
+    void setNoEvents( int val );
 
-    public void setLegs( SecDefLeg val );
+    void setEvents( SecDefEvent val );
 
-    public void setTradingReferencePrice( double val );
+    void setSecurityUpdateAction( SecurityUpdateAction val );
 
-    public void setHighLimitPx( double val );
+    void setNoLegs( int val );
 
-    public void setLowLimitPx( double val );
+    void setLegs( SecDefLeg val );
 
-    public void setMinPriceIncrement( double val );
+    void setTradingReferencePrice( double val );
 
-    public void setMinPriceIncrementAmount( double val );
+    void setHighLimitPx( double val );
 
-    public void setSecurityGroup( byte[] buf, int offset, int len );
-    public ReusableString getSecurityGroupForUpdate();
+    void setLowLimitPx( double val );
 
-    public void setSecurityDesc( byte[] buf, int offset, int len );
-    public ReusableString getSecurityDescForUpdate();
+    void setFutPointValue( double val );
 
-    public void setCFICode( byte[] buf, int offset, int len );
-    public ReusableString getCFICodeForUpdate();
+    void setMinPriceIncrement( double val );
 
-    public void setUnderlyingProduct( byte[] buf, int offset, int len );
-    public ReusableString getUnderlyingProductForUpdate();
+    void setMinPriceIncrementAmount( double val );
 
-    public void setSecurityExchange( byte[] buf, int offset, int len );
-    public ReusableString getSecurityExchangeForUpdate();
+    void setSecurityGroup( byte[] buf, int offset, int len );
+    ReusableString getSecurityGroupForUpdate();
 
-    public void setNoSecurityAltID( int val );
+    void setSecurityDesc( byte[] buf, int offset, int len );
+    ReusableString getSecurityDescForUpdate();
 
-    public void setSecurityAltIDs( SecurityAltID val );
+    void setSecurityLongDesc( byte[] buf, int offset, int len );
+    ReusableString getSecurityLongDescForUpdate();
 
-    public void setStrikePrice( double val );
+    void setCFICode( byte[] buf, int offset, int len );
+    ReusableString getCFICodeForUpdate();
 
-    public void setStrikeCurrency( Currency val );
+    void setUnderlyingProduct( ProductComplex val );
 
-    public void setCurrency( Currency val );
+    void setSecurityExchange( ExchangeCode val );
 
-    public void setSettlCurrency( Currency val );
+    void setUnderlyingSecurityIDSource( SecurityIDSource val );
 
-    public void setMinTradeVol( long val );
+    void setUnderlyingSecurityID( byte[] buf, int offset, int len );
+    ReusableString getUnderlyingSecurityIDForUpdate();
 
-    public void setMaxTradeVol( long val );
+    void setUnderlyingScurityExchange( ExchangeCode val );
 
-    public void setNoSDFeedTypes( int val );
+    void setPrimarySecurityExchange( ExchangeCode val );
 
-    public void setSDFeedTypes( SDFeedType val );
+    void setTickRule( int val );
 
-    public void setMaturityMonthYear( long val );
+    void setNoSecurityAltID( int val );
 
-    public void setLastUpdateTime( long val );
+    void setSecurityAltIDs( SecurityAltID val );
 
-    public void setApplID( byte[] buf, int offset, int len );
-    public ReusableString getApplIDForUpdate();
+    void setStrikePrice( double val );
 
-    public void setDisplayFactor( double val );
+    void setStrikeCurrency( Currency val );
 
-    public void setPriceRatio( double val );
+    void setCurrency( Currency val );
 
-    public void setContractMultiplierType( int val );
+    void setSettlCurrency( Currency val );
 
-    public void setContractMultiplier( int val );
+    void setMinTradeVol( long val );
 
-    public void setOpenInterestQty( int val );
+    void setMaxTradeVol( long val );
 
-    public void setTradingReferenceDate( int val );
+    void setNoSDFeedTypes( int val );
 
-    public void setMinQty( int val );
+    void setSDFeedTypes( SDFeedType val );
 
-    public void setPricePrecision( double val );
+    void setMaturityMonthYear( int val );
 
-    public void setMsgSeqNum( int val );
+    void setApplID( byte[] buf, int offset, int len );
+    ReusableString getApplIDForUpdate();
 
-    public void setPossDupFlag( boolean val );
+    void setDisplayFactor( double val );
+
+    void setPriceRatio( double val );
+
+    void setContractMultiplierType( int val );
+
+    void setContractMultiplier( double val );
+
+    void setOpenInterestQty( int val );
+
+    void setTradingReferenceDate( int val );
+
+    void setMinQty( int val );
+
+    void setPricePrecision( double val );
+
+    void setUnitOfMeasure( UnitOfMeasure val );
+
+    void setUnitOfMeasureQty( double val );
+
+    void setCompanyName( byte[] buf, int offset, int len );
+    ReusableString getCompanyNameForUpdate();
+
+    void setSharesOutstanding( double val );
+
+    void setCommonSecurityId( long val );
+
+    void setParentCompanyId( long val );
+
+    void setGicsCode( long val );
+
+    void setGetOutDate( long val );
+
+    void setDeadTimestamp( long val );
+
+    void setStartTimestamp( long val );
+
+    void setEndTimestamp( long val );
+
+    void setDataSrc( DataSrc val );
+
+    void setSecDefSpecialType( SecDefSpecialType val );
+
+    void setCompanyStatusType( CompanyStatusType val );
 
 }

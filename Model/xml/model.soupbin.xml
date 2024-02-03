@@ -1,0 +1,121 @@
+<!--suppress ALL -->
+
+
+
+@SECTION SOUPBIN_MODEL START
+            <Model id="SoupBin3" modelVersionNumber="3.0">
+
+                <Attribute name="BinaryVersion" value="3"/>
+
+                <Dictionary>
+                    <!-- certain tags are special and have specific optimised codec code eg fixVersion.msgType -->
+                    <!--  type should be external facing not internal type mapping -->
+                    <!--  for name try and use the internal event field name so it can be auto matched to the event -->
+                    <!-- valid types zstr(fixed len str)|str(with len as max)|ch|price|sByte|sShort|sInt|sLong|bool|timestampLocal|timestampUTC|timeLocal|timeUTC -->
+
+                    <Field id="msgType"                 type="uByte"/>
+                    <Field id="message"                 type="zstr" len="4"/>
+                    <Field id="password"                type="zstr" len="SOUP_PASSWORD_LEN"/>
+                    <Field id="rejectReasonCode"        type="uByte"/>
+                    <Field id="requestedSeqNum"         type="uInt"/>
+                    <Field id="text"                    type="str"/>
+                    <Field id="requestedSession"        type="zstr" len="10"/>
+                    <Field id="sessionId"               type="zstr" len="10"/>
+                    <Field id="soupSeqNum"              type="zstr" len="20"/>
+                    <Field id="seqNum"                  type="uLong"/>
+                    <Field id="userName"                type="zstr" len="SOUP_USERNAME_LEN"/>
+
+                </Dictionary>
+
+                <StandardHeader>
+                    <Field id="msgType"           mand="N"/>
+                </StandardHeader>
+
+                <StandardTrailer>
+                </StandardTrailer>
+
+                <Message id="DebugPacket" msgType="+">
+                    <Field id="text" mand="N"/>
+                </Message>
+
+                <Message id="LogInAccepted" msgType="A">
+                    <Field id="sessionId" mand="N"/>
+                    <Field id="soupSeqNum" mand="N"/>
+                </Message>
+
+                <Message id="LogInRejected" msgType="J">
+                    <Field id="rejectReasonCode" mand="N"/>
+                </Message>
+
+                <Message id="SequencedDataPacket" msgType="S">
+                </Message>
+
+                <Message id="EndOfSession" msgType="Z">
+                </Message>
+
+                <Message id="ServerHeartbeat" msgType="H">
+                </Message>
+
+                <Message id="LogoutRequest" msgType="O">
+                </Message>
+
+                <Message id="LogInRequest" msgType="L">
+                    <Field id="userName" mand="N"/>
+                    <Field id="password" mand="N"/>
+                    <Field id="requestedSession" mand="N"/>
+                    <Field id="requestedSeqNum" mand="N"/>
+                </Message>
+
+                <Message id="UnsequencedDataPacket" msgType="U">
+                </Message>
+
+                <Message id="ClientHeartbeat" msgType="R">
+                </Message>
+
+            </Model>
+@SECTION SOUPBIN_MODEL END
+
+@SECTION SOUPBIN_CODEC START
+            <BinaryCodec id="SoupBin3"
+                         model="SoupBin3"
+                         decodeInclude="./soup/SoupBin3Decoder.include"
+                         encodeInclude="./soup/SoupBin3Encoder.include"
+                         decodeGenerator="com.rr.model.generator.soup.SoupBin3DecoderGenerator"
+                         encodeGenerator="com.rr.model.generator.soup.SoupBin3EncoderGenerator">
+
+
+                <MessageMap id="SequencedDataPacket"   messageId="SequencedDataPacket"  ignore="true">
+                    <Hook type="decode" code="msg = doDecodeSequencedDataPacket()"/>
+                </MessageMap>
+
+                <MessageMap id="UnsequencedDataPacket"   messageId="UnsequencedDataPacket"  ignore="true">
+                    <Hook type="decode" code="msg = doDecodeUnsequencedDataPacket()"/>
+                </MessageMap>
+
+                <MessageMap id="BaseResponse" messageId="" ignore="true">
+                    <Map field="eventTimestamp">
+                        <Hook type="encode" code="encodeLong( now )"/>
+                    </Map>
+                </MessageMap>
+
+                <MessageMap id="SoupDebugPacket"   eventId="SoupDebugPacket" messageId="DebugPacket"     extends="BaseResponse"/>
+
+                <MessageMap id="SoupLogInAccepted"   eventId="SoupLogInAccepted" messageId="LogInAccepted"    extends="BaseResponse">
+                    <Map field="soupSeqNum"              eventAttr="seqNum"/>
+                </MessageMap>
+
+                <MessageMap id="SoupLogInRejected"   eventId="SoupLogInRejected" messageId="LogInRejected"     extends="BaseResponse"/>
+
+                <MessageMap id="SoupLogInRequest"   eventId="SoupLogInRequest" messageId="LogInRequest"    extends="BaseResponse"/>
+
+                <MessageMap id="ClientHeartbeat"   eventId="Heartbeat" messageId="ClientHeartbeat"    extends="BaseResponse"/>
+
+                <MessageMap id="ServerHeartbeat"   eventId="Heartbeat" messageId="ServerHeartbeat"    extends="BaseResponse"/>
+
+                <MessageMap id="EndOfSession"   eventId="EndOfSession" messageId="EndOfSession"    extends="BaseResponse"/>
+
+                <MessageMap id="LogoutRequest"   eventId="LogoutRequest" messageId="LogoutRequest"    extends="BaseResponse"/>
+
+            </BinaryCodec>
+
+@SECTION SOUPBIN_CODEC END

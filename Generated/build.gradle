@@ -1,0 +1,20 @@
+sourceSets {
+    main {
+        java {
+            srcDirs 'src/main/java'
+            srcDirs 'model/binary/version/1.0.0/src'
+            srcDirs 'model/codec-base/version/1.0.0/src'
+            srcDirs 'model/codec-binary/version/1.0.0/src'
+            srcDirs 'model/codec-client/version/1.0.0/src'
+            srcDirs 'model/codec-exchange/version/1.0.0/src'
+            srcDirs 'model/codec-factory/version/1.0.0/src'
+            srcDirs 'model/fix/version/1.0.0/src'
+            srcDirs 'model/internal/version/1.0.0/src'
+        }
+    }
+}
+
+dependencies {
+    api project(':Core')
+    api project(':CoreMD')
+}

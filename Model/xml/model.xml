@@ -1,0 +1,199 @@
+<?xml version="1.0"?>
+<Model xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="file:///c:/Working/dev/NewProj/Model/xml/model.xsd">
+
+    <!--
+        fix sub groups have now been added, but restrictions are
+        
+        a) the counter must be the first entry directly preceeding the grp as in fast fix sequences
+        b) fix subgroup must have same name as model sub group
+        c) ALL possible fix entries in repeating group must be in the fix sub grp definition
+           otherwise it can trigger early return from sub grp processing which stops on unexpected tag
+           These tags dont need to be added to the internal model tho
+           
+        d) MUST BE CAREFUL, WHEN EXCHANGE CHANGE FIX SUB EVENTS THEY MUST BE UPDATED IN MODEL
+
+        WARNING : SubGroups ... the first field in the sub group MUST be in correct order as its used to switch to next entry
+    -->
+
+    <InternalModel version="1.0.0" dir="../Generated/model/internal/version" rootPackage="com.rr.model.generated.internal">
+
+        <!-- internal model values based on fix 4.4 -->
+
+        <Sizes> <!-- will be placed into an OM size enum file -->
+            @INCLUDE ./xml/model.sizes.xml DEFAULT_SIZES_CONSTANTS
+
+            @INCLUDE ./xml/model.euronext.cash.utp.xml EURONEXT_CASH_UTP_CONSTANTS
+
+            @INCLUDE ./xml/model.lse.millenium.xml LSE_MILLENIUM_CONSTANTS
+
+            @INCLUDE ./xml/model.eurex.eti.xml EUREX_ETI_CONSTANTS
+
+            @INCLUDE ./xml/model.cme.sbe.xml CME_CONSTANTS
+
+            @INCLUDE ./xml/model.pitch.xml PITCH_CONSTANTS
+
+            @INCLUDE ./xml/model.soup.xml SOUP_CONSTANTS
+        </Sizes>
+
+
+        <Instruction>RestrictMultiValueFieldsToSingleValue</Instruction>
+
+        <Types>
+            @INCLUDE ./xml/model.types.xml TYPES
+
+            @INCLUDE ./xml/model.euronext.cash.utp.xml EURONEXT_CASH_UTP_TYPES
+
+            @INCLUDE ./xml/model.lse.millenium.xml LSE_MILLENIUM_TYPES
+
+            @INCLUDE ./xml/model.eurex.eti.xml EUREX_ETI_TYPES
+
+            @INCLUDE ./xml/model.pitch.xml PITCH_TYPES
+
+            @INCLUDE ./xml/model.soup.xml SOUP_TYPES
+        </Types>
+
+        <!-- if no attribute name supplied then typeId used to generate name -->
+        <!--  attribute name used as a default for mapping to/from fix -->
+
+
+        <!--  if ViewString is used their must be reusableString attribute named buf in event -->
+
+        <!--  Attribute has optional attr outbound=[delegate|seperate]
+
+              if any attr have delegate market side event then create Update interface
+              marketside then doesnt implement Write interface only the Update interface
+
+              "seperate" -> attr in inbound and outbound events may be different
+
+              type : char | boolean | int | short | double | float | date | viewstring | reusablestring\[nnn\] | UTCTimestamp | InternalTypeId
+        -->
+
+        <Events>
+            @INCLUDE ./xml/model.events.xml EVENTS
+
+            @INCLUDE ./xml/model.events.strats.xml STRATS_EVENTS
+
+            @INCLUDE ./xml/model.euronext.cash.utp.xml EURONEXT_CASH_UTP_EVENTS
+
+            @INCLUDE ./xml/model.eurex.eti.xml EUREX_ETI_EVENTS
+
+            @INCLUDE ./xml/model.lse.millenium.xml LSE_MILLENIUM_EVENTS
+
+            @INCLUDE ./xml/model.lse.itch.xml LSE_ITCH_EVENTS
+
+            @INCLUDE ./xml/model.pitch.xml PITCH_EVENTS
+
+            @INCLUDE ./xml/model.soup.xml SOUP_EVENTS
+
+        </Events>
+    </InternalModel>
+
+    <!--
+         Fix Model (depends on Internal Model Schema)
+
+            Model : [InternalModelVersion] [FixModel]+
+
+            FixModel : [Id] [FixVersion] [modelVersionNumber] [FixHelper] [Dictionary] [FixMessage]*
+            Dictionary = [Tag]* [SimpleFormatters]* [ComplexFormatters]*
+            FixMessage = [Id] [FixMessageElements]*
+            FixMessageElement = [Tag] (Priority) | [RepeatingGroup]
+            RepeatingGroup = [GroupStart][CountTag][Tag]*[GroupEnd]
+            Tag : [Id] [Name]
+     -->
+
+    <FixModels version="1.0.0" dir="../Generated/model/fix/version" rootPackage="com.rr.model.generated.fix">
+
+        <FixVersion>
+            <Entry name="4.0" value="4.0"/>
+            <Entry name="4.2" value="4.2"/>
+            <Entry name="4.4" value="4.4"/>
+            <Entry name="5.0" value="5.0"/>
+            <Entry name="MD4.4" value="4.4"/>
+            <Entry name="MD5.0" value="5.0"/>
+            <Entry name="DC4.4" value="4.4"/>
+            <Entry name="MS4.4" value="4.4"/>
+            <Entry name="Portara4.4" value="4.4"/>
+        </FixVersion>
+
+        @INCLUDE ./xml/model.fix.models.xml FIX_MODELS
+
+        @INCLUDE ./xml/model.fix.models.dropcopy.xml FIX_DROP_COPY_MODELS
+
+    </FixModels>
+
+    <BinaryModels version="1.0.0" dir="../Generated/model/binary/version" rootPackage="com.rr.model.generated">
+        @INCLUDE ./xml/model.euronext.cash.utp.xml EURONEXT_CASH_UTP_MODEL
+
+        @INCLUDE ./xml/model.lse.millenium.xml LSE_MILLENIUM_MODEL
+
+        @INCLUDE ./xml/model.lse.itch.xml LSE_ITCH_MODEL
+
+        @INCLUDE ./xml/model.eurex.eti.xml EUREX_ETI_MODEL
+
+        @INCLUDE ./xml/model.cme.sbe.xml CME_MODEL
+
+        @INCLUDE ./xml/model.cboe.eu.tcp.pitch.xml TCP_PITCH_MODEL
+
+        @INCLUDE ./xml/model.cboe.eu.tcp.pitch.historic.xml TCP_HISTORIC_PITCH_MODEL
+
+        @INCLUDE ./xml/model.soup.xml SOUP_MODEL
+
+    </BinaryModels>
+
+
+    <!--
+
+            MessageMapping: [FixMessageId] [EventId] { [handEncode] | [handDecode] } [Mapping]* ( [PostMapUserFunct] )
+            Mapping: [TagId] [AttributeId] (MapInstruction) { [AttrUserFunct] | [ValueMap] }
+            ValueMap : [FixValue][TypeEntryName]
+
+            ORDER IS IMPORTANT, CODECS EXTENDING OTHER CODECS MUST APPEAR AFTER
+    -->
+
+    <Codecs version="1.0.0" dir="../Generated/model/codec-base/version" rootPackage="com.rr.model.generated.fix">
+        @INCLUDE ./xml/model.fix.codecs.xml FIX_CODECS
+        @INCLUDE ./xml/model.fix.codecs.dropcopy.xml FIX_DROP_COPY_CODECS
+    </Codecs>
+
+    <ExchangeCodecs version="1.0.0" dir="../Generated/model/codec-exchange/version" rootPackage="com.rr.model.generated.fix">
+        <Codec id="CHIX" fix="4.2" type="Exchange" extends="Standard42"/>
+
+        <Codec id="MDBSE" fix="MD5.0" extends="MD50" decodeInclude="BSEMDDecoder50.include" encodeInclude="BSEMDEncoder50.include"
+               encodeBuilder="com.rr.core.codec.ReadableMDFastFixEncoder"
+               decodeGenerator="com.rr.model.generator.customfix.BSEFixDecoderGenerator">
+        </Codec>
+
+        @INCLUDE ./xml/model.cme.fix.xml CME_EXCHANGE_CODEC
+
+    </ExchangeCodecs>
+
+    <ClientCodecs version="1.0.0" dir="../Generated/model/codec-client/version" rootPackage="com.rr.model.generated.fix">
+        <Codec id="ClientX_44" fix="4.4" type="Client" extends="Standard44"/>
+    </ClientCodecs>
+
+    <BinaryCodecs version="1.0.0" dir="../Generated/model/codec-binary/version" rootPackage="com.rr.model.generated">
+        @INCLUDE ./xml/model.euronext.cash.utp.xml EURONEXT_CASH_UTP_BINARY_CODEC
+
+        @INCLUDE ./xml/model.lse.millenium.xml LSE_MILLENIUM_BINARY_CODEC
+
+        @INCLUDE ./xml/model.lse.itch.xml LSE_ITCH_BINARY_CODEC
+
+        @INCLUDE ./xml/model.eurex.eti.xml EUREX_ETI_BINARY_CODEC
+
+        @INCLUDE ./xml/model.bse.eti.xml BSE_ETI_BINARY_CODEC
+
+        @INCLUDE ./xml/model.cme.sbe.xml CME_SBE_CODEC
+
+        @INCLUDE ./xml/model.cboe.eu.tcp.pitch.xml TCP_PITCH_BINARY_CODEC
+
+        @INCLUDE ./xml/model.cboe.eu.tcp.pitch.historic.xml TCP_HISTORIC_PITCH_BINARY_CODEC
+
+        @INCLUDE ./xml/model.soup.xml SOUP_CODEC
+
+    </BinaryCodecs>
+
+    <CodecFactories version="1.0.0" dir="../Generated/model/codec-factory/version" rootPackage="com.rr.model.generated.fix"/>
+
+</Model>
+
+	

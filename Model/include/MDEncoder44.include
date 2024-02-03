@@ -1,0 +1,9 @@
+@INCLUDE FixEncoder.include
+
+@INCLUDE TickToTradeStatsEncoder.include
+
+/*
+ * HANDCODED ENCODER METHDOS
+ */
+
+ 

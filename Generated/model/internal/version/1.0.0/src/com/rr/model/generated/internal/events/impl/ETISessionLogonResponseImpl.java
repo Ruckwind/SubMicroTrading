@@ -1,39 +1,31 @@
-/*******************************************************************************
- * Copyright (c) 2015 Low Latency Trading Limited  :  Author Richard Rose
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at	http://www.apache.org/licenses/LICENSE-2.0
- * Unless required by applicable law or agreed to in writing,  software distributed under the License 
- * is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and limitations under the License.
- *******************************************************************************/
 package com.rr.model.generated.internal.events.impl;
 
+/*
+Copyright 2015 Low Latency Trading Limited
+Author Richard Rose
+*/
+
 import com.rr.model.generated.internal.type.ETIEnv;
-import com.rr.core.lang.ViewString;
-import com.rr.core.lang.ReusableString;
-import com.rr.core.lang.Constants;
-import com.rr.core.model.MsgFlag;
-import com.rr.core.lang.ReusableType;
-import com.rr.core.lang.Reusable;
-import com.rr.core.model.Message;
-import com.rr.core.model.MessageHandler;
+import com.rr.core.utils.Utils;
+import com.rr.core.lang.*;
+import com.rr.core.model.*;
+import com.rr.core.annotations.*;
 import com.rr.model.internal.type.*;
 import com.rr.model.generated.internal.core.ModelReusableTypes;
 import com.rr.model.generated.internal.core.SizeType;
 import com.rr.model.generated.internal.core.EventIds;
 import com.rr.model.generated.internal.events.interfaces.*;
 
-@SuppressWarnings( "unused" )
+@SuppressWarnings( { "unused", "override"  })
 
-public final class ETISessionLogonResponseImpl implements BaseETIResponse, ETISessionLogonResponseWrite, Reusable<ETISessionLogonResponseImpl> {
+public final class ETISessionLogonResponseImpl implements BaseETIResponse, ETISessionLogonResponseWrite, Copyable<ETISessionLogonResponse>, Reusable<ETISessionLogonResponseImpl> {
 
    // Attrs
 
-    private          ETISessionLogonResponseImpl _next = null;
-    private volatile Message        _nextMessage    = null;
-    private          MessageHandler _messageHandler = null;
-    private int _requestTime = Constants.UNSET_INT;
-    private int _sendingTime = Constants.UNSET_INT;
+    private transient          ETISessionLogonResponseImpl _next = null;
+    private transient volatile Event        _nextMessage    = null;
+    private transient          EventHandler _messageHandler = null;
+    @TimestampMS private long _requestTime = Constants.UNSET_LONG;
     private long _throttleTimeIntervalMS = Constants.UNSET_LONG;
     private int _throttleNoMsgs = Constants.UNSET_INT;
     private int _throttleDisconnectLimit = Constants.UNSET_INT;
@@ -41,17 +33,15 @@ public final class ETISessionLogonResponseImpl implements BaseETIResponse, ETISe
     private int _sessionInstanceID = Constants.UNSET_INT;
     private final ReusableString _defaultCstmApplVerID = new ReusableString( SizeType.ETI_INTERFACE_VERSION_LENGTH.getSize() );
     private int _msgSeqNum = Constants.UNSET_INT;
+    @TimestampMS private long _eventTimestamp = Constants.UNSET_LONG;
 
     private ETIEnv _tradSesMode;
 
-    private byte           _flags          = 0;
+    private int           _flags          = 0;
 
    // Getters and Setters
-    @Override public final int getRequestTime() { return _requestTime; }
-    @Override public final void setRequestTime( int val ) { _requestTime = val; }
-
-    @Override public final int getSendingTime() { return _sendingTime; }
-    @Override public final void setSendingTime( int val ) { _sendingTime = val; }
+    @Override public final long getRequestTime() { return _requestTime; }
+    @Override public final void setRequestTime( long val ) { _requestTime = val; }
 
     @Override public final long getThrottleTimeIntervalMS() { return _throttleTimeIntervalMS; }
     @Override public final void setThrottleTimeIntervalMS( long val ) { _throttleTimeIntervalMS = val; }
@@ -79,6 +69,9 @@ public final class ETISessionLogonResponseImpl implements BaseETIResponse, ETISe
     @Override public final int getMsgSeqNum() { return _msgSeqNum; }
     @Override public final void setMsgSeqNum( int val ) { _msgSeqNum = val; }
 
+    @Override public final long getEventTimestamp() { return _eventTimestamp; }
+    @Override public final void setEventTimestamp( long val ) { _eventTimestamp = val; }
+
 
     @Override public final boolean getPossDupFlag() { return isFlagSet( MsgFlag.PossDupFlag ); }
     @Override public final void setPossDupFlag( boolean val ) { setFlag( MsgFlag.PossDupFlag, val ); }
@@ -87,8 +80,7 @@ public final class ETISessionLogonResponseImpl implements BaseETIResponse, ETISe
 
     @Override
     public final void reset() {
-        _requestTime = Constants.UNSET_INT;
-        _sendingTime = Constants.UNSET_INT;
+        _requestTime = Constants.UNSET_LONG;
         _throttleTimeIntervalMS = Constants.UNSET_LONG;
         _throttleNoMsgs = Constants.UNSET_INT;
         _throttleDisconnectLimit = Constants.UNSET_INT;
@@ -97,6 +89,7 @@ public final class ETISessionLogonResponseImpl implements BaseETIResponse, ETISe
         _tradSesMode = null;
         _defaultCstmApplVerID.reset();
         _msgSeqNum = Constants.UNSET_INT;
+        _eventTimestamp = Constants.UNSET_LONG;
         _flags = 0;
         _next = null;
         _nextMessage = null;
@@ -124,22 +117,22 @@ public final class ETISessionLogonResponseImpl implements BaseETIResponse, ETISe
     }
 
     @Override
-    public final Message getNextQueueEntry() {
+    public final Event getNextQueueEntry() {
         return _nextMessage;
     }
 
     @Override
-    public final void attachQueue( Message nxt ) {
+    public final void attachQueue( Event nxt ) {
         _nextMessage = nxt;
     }
 
     @Override
-    public final MessageHandler getMessageHandler() {
+    public final EventHandler getEventHandler() {
         return _messageHandler;
     }
 
     @Override
-    public final void setMessageHandler( MessageHandler handler ) {
+    public final void setEventHandler( EventHandler handler ) {
         _messageHandler = handler;
     }
 
@@ -147,7 +140,7 @@ public final class ETISessionLogonResponseImpl implements BaseETIResponse, ETISe
    // Helper methods
     @Override
     public void setFlag( MsgFlag flag, boolean isOn ) {
-        _flags = (byte) MsgFlag.setFlag( _flags, flag, isOn );
+        _flags = MsgFlag.setFlag( _flags, flag, isOn );
     }
 
     @Override
@@ -156,26 +149,96 @@ public final class ETISessionLogonResponseImpl implements BaseETIResponse, ETISe
     }
 
     @Override
-    public String toString() {
-        ReusableString buf = new ReusableString();
-        dump( buf );
-        return buf.toString();
+    public int getFlags() {
+        return _flags;
     }
 
     @Override
-    public final void dump( ReusableString out ) {
+    public String toString() {
+        ReusableString buf = TLC.instance().pop();
+        dump( buf );
+        String rs = buf.toString();
+        TLC.instance().pushback( buf );
+        return rs;
+    }
+
+    @Override
+    public final void dump( final ReusableString out ) {
         out.append( "ETISessionLogonResponseImpl" ).append( ' ' );
-        out.append( ", requestTime=" ).append( getRequestTime() );
-        out.append( ", sendingTime=" ).append( getSendingTime() );
-        out.append( ", throttleTimeIntervalMS=" ).append( getThrottleTimeIntervalMS() );
-        out.append( ", throttleNoMsgs=" ).append( getThrottleNoMsgs() );
-        out.append( ", throttleDisconnectLimit=" ).append( getThrottleDisconnectLimit() );
-        out.append( ", heartBtIntMS=" ).append( getHeartBtIntMS() );
-        out.append( ", sessionInstanceID=" ).append( getSessionInstanceID() );
-        out.append( ", tradSesMode=" ).append( getTradSesMode() );
-        out.append( ", defaultCstmApplVerID=" ).append( getDefaultCstmApplVerID() );
-        out.append( ", msgSeqNum=" ).append( getMsgSeqNum() );
+        if ( Constants.UNSET_LONG != getRequestTime() && 0 != getRequestTime() ) {
+            out.append( ", requestTime=" );
+            TimeUtilsFactory.safeTimeUtils().unixTimeToLocalTimestamp( out, getRequestTime() );
+            out.append( " / " );
+            TimeUtilsFactory.safeTimeUtils().unixTimeToUTCTimestamp( out, getRequestTime() );
+            out.append( " ( " );
+            out.append( getRequestTime() ).append( " ) " );
+        }
+        if ( Constants.UNSET_LONG != getThrottleTimeIntervalMS() && 0 != getThrottleTimeIntervalMS() )             out.append( ", throttleTimeIntervalMS=" ).append( getThrottleTimeIntervalMS() );
+        if ( Constants.UNSET_INT != getThrottleNoMsgs() && 0 != getThrottleNoMsgs() )             out.append( ", throttleNoMsgs=" ).append( getThrottleNoMsgs() );
+        if ( Constants.UNSET_INT != getThrottleDisconnectLimit() && 0 != getThrottleDisconnectLimit() )             out.append( ", throttleDisconnectLimit=" ).append( getThrottleDisconnectLimit() );
+        if ( Constants.UNSET_INT != getHeartBtIntMS() && 0 != getHeartBtIntMS() )             out.append( ", heartBtIntMS=" ).append( getHeartBtIntMS() );
+        if ( Constants.UNSET_INT != getSessionInstanceID() && 0 != getSessionInstanceID() )             out.append( ", sessionInstanceID=" ).append( getSessionInstanceID() );
+        if ( getTradSesMode() != null )             out.append( ", tradSesMode=" ).append( getTradSesMode() );
+        if ( getDefaultCstmApplVerID().length() > 0 )             out.append( ", defaultCstmApplVerID=" ).append( getDefaultCstmApplVerID() );
+        if ( Constants.UNSET_INT != getMsgSeqNum() && 0 != getMsgSeqNum() )             out.append( ", msgSeqNum=" ).append( getMsgSeqNum() );
         out.append( ", possDupFlag=" ).append( getPossDupFlag() );
+        if ( Constants.UNSET_LONG != getEventTimestamp() && 0 != getEventTimestamp() ) {
+            out.append( ", eventTimestamp=" );
+            TimeUtilsFactory.safeTimeUtils().unixTimeToLocalTimestamp( out, getEventTimestamp() );
+            out.append( " / " );
+            TimeUtilsFactory.safeTimeUtils().unixTimeToUTCTimestamp( out, getEventTimestamp() );
+            out.append( " ( " );
+            out.append( getEventTimestamp() ).append( " ) " );
+        }
+    }
+
+    @Override public final void snapTo( ETISessionLogonResponse dest ) {
+        ((ETISessionLogonResponseImpl)dest).deepCopyFrom( this );
+    }
+
+    /** DEEP copy all members ... INCLUDING subEvents : WARNING CREATES NEW OBJECTS SO MONITOR FOR GC */
+    @Override public final void deepCopyFrom( ETISessionLogonResponse src ) {
+        setRequestTime( src.getRequestTime() );
+        setThrottleTimeIntervalMS( src.getThrottleTimeIntervalMS() );
+        setThrottleNoMsgs( src.getThrottleNoMsgs() );
+        setThrottleDisconnectLimit( src.getThrottleDisconnectLimit() );
+        setHeartBtIntMS( src.getHeartBtIntMS() );
+        setSessionInstanceID( src.getSessionInstanceID() );
+        setTradSesMode( src.getTradSesMode() );
+        getDefaultCstmApplVerIDForUpdate().copy( src.getDefaultCstmApplVerID() );
+        setMsgSeqNum( src.getMsgSeqNum() );
+        setPossDupFlag( src.getPossDupFlag() );
+        setEventTimestamp( src.getEventTimestamp() );
+    }
+
+    /** shallow copy all primitive members ... EXCLUDING subEvents */
+    @Override public final void shallowCopyFrom( ETISessionLogonResponse src ) {
+        setRequestTime( src.getRequestTime() );
+        setThrottleTimeIntervalMS( src.getThrottleTimeIntervalMS() );
+        setThrottleNoMsgs( src.getThrottleNoMsgs() );
+        setThrottleDisconnectLimit( src.getThrottleDisconnectLimit() );
+        setHeartBtIntMS( src.getHeartBtIntMS() );
+        setSessionInstanceID( src.getSessionInstanceID() );
+        setTradSesMode( src.getTradSesMode() );
+        getDefaultCstmApplVerIDForUpdate().copy( src.getDefaultCstmApplVerID() );
+        setMsgSeqNum( src.getMsgSeqNum() );
+        setPossDupFlag( src.getPossDupFlag() );
+        setEventTimestamp( src.getEventTimestamp() );
+    }
+
+    /** shallow copy all primitive members ... EXCLUDING subEvents */
+    @Override public final void shallowMergeFrom( ETISessionLogonResponse src ) {
+        if ( Constants.UNSET_LONG != src.getRequestTime() ) setRequestTime( src.getRequestTime() );
+        if ( Constants.UNSET_LONG != src.getThrottleTimeIntervalMS() ) setThrottleTimeIntervalMS( src.getThrottleTimeIntervalMS() );
+        if ( Constants.UNSET_INT != src.getThrottleNoMsgs() ) setThrottleNoMsgs( src.getThrottleNoMsgs() );
+        if ( Constants.UNSET_INT != src.getThrottleDisconnectLimit() ) setThrottleDisconnectLimit( src.getThrottleDisconnectLimit() );
+        if ( Constants.UNSET_INT != src.getHeartBtIntMS() ) setHeartBtIntMS( src.getHeartBtIntMS() );
+        if ( Constants.UNSET_INT != src.getSessionInstanceID() ) setSessionInstanceID( src.getSessionInstanceID() );
+        setTradSesMode( src.getTradSesMode() );
+        if ( src.getDefaultCstmApplVerID().length() > 0 ) getDefaultCstmApplVerIDForUpdate().copy( src.getDefaultCstmApplVerID() );
+        if ( Constants.UNSET_INT != src.getMsgSeqNum() ) setMsgSeqNum( src.getMsgSeqNum() );
+        setPossDupFlag( src.getPossDupFlag() );
+        if ( Constants.UNSET_LONG != src.getEventTimestamp() ) setEventTimestamp( src.getEventTimestamp() );
     }
 
 }

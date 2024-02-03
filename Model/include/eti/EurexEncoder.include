@@ -1,0 +1,58 @@
+@INCLUDE Encoder.include
+
+@INCLUDE ClientToMarketOrderStats.include
+
+    private int _senderSubID = 0;
+
+    private long _locationId = 0;
+
+    private final ReusableString _uniqueClientCode = new ReusableString("1");
+
+    @Override    
+    public void setUniqueClientCode( ZString uniqueClientCode ) {
+        _uniqueClientCode.copy( uniqueClientCode );
+    }
+
+    @Override    
+    public void setLocationId( long locationId ) {
+        _locationId = locationId;
+    } 
+
+    @Override    
+    public void setSenderSubID( int newId ) {
+        _senderSubID = newId;
+    } 
+    
+    @Override    
+    public void setExchangeEmulationOn() {
+        if ( _builder instanceof DebugBinaryEncodeBuilder ) {
+            @SuppressWarnings( "unchecked" )
+            ETIEncodeBuilderImpl b = ((DebugBinaryEncodeBuilder<ETIEncodeBuilderImpl>) _builder).getBuilder();
+            
+            b.setHeaderPad( 2 );
+        } else {
+            ((ETIEncodeBuilderImpl)_builder).setHeaderPad( 2 );
+        }
+    }
+
+    private void encodeSimpleSecurityId( Instrument instrument ) {
+        _builder.encodeStringAsInt( instrument.getExchangeSymbol() );
+    }
+    
+    protected void encodeMarketSegmentID( Instrument instrument ) {
+        _builder.encodeInt( ((ExchangeInstrument)instrument).getIntSegment() );
+    }
+
+    // ApplID encoding only used by exchange simulator 
+    
+    private long _nextApplMsgId = 0;
+    private ReusableString _nextApplMsgIdStr = new ReusableString(16);
+    
+    private ZString nextApplMsgID() {
+        byte[] bytes = _nextApplMsgIdStr.getBytes();
+        com.rr.core.codec.binary.BinaryBigEndianEncoderUtils.encodeLong( bytes, 0, 0 );
+        com.rr.core.codec.binary.BinaryBigEndianEncoderUtils.encodeLong( bytes, 8, ++_nextApplMsgId );
+        return _nextApplMsgIdStr;
+    }
+
+

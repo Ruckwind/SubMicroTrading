@@ -1,18 +1,17 @@
-/*******************************************************************************
- * Copyright (c) 2015 Low Latency Trading Limited  :  Author Richard Rose
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at	http://www.apache.org/licenses/LICENSE-2.0
- * Unless required by applicable law or agreed to in writing,  software distributed under the License 
- * is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and limitations under the License.
- *******************************************************************************/
 package com.rr.model.generated.codec;
+
+/*
+Copyright 2015 Low Latency Trading Limited
+Author Richard Rose
+*/
 
 import java.util.HashMap;
 import java.util.Map;
-import com.rr.core.codec.AbstractBinaryDecoder;
+import com.rr.core.codec.*;
+import com.rr.core.utils.*;
 import com.rr.core.lang.*;
 import com.rr.core.model.*;
+import com.rr.core.factories.*;
 import com.rr.core.pool.SuperPool;
 import com.rr.core.pool.SuperpoolManager;
 import com.rr.model.internal.type.*;
@@ -28,6 +27,8 @@ import com.rr.model.generated.internal.core.SizeType;
 @SuppressWarnings( "unused" )
 
 public final class UTPEuronextCashDecoder extends AbstractBinaryDecoder {
+
+    private final ReusableString _tmpLookupKey = new ReusableString();
 
    // Attrs
     private static final byte      MSG_Logon = (byte)'A';
@@ -53,9 +54,10 @@ public final class UTPEuronextCashDecoder extends AbstractBinaryDecoder {
 
     private       byte _msgType;
     private final byte                        _protocolVersion;
+    private final String                      _id;
     private       int                         _msgStatedLen;
-    private final ViewString                  _lookup = new ViewString();
     private final ReusableString _dump  = new ReusableString(256);
+    private final ReusableString _missedMsgTypes = new ReusableString();
 
     // dict var holders for conditional mappings and fields with no corresponding event entry .. useful for hooks
     private       int                         _lastMsgSeqNum;
@@ -65,7 +67,7 @@ public final class UTPEuronextCashDecoder extends AbstractBinaryDecoder {
     private       byte                        _rejectCode;
     private       ReusableString              _rejectText = new ReusableString(30);
     private       int                         _msgSeqNum;
-    private       int                         _mktPhaseChgTime;
+    private       long                        _mktPhaseChgTime;
     private       ReusableString              _instClassId = new ReusableString(30);
     private       ReusableString              _instClassStatus = new ReusableString(30);
     private       boolean                     _orderEntryAllowed;
@@ -85,9 +87,9 @@ public final class UTPEuronextCashDecoder extends AbstractBinaryDecoder {
     private       ReusableString              _mic = new ReusableString(30);
     private       ReusableString              _currency = new ReusableString(30);
     private       ReusableString              _giveUpFirm = new ReusableString(30);
-    private       ReusableString              _srcLinkId = new ReusableString(30);
+    private       ReusableString              _parentClOrdId = new ReusableString(30);
     private       long                        _orderId;
-    private       int                         _transactTime;
+    private       long                        _transactTime;
     private       long                        _origClOrdId;
     private       double                      _collarRejPx;
     private       int                         _errorCode;
@@ -116,41 +118,43 @@ public final class UTPEuronextCashDecoder extends AbstractBinaryDecoder {
     private final SuperPool<HeartbeatImpl> _heartbeatPool = SuperpoolManager.instance().getSuperPool( HeartbeatImpl.class );
     private final HeartbeatFactory _heartbeatFactory = new HeartbeatFactory( _heartbeatPool );
 
-    private final SuperPool<RecoveryNewOrderSingleImpl> _newOrderSinglePool = SuperpoolManager.instance().getSuperPool( RecoveryNewOrderSingleImpl.class );
-    private final RecoveryNewOrderSingleFactory _newOrderSingleFactory = new RecoveryNewOrderSingleFactory( _newOrderSinglePool );
+    private final SuperPool<NewOrderSingleImpl> _newOrderSinglePool = SuperpoolManager.instance().getSuperPool( NewOrderSingleImpl.class );
+    private final NewOrderSingleFactory _newOrderSingleFactory = new NewOrderSingleFactory( _newOrderSinglePool );
 
-    private final SuperPool<RecoveryNewOrderAckImpl> _newOrderAckPool = SuperpoolManager.instance().getSuperPool( RecoveryNewOrderAckImpl.class );
-    private final RecoveryNewOrderAckFactory _newOrderAckFactory = new RecoveryNewOrderAckFactory( _newOrderAckPool );
+    private final SuperPool<NewOrderAckImpl> _newOrderAckPool = SuperpoolManager.instance().getSuperPool( NewOrderAckImpl.class );
+    private final NewOrderAckFactory _newOrderAckFactory = new NewOrderAckFactory( _newOrderAckPool );
 
-    private final SuperPool<RecoveryCancelRequestImpl> _cancelRequestPool = SuperpoolManager.instance().getSuperPool( RecoveryCancelRequestImpl.class );
-    private final RecoveryCancelRequestFactory _cancelRequestFactory = new RecoveryCancelRequestFactory( _cancelRequestPool );
+    private final SuperPool<CancelRequestImpl> _cancelRequestPool = SuperpoolManager.instance().getSuperPool( CancelRequestImpl.class );
+    private final CancelRequestFactory _cancelRequestFactory = new CancelRequestFactory( _cancelRequestPool );
 
-    private final SuperPool<RecoveryCancelledImpl> _cancelledPool = SuperpoolManager.instance().getSuperPool( RecoveryCancelledImpl.class );
-    private final RecoveryCancelledFactory _cancelledFactory = new RecoveryCancelledFactory( _cancelledPool );
+    private final SuperPool<CancelledImpl> _cancelledPool = SuperpoolManager.instance().getSuperPool( CancelledImpl.class );
+    private final CancelledFactory _cancelledFactory = new CancelledFactory( _cancelledPool );
 
-    private final SuperPool<RecoveryCancelReplaceRequestImpl> _cancelReplaceRequestPool = SuperpoolManager.instance().getSuperPool( RecoveryCancelReplaceRequestImpl.class );
-    private final RecoveryCancelReplaceRequestFactory _cancelReplaceRequestFactory = new RecoveryCancelReplaceRequestFactory( _cancelReplaceRequestPool );
+    private final SuperPool<CancelReplaceRequestImpl> _cancelReplaceRequestPool = SuperpoolManager.instance().getSuperPool( CancelReplaceRequestImpl.class );
+    private final CancelReplaceRequestFactory _cancelReplaceRequestFactory = new CancelReplaceRequestFactory( _cancelReplaceRequestPool );
 
-    private final SuperPool<RecoveryReplacedImpl> _replacedPool = SuperpoolManager.instance().getSuperPool( RecoveryReplacedImpl.class );
-    private final RecoveryReplacedFactory _replacedFactory = new RecoveryReplacedFactory( _replacedPool );
+    private final SuperPool<ReplacedImpl> _replacedPool = SuperpoolManager.instance().getSuperPool( ReplacedImpl.class );
+    private final ReplacedFactory _replacedFactory = new ReplacedFactory( _replacedPool );
 
-    private final SuperPool<RecoveryRejectedImpl> _rejectedPool = SuperpoolManager.instance().getSuperPool( RecoveryRejectedImpl.class );
-    private final RecoveryRejectedFactory _rejectedFactory = new RecoveryRejectedFactory( _rejectedPool );
+    private final SuperPool<RejectedImpl> _rejectedPool = SuperpoolManager.instance().getSuperPool( RejectedImpl.class );
+    private final RejectedFactory _rejectedFactory = new RejectedFactory( _rejectedPool );
 
-    private final SuperPool<RecoveryTradeNewImpl> _tradeNewPool = SuperpoolManager.instance().getSuperPool( RecoveryTradeNewImpl.class );
-    private final RecoveryTradeNewFactory _tradeNewFactory = new RecoveryTradeNewFactory( _tradeNewPool );
+    private final SuperPool<TradeNewImpl> _tradeNewPool = SuperpoolManager.instance().getSuperPool( TradeNewImpl.class );
+    private final TradeNewFactory _tradeNewFactory = new TradeNewFactory( _tradeNewPool );
 
-    private final SuperPool<RecoveryTradeCancelImpl> _tradeCancelPool = SuperpoolManager.instance().getSuperPool( RecoveryTradeCancelImpl.class );
-    private final RecoveryTradeCancelFactory _tradeCancelFactory = new RecoveryTradeCancelFactory( _tradeCancelPool );
+    private final SuperPool<TradeCancelImpl> _tradeCancelPool = SuperpoolManager.instance().getSuperPool( TradeCancelImpl.class );
+    private final TradeCancelFactory _tradeCancelFactory = new TradeCancelFactory( _tradeCancelPool );
 
-    private final SuperPool<RecoveryTradeCorrectImpl> _tradeCorrectPool = SuperpoolManager.instance().getSuperPool( RecoveryTradeCorrectImpl.class );
-    private final RecoveryTradeCorrectFactory _tradeCorrectFactory = new RecoveryTradeCorrectFactory( _tradeCorrectPool );
+    private final SuperPool<TradeCorrectImpl> _tradeCorrectPool = SuperpoolManager.instance().getSuperPool( TradeCorrectImpl.class );
+    private final TradeCorrectFactory _tradeCorrectFactory = new TradeCorrectFactory( _tradeCorrectPool );
 
 
    // Constructors
-    public UTPEuronextCashDecoder() {
+    public UTPEuronextCashDecoder() { this( null ); }
+    public UTPEuronextCashDecoder( String id ) {
         super();
         setBuilder();
+        _id = id;
         _protocolVersion = (byte)'2';
     }
 
@@ -177,12 +181,12 @@ public final class UTPEuronextCashDecoder extends AbstractBinaryDecoder {
     }
 
     private void setBuilder() {
-        _builder = (_debug) ? new DebugBinaryDecodeBuilder<com.rr.codec.emea.exchange.utp.UTPDecodeBuilderImpl>( _dump, new com.rr.codec.emea.exchange.utp.UTPDecodeBuilderImpl() )
+        _builder = (_debug) ? new DebugBinaryDecodeBuilder<>( _dump, new com.rr.codec.emea.exchange.utp.UTPDecodeBuilderImpl() )
                             : new com.rr.codec.emea.exchange.utp.UTPDecodeBuilderImpl();
     }
 
     @Override
-    protected final Message doMessageDecode() {
+    protected final Event doMessageDecode() {
         _builder.setMaxIdx( _maxIdx );
 
         switch( _msgType ) {
@@ -266,14 +270,18 @@ public final class UTPEuronextCashDecoder extends AbstractBinaryDecoder {
             break;
         }
         if ( _debug ) {
-            _dump.append( "Skipped Unsupported Message : " ).append( _msgType );
-            _log.info( _dump );
-            _dump.reset();
+            _tmpLookupKey.copy( '|' ).append( _msgType ).append( '|' );
+            if ( ! _missedMsgTypes.contains( _tmpLookupKey ) ) {
+                _dump.append( "Skipped Unsupported Message : " ).append( _msgType );
+                _log.info( _dump );
+                _dump.reset();
+                _missedMsgTypes.append( _tmpLookupKey );
+            }
         }
         return null;
     }
 
-    private final Message decodeLogon() {
+    private Event decodeLogon() {
         if ( _debug ) {
             _dump.append( "\nKnown Message : " ).append( "Logon" ).append( " : " );
         }
@@ -292,7 +300,7 @@ public final class UTPEuronextCashDecoder extends AbstractBinaryDecoder {
         return msg;
     }
 
-    private final Message decodeLogonReject() {
+    private Event decodeLogonReject() {
         if ( _debug ) {
             _dump.append( "\nKnown Message : " ).append( "LogonReject" ).append( " : " );
         }
@@ -317,7 +325,7 @@ public final class UTPEuronextCashDecoder extends AbstractBinaryDecoder {
         return msg;
     }
 
-    private final Message decodeTradingSessionStatus() {
+    private Event decodeTradingSessionStatus() {
         if ( _debug ) {
             _dump.append( "\nKnown Message : " ).append( "TradingSessionStatus" ).append( " : " );
         }
@@ -345,7 +353,7 @@ public final class UTPEuronextCashDecoder extends AbstractBinaryDecoder {
         return msg;
     }
 
-    private final Message decodeTestRequest() {
+    private Event decodeTestRequest() {
         if ( _debug ) {
             _dump.append( "\nKnown Message : " ).append( "TestRequest" ).append( " : " );
         }
@@ -358,7 +366,7 @@ public final class UTPEuronextCashDecoder extends AbstractBinaryDecoder {
         return msg;
     }
 
-    private final Message decodeHeartbeat() {
+    private Event decodeHeartbeat() {
         if ( _debug ) {
             _dump.append( "\nKnown Message : " ).append( "Heartbeat" ).append( " : " );
         }
@@ -371,12 +379,12 @@ public final class UTPEuronextCashDecoder extends AbstractBinaryDecoder {
         return msg;
     }
 
-    private final Message decodeNewOrder() {
+    private Event decodeNewOrder() {
         if ( _debug ) {
             _dump.append( "\nKnown Message : " ).append( "NewOrder" ).append( " : " );
         }
 
-        final RecoveryNewOrderSingleImpl msg = _newOrderSingleFactory.get();
+        final NewOrderSingleImpl msg = _newOrderSingleFactory.get();
 
         if ( _debug ) _dump.append( "\nField: " ).append( "msgSeqNum" ).append( " : " );
         msg.setMsgSeqNum( _builder.decodeInt() );
@@ -429,7 +437,8 @@ public final class UTPEuronextCashDecoder extends AbstractBinaryDecoder {
         _builder.decodeStringFixedWidth( _mic, 4 );
 
         if ( _debug ) _dump.append( "\nField: " ).append( "currency" ).append( " : " );
-        msg.setCurrency( Currency.getVal( _binaryMsg, _builder.getCurrentIndex(), 3) );
+        _tmpLookupKey.setValue( _binaryMsg, _builder.getCurrentIndex(), 3 );
+        msg.setCurrency( Currency.getVal( _tmpLookupKey ) );
         _builder.skip( 3);
         if ( _debug ) _dump.append( "\nField: " ).append( "giveUpFirm" ).append( " : " );
         _builder.decodeZStringFixedWidth( _giveUpFirm, 8 );
@@ -437,8 +446,8 @@ public final class UTPEuronextCashDecoder extends AbstractBinaryDecoder {
         if ( _debug ) _dump.append( "\nField: " ).append( "filler5" ).append( " : " );
         _builder.skip( 8 );
 
-        if ( _debug ) _dump.append( "\nField: " ).append( "srcLinkId" ).append( " : " );
-        _builder.decodeZStringFixedWidth( msg.getSrcLinkIdForUpdate(), 18 );
+        if ( _debug ) _dump.append( "\nField: " ).append( "parentClOrdId" ).append( " : " );
+        _builder.decodeZStringFixedWidth( msg.getParentClOrdIdForUpdate(), 18 );
 
         if ( _debug ) _dump.append( "\nField: " ).append( "filler6" ).append( " : " );
         _builder.skip( 52 );
@@ -446,12 +455,12 @@ public final class UTPEuronextCashDecoder extends AbstractBinaryDecoder {
         return msg;
     }
 
-    private final Message decodeOrderAck() {
+    private Event decodeOrderAck() {
         if ( _debug ) {
             _dump.append( "\nKnown Message : " ).append( "OrderAck" ).append( " : " );
         }
 
-        final RecoveryNewOrderAckImpl msg = _newOrderAckFactory.get();
+        final NewOrderAckImpl msg = _newOrderAckFactory.get();
         if ( _debug ) _dump.append( "\nHook : " ).append( "predecode" ).append( " : " );
         if ( _nanoStats ) msg.setAckReceived( _received );
 
@@ -463,8 +472,9 @@ public final class UTPEuronextCashDecoder extends AbstractBinaryDecoder {
 
         if ( _debug ) _dump.append( "\nField: " ).append( "orderId" ).append( " : " );
         _builder.decodeLongToString( msg.getOrderIdForUpdate() );
+
         if ( _debug ) _dump.append( "\nField: " ).append( "transactTime" ).append( " : " );
-        _transactTime = _builder.decodeTimestampUTC();
+        msg.setTransactTime( _builder.decodeTimestampUTC() );
 
         if ( _debug ) _dump.append( "\nField: " ).append( "filler" ).append( " : " );
         _builder.skip( 31 );
@@ -472,12 +482,12 @@ public final class UTPEuronextCashDecoder extends AbstractBinaryDecoder {
         return msg;
     }
 
-    private final Message decodeOrderCancelRequest() {
+    private Event decodeOrderCancelRequest() {
         if ( _debug ) {
             _dump.append( "\nKnown Message : " ).append( "OrderCancelRequest" ).append( " : " );
         }
 
-        final RecoveryCancelRequestImpl msg = _cancelRequestFactory.get();
+        final CancelRequestImpl msg = _cancelRequestFactory.get();
 
         if ( _debug ) _dump.append( "\nField: " ).append( "msgSeqNum" ).append( " : " );
         msg.setMsgSeqNum( _builder.decodeInt() );
@@ -505,12 +515,12 @@ public final class UTPEuronextCashDecoder extends AbstractBinaryDecoder {
         return msg;
     }
 
-    private final Message decodeCancelReqAck() {
+    private Event decodeCancelReqAck() {
         if ( _debug ) {
             _dump.append( "\nKnown Message : " ).append( "CancelReqAck" ).append( " : " );
         }
 
-        final Message msg = null;
+        Event msg = null;
         if ( _debug ) _dump.append( "\nField: " ).append( "msgSeqNum" ).append( " : " );
         _msgSeqNum = _builder.decodeInt();
         if ( _debug ) _dump.append( "\nField: " ).append( "clOrdId" ).append( " : " );
@@ -526,12 +536,12 @@ public final class UTPEuronextCashDecoder extends AbstractBinaryDecoder {
         return msg;
     }
 
-    private final Message decodeOrderKilled() {
+    private Event decodeOrderKilled() {
         if ( _debug ) {
             _dump.append( "\nKnown Message : " ).append( "OrderKilled" ).append( " : " );
         }
 
-        final RecoveryCancelledImpl msg = _cancelledFactory.get();
+        final CancelledImpl msg = _cancelledFactory.get();
 
         if ( _debug ) _dump.append( "\nField: " ).append( "msgSeqNum" ).append( " : " );
         msg.setMsgSeqNum( _builder.decodeInt() );
@@ -541,8 +551,9 @@ public final class UTPEuronextCashDecoder extends AbstractBinaryDecoder {
 
         if ( _debug ) _dump.append( "\nField: " ).append( "orderId" ).append( " : " );
         _builder.decodeLongToString( msg.getOrderIdForUpdate() );
+
         if ( _debug ) _dump.append( "\nField: " ).append( "transactTime" ).append( " : " );
-        _transactTime = _builder.decodeTimestampUTC();
+        msg.setTransactTime( _builder.decodeTimestampUTC() );
 
         if ( _debug ) _dump.append( "\nField: " ).append( "filler" ).append( " : " );
         _builder.skip( 31 );
@@ -550,12 +561,12 @@ public final class UTPEuronextCashDecoder extends AbstractBinaryDecoder {
         return msg;
     }
 
-    private final Message decodeOrderReplaceRequest() {
+    private Event decodeOrderReplaceRequest() {
         if ( _debug ) {
             _dump.append( "\nKnown Message : " ).append( "OrderReplaceRequest" ).append( " : " );
         }
 
-        final RecoveryCancelReplaceRequestImpl msg = _cancelReplaceRequestFactory.get();
+        final CancelReplaceRequestImpl msg = _cancelReplaceRequestFactory.get();
 
         if ( _debug ) _dump.append( "\nField: " ).append( "msgSeqNum" ).append( " : " );
         msg.setMsgSeqNum( _builder.decodeInt() );
@@ -619,8 +630,8 @@ public final class UTPEuronextCashDecoder extends AbstractBinaryDecoder {
         if ( _debug ) _dump.append( "\nField: " ).append( "filler6" ).append( " : " );
         _builder.skip( 8 );
 
-        if ( _debug ) _dump.append( "\nField: " ).append( "srcLinkId" ).append( " : " );
-        _builder.decodeZStringFixedWidth( msg.getSrcLinkIdForUpdate(), 18 );
+        if ( _debug ) _dump.append( "\nField: " ).append( "parentClOrdId" ).append( " : " );
+        _builder.decodeZStringFixedWidth( msg.getParentClOrdIdForUpdate(), 18 );
 
         if ( _debug ) _dump.append( "\nField: " ).append( "filler7" ).append( " : " );
         _builder.skip( 4 );
@@ -628,12 +639,12 @@ public final class UTPEuronextCashDecoder extends AbstractBinaryDecoder {
         return msg;
     }
 
-    private final Message decodeReplaceReqAck() {
+    private Event decodeReplaceReqAck() {
         if ( _debug ) {
             _dump.append( "\nKnown Message : " ).append( "ReplaceReqAck" ).append( " : " );
         }
 
-        final Message msg = null;
+        Event msg = null;
         if ( _debug ) _dump.append( "\nField: " ).append( "msgSeqNum" ).append( " : " );
         _msgSeqNum = _builder.decodeInt();
         if ( _debug ) _dump.append( "\nField: " ).append( "clOrdId" ).append( " : " );
@@ -649,12 +660,12 @@ public final class UTPEuronextCashDecoder extends AbstractBinaryDecoder {
         return msg;
     }
 
-    private final Message decodeOrderReplaced() {
+    private Event decodeOrderReplaced() {
         if ( _debug ) {
             _dump.append( "\nKnown Message : " ).append( "OrderReplaced" ).append( " : " );
         }
 
-        final RecoveryReplacedImpl msg = _replacedFactory.get();
+        final ReplacedImpl msg = _replacedFactory.get();
 
         if ( _debug ) _dump.append( "\nField: " ).append( "msgSeqNum" ).append( " : " );
         msg.setMsgSeqNum( _builder.decodeInt() );
@@ -664,8 +675,9 @@ public final class UTPEuronextCashDecoder extends AbstractBinaryDecoder {
 
         if ( _debug ) _dump.append( "\nField: " ).append( "orderId" ).append( " : " );
         _builder.decodeLongToString( msg.getOrderIdForUpdate() );
+
         if ( _debug ) _dump.append( "\nField: " ).append( "transactTime" ).append( " : " );
-        _transactTime = _builder.decodeTimestampUTC();
+        msg.setTransactTime( _builder.decodeTimestampUTC() );
 
         if ( _debug ) _dump.append( "\nField: " ).append( "filler" ).append( " : " );
         _builder.skip( 31 );
@@ -673,12 +685,12 @@ public final class UTPEuronextCashDecoder extends AbstractBinaryDecoder {
         return msg;
     }
 
-    private final Message decodeCancelReplaceReject() {
+    private Event decodeCancelReplaceReject() {
         if ( _debug ) {
             _dump.append( "\nKnown Message : " ).append( "CancelReplaceReject" ).append( " : " );
         }
 
-        final RecoveryRejectedImpl msg = _rejectedFactory.get();
+        final RejectedImpl msg = _rejectedFactory.get();
 
         if ( _debug ) _dump.append( "\nField: " ).append( "msgSeqNum" ).append( " : " );
         msg.setMsgSeqNum( _builder.decodeInt() );
@@ -688,8 +700,9 @@ public final class UTPEuronextCashDecoder extends AbstractBinaryDecoder {
 
         if ( _debug ) _dump.append( "\nField: " ).append( "origClOrdId" ).append( " : " );
         _builder.decodeLongToString( msg.getOrigClOrdIdForUpdate() );
+
         if ( _debug ) _dump.append( "\nField: " ).append( "transactTime" ).append( " : " );
-        _transactTime = _builder.decodeTimestampUTC();
+        msg.setTransactTime( _builder.decodeTimestampUTC() );
         if ( _debug ) _dump.append( "\nField: " ).append( "collarRejPx" ).append( " : " );
         _collarRejPx = _builder.decodePrice();
         if ( _debug ) _dump.append( "\nField: " ).append( "errorCode" ).append( " : " );
@@ -708,12 +721,12 @@ public final class UTPEuronextCashDecoder extends AbstractBinaryDecoder {
         return msg;
     }
 
-    private final Message decodeOrderFill() {
+    private Event decodeOrderFill() {
         if ( _debug ) {
             _dump.append( "\nKnown Message : " ).append( "OrderFill" ).append( " : " );
         }
 
-        final RecoveryTradeNewImpl msg = _tradeNewFactory.get();
+        final TradeNewImpl msg = _tradeNewFactory.get();
 
         if ( _debug ) _dump.append( "\nField: " ).append( "msgSeqNum" ).append( " : " );
         msg.setMsgSeqNum( _builder.decodeInt() );
@@ -726,8 +739,9 @@ public final class UTPEuronextCashDecoder extends AbstractBinaryDecoder {
 
         if ( _debug ) _dump.append( "\nField: " ).append( "execId" ).append( " : " );
         _builder.decodeLongToString( msg.getExecIdForUpdate() );
+
         if ( _debug ) _dump.append( "\nField: " ).append( "transactTime" ).append( " : " );
-        _transactTime = _builder.decodeTimestampUTC();
+        msg.setTransactTime( _builder.decodeTimestampUTC() );
 
         if ( _debug ) _dump.append( "\nField: " ).append( "lastQty" ).append( " : " );
         msg.setLastQty( _builder.decodeInt() );
@@ -751,23 +765,25 @@ public final class UTPEuronextCashDecoder extends AbstractBinaryDecoder {
         return msg;
     }
 
-    private final Message conditionalDecoder1( Message prevMsg ) {
+    private Event conditionalDecoder1( Event prevMsg ) {
         switch( _tradeChangeType ) {
         case 1: {
-                final RecoveryTradeCancelImpl msg = _tradeCancelFactory.get();
+                final TradeCancelImpl msg = _tradeCancelFactory.get();
                 msg.setMsgSeqNum( _msgSeqNum );
                 msg.getClOrdIdForUpdate().append( _clOrdId );
                 msg.getExecIdForUpdate().append( _execId );
+                msg.setTransactTime( _transactTime );
                 msg.setLastQty( _lastQty );
                 msg.setLastPx( scale( _lastPx, _priceScale ) );
                 if ( prevMsg != null ) prevMsg.attachQueue( msg );
                 return msg;
             }
         case 2: {
-                final RecoveryTradeCorrectImpl msg = _tradeCorrectFactory.get();
+                final TradeCorrectImpl msg = _tradeCorrectFactory.get();
                 msg.setMsgSeqNum( _msgSeqNum );
                 msg.getClOrdIdForUpdate().append( _clOrdId );
                 msg.getExecIdForUpdate().append( _execId );
+                msg.setTransactTime( _transactTime );
                 msg.setLastQty( _lastQty );
                 msg.setLastPx( scale( _lastPx, _priceScale ) );
                 if ( prevMsg != null ) prevMsg.attachQueue( msg );
@@ -776,8 +792,8 @@ public final class UTPEuronextCashDecoder extends AbstractBinaryDecoder {
         }
         throw new RuntimeDecodingException( "No matching condition for conditional message type" );
     }
-    private final Message decodeBustCorrect() {
-        Message msg = null;
+    private Event decodeBustCorrect() {
+        Event msg;
         if ( _debug ) _dump.append( "\nField: " ).append( "msgSeqNum" ).append( " : " );
         _msgSeqNum = _builder.decodeInt();
         if ( _debug ) _dump.append( "\nField: " ).append( "clOrdId" ).append( " : " );
@@ -800,6 +816,8 @@ public final class UTPEuronextCashDecoder extends AbstractBinaryDecoder {
         return msg;
     }
 
+
+    @Override public String getComponentId() { return _id; }
 
    // transform methods
     private static final Side[] _sideMap = new Side[3];
@@ -915,4 +933,67 @@ public final class UTPEuronextCashDecoder extends AbstractBinaryDecoder {
         return intVal;
     }
 
-    @Override    public final int parseHeader( final byte[] msg, final int offset, final int bytesRead ) {               _binaryMsg = msg;        _maxIdx = bytesRead + offset; // temp assign maxIdx to last data bytes in buffer        _offset = offset;        _builder.start( msg, offset, _maxIdx );                if ( bytesRead < 4 ) {            ReusableString copy = TLC.instance().getString();            if ( bytesRead == 0 )  {                copy.setValue( "{empty}" );            } else{                copy.setValue( msg, offset, bytesRead );            }            throw new RuntimeDecodingException( "UTP Messsage too small, len=" + bytesRead, copy );        } else if ( msg.length < _maxIdx ){            throwDecodeException( "Buffer too small for specified bytesRead=" + bytesRead + ",offset=" + offset + ", bufLen=" + msg.length );        }                _msgType = _builder.decodeByte();        final byte version = _builder.decodeByte();                if ( version != _protocolVersion ) {            throwDecodeException( "Expected version="  + _protocolVersion + " not " + version );        }        _msgStatedLen = _builder.decodeShort();                _maxIdx = _msgStatedLen + _offset;  // correctly assign maxIdx as last bytes of current message        if ( _maxIdx > _binaryMsg.length )  _maxIdx  = _binaryMsg.length;                return _msgStatedLen;    }    private final double scale( final double lastPx, final byte priceScale ) {        switch( priceScale ) {        case '0':            return lastPx;        case '1':            return lastPx / 10.0;        case '2':            return lastPx / 100.0;        case '3':            return lastPx / 1000.0;        case '4':            return lastPx / 10000.0;        case '5':            return lastPx / 100000.0;        case '6':            return lastPx / 1000000.0;        case '7':            return lastPx / 10000000.0;        case '8':            return lastPx / 100000000.0;        case '9':            return lastPx / 1000000000.0;        }        return lastPx;    }}
+
+    @Override
+    public final int parseHeader( final byte[] msg, final int offset, final int bytesRead ) {
+       
+        _binaryMsg = msg;
+        _maxIdx = bytesRead + offset; // temp assign maxIdx to last data bytes in bufferMap
+        _offset = offset;
+        _builder.start( msg, offset, _maxIdx );
+        
+        if ( bytesRead < 4 ) {
+            ReusableString copy = TLC.instance().getString();
+            if ( bytesRead == 0 )  {
+                copy.setValue( "{empty}" );
+            } else{
+                copy.setValue( msg, offset, bytesRead );
+            }
+            throw new RuntimeDecodingException( "UTP Messsage too small, len=" + bytesRead, copy );
+        } else if ( msg.length < _maxIdx ){
+            throwDecodeException( "Buffer too small for specified bytesRead=" + bytesRead + ",offset=" + offset + ", bufLen=" + msg.length );
+        }
+        
+        _msgType = _builder.decodeByte();
+        final byte version = _builder.decodeByte();
+        
+        if ( version != _protocolVersion ) {
+            throwDecodeException( "Expected version="  + _protocolVersion + " not " + version );
+        }
+
+        _msgStatedLen = _builder.decodeShort();
+        
+        _maxIdx = _msgStatedLen + _offset;  // correctly assign maxIdx as last bytes of current message
+
+        if ( _maxIdx > _binaryMsg.length )  _maxIdx  = _binaryMsg.length;
+        
+        return _msgStatedLen;
+    }
+
+    private double scale( final double lastPx, final byte priceScale ) {
+        switch( priceScale ) {
+        case '0':
+            return lastPx;
+        case '1':
+            return lastPx / 10.0;
+        case '2':
+            return lastPx / 100.0;
+        case '3':
+            return lastPx / 1000.0;
+        case '4':
+            return lastPx / 10000.0;
+        case '5':
+            return lastPx / 100000.0;
+        case '6':
+            return lastPx / 1000000.0;
+        case '7':
+            return lastPx / 10000000.0;
+        case '8':
+            return lastPx / 100000000.0;
+        case '9':
+            return lastPx / 1000000000.0;
+        }
+        return lastPx;
+    }
+
+}

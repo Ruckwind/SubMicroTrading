@@ -1,0 +1,557 @@
+{
+  "@jsonId": 1,
+  "@class": "com.rr.core.recovery.json.JSONClassDefinition",
+  "_targetClass": "com.rr.core.recovery.json.JSONClassDefinition",
+  "_entries": {
+    "@jsonId": 2,
+    "@arrayOf": "com.rr.core.recovery.json.JSONClassDefinition$FieldEntry",
+    "@val": [
+      {
+        "@jsonId": 3,
+        "@class": "com.rr.core.recovery.json.JSONClassDefinition$FieldEntry",
+        "_field": {
+          "fieldClass": "com.rr.core.recovery.json.JSONClassDefinition",
+          "fieldName": "_targetClass"
+        },
+        "_fieldType": {
+          "@enum": "com.rr.core.recovery.json.JSONFieldType.Object"
+        },
+        "_fieldClass": "java.lang.Class",
+        "_isArray": false,
+        "_objectDef": null,
+        "_hasPersistAnnotation": false,
+        "_hadPermission": false,
+        "_customCodec": {
+          "@jsonId": 4,
+          "@class": "com.rr.core.recovery.json.custom.CustomJSONCodecs$ClassJSONCodec"
+        },
+        "_isForceSMTRef": false,
+        "_isEncodeAsStringTimestamp": false,
+        "_depth": 0,
+        "_shadowed": false,
+        "_isExportable": true
+      },
+      {
+        "@jsonId": 5,
+        "@class": "com.rr.core.recovery.json.JSONClassDefinition$FieldEntry",
+        "_field": {
+          "fieldClass": "com.rr.core.recovery.json.JSONClassDefinition",
+          "fieldName": "_entries"
+        },
+        "_fieldType": {
+          "@enum": "com.rr.core.recovery.json.JSONFieldType.Object"
+        },
+        "_fieldClass": "[Lcom.rr.core.recovery.json.JSONClassDefinition$FieldEntry;",
+        "_isArray": true,
+        "_objectDef": {
+          "@jsonId": 6,
+          "@class": "com.rr.core.recovery.json.JSONClassDefinition",
+          "_targetClass": "[Lcom.rr.core.recovery.json.JSONClassDefinition$FieldEntry;",
+          "_entries": {
+            "@jsonId": 7,
+            "@arrayOf": "com.rr.core.recovery.json.JSONClassDefinition$FieldEntry",
+            "@val": [
+            ]
+          },
+          "_innerClassesParent": null,
+          "_isArray": true,
+          "_componentJCD": {
+            "@jsonId": 8,
+            "@class": "com.rr.core.recovery.json.JSONClassDefinition",
+            "_targetClass": "com.rr.core.recovery.json.JSONClassDefinition$FieldEntry",
+            "_entries": {
+              "@jsonId": 9,
+              "@arrayOf": "com.rr.core.recovery.json.JSONClassDefinition$FieldEntry",
+              "@val": [
+                {
+                  "@jsonId": 10,
+                  "@class": "com.rr.core.recovery.json.JSONClassDefinition$FieldEntry",
+                  "_field": {
+                    "fieldClass": "com.rr.core.recovery.json.JSONClassDefinition$FieldEntry",
+                    "fieldName": "_field"
+                  },
+                  "_fieldType": {
+                    "@enum": "com.rr.core.recovery.json.JSONFieldType.Object"
+                  },
+                  "_fieldClass": "java.lang.reflect.Field",
+                  "_isArray": false,
+                  "_objectDef": null,
+                  "_hasPersistAnnotation": true,
+                  "_hadPermission": false,
+                  "_customCodec": {
+                    "@jsonId": 11,
+                    "@class": "com.rr.core.recovery.json.custom.CustomJSONCodecs$ReflectFieldJSONCodec"
+                  },
+                  "_isForceSMTRef": false,
+                  "_isEncodeAsStringTimestamp": false,
+                  "_depth": 0,
+                  "_shadowed": false,
+                  "_isExportable": true
+                },
+                {
+                  "@jsonId": 12,
+                  "@class": "com.rr.core.recovery.json.JSONClassDefinition$FieldEntry",
+                  "_field": {
+                    "fieldClass": "com.rr.core.recovery.json.JSONClassDefinition$FieldEntry",
+                    "fieldName": "_fieldType"
+                  },
+                  "_fieldType": {
+                    "@enum": "com.rr.core.recovery.json.JSONFieldType.Enum"
+                  },
+                  "_fieldClass": "com.rr.core.recovery.json.JSONFieldType",
+                  "_isArray": false,
+                  "_objectDef": null,
+                  "_hasPersistAnnotation": true,
+                  "_hadPermission": false,
+                  "_customCodec": {
+                    "@jsonId": 13,
+                    "@class": "com.rr.core.recovery.json.custom.CustomJSONCodecs$SpecificEnumJSONCodec",
+                    "_enumClass": "com.rr.core.recovery.json.JSONFieldType"
+                  },
+                  "_isForceSMTRef": false,
+                  "_isEncodeAsStringTimestamp": false,
+                  "_depth": 0,
+                  "_shadowed": false,
+                  "_isExportable": true
+                },
+                {
+                  "@jsonId": 14,
+                  "@class": "com.rr.core.recovery.json.JSONClassDefinition$FieldEntry",
+                  "_field": {
+                    "fieldClass": "com.rr.core.recovery.json.JSONClassDefinition$FieldEntry",
+                    "fieldName": "_fieldClass"
+                  },
+                  "_fieldType": {
+                    "@enum": "com.rr.core.recovery.json.JSONFieldType.Object"
+                  },
+                  "_fieldClass": "java.lang.Class",
+                  "_isArray": false,
+                  "_objectDef": null,
+                  "_hasPersistAnnotation": true,
+                  "_hadPermission": false,
+                  "_customCodec": {
+                    "@ref": "4"
+                  },
+                  "_isForceSMTRef": false,
+                  "_isEncodeAsStringTimestamp": false,
+                  "_depth": 0,
+                  "_shadowed": false,
+                  "_isExportable": true
+                },
+                {
+                  "@jsonId": 15,
+                  "@class": "com.rr.core.recovery.json.JSONClassDefinition$FieldEntry",
+                  "_field": {
+                    "fieldClass": "com.rr.core.recovery.json.JSONClassDefinition$FieldEntry",
+                    "fieldName": "_isArray"
+                  },
+                  "_fieldType": {
+                    "@enum": "com.rr.core.recovery.json.JSONFieldType.booleanType"
+                  },
+                  "_fieldClass": "boolean",
+                  "_isArray": false,
+                  "_objectDef": null,
+                  "_hasPersistAnnotation": true,
+                  "_hadPermission": false,
+                  "_customCodec": null,
+                  "_isForceSMTRef": false,
+                  "_isEncodeAsStringTimestamp": false,
+                  "_depth": 0,
+                  "_shadowed": false,
+                  "_isExportable": true
+                },
+                {
+                  "@jsonId": 16,
+                  "@class": "com.rr.core.recovery.json.JSONClassDefinition$FieldEntry",
+                  "_field": {
+                    "fieldClass": "com.rr.core.recovery.json.JSONClassDefinition$FieldEntry",
+                    "fieldName": "_objectDef"
+                  },
+                  "_fieldType": {
+                    "@enum": "com.rr.core.recovery.json.JSONFieldType.Object"
+                  },
+                  "_fieldClass": "com.rr.core.recovery.json.JSONClassDefinition",
+                  "_isArray": false,
+                  "_objectDef": {
+                    "@ref": "1"
+                  },
+                  "_hasPersistAnnotation": true,
+                  "_hadPermission": false,
+                  "_customCodec": null,
+                  "_isForceSMTRef": false,
+                  "_isEncodeAsStringTimestamp": false,
+                  "_depth": 0,
+                  "_shadowed": false,
+                  "_isExportable": true
+                },
+                {
+                  "@jsonId": 17,
+                  "@class": "com.rr.core.recovery.json.JSONClassDefinition$FieldEntry",
+                  "_field": {
+                    "fieldClass": "com.rr.core.recovery.json.JSONClassDefinition$FieldEntry",
+                    "fieldName": "_hasPersistAnnotation"
+                  },
+                  "_fieldType": {
+                    "@enum": "com.rr.core.recovery.json.JSONFieldType.booleanType"
+                  },
+                  "_fieldClass": "boolean",
+                  "_isArray": false,
+                  "_objectDef": null,
+                  "_hasPersistAnnotation": true,
+                  "_hadPermission": false,
+                  "_customCodec": null,
+                  "_isForceSMTRef": false,
+                  "_isEncodeAsStringTimestamp": false,
+                  "_depth": 0,
+                  "_shadowed": false,
+                  "_isExportable": true
+                },
+                {
+                  "@jsonId": 18,
+                  "@class": "com.rr.core.recovery.json.JSONClassDefinition$FieldEntry",
+                  "_field": {
+                    "fieldClass": "com.rr.core.recovery.json.JSONClassDefinition$FieldEntry",
+                    "fieldName": "_hadPermission"
+                  },
+                  "_fieldType": {
+                    "@enum": "com.rr.core.recovery.json.JSONFieldType.booleanType"
+                  },
+                  "_fieldClass": "boolean",
+                  "_isArray": false,
+                  "_objectDef": null,
+                  "_hasPersistAnnotation": true,
+                  "_hadPermission": false,
+                  "_customCodec": null,
+                  "_isForceSMTRef": false,
+                  "_isEncodeAsStringTimestamp": false,
+                  "_depth": 0,
+                  "_shadowed": false,
+                  "_isExportable": true
+                },
+                {
+                  "@jsonId": 19,
+                  "@class": "com.rr.core.recovery.json.JSONClassDefinition$FieldEntry",
+                  "_field": {
+                    "fieldClass": "com.rr.core.recovery.json.JSONClassDefinition$FieldEntry",
+                    "fieldName": "_customCodec"
+                  },
+                  "_fieldType": {
+                    "@enum": "com.rr.core.recovery.json.JSONFieldType.Object"
+                  },
+                  "_fieldClass": "com.rr.core.recovery.json.JSONClassCodec",
+                  "_isArray": false,
+                  "_objectDef": null,
+                  "_hasPersistAnnotation": true,
+                  "_hadPermission": false,
+                  "_customCodec": null,
+                  "_isForceSMTRef": false,
+                  "_isEncodeAsStringTimestamp": false,
+                  "_depth": 0,
+                  "_shadowed": false,
+                  "_isExportable": true
+                },
+                {
+                  "@jsonId": 20,
+                  "@class": "com.rr.core.recovery.json.JSONClassDefinition$FieldEntry",
+                  "_field": {
+                    "fieldClass": "com.rr.core.recovery.json.JSONClassDefinition$FieldEntry",
+                    "fieldName": "_isForceSMTRef"
+                  },
+                  "_fieldType": {
+                    "@enum": "com.rr.core.recovery.json.JSONFieldType.booleanType"
+                  },
+                  "_fieldClass": "boolean",
+                  "_isArray": false,
+                  "_objectDef": null,
+                  "_hasPersistAnnotation": true,
+                  "_hadPermission": false,
+                  "_customCodec": null,
+                  "_isForceSMTRef": false,
+                  "_isEncodeAsStringTimestamp": false,
+                  "_depth": 0,
+                  "_shadowed": false,
+                  "_isExportable": true
+                },
+                {
+                  "@jsonId": 21,
+                  "@class": "com.rr.core.recovery.json.JSONClassDefinition$FieldEntry",
+                  "_field": {
+                    "fieldClass": "com.rr.core.recovery.json.JSONClassDefinition$FieldEntry",
+                    "fieldName": "_isEncodeAsStringTimestamp"
+                  },
+                  "_fieldType": {
+                    "@enum": "com.rr.core.recovery.json.JSONFieldType.booleanType"
+                  },
+                  "_fieldClass": "boolean",
+                  "_isArray": false,
+                  "_objectDef": null,
+                  "_hasPersistAnnotation": true,
+                  "_hadPermission": false,
+                  "_customCodec": null,
+                  "_isForceSMTRef": false,
+                  "_isEncodeAsStringTimestamp": false,
+                  "_depth": 0,
+                  "_shadowed": false,
+                  "_isExportable": true
+                },
+                {
+                  "@jsonId": 22,
+                  "@class": "com.rr.core.recovery.json.JSONClassDefinition$FieldEntry",
+                  "_field": {
+                    "fieldClass": "com.rr.core.recovery.json.JSONClassDefinition$FieldEntry",
+                    "fieldName": "_depth"
+                  },
+                  "_fieldType": {
+                    "@enum": "com.rr.core.recovery.json.JSONFieldType.intType"
+                  },
+                  "_fieldClass": "int",
+                  "_isArray": false,
+                  "_objectDef": null,
+                  "_hasPersistAnnotation": true,
+                  "_hadPermission": false,
+                  "_customCodec": null,
+                  "_isForceSMTRef": false,
+                  "_isEncodeAsStringTimestamp": false,
+                  "_depth": 0,
+                  "_shadowed": false,
+                  "_isExportable": true
+                },
+                {
+                  "@jsonId": 23,
+                  "@class": "com.rr.core.recovery.json.JSONClassDefinition$FieldEntry",
+                  "_field": {
+                    "fieldClass": "com.rr.core.recovery.json.JSONClassDefinition$FieldEntry",
+                    "fieldName": "_shadowed"
+                  },
+                  "_fieldType": {
+                    "@enum": "com.rr.core.recovery.json.JSONFieldType.booleanType"
+                  },
+                  "_fieldClass": "boolean",
+                  "_isArray": false,
+                  "_objectDef": null,
+                  "_hasPersistAnnotation": true,
+                  "_hadPermission": false,
+                  "_customCodec": null,
+                  "_isForceSMTRef": false,
+                  "_isEncodeAsStringTimestamp": false,
+                  "_depth": 0,
+                  "_shadowed": false,
+                  "_isExportable": true
+                },
+                {
+                  "@jsonId": 24,
+                  "@class": "com.rr.core.recovery.json.JSONClassDefinition$FieldEntry",
+                  "_field": {
+                    "fieldClass": "com.rr.core.recovery.json.JSONClassDefinition$FieldEntry",
+                    "fieldName": "_isExportable"
+                  },
+                  "_fieldType": {
+                    "@enum": "com.rr.core.recovery.json.JSONFieldType.booleanType"
+                  },
+                  "_fieldClass": "boolean",
+                  "_isArray": false,
+                  "_objectDef": null,
+                  "_hasPersistAnnotation": true,
+                  "_hadPermission": false,
+                  "_customCodec": null,
+                  "_isForceSMTRef": false,
+                  "_isEncodeAsStringTimestamp": false,
+                  "_depth": 0,
+                  "_shadowed": false,
+                  "_isExportable": true
+                }
+              ]
+            },
+            "_innerClassesParent": null,
+            "_isArray": false,
+            "_componentJCD": null,
+            "_classDefId": 3,
+            "_isInnerClass": false,
+            "_embeddedClass": true,
+            "_postRestoreMethods": null
+          },
+          "_classDefId": 2,
+          "_isInnerClass": false,
+          "_embeddedClass": false,
+          "_postRestoreMethods": null
+        },
+        "_hasPersistAnnotation": false,
+        "_hadPermission": false,
+        "_customCodec": null,
+        "_isForceSMTRef": false,
+        "_isEncodeAsStringTimestamp": false,
+        "_depth": 0,
+        "_shadowed": false,
+        "_isExportable": true
+      },
+      {
+        "@jsonId": 25,
+        "@class": "com.rr.core.recovery.json.JSONClassDefinition$FieldEntry",
+        "_field": {
+          "fieldClass": "com.rr.core.recovery.json.JSONClassDefinition",
+          "fieldName": "_innerClassesParent"
+        },
+        "_fieldType": {
+          "@enum": "com.rr.core.recovery.json.JSONFieldType.Object"
+        },
+        "_fieldClass": "com.rr.core.recovery.json.JSONClassDefinition$FieldEntry",
+        "_isArray": false,
+        "_objectDef": {
+          "@ref": "8"
+        },
+        "_hasPersistAnnotation": false,
+        "_hadPermission": false,
+        "_customCodec": null,
+        "_isForceSMTRef": false,
+        "_isEncodeAsStringTimestamp": false,
+        "_depth": 0,
+        "_shadowed": false,
+        "_isExportable": true
+      },
+      {
+        "@jsonId": 26,
+        "@class": "com.rr.core.recovery.json.JSONClassDefinition$FieldEntry",
+        "_field": {
+          "fieldClass": "com.rr.core.recovery.json.JSONClassDefinition",
+          "fieldName": "_isArray"
+        },
+        "_fieldType": {
+          "@enum": "com.rr.core.recovery.json.JSONFieldType.booleanType"
+        },
+        "_fieldClass": "boolean",
+        "_isArray": false,
+        "_objectDef": null,
+        "_hasPersistAnnotation": false,
+        "_hadPermission": false,
+        "_customCodec": null,
+        "_isForceSMTRef": false,
+        "_isEncodeAsStringTimestamp": false,
+        "_depth": 0,
+        "_shadowed": false,
+        "_isExportable": true
+      },
+      {
+        "@jsonId": 27,
+        "@class": "com.rr.core.recovery.json.JSONClassDefinition$FieldEntry",
+        "_field": {
+          "fieldClass": "com.rr.core.recovery.json.JSONClassDefinition",
+          "fieldName": "_componentJCD"
+        },
+        "_fieldType": {
+          "@enum": "com.rr.core.recovery.json.JSONFieldType.Object"
+        },
+        "_fieldClass": "com.rr.core.recovery.json.JSONClassDefinition",
+        "_isArray": false,
+        "_objectDef": {
+          "@ref": "1"
+        },
+        "_hasPersistAnnotation": false,
+        "_hadPermission": false,
+        "_customCodec": null,
+        "_isForceSMTRef": false,
+        "_isEncodeAsStringTimestamp": false,
+        "_depth": 0,
+        "_shadowed": false,
+        "_isExportable": true
+      },
+      {
+        "@jsonId": 28,
+        "@class": "com.rr.core.recovery.json.JSONClassDefinition$FieldEntry",
+        "_field": {
+          "fieldClass": "com.rr.core.recovery.json.JSONClassDefinition",
+          "fieldName": "_classDefId"
+        },
+        "_fieldType": {
+          "@enum": "com.rr.core.recovery.json.JSONFieldType.intType"
+        },
+        "_fieldClass": "int",
+        "_isArray": false,
+        "_objectDef": null,
+        "_hasPersistAnnotation": false,
+        "_hadPermission": false,
+        "_customCodec": null,
+        "_isForceSMTRef": false,
+        "_isEncodeAsStringTimestamp": false,
+        "_depth": 0,
+        "_shadowed": false,
+        "_isExportable": true
+      },
+      {
+        "@jsonId": 29,
+        "@class": "com.rr.core.recovery.json.JSONClassDefinition$FieldEntry",
+        "_field": {
+          "fieldClass": "com.rr.core.recovery.json.JSONClassDefinition",
+          "fieldName": "_isInnerClass"
+        },
+        "_fieldType": {
+          "@enum": "com.rr.core.recovery.json.JSONFieldType.booleanType"
+        },
+        "_fieldClass": "boolean",
+        "_isArray": false,
+        "_objectDef": null,
+        "_hasPersistAnnotation": false,
+        "_hadPermission": false,
+        "_customCodec": null,
+        "_isForceSMTRef": false,
+        "_isEncodeAsStringTimestamp": false,
+        "_depth": 0,
+        "_shadowed": false,
+        "_isExportable": true
+      },
+      {
+        "@jsonId": 30,
+        "@class": "com.rr.core.recovery.json.JSONClassDefinition$FieldEntry",
+        "_field": {
+          "fieldClass": "com.rr.core.recovery.json.JSONClassDefinition",
+          "fieldName": "_embeddedClass"
+        },
+        "_fieldType": {
+          "@enum": "com.rr.core.recovery.json.JSONFieldType.booleanType"
+        },
+        "_fieldClass": "boolean",
+        "_isArray": false,
+        "_objectDef": null,
+        "_hasPersistAnnotation": false,
+        "_hadPermission": false,
+        "_customCodec": null,
+        "_isForceSMTRef": false,
+        "_isEncodeAsStringTimestamp": false,
+        "_depth": 0,
+        "_shadowed": false,
+        "_isExportable": true
+      },
+      {
+        "@jsonId": 31,
+        "@class": "com.rr.core.recovery.json.JSONClassDefinition$FieldEntry",
+        "_field": {
+          "fieldClass": "com.rr.core.recovery.json.JSONClassDefinition",
+          "fieldName": "_postRestoreMethods"
+        },
+        "_fieldType": {
+          "@enum": "com.rr.core.recovery.json.JSONFieldType.Collection"
+        },
+        "_fieldClass": "java.util.List",
+        "_isArray": false,
+        "_objectDef": null,
+        "_hasPersistAnnotation": false,
+        "_hadPermission": false,
+        "_customCodec": {
+          "@jsonId": 32,
+          "@class": "com.rr.core.recovery.json.custom.CollectionJSONCodec"
+        },
+        "_isForceSMTRef": false,
+        "_isEncodeAsStringTimestamp": false,
+        "_depth": 0,
+        "_shadowed": false,
+        "_isExportable": true
+      }
+    ]
+  },
+  "_innerClassesParent": null,
+  "_isArray": false,
+  "_componentJCD": null,
+  "_classDefId": 1,
+  "_isInnerClass": false,
+  "_embeddedClass": false,
+  "_postRestoreMethods": null
+}

@@ -1,85 +1,173 @@
-/*******************************************************************************
- * Copyright (c) 2015 Low Latency Trading Limited  :  Author Richard Rose
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at	http://www.apache.org/licenses/LICENSE-2.0
- * Unless required by applicable law or agreed to in writing,  software distributed under the License 
- * is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and limitations under the License.
- *******************************************************************************/
 package com.rr.model.generated.internal.events.interfaces;
 
-import com.rr.core.model.Instrument;
-import com.rr.core.lang.ReusableString;
+/*
+Copyright 2015 Low Latency Trading Limited
+Author Richard Rose
+*/
+
+import com.rr.core.utils.Utils;
+import com.rr.core.lang.*;
+import com.rr.core.model.*;
+import com.rr.core.annotations.*;
 import com.rr.model.internal.type.SubEvent;
 
-public interface StratInstrumentState extends SubEvent {
+@SuppressWarnings( { "unused", "override"  })
+
+public interface StratInstrumentState extends SubEvent, com.rr.core.model.PointInTime {
 
    // Getters and Setters
-    public Instrument getInstrument();
+    long getStratTimestamp();
 
-    public long getLastTickId();
+    Instrument getInstrument();
 
-    public int getTotLongContractsExecuted();
+    /**
+     *units of instrument currently held
+     */
+    double getPosition();
 
-    public int getTotShortContractsExecuted();
+    double getUnrealisedTotalPnL();
 
-    public int getTotLongContractsOpen();
+    double getFromLongRealisedTotalPnL();
 
-    public int getTotShortContractsOpen();
+    double getFromShortRealisedTotalPnL();
 
-    public double getTotLongValueExecuted();
+    double getUnrealisedTotalPnLMin();
 
-    public double getTotShortValueExecuted();
+    double getFromLongRealisedTotalPnLMin();
 
-    public int getTotalLongOrders();
+    double getFromShortRealisedTotalPnLMin();
 
-    public int getTotalShortOrders();
+    double getUnrealisedTotalPnLMax();
 
-    public int getTotLongContractsUnwound();
+    double getFromLongRealisedTotalPnLMax();
 
-    public int getTotShortContractsUnwound();
+    double getFromShortRealisedTotalPnLMax();
 
-    public double getBidPx();
+    boolean getIsActiveTracker();
 
-    public double getAskPx();
+    long getId();
 
-    public double getLastDecidedPosition();
+    double getFromLongRealisedTotalLongValue();
 
-    public double getUnwindPnl();
+    double getFromLongRealisedTotalShortValue();
 
-    @Override
-    public void dump( ReusableString out );
+    double getFromShortRealisedTotalLongValue();
 
-    public void setInstrument( Instrument val );
+    double getFromShortRealisedTotalShortValue();
 
-    public void setLastTickId( long val );
+    double getUnrealisedTotalValue();
 
-    public void setTotLongContractsExecuted( int val );
+    double getLastPrice();
 
-    public void setTotShortContractsExecuted( int val );
+    double getTotalTradeQty();
 
-    public void setTotLongContractsOpen( int val );
+    double getTotalTradeVal();
 
-    public void setTotShortContractsOpen( int val );
+    double getPointValue();
 
-    public void setTotLongValueExecuted( double val );
+    int getTotalLongOrders();
 
-    public void setTotShortValueExecuted( double val );
+    int getTotalShortOrders();
 
-    public void setTotalLongOrders( int val );
+    double getBidPx();
 
-    public void setTotalShortOrders( int val );
+    double getAskPx();
 
-    public void setTotLongContractsUnwound( int val );
+    double getTotLongOpenQty();
 
-    public void setTotShortContractsUnwound( int val );
+    double getTotShortOpenQty();
 
-    public void setBidPx( double val );
+    int getNumTrades();
 
-    public void setAskPx( double val );
+    /**
+     *used for pending split qty
+     */
+    double getSplitAccrualQty();
 
-    public void setLastDecidedPosition( double val );
+    /**
+     *used for pending split
+     */
+    double getSplitAccrualVal();
 
-    public void setUnwindPnl( double val );
+    /**
+     *used for pending cash dividend
+     */
+    double getDivAccrualVal();
+
+    int getPublishSeqNum();
+
+    int getSicFlags();
+
+    @Override void dump( ReusableString out );
+
+    void setStratTimestamp( long val );
+
+    void setInstrument( Instrument val );
+
+    void setPosition( double val );
+
+    void setUnrealisedTotalPnL( double val );
+
+    void setFromLongRealisedTotalPnL( double val );
+
+    void setFromShortRealisedTotalPnL( double val );
+
+    void setUnrealisedTotalPnLMin( double val );
+
+    void setFromLongRealisedTotalPnLMin( double val );
+
+    void setFromShortRealisedTotalPnLMin( double val );
+
+    void setUnrealisedTotalPnLMax( double val );
+
+    void setFromLongRealisedTotalPnLMax( double val );
+
+    void setFromShortRealisedTotalPnLMax( double val );
+
+    void setIsActiveTracker( boolean val );
+
+    void setId( long val );
+
+    void setFromLongRealisedTotalLongValue( double val );
+
+    void setFromLongRealisedTotalShortValue( double val );
+
+    void setFromShortRealisedTotalLongValue( double val );
+
+    void setFromShortRealisedTotalShortValue( double val );
+
+    void setUnrealisedTotalValue( double val );
+
+    void setLastPrice( double val );
+
+    void setTotalTradeQty( double val );
+
+    void setTotalTradeVal( double val );
+
+    void setPointValue( double val );
+
+    void setTotalLongOrders( int val );
+
+    void setTotalShortOrders( int val );
+
+    void setBidPx( double val );
+
+    void setAskPx( double val );
+
+    void setTotLongOpenQty( double val );
+
+    void setTotShortOpenQty( double val );
+
+    void setNumTrades( int val );
+
+    void setSplitAccrualQty( double val );
+
+    void setSplitAccrualVal( double val );
+
+    void setDivAccrualVal( double val );
+
+    void setPublishSeqNum( int val );
+
+    void setSicFlags( int val );
 
 }

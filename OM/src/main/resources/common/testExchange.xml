@@ -1,0 +1,361 @@
+<Root>
+    <Exchanges>
+        <Exchange mic="XLON" timezone="Europe/London">
+            <ResetTime>06:00:01</ResetTime>
+            <OpenTime>07:50:00</OpenTime>
+            <CloseTime>16:50:00</CloseTime>
+            <HalfDayClose>13:00:00</HalfDayClose>
+            <Sessions expireTimeForSendEODEvents="16:55:00">
+                <Session>
+                    <OpenAuction  ref="OpenTime"  startOffset="+00:00:00" endOffset="+00:10:00"/>
+                    <CloseAuction ref="CloseTime" startOffset="-00:19:30" endOffset="-00:00:00" desc="closing auction runs 16:30 to 16:35 LDN ... extended time due to ER auction generated events with late timestamp"/>
+                </Session>
+                <Segments id="iobSegment" set="IOB,IOBE,IOBU,ITBB,ITBU">
+                    <OpenAuction  ref="OpenTime"  startOffset="+00:10:00" endOffset="+00:25:00"/>
+                    <CloseAuction ref="CloseTime" startOffset="-01:19:30" endOffset="-00:00:00"/>
+                </Segments>
+            </Sessions>
+        </Exchange>
+
+        <Exchange mic="XSWX" timezone="Europe/Zurich">
+            <ResetTime>06:00:01</ResetTime>
+            <OpenTime>08:50:00</OpenTime>
+            <CloseTime>17:50:00</CloseTime>
+            <HalfDayClose>13:00:00</HalfDayClose>
+            <Sessions expireTimeForSendEODEvents="17:55:00">
+                <Session>
+                    <OpenAuction  ref="OpenTime"  startOffset="+00:00:00" endOffset="+00:10:00"/>
+                    <CloseAuction ref="CloseTime" startOffset="-00:30:00" endOffset="-00:00:00" desc="closing auction runs 16:20 to 16:30 LDN with uncross at 16:32  ... extended time due to ER auction generated events with late timestamp"/>
+                </Session>
+            </Sessions>
+        </Exchange>
+
+        <Exchange mic="XETR" timezone="Europe/Berlin">
+            <ResetTime>06:00:01</ResetTime>
+            <OpenTime>08:50:00</OpenTime>
+            <CloseTime>17:50:00</CloseTime>
+            <HalfDayClose>13:00:00</HalfDayClose>
+            <Sessions expireTimeForSendEODEvents="17:55:00">
+                <Session>
+                    <OpenAuction  ref="OpenTime"  startOffset="+00:00:00" endOffset="+00:10:00"/>
+                    <CloseAuction ref="CloseTime" startOffset="-00:20:00" endOffset="-00:00:00" desc="closing auction runs 16:30 to 16:35 LDN ... extended time due to ER auction generated events with late timestamp"/>
+                </Session>
+            </Sessions>
+        </Exchange>
+
+        <Exchange mic="XPAR" timezone="Europe/Paris">
+            <ResetTime>06:00:01</ResetTime>
+            <OpenTime>07:30:00</OpenTime>
+            <CloseTime>17:50:00</CloseTime>
+            <HalfDayClose>13:00:00</HalfDayClose>
+            <Sessions expireTimeForSendEODEvents="17:55:00">
+                <Session>
+                    <OpenAuction  ref="OpenTime"  startOffset="+00:00:00" endOffset="+01:30:00"/>
+                    <CloseAuction ref="CloseTime" startOffset="-00:20:00" endOffset="-00:00:00" desc="closing auction runs 16:30 to 16:35 LDN ... extended time due to ER auction generated events with late timestamp"/>
+                </Session>
+            </Sessions>
+        </Exchange>
+
+        <Exchange mic="XSTO" timezone="Europe/Stockholm">
+            <ResetTime>06:00:01</ResetTime>
+            <OpenTime>08:00:00</OpenTime>
+            <CloseTime>17:50:00</CloseTime>
+            <HalfDayClose>13:00:00</HalfDayClose>
+            <Sessions expireTimeForSendEODEvents="18:00:00">
+                <Session>
+                    <OpenAuction  ref="OpenTime"  startOffset="+00:00:00" endOffset="+01:00:00"/>
+                    <CloseAuction ref="CloseTime" startOffset="-00:25:00" endOffset="-00:00:00" desc="closing auction runs 16:25 to 16:30 LDN ... extended time due to ER auction generated events with late timestamp"/>
+                </Session>
+            </Sessions>
+        </Exchange>
+
+
+
+
+
+
+        <Exchange mic="IFEU" timezone="America/New_York">
+            <OpenTime>23:55:05</OpenTime>
+            <CloseTime>23:05:00</CloseTime>
+            <Sessions/>
+        </Exchange>
+
+        <Exchange mic="XCME" timezone="America/Chicago">
+            <OpenTime>02:30:01</OpenTime>
+            <CloseTime>02:30:00</CloseTime>
+            <Sessions/>
+        </Exchange>
+
+        <Exchange mic="XNYM" timezone="America/New_York">
+            <OpenTime>02:30:01</OpenTime>
+            <CloseTime>02:30:00</CloseTime>
+            <Sessions/>
+        </Exchange>
+
+        <Exchange mic="XCBT" timezone="America/Chicago">
+            <OpenTime>02:30:01</OpenTime>
+            <CloseTime>02:30:00</CloseTime>
+            <Sessions/>
+        </Exchange>
+
+        <Exchange mic="XCEC" timezone="America/New_York">
+            <OpenTime>02:30:01</OpenTime>
+            <CloseTime>02:30:00</CloseTime>
+            <Sessions/>
+        </Exchange>
+
+        <Exchange mic="XLDN" timezone="Europe/London">
+            <ResetTime>06:00:01</ResetTime>
+            <OpenTime>08:00:00</OpenTime>
+            <CloseTime>16:30:30</CloseTime>
+            <Sessions expireTimeForSendEODEvents="17:00:00"/>
+        </Exchange>
+
+        <Exchange mic="XSMP" timezone="Europe/London">
+            <ResetTime>06:00:01</ResetTime>
+            <OpenTime>08:00:00</OpenTime>
+            <CloseTime>16:30:30</CloseTime>
+            <Sessions expireTimeForSendEODEvents="17:00:00"/>
+        </Exchange>
+
+        <Exchange mic="XBOM" timezone="IST">
+            <ResetTime>06:00:01</ResetTime>
+            <OpenTime>09:15:00</OpenTime>
+            <CloseTime>15:30:00</CloseTime>
+            <Sessions expireTimeForSendEODEvents="17:00:00"/>
+        </Exchange>
+
+        <Exchange mic="CHIX" timezone="Europe/London">
+            <ResetTime>06:00:01</ResetTime>
+            <OpenTime>08:00:00</OpenTime>
+            <CloseTime>16:30:30</CloseTime>
+            <Sessions expireTimeForSendEODEvents="17:00:00"/>
+        </Exchange>
+
+        <Exchange mic="BATE" timezone="Europe/London">
+            <ResetTime>06:00:01</ResetTime>
+            <OpenTime>08:00:00</OpenTime>
+            <CloseTime>16:30:00</CloseTime>
+            <Sessions expireTimeForSendEODEvents="17:00:00"/>
+        </Exchange>
+
+        <Exchange mic="XEUR" timezone="Europe/Berlin">
+            <ResetTime>06:00:01</ResetTime>
+            <OpenTime>08:30:00</OpenTime>
+            <CloseTime>17:45:00</CloseTime>
+            <Sessions expireTimeForSendEODEvents="19:00:00">
+                <Session>
+                    <OpenAuction  ref="OpenTime"  startOffset="+00:00:00" endOffset="+00:30:00"/>
+                    <CloseAuction ref="CloseTime" startOffset="-00:15:00" endOffset="-00:00:00"/>
+                </Session>
+            </Sessions>
+        </Exchange>
+
+        <Exchange mic="XLIF" timezone="Europe/London">
+            <ResetTime>02:00:01</ResetTime>
+            <OpenTime>05:30:00</OpenTime>
+            <CloseTime>18:00:00</CloseTime>
+            <Sessions expireTimeForSendEODEvents="18:00:00"/>
+        </Exchange>
+
+        <Exchange mic="XBRU" timezone="Europe/Brussels">
+            <ResetTime>06:00:01</ResetTime>
+            <OpenTime>08:30:00</OpenTime>
+            <CloseTime>17:40:00</CloseTime>
+            <HalfDayClose>14:00:00</HalfDayClose>
+            <Sessions expireTimeForSendEODEvents="17:00:00">
+                <Session>
+                    <OpenAuction  ref="OpenTime"  startOffset="+00:00:00" endOffset="+00:30:00"/>
+                    <CloseAuction ref="CloseTime" startOffset="-00:10:00" endOffset="-00:00:00"/>
+                </Session>
+            </Sessions>
+        </Exchange>
+
+        <Exchange mic="TNLK" timezone="Europe/Brussels">
+            <ResetTime>06:00:01</ResetTime>
+            <OpenTime>08:30:00</OpenTime>
+            <CloseTime>17:40:00</CloseTime>
+            <HalfDayClose>14:00:00</HalfDayClose>
+            <Sessions expireTimeForSendEODEvents="17:00:00">
+                <Session>
+                    <OpenAuction  ref="OpenTime"  startOffset="+00:00:00" endOffset="+00:30:00"/>
+                    <CloseAuction ref="CloseTime" startOffset="-00:10:00" endOffset="-00:00:00"/>
+                </Session>
+            </Sessions>
+        </Exchange>
+
+        <Exchange mic="XLIS" timezone="Europe/Lisbon">
+            <ResetTime>06:00:01</ResetTime>
+            <OpenTime>07:30:00</OpenTime>
+            <CloseTime>16:40:00</CloseTime>
+            <HalfDayClose>14:00:00</HalfDayClose>
+            <Sessions expireTimeForSendEODEvents="17:00:00">
+                <Session>
+                    <OpenAuction  ref="OpenTime"  startOffset="+00:00:00" endOffset="+00:30:00"/>
+                    <CloseAuction ref="CloseTime" startOffset="-00:10:00" endOffset="-00:00:00"/>
+                </Session>
+            </Sessions>
+        </Exchange>
+
+        <Exchange mic="IFEN" timezone="Europe/London">
+            <OpenTime>23:00:01</OpenTime>
+            <CloseTime>23:00:00</CloseTime>
+            <Sessions/>
+        </Exchange>
+        <Exchange mic="IFED" timezone="America/New_York">
+            <OpenTime>23:00:01</OpenTime>
+            <CloseTime>23:00:00</CloseTime>
+            <Sessions/>
+        </Exchange>
+        <Exchange mic="IFLL" timezone="Europe/London">
+            <OpenTime>23:00:01</OpenTime>
+            <CloseTime>23:00:00</CloseTime>
+            <Sessions/>
+        </Exchange>
+        <Exchange mic="IFLX" timezone="Europe/London">
+            <OpenTime>23:00:01</OpenTime>
+            <CloseTime>23:00:00</CloseTime>
+            <Sessions/>
+        </Exchange>
+        <Exchange mic="IFUS" timezone="America/New_York">
+            <OpenTime>23:00:01</OpenTime>
+            <CloseTime>23:00:00</CloseTime>
+            <Sessions/>
+        </Exchange>
+        <Exchange mic="NZFX" timezone="Pacific/Auckland">
+            <OpenTime>23:00:01</OpenTime>
+            <CloseTime>23:00:00</CloseTime>
+            <Sessions/>
+        </Exchange>
+        <Exchange mic="XASX" timezone="Australia/Sydney">
+            <OpenTime>23:00:01</OpenTime>
+            <CloseTime>23:00:00</CloseTime>
+            <Sessions/>
+        </Exchange>
+        <Exchange mic="XCBF" timezone="America/Chicago">
+            <OpenTime>23:00:01</OpenTime>
+            <CloseTime>23:00:00</CloseTime>
+            <Sessions/>
+        </Exchange>
+        <Exchange mic="XOSE" timezone="Asia/Tokyo">
+            <OpenTime>23:00:01</OpenTime>
+            <CloseTime>23:00:00</CloseTime>
+            <Sessions/>
+        </Exchange>
+        <Exchange mic="IFCA" timezone="America/Montreal">
+            <OpenTime>23:00:01</OpenTime>
+            <CloseTime>23:00:00</CloseTime>
+            <Sessions/>
+        </Exchange>
+        <Exchange mic="XMOD" timezone="America/Montreal">
+            <OpenTime>23:00:01</OpenTime>
+            <CloseTime>23:00:00</CloseTime>
+            <Sessions/>
+        </Exchange>
+        <Exchange mic="XTKT" timezone="Asia/Tokyo">
+            <OpenTime>23:00:01</OpenTime>
+            <CloseTime>23:00:00</CloseTime>
+            <Sessions/>
+        </Exchange>
+
+
+
+        <Exchange mic="DUMX" timezone="Asia/Dubai">
+            <OpenTime>23:00:01</OpenTime>
+            <CloseTime>23:00:00</CloseTime>
+            <Sessions/>
+        </Exchange>
+        <Exchange mic="KBCB" timezone="Europe/London">
+            <OpenTime>23:00:01</OpenTime>
+            <CloseTime>23:00:00</CloseTime>
+            <Sessions/>
+        </Exchange>
+        <Exchange mic="XCBO" timezone="Europe/London">
+            <OpenTime>23:00:01</OpenTime>
+            <CloseTime>23:00:00</CloseTime>
+            <Sessions/>
+        </Exchange>
+        <Exchange mic="XCSE" timezone="Europe/Copenhagen">
+            <OpenTime>23:00:01</OpenTime>
+            <CloseTime>23:00:00</CloseTime>
+            <Sessions/>
+        </Exchange>
+        <Exchange mic="XEMD" timezone="Mexico/General">
+            <OpenTime>23:00:01</OpenTime>
+            <CloseTime>23:00:00</CloseTime>
+            <Sessions/>
+        </Exchange>
+        <Exchange mic="XEEE" timezone="Europe/Berlin">
+            <OpenTime>23:00:01</OpenTime>
+            <CloseTime>23:00:00</CloseTime>
+            <Sessions/>
+        </Exchange>
+        <Exchange mic="XFRA" timezone="Europe/Berlin">
+            <OpenTime>23:00:01</OpenTime>
+            <CloseTime>23:00:00</CloseTime>
+            <Sessions/>
+        </Exchange>
+        <Exchange mic="XHEL" timezone="Europe/Helsinki">
+            <OpenTime>23:00:01</OpenTime>
+            <CloseTime>23:00:00</CloseTime>
+            <Sessions/>
+        </Exchange>
+        <Exchange mic="XKBT" timezone="America/Kansas">
+            <OpenTime>23:00:01</OpenTime>
+            <CloseTime>23:00:00</CloseTime>
+            <Sessions/>
+        </Exchange>
+        <Exchange mic="XKLS" timezone="Asia/Kuala_Lumpur">
+            <OpenTime>23:00:01</OpenTime>
+            <CloseTime>23:00:00</CloseTime>
+            <Sessions/>
+        </Exchange>
+        <Exchange mic="XMGE" timezone="America/Minnesota">
+            <OpenTime>23:00:01</OpenTime>
+            <CloseTime>23:00:00</CloseTime>
+            <Sessions/>
+        </Exchange>
+        <Exchange mic="XNYE" timezone="America/New_York">
+            <OpenTime>23:00:01</OpenTime>
+            <CloseTime>23:00:00</CloseTime>
+            <Sessions/>
+        </Exchange>
+        <Exchange mic="XNYL" timezone="America/New_York">
+            <OpenTime>23:00:01</OpenTime>
+            <CloseTime>23:00:00</CloseTime>
+            <Sessions/>
+        </Exchange>
+        <Exchange mic="XNYS" timezone="America/New_York">
+            <OpenTime>23:00:01</OpenTime>
+            <CloseTime>23:00:00</CloseTime>
+            <Sessions/>
+        </Exchange>
+        <Exchange mic="XOSL" timezone="Europe/Oslo">
+            <OpenTime>23:00:01</OpenTime>
+            <CloseTime>23:00:00</CloseTime>
+            <Sessions/>
+        </Exchange>
+        <Exchange mic="XEUE" timezone="Europe/Amsterdam">
+            <OpenTime>23:00:01</OpenTime>
+            <CloseTime>23:00:00</CloseTime>
+            <Sessions/>
+        </Exchange>
+        <Exchange mic="XEUC" timezone="Europe/Amsterdam">
+            <OpenTime>23:00:01</OpenTime>
+            <CloseTime>23:00:00</CloseTime>
+            <Sessions/>
+        </Exchange>
+        <Exchange mic="CMED" timezone="Europe/London">
+            <OpenTime>23:00:01</OpenTime>
+            <CloseTime>23:00:00</CloseTime>
+            <Sessions/>
+        </Exchange>
+
+        <Exchange mic="FCQG" timezone="America/Chicago">
+            <OpenTime>23:00:01</OpenTime>
+            <CloseTime>23:00:00</CloseTime>
+            <Sessions/>
+        </Exchange>
+
+    </Exchanges>
+</Root>

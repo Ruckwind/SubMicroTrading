@@ -1,54 +1,53 @@
-/*******************************************************************************
- * Copyright (c) 2015 Low Latency Trading Limited  :  Author Richard Rose
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at	http://www.apache.org/licenses/LICENSE-2.0
- * Unless required by applicable law or agreed to in writing,  software distributed under the License 
- * is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and limitations under the License.
- *******************************************************************************/
 package com.rr.model.generated.internal.events.interfaces;
 
-import com.rr.core.model.SecurityIDSource;
+/*
+Copyright 2015 Low Latency Trading Limited
+Author Richard Rose
+*/
+
 import com.rr.model.generated.internal.type.Side;
-import com.rr.core.model.Instrument;
-import com.rr.core.lang.ViewString;
-import com.rr.core.lang.ReusableString;
+import com.rr.core.utils.Utils;
+import com.rr.core.lang.*;
+import com.rr.core.model.*;
+import com.rr.core.annotations.*;
 import com.rr.model.internal.type.SubEvent;
+
+@SuppressWarnings( { "unused", "override"  })
 
 public interface SecDefLeg extends SubEvent, com.rr.core.model.LegInstrument {
 
    // Getters and Setters
-    public ViewString getLegSymbol();
+    ViewString getLegSymbol();
 
-    public long getLegSecurityID();
+    ViewString getLegSecurityID();
 
-    public SecurityIDSource getLegSecurityIDSource();
+    SecurityIDSource getLegSecurityIDSource();
 
-    public int getLegRatioQty();
+    int getLegRatioQty();
 
-    public ViewString getLegSecurityDesc();
+    ViewString getLegSecurityDesc();
 
-    public Side getLegSide();
+    Side getLegSide();
 
-    public Instrument getInstrument();
+    ExchangeInstrument getInstrument();
 
-    @Override
-    public void dump( ReusableString out );
+    @Override void dump( ReusableString out );
 
-    public void setLegSymbol( byte[] buf, int offset, int len );
-    public ReusableString getLegSymbolForUpdate();
+    void setLegSymbol( byte[] buf, int offset, int len );
+    ReusableString getLegSymbolForUpdate();
 
-    public void setLegSecurityID( long val );
+    void setLegSecurityID( byte[] buf, int offset, int len );
+    ReusableString getLegSecurityIDForUpdate();
 
-    public void setLegSecurityIDSource( SecurityIDSource val );
+    void setLegSecurityIDSource( SecurityIDSource val );
 
-    public void setLegRatioQty( int val );
+    void setLegRatioQty( int val );
 
-    public void setLegSecurityDesc( byte[] buf, int offset, int len );
-    public ReusableString getLegSecurityDescForUpdate();
+    void setLegSecurityDesc( byte[] buf, int offset, int len );
+    ReusableString getLegSecurityDescForUpdate();
 
-    public void setLegSide( Side val );
+    void setLegSide( Side val );
 
-    public void setInstrument( Instrument val );
+    void setInstrument( ExchangeInstrument val );
 
 }

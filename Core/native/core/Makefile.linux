@@ -25,6 +25,10 @@ setup:
 
 lib: ${BIN_PATH}/${DLL_NAME}
 
+./src/SubMicroCore_jni.h:
+	javah -force -classpath ../../../out/production/Core -o src/SubMicroCore_jni.h com.rr.core.os.NativeHooksImpl
+
+
 ${BIN_PATH}/${DLL_NAME}: ${TMP_PATH}/SubMicroCore_jni.o 
 	${LD} ${LDFLAGS} -LD ${LIBS} -shared -o ${TMP_PATH}/${DLL_NAME} ${TMP_PATH}/SubMicroCore_jni.o 
 	cp -f ${TMP_PATH}/${DLL_NAME}  ${BIN_PATH}/${DLL_NAME}

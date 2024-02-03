@@ -1,42 +1,36 @@
-/*******************************************************************************
- * Copyright (c) 2015 Low Latency Trading Limited  :  Author Richard Rose
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at	http://www.apache.org/licenses/LICENSE-2.0
- * Unless required by applicable law or agreed to in writing,  software distributed under the License 
- * is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and limitations under the License.
- *******************************************************************************/
 package com.rr.model.generated.internal.events.impl;
 
-import com.rr.core.lang.ViewString;
-import com.rr.core.lang.ReusableString;
-import com.rr.core.lang.Constants;
-import com.rr.core.model.MsgFlag;
-import com.rr.core.lang.ReusableType;
-import com.rr.core.lang.Reusable;
-import com.rr.core.model.Message;
-import com.rr.core.model.MessageHandler;
+/*
+Copyright 2015 Low Latency Trading Limited
+Author Richard Rose
+*/
+
+import com.rr.core.utils.Utils;
+import com.rr.core.lang.*;
+import com.rr.core.model.*;
+import com.rr.core.annotations.*;
 import com.rr.model.internal.type.*;
 import com.rr.model.generated.internal.core.ModelReusableTypes;
 import com.rr.model.generated.internal.core.SizeType;
 import com.rr.model.generated.internal.core.EventIds;
 import com.rr.model.generated.internal.events.interfaces.*;
 
-@SuppressWarnings( "unused" )
+@SuppressWarnings( { "unused", "override"  })
 
-public final class ETIConnectionGatewayRequestImpl implements BaseETIRequest, ETIConnectionGatewayRequestWrite, Reusable<ETIConnectionGatewayRequestImpl> {
+public final class ETIConnectionGatewayRequestImpl implements BaseETIRequest, ETIConnectionGatewayRequestWrite, Copyable<ETIConnectionGatewayRequest>, Reusable<ETIConnectionGatewayRequestImpl> {
 
    // Attrs
 
-    private          ETIConnectionGatewayRequestImpl _next = null;
-    private volatile Message        _nextMessage    = null;
-    private          MessageHandler _messageHandler = null;
+    private transient          ETIConnectionGatewayRequestImpl _next = null;
+    private transient volatile Event        _nextMessage    = null;
+    private transient          EventHandler _messageHandler = null;
     private int _msgSeqNum = Constants.UNSET_INT;
     private int _partyIDSessionID = Constants.UNSET_INT;
     private final ReusableString _password = new ReusableString( SizeType.ETI_PASSWORD_LENGTH.getSize() );
+    @TimestampMS private long _eventTimestamp = Constants.UNSET_LONG;
 
 
-    private byte           _flags          = 0;
+    private int           _flags          = 0;
 
    // Getters and Setters
     @Override public final int getMsgSeqNum() { return _msgSeqNum; }
@@ -50,6 +44,9 @@ public final class ETIConnectionGatewayRequestImpl implements BaseETIRequest, ET
     @Override public final void setPassword( byte[] buf, int offset, int len ) { _password.setValue( buf, offset, len ); }
     @Override public final ReusableString getPasswordForUpdate() { return _password; }
 
+    @Override public final long getEventTimestamp() { return _eventTimestamp; }
+    @Override public final void setEventTimestamp( long val ) { _eventTimestamp = val; }
+
 
     @Override public final boolean getPossDupFlag() { return isFlagSet( MsgFlag.PossDupFlag ); }
     @Override public final void setPossDupFlag( boolean val ) { setFlag( MsgFlag.PossDupFlag, val ); }
@@ -61,6 +58,7 @@ public final class ETIConnectionGatewayRequestImpl implements BaseETIRequest, ET
         _msgSeqNum = Constants.UNSET_INT;
         _partyIDSessionID = Constants.UNSET_INT;
         _password.reset();
+        _eventTimestamp = Constants.UNSET_LONG;
         _flags = 0;
         _next = null;
         _nextMessage = null;
@@ -88,22 +86,22 @@ public final class ETIConnectionGatewayRequestImpl implements BaseETIRequest, ET
     }
 
     @Override
-    public final Message getNextQueueEntry() {
+    public final Event getNextQueueEntry() {
         return _nextMessage;
     }
 
     @Override
-    public final void attachQueue( Message nxt ) {
+    public final void attachQueue( Event nxt ) {
         _nextMessage = nxt;
     }
 
     @Override
-    public final MessageHandler getMessageHandler() {
+    public final EventHandler getEventHandler() {
         return _messageHandler;
     }
 
     @Override
-    public final void setMessageHandler( MessageHandler handler ) {
+    public final void setEventHandler( EventHandler handler ) {
         _messageHandler = handler;
     }
 
@@ -111,7 +109,7 @@ public final class ETIConnectionGatewayRequestImpl implements BaseETIRequest, ET
    // Helper methods
     @Override
     public void setFlag( MsgFlag flag, boolean isOn ) {
-        _flags = (byte) MsgFlag.setFlag( _flags, flag, isOn );
+        _flags = MsgFlag.setFlag( _flags, flag, isOn );
     }
 
     @Override
@@ -120,19 +118,65 @@ public final class ETIConnectionGatewayRequestImpl implements BaseETIRequest, ET
     }
 
     @Override
-    public String toString() {
-        ReusableString buf = new ReusableString();
-        dump( buf );
-        return buf.toString();
+    public int getFlags() {
+        return _flags;
     }
 
     @Override
-    public final void dump( ReusableString out ) {
+    public String toString() {
+        ReusableString buf = TLC.instance().pop();
+        dump( buf );
+        String rs = buf.toString();
+        TLC.instance().pushback( buf );
+        return rs;
+    }
+
+    @Override
+    public final void dump( final ReusableString out ) {
         out.append( "ETIConnectionGatewayRequestImpl" ).append( ' ' );
-        out.append( ", msgSeqNum=" ).append( getMsgSeqNum() );
-        out.append( ", partyIDSessionID=" ).append( getPartyIDSessionID() );
-        out.append( ", password=" ).append( getPassword() );
+        if ( Constants.UNSET_INT != getMsgSeqNum() && 0 != getMsgSeqNum() )             out.append( ", msgSeqNum=" ).append( getMsgSeqNum() );
+        if ( Constants.UNSET_INT != getPartyIDSessionID() && 0 != getPartyIDSessionID() )             out.append( ", partyIDSessionID=" ).append( getPartyIDSessionID() );
+        if ( getPassword().length() > 0 )             out.append( ", password=" ).append( getPassword() );
         out.append( ", possDupFlag=" ).append( getPossDupFlag() );
+        if ( Constants.UNSET_LONG != getEventTimestamp() && 0 != getEventTimestamp() ) {
+            out.append( ", eventTimestamp=" );
+            TimeUtilsFactory.safeTimeUtils().unixTimeToLocalTimestamp( out, getEventTimestamp() );
+            out.append( " / " );
+            TimeUtilsFactory.safeTimeUtils().unixTimeToUTCTimestamp( out, getEventTimestamp() );
+            out.append( " ( " );
+            out.append( getEventTimestamp() ).append( " ) " );
+        }
+    }
+
+    @Override public final void snapTo( ETIConnectionGatewayRequest dest ) {
+        ((ETIConnectionGatewayRequestImpl)dest).deepCopyFrom( this );
+    }
+
+    /** DEEP copy all members ... INCLUDING subEvents : WARNING CREATES NEW OBJECTS SO MONITOR FOR GC */
+    @Override public final void deepCopyFrom( ETIConnectionGatewayRequest src ) {
+        setMsgSeqNum( src.getMsgSeqNum() );
+        setPartyIDSessionID( src.getPartyIDSessionID() );
+        getPasswordForUpdate().copy( src.getPassword() );
+        setPossDupFlag( src.getPossDupFlag() );
+        setEventTimestamp( src.getEventTimestamp() );
+    }
+
+    /** shallow copy all primitive members ... EXCLUDING subEvents */
+    @Override public final void shallowCopyFrom( ETIConnectionGatewayRequest src ) {
+        setMsgSeqNum( src.getMsgSeqNum() );
+        setPartyIDSessionID( src.getPartyIDSessionID() );
+        getPasswordForUpdate().copy( src.getPassword() );
+        setPossDupFlag( src.getPossDupFlag() );
+        setEventTimestamp( src.getEventTimestamp() );
+    }
+
+    /** shallow copy all primitive members ... EXCLUDING subEvents */
+    @Override public final void shallowMergeFrom( ETIConnectionGatewayRequest src ) {
+        if ( Constants.UNSET_INT != src.getMsgSeqNum() ) setMsgSeqNum( src.getMsgSeqNum() );
+        if ( Constants.UNSET_INT != src.getPartyIDSessionID() ) setPartyIDSessionID( src.getPartyIDSessionID() );
+        if ( src.getPassword().length() > 0 ) getPasswordForUpdate().copy( src.getPassword() );
+        setPossDupFlag( src.getPossDupFlag() );
+        if ( Constants.UNSET_LONG != src.getEventTimestamp() ) setEventTimestamp( src.getEventTimestamp() );
     }
 
 }

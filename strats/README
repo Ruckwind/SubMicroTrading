@@ -1,0 +1,43 @@
+
+cd NewProj/smtbht
+./mkJar.sh
+./obfusicate.sh
+./dist.sh
+
+cd ../dist
+./scripts/devMDDumpCME.sh
+
+in seperate window
+
+cd ~/data/playback-files_cme.ab.channel7-3Apr2012
+tcpreplay --intf1=%2 --oneatatime cme.ab.channel7-3Apr2012.8.30am.pcap
+
+=> enter 100, check dist/logs/CME_InstDump_*   for ticks
+
+
+#####################
+
+how to setup
+
+unzip dist.zip
+tar -xvf dist.tar
+
+######################
+
+how to decode stack trace
+
+cd ~/NewProj
+
+java -jar ../../../../Tools/ZKM_6_1_3/ZKM.jar
+
+select tools decode stack trace, select the change log which is in the NewProj dir :-
+
+	==> ChangeLog.txt
+
+In the stack trace, each line MUST start with an "at"
+
+Select Translate
+
+If its ambiguous ensure dist/smt/smt.jar still on classpath and select analyse bytecode
+
+

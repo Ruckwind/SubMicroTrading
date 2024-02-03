@@ -1,0 +1,161 @@
+<!--suppress ALL -->
+
+@SECTION LSE_ITCH_EVENTS START
+            <Base id="BaseITCH" src="both">
+                <!-- msgSeqNum and possBupFlag are required to allow Millenium events to be treated as Message -->
+                <Attribute typeId="int"                            name="msgSeqNum"         mandatory="N"  outbound="seperate"/>
+                <Attribute typeId="boolean"                        name="possDupFlag"       mandatory="N"  outbound="seperate"/>
+                <Attribute typeId="UTCTimestamp"                   name="eventTimestamp"    mandatory="N"  outbound="seperate"/>
+            </Base>
+
+            <Event id="BookAddOrder" extends="BaseITCH" src="both">
+                <Attribute typeId="int"                           name="nanosecond"   mandatory="Y"     outbound="seperate"/>
+                <Attribute typeId="long"                          name="orderId"      mandatory="Y"     outbound="seperate"/>
+                <Attribute typeId="Side"                          name="side"         mandatory="Y"     outbound="seperate"/>
+                <Attribute typeId="int"                           name="orderQty"     mandatory="Y"     outbound="seperate"/>
+                <Attribute typeId="Book"                          name="book"         mandatory="Y"     outbound="seperate"/>
+                <Attribute typeId="double"                        name="price"        mandatory="Y"     outbound="seperate"/>
+            </Event>
+
+            <Event id="BookDeleteOrder" extends="BaseITCH" src="both">
+                <Attribute typeId="int"                           name="nanosecond"   mandatory="Y"     outbound="seperate"/>
+                <Attribute typeId="long"                          name="orderId"      mandatory="Y"     outbound="seperate"/>
+            </Event>
+
+            <Event id="BookModifyOrder" extends="BaseITCH" src="both">
+                <Attribute typeId="int"                           name="nanosecond"   mandatory="Y"     outbound="seperate"/>
+                <Attribute typeId="long"                          name="orderId"      mandatory="Y"     outbound="seperate"/>
+                <Attribute typeId="int"                           name="orderQty"     mandatory="Y"     outbound="seperate"/>
+                <Attribute typeId="double"                        name="price"        mandatory="Y"     outbound="seperate"/>
+            </Event>
+
+            <Event id="BookClear" extends="BaseITCH" src="both">
+                <Attribute typeId="int"                           name="nanosecond"   mandatory="Y"     outbound="seperate"/>
+                <Attribute typeId="long"                          name="orderId"      mandatory="Y"     outbound="seperate"/>
+                <Attribute typeId="Book"                          name="book"         mandatory="Y"     outbound="seperate"/>
+            </Event>
+@SECTION LSE_ITCH_EVENTS END
+
+
+@SECTION LSE_ITCH_MODEL START
+            <Model id="ItchLSE" modelVersionNumber="1.0">
+                <Attribute name="BinaryVersion" value="2"/> <!-- protocol version is 2 -->
+
+                <Dictionary>
+                    <!-- certain tags are special and have specific optimised codec code eg fixVersion.msgType -->
+                    <!--  type should be external facing not internal type mapping -->
+                    <!--  for name try and use the internal event field name so it can be auto matched to the event -->
+
+                    <!-- valid types zstr(fixed len str)|str(with len as max)|ch|price|
+                                     sByte|sShort|sInt|sLong|uByte|uShort|uInt|uLong|
+                                     timestampLocal|timestampUTC|timeLocal|timeUTC -->
+
+                    <Field id="msgLen"              type="sShort"           comment="total message length"/>
+                    <Field id="msgCount"            type="uByte"            comment="number of messages in packet"/>
+                    <Field id="mktDataGrp"          type="uByte"            comment="market data group"/>
+                    <Field id="msgSeqNum"           type="sInt"/>
+
+                    <Field id="subLen"              type="uByte"            comment="sub message length"/>
+                    <Field id="msgType"             type="uByte"            comment="message type"/>
+
+                    <Field id="nanosecond"          type="sInt"/>
+                    <Field id="orderId"             type="sLong"/>
+                    <Field id="side"                type="uByte"/>
+                    <Field id="orderQty"            type="sInt"/>
+                    <Field id="instrumentId"        type="sInt"/>
+                    <Field id="price"               type="price"/>
+                    <Field id="flags"               type="uByte"/>
+
+                </Dictionary>
+
+                <!-- NOTE mandatory field indicates the field MUST be present in the internal event ! -->
+
+                <PackedHeader countField="msgCount">
+                    <!-- these special header fields are deemed not mandatory in the sense that they dont need to be populated by events -->
+                    <Field id="msgLen"              mand="N"/>
+                    <Field id="msgCount"            mand="N"/>
+                    <Field id="mktDataGrp"          mand="N"/>
+                    <Field id="msgSeqNum"           mand="N"/>
+                </PackedHeader>
+
+                <StandardHeader>
+                    <Field id="subLen"              mand="N"/>
+                    <Field id="msgType"             mand="N"/>
+                </StandardHeader>
+
+                <StandardTrailer>
+                </StandardTrailer>
+
+                <Message id="ITCHBookAddOrder"    msgType="A">
+                    <Field id="nanosecond"        mand="Y"/>
+                    <Field id="orderId"           mand="Y"/>
+                    <Field id="side"              mand="Y"/>
+                    <Field id="orderQty"          mand="Y"/>
+                    <Field id="instrumentId"      mand="N"/>    <!-- derived from instrument in codec mapping -->
+                    <Field id="filler1"           len="2"/>
+                    <Field id="price"             mand="Y"/>
+                    <Field id="filler2"           len="1"/>
+                </Message>
+
+                <Message id="ITCHBookDeleteOrder" msgType="D">
+                    <Field id="nanosecond"        mand="Y"/>
+                    <Field id="orderId"           mand="Y"/>
+                    <Field id="filler1"           len="1"/>
+                </Message>
+
+                <Message id="ITCHBookModifyOrder" msgType="U">
+                    <Field id="nanosecond"        mand="Y"/>
+                    <Field id="orderId"           mand="Y"/>
+                    <Field id="orderQty"          mand="Y"/>
+                    <Field id="price"             mand="Y"/>
+                    <Field id="filler2"           len="1"/>
+                </Message>
+
+                <Message id="ITCHBookClear"       msgType="y">
+                    <Field id="nanosecond"        mand="Y"/>
+                    <Field id="instrumentId"      mand="N"/>    <!-- derived from instrument in codec mapping -->
+                    <Field id="filler1"           len="3"/>
+                </Message>
+
+            </Model>
+@SECTION LSE_ITCH_MODEL END
+
+
+@SECTION LSE_ITCH_BINARY_CODEC START
+            <BinaryCodec id="ItchLSE"
+                         model="ItchLSE"
+                         decodeInclude="./millenium/ITCHLSEDecoder.include"
+                         encodeInclude="./millenium/ITCHLSEEncoder.include"
+                         decodeGenerator="com.rr.model.generator.emea.millenium.ITCHDecoderGenerator"
+                         encodeGenerator="com.rr.model.generator.emea.millenium.ITCHEncoderGenerator">
+
+                <MessageMap id="BaseResponse" messageId="" ignore="true">
+                    <Map field="eventTimestamp">
+                        <Hook type="encode" code="encodeLong( now )"/>
+                    </Map>
+                </MessageMap>
+
+                <MessageMap id="ITCHBookAddOrder"   eventId="BookAddOrder" messageId="ITCHBookAddOrder"     extends="BaseResponse">
+                    <Map field="instrumentId">
+                        <Hook type="decode" code="msg.setBook( lookupBook( _builder.decodeInt() ) )"/>
+                        <Hook type="encode" code="encodeSymbol( msg.getBook().getInstrument() )"/>
+                    </Map>
+                    <Map field="eventTimestamp">
+                        <Hook type="encode" code="encodeLong( now )"/>
+                    </Map>
+                </MessageMap>
+
+                <MessageMap id="ITCHBookDeleteOrder"   eventId="BookDeleteOrder" messageId="ITCHBookDeleteOrder"    extends="BaseResponse">
+                </MessageMap>
+
+                <MessageMap id="ITCHBookModifyOrder"   eventId="BookModifyOrder" messageId="ITCHBookModifyOrder"    extends="BaseResponse">
+                </MessageMap>
+
+                <MessageMap id="ITCHBookClear"   eventId="BookClear" messageId="ITCHBookClear"                      extends="BaseResponse">
+                    <Map field="instrumentId"><Hook type="encode" code="encodeSymbol( msg.getBook().getInstrument() )"/></Map>
+                </MessageMap>
+
+            </BinaryCodec>
+@SECTION LSE_ITCH_BINARY_CODEC END
+
+

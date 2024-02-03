@@ -1,0 +1,63 @@
+
+    @Override
+    public final int parseHeader( final byte[] msg, final int offset, final int bytesRead ) {
+       
+        _binaryMsg = msg;
+        _maxIdx = bytesRead + offset; // temp assign maxIdx to last data bytes in bufferMap
+        _offset = offset;
+        _builder.start( msg, offset, _maxIdx );
+        
+        if ( bytesRead < 4 ) {
+            ReusableString copy = TLC.instance().getString();
+            if ( bytesRead == 0 )  {
+                copy.setValue( "{empty}" );
+            } else{
+                copy.setValue( msg, offset, bytesRead );
+            }
+            throw new RuntimeDecodingException( "UTP Messsage too small, len=" + bytesRead, copy );
+        } else if ( msg.length < _maxIdx ){
+            throwDecodeException( "Buffer too small for specified bytesRead=" + bytesRead + ",offset=" + offset + ", bufLen=" + msg.length );
+        }
+        
+        _msgType = _builder.decodeByte();
+        final byte version = _builder.decodeByte();
+        
+        if ( version != _protocolVersion ) {
+            throwDecodeException( "Expected version="  + _protocolVersion + " not " + version );
+        }
+
+        _msgStatedLen = _builder.decodeShort();
+        
+        _maxIdx = _msgStatedLen + _offset;  // correctly assign maxIdx as last bytes of current message
+
+        if ( _maxIdx > _binaryMsg.length )  _maxIdx  = _binaryMsg.length;
+        
+        return _msgStatedLen;
+    }
+
+    private double scale( final double lastPx, final byte priceScale ) {
+        switch( priceScale ) {
+        case '0':
+            return lastPx;
+        case '1':
+            return lastPx / 10.0;
+        case '2':
+            return lastPx / 100.0;
+        case '3':
+            return lastPx / 1000.0;
+        case '4':
+            return lastPx / 10000.0;
+        case '5':
+            return lastPx / 100000.0;
+        case '6':
+            return lastPx / 1000000.0;
+        case '7':
+            return lastPx / 10000000.0;
+        case '8':
+            return lastPx / 100000000.0;
+        case '9':
+            return lastPx / 1000000000.0;
+        }
+        return lastPx;
+    }
+

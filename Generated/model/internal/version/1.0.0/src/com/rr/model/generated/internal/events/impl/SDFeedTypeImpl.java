@@ -1,39 +1,32 @@
-/*******************************************************************************
- * Copyright (c) 2015 Low Latency Trading Limited  :  Author Richard Rose
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at	http://www.apache.org/licenses/LICENSE-2.0
- * Unless required by applicable law or agreed to in writing,  software distributed under the License 
- * is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and limitations under the License.
- *******************************************************************************/
 package com.rr.model.generated.internal.events.impl;
 
-import com.rr.core.lang.ViewString;
-import com.rr.core.lang.ReusableString;
-import com.rr.core.lang.Constants;
-import com.rr.core.model.MsgFlag;
-import com.rr.core.lang.ReusableType;
-import com.rr.core.lang.Reusable;
-import com.rr.core.model.Message;
-import com.rr.core.model.MessageHandler;
+/*
+Copyright 2015 Low Latency Trading Limited
+Author Richard Rose
+*/
+
+import com.rr.core.utils.Utils;
+import com.rr.core.lang.*;
+import com.rr.core.model.*;
+import com.rr.core.annotations.*;
 import com.rr.model.internal.type.*;
 import com.rr.model.generated.internal.core.ModelReusableTypes;
 import com.rr.model.generated.internal.core.SizeType;
 import com.rr.model.generated.internal.core.EventIds;
 import com.rr.model.generated.internal.events.interfaces.*;
 
-@SuppressWarnings( "unused" )
+@SuppressWarnings( { "unused", "override"  })
 
-public final class SDFeedTypeImpl implements SDFeedType, Reusable<SDFeedTypeImpl> {
+public final class SDFeedTypeImpl implements SDFeedType, Reusable<SDFeedTypeImpl>, Copyable<SDFeedType> {
 
    // Attrs
 
-    private          SDFeedTypeImpl _next = null;
+    private transient          SDFeedTypeImpl _next = null;
     private final ReusableString _feedType = new ReusableString( SizeType.INST_FEED_TYPE_LENGTH.getSize() );
     private int _marketDepth = Constants.UNSET_INT;
 
 
-    private byte           _flags          = 0;
+    private int           _flags          = 0;
 
    // Getters and Setters
     @Override public final ViewString getFeedType() { return _feedType; }
@@ -74,16 +67,40 @@ public final class SDFeedTypeImpl implements SDFeedType, Reusable<SDFeedTypeImpl
    // Helper methods
     @Override
     public String toString() {
-        ReusableString buf = new ReusableString();
+        ReusableString buf = TLC.instance().pop();
         dump( buf );
-        return buf.toString();
+        String rs = buf.toString();
+        TLC.instance().pushback( buf );
+        return rs;
     }
 
     @Override
-    public final void dump( ReusableString out ) {
+    public final void dump( final ReusableString out ) {
         out.append( "SDFeedTypeImpl" ).append( ' ' );
-        out.append( ", feedType=" ).append( getFeedType() );
-        out.append( ", marketDepth=" ).append( getMarketDepth() );
+        if ( getFeedType().length() > 0 )             out.append( ", feedType=" ).append( getFeedType() );
+        if ( Constants.UNSET_INT != getMarketDepth() && 0 != getMarketDepth() )             out.append( ", marketDepth=" ).append( getMarketDepth() );
+    }
+
+    @Override public final void snapTo( SDFeedType dest ) {
+        ((SDFeedTypeImpl)dest).deepCopyFrom( this );
+    }
+
+    /** DEEP copy all members ... INCLUDING subEvents : WARNING CREATES NEW OBJECTS SO MONITOR FOR GC */
+    @Override public final void deepCopyFrom( SDFeedType src ) {
+        getFeedTypeForUpdate().copy( src.getFeedType() );
+        setMarketDepth( src.getMarketDepth() );
+    }
+
+    /** shallow copy all primitive members ... EXCLUDING subEvents */
+    @Override public final void shallowCopyFrom( SDFeedType src ) {
+        getFeedTypeForUpdate().copy( src.getFeedType() );
+        setMarketDepth( src.getMarketDepth() );
+    }
+
+    /** shallow copy all primitive members ... EXCLUDING subEvents */
+    @Override public final void shallowMergeFrom( SDFeedType src ) {
+        if ( src.getFeedType().length() > 0 ) getFeedTypeForUpdate().copy( src.getFeedType() );
+        if ( Constants.UNSET_INT != src.getMarketDepth() ) setMarketDepth( src.getMarketDepth() );
     }
 
 }

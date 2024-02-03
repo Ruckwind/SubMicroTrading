@@ -1,0 +1,1494 @@
+<!--suppress ALL -->
+
+
+@SECTION EUREX_ETI_CONSTANTS START
+
+        <!-- Eurex ETI constants -->
+            <!--suppress ALL -->
+<DefaultSize id="ETI_PASSWORD_LENGTH"           val="32"/>
+            <DefaultSize id="ETI_INTERFACE_VERSION_LENGTH"  val="30"/>
+            <DefaultSize id="ETI_APP_SYS_NAME_LENGTH"       val="30"/>
+            <DefaultSize id="ETI_APP_SYS_VER_LENGTH"        val="30"/>
+            <DefaultSize id="ETI_APP_SYS_VENDOR_LENGTH"     val="30"/>
+            <DefaultSize id="ETI_APP_MSG_ID_LENGTH"         val="16"/>
+            <DefaultSize id="ETI_VAR_TEXT_LENGTH"           val="128"/> <!-- max is 2K in doc -->
+            <DefaultSize id="ETI_ACCOUNT_LENGTH"            val="2"/>
+            <DefaultSize id="ETI_LINKID_LENGTH"             val="24"/>  <!--  FreeText1 plus FreeText2 -->
+
+@SECTION EUREX_ETI_CONSTANTS END
+
+@SECTION EUREX_ETI_TYPES START
+        <!-- ETITypes -->
+
+            <Type id="ETISessionMode"       valType="byte">
+                <Description>ETI Session Mode</Description>
+                <Entry name="HF"                  value="1"/>
+                <Entry name="LF"                  value="2"/>
+            </Type>
+
+            <Type id="ETIEnv"               valType="byte">
+                <Description>ETI Environment</Description>
+                <Entry name="Development"         value="1"/>
+                <Entry name="Simulation"          value="2"/>
+                <Entry name="Production"          value="3"/>
+                <Entry name="Acceptance"          value="4"/>
+            </Type>
+
+            <Type id="ETIOrderProcessingType">
+                <Description>ETI Order Processing Type</Description>
+                <Entry name="Automated"             value="A"/>
+                <Entry name="Manual"                value="M"/>
+                <Entry name="Both"                  value="B"/>
+                <Entry name="None"                  value="N"/>
+            </Type>
+
+            <Type id="ETIEurexDataStream"   valType="byte">
+                <Description>ETI Eurex Data Stream</Description>
+                <Entry name="Trade"               value="1"/>
+                <Entry name="News"                value="2"/>
+                <Entry name="ServiceAvailability" value="3"/>
+                <Entry name="SessionData"         value="4"/>
+                <Entry name="ListenerData"        value="5"/>
+                <Entry name="RiskControl"         value="6"/>
+            </Type>
+@SECTION EUREX_ETI_TYPES END
+
+@SECTION EUREX_ETI_EVENTS START
+        <!-- Eurex Enhanced Trading Interface EVENTS -->
+
+            <Base id="BaseETIRequest" src="both">
+                <!-- msgSeqNum and possBupFlag are required to allow ETI events to be treated as Message -->
+                <Attribute typeId="int"                            name="msgSeqNum"     mandatory="N"  outbound="seperate"/>
+                <Attribute typeId="boolean"                        name="possDupFlag"   mandatory="N"  outbound="seperate"/>
+                <Attribute typeId="UTCTimestamp"                   name="eventTimestamp"    mandatory="Y"  outbound="seperate"/>
+            </Base>
+
+            <Base id="BaseETIResponse" src="both">
+                <!-- msgSeqNum and possBupFlag are required to allow ETI events to be treated as Message -->
+                <Attribute typeId="int"                            name="msgSeqNum"         mandatory="N"  outbound="seperate"/>
+                <Attribute typeId="boolean"                        name="possDupFlag"       mandatory="N"  outbound="seperate"/>
+                <Attribute typeId="UTCTimestamp"                   name="eventTimestamp"    mandatory="Y"  outbound="seperate"/>
+            </Base>
+
+            <Event id="ETIConnectionGatewayRequest" extends="BaseETIRequest" src="both">
+                <Attribute typeId="int"                            name="msgSeqNum"     mandatory="Y"  outbound="seperate"/>
+                <Attribute typeId="int"                            name="partyIDSessionID"     mandatory="Y"  outbound="seperate"/>
+                <Attribute typeId="string[ETI_PASSWORD_LENGTH]"    name="password"       mandatory="Y"        outbound="seperate"/>
+            </Event>
+
+            <Event id="ETIConnectionGatewayResponse" extends="BaseETIResponse" src="both">
+                <Attribute typeId="UTCTimestamp"                   name="requestTime"     mandatory="Y"  outbound="seperate"/>
+                <Attribute typeId="int"                            name="msgSeqNum"       mandatory="Y"  outbound="seperate"/>
+                <Attribute typeId="int"                            name="gatewayID"       mandatory="Y"  outbound="seperate"/>
+                <Attribute typeId="int"                            name="gatewaySubID"    mandatory="Y"  outbound="seperate"/>
+                <Attribute typeId="int"                            name="secGatewayID"    mandatory="Y"  outbound="seperate"/>
+                <Attribute typeId="int"                            name="secGatewaySubID" mandatory="Y"  outbound="seperate"/>
+                <Attribute typeId="ETISessionMode"                 name="sessionMode"     mandatory="Y"  outbound="seperate"/>
+                <Attribute typeId="ETIEnv"                         name="tradSesMode"     mandatory="Y"  outbound="seperate"/>
+            </Event>
+
+            <Event id="ETISessionLogonRequest" extends="BaseETIRequest" src="both">
+                <Attribute typeId="int"                             name="heartBtIntMS"     mandatory="Y"        outbound="seperate"/>
+                <Attribute typeId="int"                             name="partyIDSessionID"  mandatory="Y"        outbound="seperate"/>
+                <Attribute typeId="string[ETI_INTERFACE_VERSION_LENGTH]"  name="defaultCstmApplVerID"  mandatory="Y"  outbound="seperate"/>
+                <Attribute typeId="string[ETI_PASSWORD_LENGTH]"     name="password"  mandatory="Y"  outbound="seperate"/>
+                <Attribute typeId="ETIOrderProcessingType"          name="applUsageOrders"  mandatory="Y"        outbound="seperate"/>
+                <Attribute typeId="ETIOrderProcessingType"          name="applUsageQuotes"  mandatory="Y"        outbound="seperate"/>
+                <Attribute typeId="boolean"                         name="orderRoutingIndicator"  mandatory="Y"        outbound="seperate"/>
+                <Attribute typeId="string[ETI_APP_SYS_NAME_LENGTH]" name="applicationSystemName"  mandatory="Y"  outbound="seperate"/>
+                <Attribute typeId="string[ETI_APP_SYS_VER_LENGTH]"  name="applicationSystemVer"  mandatory="Y"  outbound="seperate"/>
+                <Attribute typeId="string[ETI_APP_SYS_VENDOR_LENGTH]"  name="applicationSystemVendor"  mandatory="Y"  outbound="seperate"/>
+            </Event>
+
+            <Event id="ETISessionLogonResponse" extends="BaseETIResponse" src="both">
+                <Attribute typeId="UTCTimestamp"                   name="requestTime"    mandatory="Y"        outbound="seperate"/>
+                <Attribute typeId="long"                           name="throttleTimeIntervalMS"     mandatory="Y"        outbound="seperate"/>
+                <Attribute typeId="int"                            name="throttleNoMsgs"     mandatory="Y"        outbound="seperate"/>
+                <Attribute typeId="int"                            name="throttleDisconnectLimit"     mandatory="Y"        outbound="seperate"/>
+                <Attribute typeId="int"                            name="heartBtIntMS"     mandatory="Y"        outbound="seperate"/>
+                <Attribute typeId="int"                            name="sessionInstanceID"     mandatory="Y"        outbound="seperate"/>
+                <Attribute typeId="ETIEnv"                         name="tradSesMode"  mandatory="Y"        outbound="seperate"/>
+                <Attribute typeId="string[ETI_INTERFACE_VERSION_LENGTH]"  name="defaultCstmApplVerID"  mandatory="Y"  outbound="seperate"/>
+            </Event>
+
+            <Event id="ETISessionLogoutRequest" extends="BaseETIRequest" src="both">
+            </Event>
+
+            <Event id="ETISessionLogoutResponse" extends="BaseETIResponse" src="both">
+                <Attribute typeId="UTCTimestamp"                   name="requestTime"    mandatory="Y"        outbound="seperate"/>
+            </Event>
+
+            <Event id="ETISessionLogoutNotification" extends="BaseETIResponse" src="both">
+                <Attribute typeId="UTCTimestamp"                   name="requestTime"    mandatory="Y"        outbound="seperate"/>
+                <Attribute typeId="string[ETI_VAR_TEXT_LENGTH]"    name="reason" mandatory="Y"                outbound="seperate"/>
+            </Event>
+
+            <Event id="ETIUserLogonRequest" extends="BaseETIRequest" src="both">
+                <Attribute typeId="int"                             name="userName"  mandatory="Y"        outbound="seperate"/>
+                <Attribute typeId="string[ETI_PASSWORD_LENGTH]"     name="password"  mandatory="Y"  outbound="seperate"/>
+            </Event>
+
+            <Event id="ETIUserLogonResponse" extends="BaseETIResponse" src="both">
+                <Attribute typeId="UTCTimestamp"                   name="requestTime"    mandatory="Y"        outbound="seperate"/>
+            </Event>
+
+            <Event id="ETIUserLogoutRequest" extends="BaseETIRequest" src="both">
+                <Attribute typeId="int"                             name="userName"  mandatory="Y"        outbound="seperate"/>
+            </Event>
+
+            <Event id="ETIUserLogoutResponse" extends="BaseETIResponse" src="both">
+                <Attribute typeId="UTCTimestamp"                   name="requestTime"    mandatory="Y"        outbound="seperate"/>
+            </Event>
+
+            <Event id="ETIThrottleUpdateNotification" extends="BaseETIResponse" src="both">
+                <Attribute typeId="long"                           name="throttleTimeIntervalMS"     mandatory="Y"        outbound="seperate"/>
+                <Attribute typeId="int"                            name="throttleNoMsgs"             mandatory="Y"        outbound="seperate"/>
+                <Attribute typeId="int"                            name="throttleDisconnectLimit"    mandatory="Y"        outbound="seperate"/>
+            </Event>
+
+            <Event id="ETISubscribe" extends="BaseETIRequest" src="both">
+                <Attribute typeId="int"                             name="subscriptionScope"  mandatory="Y"        outbound="seperate"/>
+                <Attribute typeId="ETIEurexDataStream"              name="refApplID"          mandatory="Y"        outbound="seperate"/>
+            </Event>
+
+            <Event id="ETISubscribeResponse" extends="BaseETIResponse" src="both">
+                <Attribute typeId="UTCTimestamp"                   name="requestTime"    mandatory="Y"        outbound="seperate"/>
+                <Attribute typeId="int"                            name="applSubID"      mandatory="Y"        outbound="seperate"/>
+            </Event>
+
+            <Event id="ETIUnsubscribe" extends="BaseETIRequest" src="both">
+                <Attribute typeId="int"                             name="refApplSubID"  mandatory="Y"        outbound="seperate"/>
+            </Event>
+
+            <Event id="ETIUnsubscribeResponse" extends="BaseETIResponse" src="both">
+                <Attribute typeId="UTCTimestamp"                   name="requestTime"    mandatory="Y"        outbound="seperate"/>
+            </Event>
+
+            <Event id="ETIRetransmit" extends="BaseETIRequest" src="both">
+                <Attribute typeId="long"                            name="applBegSeqNum"      mandatory="Y"        outbound="seperate"/>
+                <Attribute typeId="long"                            name="applEndSeqNum"      mandatory="Y"        outbound="seperate"/>
+                <Attribute typeId="int"                             name="subscriptionScope"  mandatory="Y"        outbound="seperate"/>
+                <Attribute typeId="short"                           name="partitionID"        mandatory="Y"        outbound="seperate"/>
+                <Attribute typeId="ETIEurexDataStream"              name="refApplID"          mandatory="Y"        outbound="seperate"/>
+            </Event>
+
+            <Event id="ETIRetransmitResponse" extends="BaseETIResponse" src="both">
+                <Attribute typeId="UTCTimestamp"                   name="requestTime"            mandatory="Y"        outbound="seperate"/>
+                <Attribute typeId="long"                           name="applEndSeqNum"          mandatory="Y"        outbound="seperate"/>
+                <Attribute typeId="long"                           name="refApplLastSeqNum"      mandatory="Y"        outbound="seperate"/>
+                <Attribute typeId="short"                          name="applTotalMessageCount"  mandatory="Y"        outbound="seperate"/>
+            </Event>
+
+            <Event id="ETIRetransmitOrderEvents" extends="BaseETIRequest" src="both">
+                <Attribute typeId="int"                             name="subscriptionScope"  mandatory="Y"        outbound="seperate"/>
+                <Attribute typeId="short"                           name="partitionID"        mandatory="Y"        outbound="seperate"/>
+                <Attribute typeId="ETIEurexDataStream"              name="refApplID"          mandatory="Y"        outbound="seperate"/>
+                <Attribute typeId="string[ETI_APP_MSG_ID_LENGTH]"   name="applBegMsgID"       mandatory="Y"        outbound="seperate"/>
+                <Attribute typeId="string[ETI_APP_MSG_ID_LENGTH]"   name="applEndMsgID"       mandatory="Y"        outbound="seperate"/>
+            </Event>
+
+            <Event id="ETIRetransmitOrderEventsResponse" extends="BaseETIResponse" src="both">
+                <Attribute typeId="UTCTimestamp"                   name="requestTime"            mandatory="Y"        outbound="seperate"/>
+                <Attribute typeId="short"                          name="applTotalMessageCount"  mandatory="Y"        outbound="seperate"/>
+                <Attribute typeId="string[ETI_APP_MSG_ID_LENGTH]"  name="applEndMsgID"           mandatory="Y"        outbound="seperate"/>
+                <Attribute typeId="string[ETI_APP_MSG_ID_LENGTH]"  name="refApplLastMsgID"       mandatory="Y"        outbound="seperate"/>
+            </Event>
+
+            <Event id="ETIRetransmitOrderEventsResponse" extends="BaseETIResponse" src="both">
+                <Attribute typeId="UTCTimestamp"                   name="requestTime"            mandatory="Y"        outbound="seperate"/>
+                <Attribute typeId="short"                          name="applTotalMessageCount"  mandatory="Y"        outbound="seperate"/>
+                <Attribute typeId="string[ETI_APP_MSG_ID_LENGTH]"  name="applEndMsgID"           mandatory="Y"        outbound="seperate"/>
+                <Attribute typeId="string[ETI_APP_MSG_ID_LENGTH]"  name="refApplLastMsgID"       mandatory="Y"        outbound="seperate"/>
+            </Event>
+
+@SECTION EUREX_ETI_EVENTS END
+
+@SECTION EUREX_ETI_MODEL START
+
+        <Model id="ETIEurex" modelVersionNumber="1.0">
+
+            <Attribute name="BinaryVersion" value="1"/>
+            <Attribute name="MessageTypeAscii" value="N"/>
+
+            <Dictionary>
+                <!-- certain tags are special and have specific optimised codec code eg fixVersion.msgType -->
+                <!--  type should be external facing not internal type mapping -->
+                <!--  for name try and use the internal event field name so it can be auto matched to the event -->
+                <!-- valid types zstr(fixed len str)|str(with len as max)|ch|price|sByte|sShort|sInt|sLong|bool|
+                                 timestampLocal|timestampUTC|timeLocal|timeUTC -->
+
+                <Field id="account"                 type="zstr" len="ETI_ACCOUNT_LENGTH"/>
+                <Field id="accountType"             type="uByte"/>
+                <Field id="aggressorIndicator"       type="uByte"/>
+                <Field id="applBegSeqNum"           type="uLong"/>
+                <Field id="applEndSeqNum"           type="uLong"/>
+                <Field id="applBegMsgID"            type="zstr" len="ETI_APP_MSG_ID_LENGTH"/>
+                <Field id="applEndMsgID"            type="zstr" len="ETI_APP_MSG_ID_LENGTH"/>
+                <Field id="applicationSystemName"   type="zstr" len="ETI_APP_SYS_NAME_LENGTH"/>
+                <Field id="applicationSystemVer"    type="zstr" len="ETI_APP_SYS_VER_LENGTH"/>
+                <Field id="applicationSystemVendor" type="zstr" len="ETI_APP_SYS_VENDOR_LENGTH"/>
+                <Field id="applID"                  type="uByte"/>
+                <Field id="applMsgID"               type="data" len="ETI_APP_MSG_ID_LENGTH"/>
+                <Field id="applResendFlag"          type="bool"/>
+                <Field id="applSeqIndicator"        type="uByte"/>
+                <Field id="applSubID"               type="uInt"/>
+                <Field id="applTotalMessageCount"   type="uShort"/>
+                <Field id="applUsageOrders"         type="ch"/>
+                <Field id="applUsageQuotes"         type="ch"/>
+                <Field id="cumQty"                  type="qty"/>
+                <Field id="clOrdId"                 type="uLong"/>
+                <Field id="cxlQty"                  type="qty"/>
+                <Field id="defaultCstmApplVerID"    type="zstr" len="ETI_INTERFACE_VERSION_LENGTH"/>
+                <Field id="execId"                  type="uLong"/>
+                <Field id="execInst"                type="uByte"/>
+                <Field id="execRestatementReason"   type="uShort"/>
+                <Field id="execType"                type="ch"/>
+                <Field id="expireDate"              type="uInt"/>
+                <Field id="fillExecID"              type="uInt"/>
+                <Field id="fillLiquidityInd"        type="uByte"/>
+                <Field id="fillMatchID"             type="uInt"/>
+                <Field id="fillPx"                  type="price"/>
+                <Field id="fillQty"                 type="qty"/>
+                <Field id="fillsIndex"              type="uByte"        comment="index into fills repeating grp"/>
+                <Field id="gatewayID"               type="uInt"/>
+                <Field id="gatewaySubID"            type="uInt"/>
+                <Field id="heartBtIntMS"            type="uInt"/>
+                <Field id="lastFragment"            type="uByte"/>
+                <Field id="lastPx"                  type="price"/>
+                <Field id="leavesQty"               type="qty"/>
+                <Field id="legAccount"              type="zstr" len="ETI_ACCOUNT_LENGTH"/>
+                <Field id="legExecID"               type="sInt"/>
+                <Field id="legLastPx"               type="price"/>
+                <Field id="legLastQty"              type="qty"/>
+                <Field id="legPositionEffect"       type="ch"/>
+                <Field id="legSecurityID"           type="sLong"/>
+                <Field id="legSide"                 type="uByte"/>
+                <Field id="parentClOrdId"           type="zstr" len="ETI_LINKID_LENGTH"   comment="FreeText1 plus FreeText2"/>
+                <Field id="marketSegmentID"         type="sInt"/>
+                <Field id="matchType"         		type="uByte"/>
+                <Field id="matchSubType"         	type="uByte"/>
+                <Field id="maxPricePercentage"      type="price"/>
+                <Field id="msgType"                 type="uShort"       comment="templateID"/>
+                <Field id="msgLen"                  type="uInt"         comment="total message length"/>
+                <Field id="msgSeqNum"               type="uInt"         comment="last message sequence number"/>
+                <Field id="noFills"                 type="uByte"/>
+                <Field id="noLegExecs"              type="uShort"/>
+                <Field id="noLegs"                  type="uShort"/>
+                <Field id="orderCapacity"           type="uByte"        comment="tradingCapacity"/>
+                <Field id="orderId"                 type="uLong"/>
+                <Field id="orderRoutingIndicator"   type="bool"/>
+                <Field id="orderQty"                type="qty"/>
+                <Field id="ordStatus"               type="ch"/>
+                <Field id="ordType"                 type="uByte"/>
+                <Field id="origClOrdId"             type="uLong"/>
+                <Field id="origTradeId"             type="uInt"/>
+                <Field id="partitionID"             type="uShort"/>
+                <Field id="partyIDEnteringTrader"   type="uInt"/>
+                <Field id="partyIDEnteringFirm"     type="uByte"/>
+                <Field id="partyIDExecutingTrader"  type="uInt"/>
+                <Field id="partyIDExecutingUnit"    type="uInt"/>
+                <Field id="partyIDSessionID"        type="uInt"/>
+                <Field id="password"                type="zstr" len="ETI_PASSWORD_LENGTH"/>
+                <Field id="positionEffect"          type="ch"/>
+                <Field id="price"                   type="price"/>
+                <Field id="priceMkToLimitPx"        type="price"/>
+                <Field id="priceValidityCheckType"  type="uByte"/>
+                <Field id="productComplex"          type="uByte"/>
+                <Field id="refApplID"               type="uByte"/>
+                <Field id="refApplLastSeqNum"       type="uLong"/>
+                <Field id="refApplLastMsgID"        type="zstr" len="ETI_APP_MSG_ID_LENGTH"/>
+                <Field id="refApplSubID"            type="uInt"/>
+                <Field id="relatedSecurityId"       type="sLong"/>
+                <Field id="requestTime"             type="timestampUTC"/>
+                <Field id="senderLocationID"        type="uLong"/>
+                <Field id="senderSubID"             type="uInt"/>
+                <Field id="sendingTime"             type="timestampUTC"/>
+                <Field id="secondaryGatewayID"      type="uInt"/>
+                <Field id="secondaryGatewaySubID"   type="uInt"/>
+                <Field id="securityId"              type="sLong"/>
+                <Field id="sessionInstanceID"       type="uInt"/>
+                <Field id="sessionMode"             type="uByte"/>
+                <Field id="sessionRejectReason"     type="uInt"/>
+                <Field id="sessionStatus"           type="uByte"/>
+                <Field id="side"                    type="uByte"/>
+                <Field id="sideLastPx"              type="price"/>
+                <Field id="simpleSecurityID"        type="uInt"/>
+                <Field id="stopPx"                  type="price"/>
+                <Field id="subscriptionScope"       type="uInt"/>
+                <Field id="targetPartyIDSessionID"  type="uInt"/>
+                <Field id="throttleDisconnectLimit" type="uInt"/>
+                <Field id="throttleNoMsgs"          type="uInt"/>
+                <Field id="throttleTimeIntervalMS"  type="sLong"/>
+                <Field id="timeInForce"             type="uByte"/>
+                <Field id="tradingSessionSubID"     type="uByte"/>
+                <Field id="tradSesMode"             type="uByte"/>
+                <Field id="tradeId"                 type="uInt"/>
+                <Field id="tradeReportType"         type="uByte"/>
+                <Field id="tranExecId"              type="uLong"/>
+                <Field id="trdMatchDate"            type="uInt"/>
+                <Field id="trdMatchID"              type="uInt"/>
+                <Field id="trdRegTSEntryTime"       type="timestampUTC"/>
+                <Field id="trdRegTSTimeIn"          type="timestampUTC"/>
+                <Field id="trdRegTSTimeOut"         type="timestampUTC"/>
+                <Field id="trdRegTSTimePriority"    type="timestampUTC"/>
+                <Field id="triggered"               type="uByte"/>
+                <Field id="uniqueClientCode"        type="str" len="12"/>
+                <Field id="userName"                type="uInt"/>
+                <Field id="varTextLen"              type="uShort"/>
+                <Field id="varText"                 type="str" len="ETI_VAR_TEXT_LENGTH"/>
+
+            </Dictionary>
+
+            <!-- NOTE mandatory field indicates the field MUST be present in the internal event ! -->
+
+            <StandardHeader>
+                <!-- these special header fields are deemed not mandatory in the sense that they dont need to be populated by events -->
+                <Field id="msgLen"            mand="N"/>
+                <Field id="msgType"           mand="N"/>
+            </StandardHeader>
+
+            <StandardTrailer>
+            </StandardTrailer>
+
+            <!-- any id starting with filler will form a fixed width field of specified len, multiple fillers per msg allowed but must have unique ids -->
+            <Message id="ConnectionGatewayRequest"  msgType="10020">
+                <Field id="msgSeqNum"               mand="Y"/>
+                <Field id="senderSubID"             mand="Y"/>
+                <Field id="partyIDSessionID"        mand="Y"/>
+                <Field id="password"                mand="Y"/>
+                <Field id="filler2"                 len="4"/>
+            </Message>
+
+            <Message id="ConnectionGatewayResponse"  msgType="10021">
+                <Field id="requestTime"             mand="Y"/>
+                <Field id="sendingTime"             mand="Y"/>
+                <Field id="msgSeqNum"               mand="Y"/>
+                <Field id="filler1"                 len="4"/>
+                <Field id="gatewayID"               mand="Y"/>
+                <Field id="gatewaySubID"            mand="Y"/>
+                <Field id="secondaryGatewayID"      mand="N"/>
+                <Field id="secondaryGatewaySubID"   mand="N"/>
+                <Field id="sessionMode"             mand="Y"/>
+                <Field id="tradSesMode"             mand="Y"/>
+                <Field id="filler2"                 len="6"/>
+            </Message>
+
+            <Message id="SessionLogonRequest"  msgType="10000">
+                <Field id="msgSeqNum"               mand="Y"/>
+                <Field id="senderSubID"             mand="Y"/>
+                <Field id="heartBtIntMS"            mand="Y"/>
+                <Field id="partyIDSessionID"        mand="Y"/>
+                <Field id="defaultCstmApplVerID"    mand="Y"/>
+                <Field id="password"                mand="Y"/>
+                <Field id="applUsageOrders"         mand="Y"/>
+                <Field id="applUsageQuotes"         mand="Y"/>
+                <Field id="orderRoutingIndicator"   mand="Y"/>
+                <Field id="filler2"                 len="30"/>                  <!--  fix engine name -->
+                <Field id="filler3"                 len="30"/>                  <!--  fix engine version -->
+                <Field id="filler4"                 len="30"/>                  <!--  fix engine vendor -->
+                <Field id="applicationSystemName"   mand="Y"/>
+                <Field id="applicationSystemVer"    mand="Y"/>
+                <Field id="applicationSystemVendor" mand="Y"/>
+                <Field id="filler5"                 len="3"/>
+            </Message>
+
+            <Message id="SessionLogonResponse"  msgType="10001">
+                <Field id="requestTime"             mand="Y"/>
+                <Field id="sendingTime"             mand="Y"/>
+                <Field id="msgSeqNum"               mand="Y"/>
+                <Field id="filler1"                 len="4"/>
+                <Field id="throttleTimeIntervalMS"  mand="Y"/>
+                <Field id="throttleNoMsgs"          mand="Y"/>
+                <Field id="throttleDisconnectLimit" mand="Y"/>
+                <Field id="heartBtIntMS"            mand="Y"/>
+                <Field id="sessionInstanceID"       mand="Y"/>
+                <Field id="tradSesMode"             mand="Y"/>
+                <Field id="defaultCstmApplVerID"    mand="Y"/>
+                <Field id="filler2"                 len="1"/>
+            </Message>
+
+            <Message id="SessionLogoutRequest"                msgType="10002">
+                <Field id="msgSeqNum"               mand="Y"/>
+                <Field id="senderSubID"             mand="Y"/>
+            </Message>
+
+            <Message id="SessionLogoutResponse"                msgType="10003">
+                <Field id="requestTime"             mand="Y"/>
+                <Field id="sendingTime"             mand="Y"/>
+                <Field id="msgSeqNum"               mand="Y"/>
+                <Field id="filler"                  len="4"/>
+            </Message>
+
+            <Message id="SessionLogoutNotification"                msgType="10012"> <!--  unsol logout -->
+                <Field id="sendingTime"             mand="Y"/>
+                <Field id="varTextLen"              mand="N"/>
+                <Field id="filler"                  len="6"/>
+                <Field id="varText"                 mand="N"/>
+            </Message>
+
+            <Message id="Heartbeat"             msgType="10011">
+            </Message>
+
+            <Message id="HeartbeatNotification"  msgType="10023">
+                <Field id="sendingTime"             mand="Y"/>
+            </Message>
+
+            <Message id="UserLogonRequest"  msgType="10018">
+                <Field id="msgSeqNum"               mand="Y"/>
+                <Field id="senderSubID"             mand="Y"/>
+                <Field id="userName"                mand="Y"/>
+                <Field id="password"                mand="Y"/>
+                <Field id="filler2"                 len="4"/>
+            </Message>
+
+            <Message id="UserLogonResponse"  msgType="10019">
+                <Field id="requestTime"             mand="Y"/>
+                <Field id="sendingTime"             mand="Y"/>
+                <Field id="msgSeqNum"               mand="Y"/>
+                <Field id="filler"                  len="4"/>
+            </Message>
+
+            <Message id="UserLogoutRequest"                msgType="10029">
+                <Field id="msgSeqNum"               mand="Y"/>
+                <Field id="senderSubID"             mand="Y"/>
+                <Field id="userName"                mand="Y"/>
+                <Field id="filler2"                 len="4"/>
+            </Message>
+
+            <Message id="UserLogoutResponse"                msgType="10024">
+                <Field id="requestTime"             mand="Y"/>
+                <Field id="sendingTime"             mand="Y"/>
+                <Field id="msgSeqNum"               mand="Y"/>
+                <Field id="filler"                  len="4"/>
+            </Message>
+
+            <Message id="ThrottleUpdateNotification"  msgType="10028">
+                <Field id="sendingTime"             mand="Y"/>
+                <Field id="throttleTimeIntervalMS"  mand="Y"/>
+                <Field id="throttleNoMsgs"          mand="Y"/>
+                <Field id="throttleDisconnectLimit" mand="Y"/>
+            </Message>
+
+            <Message id="Subscribe"                msgType="10025">
+                <Field id="msgSeqNum"               mand="Y"/>
+                <Field id="senderSubID"             mand="Y"/>
+                <Field id="subscriptionScope"       mand="Y"/>
+                <Field id="refApplID"               mand="Y"/>
+                <Field id="filler2"                 len="3"/>
+            </Message>
+
+            <Message id="SubscribeResponse"                msgType="10005">
+                <Field id="requestTime"             mand="Y"/>
+                <Field id="sendingTime"             mand="Y"/>
+                <Field id="msgSeqNum"               mand="Y"/>
+                <Field id="filler1"                 len="4"/>
+                <Field id="applSubID"               mand="Y"/>
+                <Field id="filler2"                 len="4"/>
+            </Message>
+
+            <Message id="Unsubscribe"                msgType="10006">
+                <Field id="msgSeqNum"               mand="Y"/>
+                <Field id="senderSubID"             mand="Y"/>
+                <Field id="refApplSubID"            mand="Y"/>
+                <Field id="filler2"                 len="4"/>
+            </Message>
+
+            <Message id="UnsubscribeResponse"                msgType="10007">
+                <Field id="requestTime"             mand="Y"/>
+                <Field id="sendingTime"             mand="Y"/>
+                <Field id="msgSeqNum"               mand="Y"/>
+                <Field id="filler"                  len="4"/>
+            </Message>
+
+            <Message id="Retransmit"                msgType="10008">
+                <Field id="msgSeqNum"               mand="Y"/>
+                <Field id="senderSubID"             mand="Y"/>
+                <Field id="applBegSeqNum"           mand="Y"/>
+                <Field id="applEndSeqNum"           mand="Y"/>
+                <Field id="subscriptionScope"       mand="Y"/>
+                <Field id="partitionID"             mand="Y"/>
+                <Field id="refApplID"               mand="Y"/>
+                <Field id="filler2"                 len="1"/>
+            </Message>
+
+            <Message id="RetransmitResponse"                msgType="10009">
+                <Field id="requestTime"             mand="Y"/>
+                <Field id="sendingTime"             mand="Y"/>
+                <Field id="msgSeqNum"               mand="Y"/>
+                <Field id="filler1"                 len="4"/>
+                <Field id="applEndSeqNum"           mand="Y"/>
+                <Field id="refApplLastSeqNum"       mand="Y"/>
+                <Field id="applTotalMessageCount"   mand="Y"/>
+                <Field id="filler2"                 len="6"/>
+            </Message>
+
+            <Message id="RetransmitOrderEvents"                msgType="10026">
+                <Field id="msgSeqNum"               mand="Y"/>
+                <Field id="senderSubID"             mand="Y"/>
+                <Field id="subscriptionScope"       mand="Y"/>
+                <Field id="partitionID"             mand="Y"/>
+                <Field id="refApplID"               mand="Y"/>
+                <Field id="applBegMsgID"            mand="Y"/>
+                <Field id="applEndMsgID"            mand="Y"/>
+                <Field id="filler2"                 len="1"/>
+            </Message>
+
+            <Message id="RetransmitOrderEventsResponse"        msgType="10027">
+                <Field id="requestTime"             mand="Y"/>
+                <Field id="sendingTime"             mand="Y"/>
+                <Field id="msgSeqNum"               mand="Y"/>
+                <Field id="filler1"                 len="4"/>
+                <Field id="applTotalMessageCount"   mand="Y"/>
+                <Field id="applEndMsgID"            mand="Y"/>
+                <Field id="refApplLastMsgID"        mand="Y"/>
+                <Field id="filler2"                 len="6"/>
+            </Message>
+
+            <Message id="Reject"                msgType="10010">
+                <Field id="requestTime"             mand="N"/>
+                <Field id="sendingTime"             mand="N"/>
+                <Field id="msgSeqNum"               mand="Y"/>
+                <Field id="filler1"                 len="4"/>
+                <Field id="sessionRejectReason"     mand="Y"/>
+                <Field id="varTextLen"              mand="N"/>
+                <Field id="sessionStatus"           mand="N"/>
+                <Field id="filler2"                 len="1"/>
+                <Field id="varText"                 mand="N"/>
+            </Message>
+
+            <Message id="NewOrderRequest"            msgType="10100">
+                <Field id="msgSeqNum"               mand="Y"/>
+                <Field id="senderSubID"             mand="Y"/>
+
+                <Field id="price"                   mand="N"/>
+                <Field id="stopPx"                  mand="N"/>
+                <Field id="maxPricePercentage"      mand="N"/>
+                <Field id="senderLocationID"        mand="N"/>
+                <Field id="clOrdId"                 mand="Y"/>
+                <Field id="filler1b"                len="4"/>   <!-- messageTag tag526 -->
+                <Field id="orderQty"                mand="Y"/>
+                <Field id="filler1c"                len="4"/>   <!-- maxShow tag210 -->
+                <Field id="expireDate"              mand="N"/>
+                <Field id="marketSegmentID"         mand="Y"/>
+                <Field id="simpleSecurityID"        mand="Y"/>
+
+                <Field id="filler2"                 len="5"/>    <!-- PartyIDTakeUpTradingFirm -->
+                <Field id="filler3"                 len="3"/>    <!-- PartyIDOrderOriginationFirm -->
+                <Field id="filler4"                 len="9"/>    <!-- PartyIDBeneficiary -->
+
+                <Field id="accountType"             mand="N"/>
+                <Field id="applSeqIndicator"        mand="N"/>
+                <Field id="side"                    mand="Y"/>
+                <Field id="ordType"                 mand="Y"/>
+                <Field id="priceValidityCheckType"  mand="Y"/>
+                <Field id="timeInForce"             mand="Y"/>
+                <Field id="execInst"                mand="Y"/>
+                <Field id="tradingSessionSubID"     mand="N"/>
+                <Field id="orderCapacity"           mand="N"/> <!--  tradingCapacity -->
+                <Field id="account"                 mand="N"/>
+                <Field id="positionEffect"          mand="N"/>
+
+                <Field id="filler5"                 len="20"/>    <!-- RegulatoryText -->
+
+                <Field id="uniqueClientCode"        mand="N"/>
+                <Field id="parentClOrdId"               mand="Y"/> <!-- FreeText2 + FreeText3 -->
+
+                <Field id="filler8"                 len="3"/>
+            </Message>
+
+            <SubMessage id="OrderLegsGrp">
+                <Field id="legAccount"              mand="N"/>
+                <Field id="legPositionEffect"       mand="N"/>
+                <Field id="fillerLegsGrp"           len="5"/>
+            </SubMessage>
+
+            <Message id="NewOrderRequestMultiLeg"   msgType="10113">
+                <Field id="msgSeqNum"               mand="Y"/>
+                <Field id="senderSubID"             mand="Y"/>
+
+                <Field id="clOrdId"                 mand="Y"/>
+                <Field id="securityId"              mand="Y"/>
+                <Field id="maxPricePercentage"      mand="N"/>
+                <Field id="senderLocationID"        mand="N"/>
+                <Field id="price"                   mand="N"/>
+                <Field id="filler1b"                len="4"/>   <!-- messageTag tag526 -->
+                <Field id="marketSegmentID"         mand="Y"/>
+                <Field id="orderQty"                mand="Y"/>
+                <Field id="filler1c"                len="4"/>   <!-- maxShow tag210 -->
+                <Field id="expireDate"              mand="N"/>
+                <Field id="filler2"                 len="5"/>    <!-- PartyIDTakeUpTradingFirm -->
+                <Field id="filler3"                 len="3"/>    <!-- PartyIDOrderOriginationFirm -->
+                <Field id="filler4"                 len="9"/>    <!-- PartyIDBeneficiary -->
+                <Field id="accountType"             mand="N"/>
+                <Field id="applSeqIndicator"        mand="N"/>
+                <Field id="productComplex"          mand="N"/>
+                <Field id="side"                    mand="Y"/>
+                <Field id="ordType"                 mand="Y"/>
+                <Field id="priceValidityCheckType"  mand="Y"/>
+                <Field id="execInst"                mand="Y"/>
+                <Field id="timeInForce"             mand="Y"/>
+                <Field id="orderCapacity"           mand="N"/> <!--  tradingCapacity -->
+                <Field id="filler5"                 len="20"/>    <!-- RegulatoryText -->
+                <Field id="uniqueClientCode"        mand="N"/>
+                <Field id="parentClOrdId"               mand="Y"/> <!-- FreeText2 + FreeText3 -->
+
+                <Field id="noLegs"                  mand="N"/>
+                <Field id="filler8"                 len="1"/>
+
+                <Field id="OrderLegsGrp"            counter="noLegs"/>
+
+            </Message>
+
+            <Message id="NewOrderRequestSimple"            msgType="10125">
+                <Field id="msgSeqNum"               mand="Y"/>
+                <Field id="senderSubID"             mand="Y"/>
+
+                <Field id="price"                   mand="Y"/>
+                <Field id="senderLocationID"        mand="N"/>
+                <Field id="clOrdId"                 mand="Y"/>
+                <Field id="orderQty"                mand="Y"/>
+                <Field id="filler1c"                len="4"/>   <!-- maxShow tag210 -->
+                <Field id="simpleSecurityID"        mand="Y"/>
+
+                <Field id="accountType"             mand="N"/>
+                <Field id="side"                    mand="Y"/>
+                <Field id="priceValidityCheckType"  mand="Y"/>
+                <Field id="timeInForce"             mand="Y"/>
+                <Field id="execInst"                mand="Y"/>
+                <Field id="uniqueClientCode"        mand="N"/>
+                <Field id="filler3"                 len="3" comment="pad3"/>
+            </Message>
+
+            <Message id="NewOrderStandardResponse"     msgType="10101">
+                <Field id="requestTime"             mand="N"/>
+                <Field id="trdRegTSTimeIn"          mand="N"/>
+                <Field id="trdRegTSTimeOut"         mand="N"/>
+                <Field id="sendingTime"             mand="N"/>
+                <Field id="msgSeqNum"               mand="Y"/>
+                <Field id="partitionID"             mand="N"/>
+                <Field id="applID"                  mand="N"/>
+                <Field id="applMsgID"               mand="N"/>
+                <Field id="lastFragment"            mand="N"/>
+
+                <Field id="orderId"                 mand="Y"/>
+                <Field id="clOrdId"                 mand="Y"/>
+                <Field id="securityId"              mand="Y"/>
+                <Field id="execId"                  mand="Y"/>
+                <Field id="trdRegTSEntryTime"       mand="N"/>
+                <Field id="trdRegTSTimePriority"    mand="N"/>
+                <Field id="ordStatus"               mand="Y"/>
+                <Field id="execType"                mand="Y"/>
+                <Field id="execRestatementReason"   mand="N"/>
+                <Field id="productComplex"          mand="N"/>
+
+                <Field id="filler"                  len="3"/>
+            </Message>
+
+            <Message id="NewOrderLeanResponse"     msgType="10102">
+                <Field id="requestTime"             mand="N"/>
+                <Field id="trdRegTSTimeIn"          mand="N"/>
+                <Field id="trdRegTSTimeOut"         mand="N"/>
+                <Field id="sendingTime"             mand="N"/>
+                <Field id="msgSeqNum"               mand="Y"/>
+                <Field id="lastFragment"            mand="N"/>
+                <Field id="filler1"                 len="3"/>
+
+                <Field id="orderId"                 mand="Y"/>
+                <Field id="clOrdId"                 mand="Y"/>
+                <Field id="securityId"              mand="Y"/>
+                <Field id="priceMkToLimitPx"        mand="N"/>
+
+                <Field id="execId"                  mand="Y"/>
+                <Field id="ordStatus"               mand="Y"/>
+                <Field id="execType"                mand="Y"/>
+                <Field id="execRestatementReason"   mand="N"/>
+                <Field id="productComplex"          mand="N"/>
+
+                <Field id="filler2"                 len="3"/>
+            </Message>
+
+            <SubMessage id="FillsGrp">
+                <Field id="fillPx"              mand="Y"/>
+                <Field id="fillQty"             mand="Y"/>
+                <Field id="fillMatchID"         mand="Y"/>
+                <Field id="fillExecID"          mand="N"/>
+                <Field id="fillLiquidityInd"    mand="Y"/>
+                <Field id="fillerFillsGrp"      len="3"/>
+            </SubMessage>
+
+            <SubMessage id="InstrmntLegExecGrp">
+                <Field id="legSecurityID"       mand="N"/>
+                <Field id="legLastPx"           mand="N"/>
+                <Field id="legLastQty"          mand="N"/>
+                <Field id="legExecID"           mand="N"/>
+                <Field id="legSide"             mand="N"/>
+                <Field id="fillsIndex"          mand="N"/>
+                <Field id="fillerLegExec"       len="6"/>
+            </SubMessage>
+
+            <!--
+             This message informs about the immediate execution of an incoming order or the execution of a book order
+             due to a replace request
+             -->
+            <Message id="ImmediateExecResponse"     msgType="10103">
+                <Field id="requestTime"             mand="N"/>
+                <Field id="trdRegTSTimeIn"          mand="N"/>
+                <Field id="trdRegTSTimeOut"         mand="N"/>
+                <Field id="sendingTime"             mand="N"/>
+                <Field id="msgSeqNum"               mand="Y"/>
+                <Field id="partitionID"             mand="N"/>
+                <Field id="applID"                  mand="N"/>
+                <Field id="applMsgID"               mand="N"/>
+                <Field id="lastFragment"            mand="N"/>
+
+                <Field id="orderId"                 mand="Y"/>
+                <Field id="clOrdId"                 mand="Y"/>
+                <Field id="origClOrdId"             mand="N"/>
+                <Field id="securityId"              mand="N"/>
+                <Field id="tranExecId"              mand="N"/>
+                <Field id="trdRegTSEntryTime"       mand="N"/>
+                <Field id="trdRegTSTimePriority"    mand="N"/>
+                <Field id="marketSegmentID"         mand="N"/>
+                <Field id="leavesQty"               mand="Y"/>
+                <Field id="cumQty"                  mand="Y"/>
+                <Field id="cxlQty"                  mand="N"/>
+                <Field id="noLegExecs"              mand="N"/>
+                <Field id="execRestatementReason"   mand="N"/>
+                <Field id="productComplex"          mand="N"/>
+                <Field id="ordStatus"               mand="Y"/>
+                <Field id="execType"                mand="Y"/>
+                <Field id="triggered"               mand="N"/>
+                <Field id="noFills"                 mand="N"/>
+                <Field id="filler"                  len="7"/>
+
+                <Field id="FillsGrp"                counter="noFills"/>
+
+                <Field id="InstrmntLegExecGrp"      counter="noLegExecs"/>
+
+            </Message>
+
+
+            <!--
+                This message informs about the execution of a resting book order
+            -->
+            <Message id="BookOrderExecution"     msgType="10104">
+                <Field id="trdRegTSTimeOut"         mand="N"/>
+                <Field id="sendingTime"             mand="N"/>
+                <Field id="applSubID"               mand="N"/>
+                <Field id="partitionID"             mand="N"/>
+                <Field id="applMsgID"               mand="N"/>
+                <Field id="applID"                  mand="N"/>
+                <Field id="applResendFlag"          mand="N"/>
+                <Field id="lastFragment"            mand="N"/>
+                <Field id="filler1"                 len="7"/>
+
+                <Field id="orderId"                 mand="Y"/>
+                <Field id="senderLocationID"        mand="N"/>
+                <Field id="clOrdId"                 mand="Y"/>
+                <Field id="origClOrdId"             mand="N"/>
+                <Field id="securityId"              mand="Y"/>
+                <Field id="tranExecId"              mand="N"/>
+                <Field id="filler1b"                len="4"/>
+                <Field id="marketSegmentID"         mand="N"/>
+                <Field id="leavesQty"               mand="Y"/>
+                <Field id="cumQty"                  mand="Y"/>
+                <Field id="cxlQty"                  mand="N"/>
+                <Field id="noLegExecs"              mand="N"/>
+                <Field id="execRestatementReason"   mand="N"/>
+                <Field id="accountType"             mand="N"/>
+                <Field id="productComplex"          mand="N"/>
+                <Field id="ordStatus"               mand="Y"/>
+                <Field id="execType"                mand="Y"/>
+                <Field id="triggered"               mand="N"/>
+                <Field id="noFills"                 mand="N"/>
+                <Field id="side"                    mand="N"/>
+                <Field id="account"                 mand="N"/>
+                <Field id="filler2"                 len="39"/>       <!-- freetext1 freetext2 freetext3, pad3 -->
+
+                <Field id="FillsGrp"                counter="noFills"/>
+
+                <Field id="InstrmntLegExecGrp"      counter="noLegExecs"/>
+
+            </Message>
+
+            <Message id="ReplaceOrderSingleRequest"            msgType="10106">
+                <Field id="msgSeqNum"               mand="Y"/>
+                <Field id="senderSubID"             mand="Y"/>
+
+                <Field id="orderId"                 mand="Y"/>
+                <Field id="clOrdId"                 mand="Y"/>
+                <Field id="origClOrdId"             mand="Y"/>
+                <Field id="price"                   mand="N"/>
+                <Field id="stopPx"                  mand="N"/>
+                <Field id="maxPricePercentage"      mand="N"/>
+                <Field id="senderLocationID"        mand="N"/>
+                <Field id="filler1b"                len="4"/>   <!-- messageTag tag526 -->
+                <Field id="orderQty"                mand="Y"/>
+                <Field id="filler1c"                len="4"/>   <!-- maxShow tag210 -->
+                <Field id="expireDate"              mand="N"/>
+                <Field id="marketSegmentID"         mand="Y"/>
+                <Field id="simpleSecurityID"        mand="Y"/>
+                <Field id="targetPartyIDSessionID"  mand="N"/>
+
+                <Field id="filler2"                 len="5"/>    <!-- PartyIDTakeUpTradingFirm -->
+                <Field id="filler3"                 len="3"/>    <!-- PartyIDOrderOriginationFirm -->
+                <Field id="filler4"                 len="9"/>    <!-- PartyIDBeneficiary -->
+
+                <Field id="accountType"             mand="N"/>
+                <Field id="applSeqIndicator"        mand="N"/>
+                <Field id="side"                    mand="Y"/>
+                <Field id="ordType"                 mand="Y"/>
+                <Field id="priceValidityCheckType"  mand="Y"/>
+                <Field id="timeInForce"             mand="Y"/>
+                <Field id="execInst"                mand="Y"/>
+                <Field id="tradingSessionSubID"     mand="N"/>
+                <Field id="orderCapacity"           mand="Y"/> <!--  tradingCapacity -->
+                <Field id="filler5"                 len="1"/>   <!-- delta qty not used-->
+                <Field id="account"                 mand="Y"/>
+                <Field id="positionEffect"          mand="Y"/>
+
+                <Field id="filler6"                 len="20"/>    <!-- RegulatoryText -->
+
+                <Field id="parentClOrdId"               mand="Y"/> <!-- FreeText1 + FreeText2 -->
+                <Field id="filler7"                 len="18"/>    <!-- FreeText3 + pad6-->
+            </Message>
+
+            <Message id="ReplaceOrderMultiLeg"   msgType="10114">
+                <Field id="msgSeqNum"               mand="Y"/>
+                <Field id="senderSubID"             mand="Y"/>
+
+                <Field id="orderId"                 mand="Y"/>
+                <Field id="clOrdId"                 mand="Y"/>
+                <Field id="origClOrdId"             mand="Y"/>
+                <Field id="securityId"              mand="Y"/>
+                <Field id="price"                   mand="N"/>
+                <Field id="maxPricePercentage"      mand="N"/>
+                <Field id="senderLocationID"        mand="N"/>
+                <Field id="marketSegmentID"         mand="Y"/>
+                <Field id="filler1b"                len="4"/>   <!-- messageTag tag526 -->
+                <Field id="orderQty"                mand="Y"/>
+                <Field id="filler1c"                len="4"/>   <!-- maxShow tag210 -->
+                <Field id="expireDate"              mand="N"/>
+                <Field id="targetPartyIDSessionID"  mand="N"/>
+                <Field id="filler2"                 len="5"/>    <!-- PartyIDTakeUpTradingFirm -->
+                <Field id="filler3"                 len="3"/>    <!-- PartyIDOrderOriginationFirm -->
+                <Field id="filler4"                 len="9"/>    <!-- PartyIDBeneficiary -->
+                <Field id="accountType"             mand="N"/>
+                <Field id="applSeqIndicator"        mand="N"/>
+                <Field id="productComplex"          mand="N"/>
+                <Field id="side"                    mand="Y"/>
+                <Field id="ordType"                 mand="Y"/>
+                <Field id="priceValidityCheckType"  mand="Y"/>
+                <Field id="execInst"                mand="Y"/>
+                <Field id="timeInForce"             mand="Y"/>
+                <Field id="orderCapacity"           mand="N"/> <!--  tradingCapacity -->
+                <Field id="filler5"                 len="21"/> <!-- deltaQtyFlag + RegulatoryText -->
+                <Field id="uniqueClientCode"        mand="N"/>
+                <Field id="parentClOrdId"               mand="Y"/> <!-- FreeText2 + FreeText3 -->
+
+                <Field id="noLegs"                  mand="N"/>
+
+                <Field id="filler8"                 len="4"/>
+
+                <Field id="OrderLegsGrp"            counter="noLegs"/>
+            </Message>
+
+            <Message id="ReplaceOrderSingleShortRequest"            msgType="10126">
+                <Field id="msgSeqNum"               mand="Y"/>
+                <Field id="senderSubID"             mand="Y"/>
+
+                <Field id="orderId"                 mand="Y"/>
+                <Field id="clOrdId"                 mand="Y"/>
+                <Field id="origClOrdId"             mand="Y"/>
+                <Field id="price"                   mand="N"/>
+                <Field id="senderLocationID"        mand="N"/>
+                <Field id="orderQty"                mand="Y"/>
+                <Field id="filler1c"                len="4"/>   <!-- maxShow tag210 -->
+                <Field id="simpleSecurityID"        mand="Y"/>
+                <Field id="accountType"             mand="N"/>
+                <Field id="side"                    mand="Y"/>
+                <Field id="priceValidityCheckType"  mand="Y"/>
+                <Field id="timeInForce"             mand="Y"/>
+                <Field id="execInst"                mand="Y"/>
+                <Field id="uniqueClientCode"        mand="N"/>
+                <Field id="filler3"                 len="3" comment="pad3"/>
+            </Message>
+
+            <Message id="ReplaceOrderStandardResponse"     msgType="10107">
+                <Field id="requestTime"             mand="N"/>
+                <Field id="trdRegTSTimeIn"          mand="N"/>
+                <Field id="trdRegTSTimeOut"         mand="N"/>
+                <Field id="sendingTime"             mand="N"/>
+                <Field id="msgSeqNum"               mand="Y"/>
+                <Field id="partitionID"             mand="N"/>
+                <Field id="applID"                  mand="N"/>
+                <Field id="applMsgID"               mand="N"/>
+                <Field id="lastFragment"            mand="N"/>
+
+                <Field id="orderId"                 mand="Y"/>
+                <Field id="clOrdId"                 mand="Y"/>
+                <Field id="origClOrdId"             mand="N"/>
+                <Field id="securityId"              mand="Y"/>
+                <Field id="execId"                  mand="Y"/>
+                <Field id="trdRegTSTimePriority"    mand="N"/>
+                <Field id="leavesQty"               mand="Y"/>
+                <Field id="cumQty"                  mand="Y"/>
+                <Field id="cxlQty"                  mand="N"/>
+                <Field id="ordStatus"               mand="Y"/>
+                <Field id="execType"                mand="Y"/>
+                <Field id="execRestatementReason"   mand="N"/>
+                <Field id="productComplex"          mand="N"/>
+
+                <Field id="filler"                  len="7"/>
+            </Message>
+
+            <Message id="ReplaceOrderLeanResponse"     msgType="10108">
+                <Field id="requestTime"             mand="N"/>
+                <Field id="trdRegTSTimeIn"          mand="N"/>
+                <Field id="trdRegTSTimeOut"         mand="N"/>
+                <Field id="sendingTime"             mand="N"/>
+                <Field id="msgSeqNum"               mand="Y"/>
+                <Field id="lastFragment"            mand="N"/>
+                <Field id="filler1"                 len="3"/>
+
+                <Field id="orderId"                 mand="Y"/>
+                <Field id="clOrdId"                 mand="Y"/>
+                <Field id="origClOrdId"             mand="N"/>
+                <Field id="securityId"              mand="Y"/>
+                <Field id="execId"                  mand="Y"/>
+                <Field id="priceMkToLimitPx"        mand="N"/>
+                <Field id="leavesQty"               mand="Y"/>
+                <Field id="cumQty"                  mand="Y"/>
+                <Field id="cxlQty"                  mand="N"/>
+                <Field id="ordStatus"               mand="Y"/>
+                <Field id="execType"                mand="Y"/>
+                <Field id="execRestatementReason"   mand="N"/>
+                <Field id="productComplex"          mand="N"/>
+
+                <Field id="filler2"                 len="7"/>
+            </Message>
+
+            <Message id="CancelOrderSingleRequest"            msgType="10109">
+                <Field id="msgSeqNum"               mand="Y"/>
+                <Field id="senderSubID"             mand="Y"/>
+
+                <Field id="orderId"                 mand="Y"/>
+                <Field id="clOrdId"                 mand="Y"/>
+                <Field id="origClOrdId"             mand="Y"/>
+                <Field id="filler1b"                len="4"/>   <!-- messageTag tag526 -->
+                <Field id="marketSegmentID"         mand="N"/>
+                <Field id="simpleSecurityID"        mand="Y"/>
+                <Field id="targetPartyIDSessionID"  mand="N"/>
+            </Message>
+
+            <Message id="CancelOrderMultiLeg"            msgType="10123">
+                <Field id="msgSeqNum"               mand="Y"/>
+                <Field id="senderSubID"             mand="Y"/>
+
+                <Field id="orderId"                 mand="Y"/>
+                <Field id="clOrdId"                 mand="Y"/>
+                <Field id="origClOrdId"             mand="Y"/>
+                <Field id="securityID"              mand="Y"/>
+                <Field id="filler1b"                len="4"/>   <!-- messageTag tag526 -->
+                <Field id="marketSegmentID"         mand="N"/>
+                <Field id="targetPartyIDSessionID"  mand="N"/>
+
+                <Field id="filler2"                 len="4"/>
+            </Message>
+
+            <Message id="CancelOrderStandardResponse"     msgType="10110">
+                <Field id="requestTime"             mand="N"/>
+                <Field id="trdRegTSTimeIn"          mand="N"/>
+                <Field id="trdRegTSTimeOut"         mand="N"/>
+                <Field id="sendingTime"             mand="N"/>
+                <Field id="msgSeqNum"               mand="Y"/>
+                <Field id="partitionID"             mand="N"/>
+                <Field id="applID"                  mand="N"/>
+                <Field id="applMsgID"               mand="N"/>
+                <Field id="lastFragment"            mand="N"/>
+
+                <Field id="orderId"                 mand="Y"/>
+                <Field id="clOrdId"                 mand="Y"/>
+                <Field id="origClOrdId"             mand="N"/>
+                <Field id="securityId"              mand="Y"/>
+                <Field id="execId"                  mand="Y"/>
+                <Field id="cumQty"                  mand="Y"/>
+                <Field id="cxlQty"                  mand="N"/>
+                <Field id="ordStatus"               mand="Y"/>
+                <Field id="execType"                mand="Y"/>
+                <Field id="execRestatementReason"   mand="N"/>
+                <Field id="productComplex"          mand="N"/>
+
+                <Field id="filler"                  len="3"/>
+            </Message>
+
+            <Message id="CancelOrderLeanResponse"     msgType="10111">
+                <Field id="requestTime"             mand="N"/>
+                <Field id="trdRegTSTimeIn"          mand="N"/>
+                <Field id="trdRegTSTimeOut"         mand="N"/>
+                <Field id="sendingTime"             mand="N"/>
+                <Field id="msgSeqNum"               mand="Y"/>
+                <Field id="lastFragment"            mand="N"/>
+                <Field id="filler1"                 len="3"/>
+
+                <Field id="orderId"                 mand="Y"/>
+                <Field id="clOrdId"                 mand="Y"/>
+                <Field id="origClOrdId"             mand="N"/>
+                <Field id="securityId"              mand="Y"/>
+                <Field id="execId"                  mand="Y"/>
+                <Field id="cumQty"                  mand="Y"/>
+                <Field id="cxlQty"                  mand="N"/>
+                <Field id="ordStatus"               mand="Y"/>
+                <Field id="execType"                mand="Y"/>
+                <Field id="execRestatementReason"   mand="N"/>
+                <Field id="productComplex"          mand="N"/>
+
+                <Field id="filler2"                 len="3"/>
+            </Message>
+
+            <Message id="CancelOrderNotification"     msgType="10112">
+                <Field id="trdRegTSTimeOut"         mand="N"/>
+                <Field id="sendingTime"             mand="N"/>
+                <Field id="applSubID"               mand="N"/>
+                <Field id="partitionID"             mand="N"/>
+                <Field id="applMsgID"               mand="N"/>
+                <Field id="applID"                  mand="N"/>
+                <Field id="applResendFlag"          mand="N"/>
+                <Field id="lastFragment"            mand="N"/>
+                <Field id="filler1"                 len="7"/>
+
+                <Field id="orderId"                 mand="Y"/>
+                <Field id="clOrdId"                 mand="Y"/>
+                <Field id="origClOrdId"             mand="Y"/>
+                <Field id="securityId"              mand="Y"/>
+                <Field id="execId"                  mand="Y"/>
+                <Field id="filler1b"                len="4"/>   <!-- messageTag tag526 -->
+                <Field id="cumQty"                  mand="Y"/>
+                <Field id="cxlQty"                  mand="N"/>
+                <Field id="partyIDEnteringTrader"   mand="N"/>
+                <Field id="execRestatementReason"   mand="N"/>
+                <Field id="partyIDEnteringFirm"     mand="N"/>
+                <Field id="ordStatus"               mand="Y"/>
+                <Field id="execType"                mand="Y"/>
+                <Field id="productComplex"          mand="N"/>
+                <Field id="filler2"                 len="2"/>
+            </Message>
+
+            <!--
+                This message format is used for order book restatement, retransmission of order events, the Listener Broadcast
+                and for unsolicited order events within the session lva
+             -->
+            <Message id="ExtendedOrderInformation"     msgType="10117">
+                <Field id="trdRegTSTimeOut"         mand="N"/>
+                <Field id="sendingTime"             mand="N"/>
+                <Field id="applSubID"               mand="N"/>
+                <Field id="partitionID"             mand="N"/>
+                <Field id="applMsgID"               mand="N"/>
+                <Field id="applID"                  mand="N"/>
+                <Field id="applResendFlag"          mand="N"/>
+                <Field id="lastFragment"            mand="N"/>
+                <Field id="filler1"                 len="7"/>
+
+                <Field id="orderId"                 mand="Y"/>
+                <Field id="clOrdId"                 mand="Y"/>
+                <Field id="origClOrdId"             mand="N"/>
+                <Field id="securityId"              mand="Y"/>
+                <Field id="execId"                  mand="Y"/>
+                <Field id="trdRegTSEntryTime"       mand="N"/>
+                <Field id="trdRegTSTimePriority"    mand="N"/>
+                <Field id="price"                   mand="N"/>
+                <Field id="stopPx"                  mand="N"/>
+                <Field id="marketSegmentID"         mand="N"/>
+                <Field id="leavesQty"               mand="Y"/>
+                <Field id="cumQty"                  mand="Y"/>
+                <Field id="cxlQty"                  mand="N"/>
+                <Field id="orderQty"                mand="Y"/>
+                <Field id="expireDate"              mand="N"/>
+                <Field id="partyIDExecutingUnit"    mand="N"/>
+                <Field id="partyIDSessionID"        mand="N"/>
+                <Field id="partyIDExecutingTrader"  mand="N"/>
+                <Field id="partyIDEnteringTrader"   mand="N"/>
+                <Field id="noLegExecs"              mand="N"/>
+                <Field id="execRestatementReason"   mand="N"/>
+                <Field id="partyIDEnteringFirm"     mand="N"/>
+                <Field id="productComplex"          mand="N"/>
+                <Field id="ordStatus"               mand="Y"/>
+                <Field id="execType"                mand="Y"/>
+                <Field id="side"                    mand="Y"/>
+                <Field id="ordType"                 mand="Y"/>
+                <Field id="orderCapacity"           mand="Y"/>      <!--  tradingCapacity -->
+                <Field id="timeInForce"             mand="Y"/>
+                <Field id="execInst"                mand="Y"/>
+                <Field id="tradingSessionSubID"     mand="N"/>
+                <Field id="applSeqIndicator"        mand="N"/>
+                <Field id="account"                 mand="Y"/>
+                <Field id="positionEffect"          mand="N"/>
+                <Field id="filler2"                 len="5"/>       <!-- PartyIDTakeUpTradingFirm -->
+                <Field id="filler3"                 len="3"/>       <!-- PartyIDOrderOriginationFirm -->
+                <Field id="filler4"                 len="9"/>       <!-- PartyIDBeneficiary -->
+                <Field id="filler5"                 len="20"/>      <!-- RegulatoryText -->
+                <Field id="parentClOrdId"               mand="Y"/>      <!-- FreeText1 + FreeText2 -->
+                <Field id="filler7"                 len="12"/>      <!-- FreeText3 -->
+                <Field id="noFills"                 mand="N"/>
+                <Field id="noLegs"                  mand="N"/>
+                <Field id="triggered"               mand="N"/>
+                <Field id="filler8"                 len="2"/>
+
+                <RepeatingGroup id="LegOrdGrp" counter="noLegs">
+                    <Field id="legAccount"          mand="Y"/>
+                    <Field id="legPositionEffect"   mand="Y"/>
+                    <Field id="filler9"             len="5"/>
+                </RepeatingGroup>
+
+                <RepeatingGroup id="FillsGrp" counter="noFills">
+                    <Field id="fillPx"              mand="Y"/>
+                    <Field id="fillQty"             mand="Y"/>
+                    <Field id="fillMatchID"         mand="Y"/>
+                    <Field id="fillExecID"          mand="Y"/>
+                    <Field id="fillLiquidityInd"    mand="Y"/>
+                    <Field id="fillerA"             len="3"/>
+                </RepeatingGroup>
+
+                <RepeatingGroup id="InstrmntLegExecGrp" counter="noLegExecs">
+                    <Field id="legSecurityID"       mand="Y"/>
+                    <Field id="legLastPx"           mand="Y"/>
+                    <Field id="legLastQty"          mand="Y"/>
+                    <Field id="legExecID"           mand="Y"/>
+                    <Field id="fillsIndex"          mand="Y"/>
+                    <Field id="fillerB"             len="7"/>
+                </RepeatingGroup>
+
+            </Message>
+
+
+            <Message id="TradeConfirmNotification"     msgType="10500">
+                <Field id="sendingTime"         	mand="N"/>
+                <Field id="applSeqNum"         		mand="N"/>
+                <Field id="applSubID"         		mand="N"/>
+                <Field id="partitionID"         	mand="N"/>
+                <Field id="applResendFlag"         	mand="N"/>
+                <Field id="applID"         			mand="N"/>
+                <Field id="lastFragment"         	mand="N"/>
+                <Field id="filler1"           		len="7"/>
+
+                <Field id="securityId"        		mand="Y"/>
+                <Field id="relatedSecurityId"       mand="N"/>
+                <Field id="price"           		mand="N"/>
+                <Field id="lastPx"           		mand="Y"/>
+                <Field id="sideLastPx"           	mand="N"/>
+                <Field id="transactTime"            mand="N"/>
+                <Field id="orderId"           		mand="Y"/>
+                <Field id="senderLocationID"        mand="N"/>
+                <Field id="clOrdId"           		mand="Y"/>
+                <Field id="filler1b"                len="4"/>   <!-- messageTag tag526 -->
+                <Field id="tradeId"           		mand="Y"/>
+                <Field id="origTradeId"           	mand="Y"/>
+
+                <Field id="filler2"           		type="uInt"		comment="RootPartyIDExecutingUnit"/>
+                <Field id="filler3"           		type="uInt"		comment="RootPartyIDSessionID"/>
+                <Field id="filler4"           		type="uInt"		comment="RootPartyIDExecutingTrader"/>
+                <Field id="filler5"           		type="uInt"		comment="RootPartyIDClearingUnit"/>
+
+                <Field id="cumQty"   				mand="Y"/>
+                <Field id="leavesQty"   			mand="Y"/>
+                <Field id="marketSegmentID"         mand="N"/>
+
+                <Field id="filler6"           		type="sInt"  	comment="RelatedSymbol"/>
+                <Field id="lastQty"            		mand="Y"/>
+                <Field id="filler7"            		type="sInt"		comment="SideLastQty"/>
+                <Field id="filler8"            		type="uInt"		comment="SideTradeID"/>
+                <Field id="trdMatchDate"            mand="Y"/>
+                <Field id="trdMatchID"              mand="N"/>
+                <Field id="filler9"            		type="uInt"		comment="StrategyLinkID"/>
+                <Field id="fillerA"            		type="sInt"		comment="TotNumTradeReports"/>
+                <Field id="fillerB"            		type="uByte"	comment="MultiLegReportingType"/>
+                <Field id="tradeReportType"         mand="Y"/>
+                <Field id="fillerC"            		type="uByte"	comment="TransferReason"/>
+                <Field id="fillerD"                 len="9"			comment="RootPartyIDBeneficiary"/>
+                <Field id="fillerE"                 len="5"			comment="RootPartyIDTakeUpTradingFirm"/>
+                <Field id="fillerF"                 len="3"			comment="RootPartyIDOrderOriginationFirm"/>
+                <Field id="accountType"             mand="N"/>
+                <Field id="fillerG"                 type="uByte"	comment="AggressorSide"/>
+                <Field id="matchType"         		mand="Y"/>
+                <Field id="matchSubType"         	mand="Y"/>
+                <Field id="side"         			mand="Y"/>
+                <Field id="aggressorIndicator"       mand="Y"/>
+                <Field id="fillerH"                 type="uByte"	comment="TradingCapacity"/>
+                <Field id="fillerI"                 len="2"			comment="Account"/>
+                <Field id="fillerJ"                 type="ch"		comment="PositionEffect"/>
+                <Field id="parentClOrdId"               mand="Y"		comment="FreeText1 + FreeText2"/>
+                <Field id="fillerK"                 len="12"		comment="FreeText3"/>
+                <Field id="fillerL"                 type="ch"		comment="OrderCategory"/>
+                <Field id="ordType"                 mand="N"/>
+                <Field id="fillerM"                 type="uByte"	comment="RelatedProductComplex"/>
+                <Field id="fillerN"                 type="uByte"	comment="OrderSide"/>
+                <Field id="fillerO"                 len="4"			comment="RootPartyClearingOrganization"/>
+                <Field id="fillerP"                 len="5"			comment="RootPartyExecutingFirm"/>
+                <Field id="fillerQ"                 len="6"			comment="RootPartyExecutingTrader"/>
+                <Field id="fillerR"                 len="5"			comment="RootPartyClearingFirm"/>
+                <Field id="fillerS"                 len="6"/>
+
+            </Message>
+
+        </Model>
+
+@SECTION EUREX_ETI_MODEL END
+
+@SECTION EUREX_ETI_BINARY_CODEC START
+
+        <BinaryCodec id="BaseETI" model="ETIEurex" >
+
+            <!-- precendence in TypeTransform is important, decoding from an external val to internal val with mult matches will
+                 match LAST entry -->
+
+            <TypeTransform typeId="OrderCapacity" transform="map" nonMatchedEncode="5" nonMatchedDecode="P" external="binary">
+                <Map internal="W" external="0x01" comment="Customer (Agency)"/>
+                <Map internal="P" external="0x05" comment="Principle/Prop"/>
+                <Map internal="G" external="0x06" comment="Market maker"/>
+            </TypeTransform>
+
+            <TypeTransform typeId="ExecInst" transform="map" nonMatchedEncode="2" nonMatchedDecode="reject" external="binary">
+                <Map internal="H" external="0x01" comment="Persistent Order"/>
+                <Map internal="Q" external="0x02" comment="Non persistent order"/>
+            </TypeTransform>
+
+            <TypeTransform typeId="Side" transform="map" nonMatchedEncode="reject" nonMatchedDecode="reject" external="binary">
+                <Map internal="1" external="0x01" comment="Buy"/>
+                <Map internal="2" external="0x02" comment="Sell"/>
+            </TypeTransform>
+
+            <TypeTransform typeId="TimeInForce" transform="map" nonMatchedEncode="0" nonMatchedDecode="reject" external="binary">
+                <Map internal="0" external="0x00" comment="Day"/>
+                <Map internal="1" external="0x01" comment="GTC"/>
+                <Map internal="3" external="0x03" comment="IOC"/>
+                <Map internal="6" external="0x06" comment="GTD"/>
+            </TypeTransform>
+
+            <TypeTransform typeId="SessionRejectReason" transform="map" nonMatchedEncode="99" nonMatchedDecode="99" external="binary">
+                <Map internal="1"  external="0x01"      comment="Required Tag Missing"/>
+                <Map internal="5"  external="0x05"      comment="Value Is Incorrect"/>
+                <Map internal="7"  external="0x07"      comment="Decryption Problem"/>
+                <Map internal="11" external="0x0B"     comment="(11) Invalid Msg ID"/>
+                <Map internal="16" external="0x10"     comment="(16) Incorrect Num In Group Count"/>
+                <Map internal="99" external="0x63"     comment="(99) Other"/>
+                <Map internal="20" external="0x64"    comment="(100) Throttle Limit Exceeded"/>
+                <Map internal="21" external="0x65"    comment="(101) Exposure Limit Exceeded"/>
+                <Map internal="22" external="0x66"    comment="(102) Service Temporarily Not Available"/>
+                <Map internal="23" external="0x67"    comment="(103) Service Not Available"/>
+                <Map internal="24" external="0x68"    comment="(104) Result Of Transaction Unknown"/>
+                <Map internal="25" external="0x69"    comment="(105) Outbound Conversion Error"/>
+                <Map internal="26" external="0xC8"    comment="(200) Internal Technical Error"/>
+
+                <!-- little endian encoding -->
+                <Map internal="27" external="0x1027"  comment="(10000) Order Not Found"/>
+                <Map internal="28" external="0x1127"  comment="(10001) Price Not Reasonable"/>
+            </TypeTransform>
+
+            <TypeTransform typeId="LiquidityInd" transform="map" nonMatchedEncode="2" nonMatchedDecode="2" external="binary">
+                <Map internal="1" external="0x01" comment="Added Liquidity"/>
+                <Map internal="2" external="0x02" comment="Removed Liquidity"/>
+            </TypeTransform>
+
+            <TypeTransform typeId="OrdType" transform="map" nonMatchedEncode="reject" nonMatchedDecode="reject" external="binary">
+                <Map internal="1" external="0x05" comment="Market"/>
+                <Map internal="2" external="0x02" comment="Limit"/>
+            </TypeTransform>
+
+            <!-- Simple ETI Specific Message Mappings -->
+
+            <MessageMap id="BaseRequest" messageId="" ignore="true">
+                <Map field="senderSubID">
+                    <Hook type="encode" code="_builder.encodeUInt( _senderSubID ); // senderSubID"/>
+                </Map>
+                <Map field="sendingTime"  eventAttr="eventTimestamp"/>
+            </MessageMap>
+
+            <MessageMap id="BaseResponse" messageId="" ignore="true">
+                <Map field="sendingTime"  eventAttr="eventTimestamp"/>
+            </MessageMap>
+
+            <MessageMap id="ConnectionGatewayRequest"	eventId="ETIConnectionGatewayRequest" messageId="ConnectionGatewayRequest" extends="BaseRequest"/>
+            <MessageMap id="ConnectionGatewayResponse"	eventId="ETIConnectionGatewayResponse"	messageId="ConnectionGatewayResponse" extends="BaseResponse"/>
+            <MessageMap id="SessionLogonRequest"	eventId="ETISessionLogonRequest"	messageId="SessionLogonRequest" extends="BaseRequest"/>
+            <MessageMap id="SessionLogonResponse"	eventId="ETISessionLogonResponse"	messageId="SessionLogonResponse" extends="BaseResponse"/>
+            <MessageMap id="SessionLogoutRequest"	eventId="ETISessionLogoutRequest"	messageId="SessionLogoutRequest" extends="BaseRequest"/>
+            <MessageMap id="SessionLogoutResponse"	eventId="ETISessionLogoutResponse"	messageId="SessionLogoutResponse" extends="BaseResponse"/>
+            <MessageMap id="UserLogonRequest"	eventId="ETIUserLogonRequest"	messageId="UserLogonRequest" extends="BaseRequest"/>
+            <MessageMap id="UserLogonResponse"	eventId="ETIUserLogonResponse"	messageId="UserLogonResponse" extends="BaseResponse"/>
+            <MessageMap id="UserLogoutRequest"	eventId="ETIUserLogoutRequest"	messageId="UserLogoutRequest" extends="BaseRequest"/>
+            <MessageMap id="UserLogoutResponse"	eventId="ETIUserLogoutResponse"	messageId="UserLogoutResponse" extends="BaseResponse"/>
+            <MessageMap id="ThrottleUpdateNotification"	eventId="ETIThrottleUpdateNotification"	messageId="ThrottleUpdateNotification" extends="BaseResponse"/>
+            <MessageMap id="Subscribe"	eventId="ETISubscribe"	messageId="Subscribe" extends="BaseRequest"/>
+            <MessageMap id="SubscribeResponse"	eventId="ETISubscribeResponse"	messageId="SubscribeResponse" extends="BaseResponse"/>
+            <MessageMap id="Unsubscribe"	eventId="ETIUnsubscribe"	messageId="Unsubscribe" extends="BaseRequest"/>
+            <MessageMap id="UnsubscribeResponse"	eventId="ETIUnsubscribeResponse"	messageId="UnsubscribeResponse" extends="BaseResponse"/>
+            <MessageMap id="Retransmit"	eventId="ETIRetransmit"	messageId="Retransmit" extends="BaseRequest"/>
+            <MessageMap id="RetransmitResponse"	eventId="ETIRetransmitResponse"	messageId="RetransmitResponse" extends="BaseResponse"/>
+            <MessageMap id="RetransmitOrderEvents"	eventId="ETIRetransmitOrderEvents"	messageId="RetransmitOrderEvents" extends="BaseRequest"/>
+            <MessageMap id="RetranOrderEventsResponse"	eventId="ETIRetransmitOrderEventsResponse"	messageId="RetransmitOrderEventsResponse" extends="BaseResponse"/>
+
+            <!-- Direct ETI Messages to Standard Event Mappings -->
+
+            <MessageMap id="Heartbeat"	eventId="Heartbeat"	messageId="Heartbeat"  extends="BaseResponse"/>
+
+            <MessageMap id="HeartbeatNotification"	eventId="Heartbeat"	messageId="HeartbeatNotification">
+                <Map field="sendingTime">
+                    <Hook type="encode" code="_builder.encodeTimeUTC( now )"/>
+                    <Hook type="decode" code="_builder.decodeTimestampUTC()"/>
+                </Map>
+            </MessageMap>
+
+            <MessageMap id="SessionLogoutNotification"  eventId="ETISessionLogoutNotification"  messageId="SessionLogoutNotification"  extends="BaseResponse">
+                <Map field="varTextLen">
+                    <Hook type="encode" code="_builder.encodeShort( msg.getReason().length() )"/>
+                </Map>
+                <Map eventAttr="reason"   field="varText">
+                    <Hook type="decode" code="_builder.decodeStringFixedWidth( _varText, _varTextLen )"/>
+                </Map>
+            </MessageMap>
+
+            <MessageMap id="OrderCancelRequest"   eventId="CancelRequest" messageId="CancelOrderSingleRequest" extends="BaseRequest">
+                <Map field="marketSegmentID"><Hook type="encode" code="encodeMarketSegmentID( msg.getInstrument() )"/></Map>
+                <Map field="simpleSecurityID"><Hook type="encode" code="encodeSimpleSecurityId( msg.getInstrument() )"/></Map>
+            </MessageMap>
+
+            <MessageMap id="BaseExec" messageId="" ignore="true"  extends="BaseResponse">
+                <Map field="applID"><Hook type="encode" code="_builder.encodeByte( (byte)4 )"/></Map>
+                <Map field="applMsgID"><Hook type="encode" code="_builder.encodeStringFixedWidth( nextApplMsgID(), 16 )"/></Map>
+                <Map field="productComplex"><Hook type="encode" code="_builder.encodeByte( (byte)1 )"/></Map>
+                <Map field="lastFragment"><Hook type="encode" code="_builder.encodeByte( (byte)1 )"/></Map>
+
+                <!--  ENCODE HOOKS FOR EXCHANGE SIMULATION -->
+                <Map field="noLegExecs">
+                    <Hook type="encode" code="_builder.encodeUShort( (short)1 )"/>
+                </Map>
+                <Map field="noFills">
+                    <Hook type="encode" code="_builder.encodeUByte( (byte)1 )"/>
+                </Map>
+            </MessageMap>
+
+            <MessageMap id="UnsolOrderCancelled"  eventId="Cancelled"    messageId="CancelOrderNotification" extends="BaseExec"/>
+
+            <MessageMap id="ImmediateExecResponse" eventId="TradeNew"  messageId="ImmediateExecResponse" extends="BaseExec">
+                <MapInstruction type="split" attr1="FillsGrp"/>
+
+                <Map eventAttr="lastPx" field="fillPx"/>
+                <Map eventAttr="lastQty" field="fillQty"/>
+                <Map eventAttr="execId" field="fillMatchID"/>
+                <Map eventAttr="liquidityInd" field="fillLiquidityInd"/>
+                <Map eventAttr="legSide" field="side"/>
+
+                <!-- <Map eventAttr="??" field="fillExecID"/>  -->
+
+            </MessageMap>
+
+            <MessageMap id="BookOrderExecution" eventId="TradeNew"  messageId="BookOrderExecution" extends="BaseExec">
+                <MapInstruction type="split" attr1="FillsGrp"/>
+
+                <Map eventAttr="lastPx" field="fillPx"/>
+                <Map eventAttr="lastQty" field="fillQty"/>
+                <Map eventAttr="execId" field="fillMatchID"/>
+                <Map eventAttr="liquidityInd" field="fillLiquidityInd"/>
+                <Map eventAttr="legSide" field="side"/>
+
+                <!-- <Map eventAttr="??" field="fillExecID"/>  -->
+
+            </MessageMap>
+
+            <MessageMap id="Reject"               eventId="SessionReject"      messageId="Reject">
+                <Map eventAttr="refSeqNum" field="msgSeqNum"/>
+                <Map eventAttr="refMsgType" field="rejectMsgType"/>
+                <Map field="sendingTime"  eventAttr="eventTimestamp"/>
+                <Map field="varTextLen">
+                    <Hook type="encode" code="_builder.encodeShort( msg.getText().length() )"/>
+                </Map>
+                <Map eventAttr="text"       field="varText">
+                    <Hook type="decode" code="_builder.decodeStringFixedWidth( msg.getTextForUpdate(), _varTextLen )"/>
+                </Map>
+            </MessageMap>
+
+        </BinaryCodec>
+
+        <BinaryCodec id="ETIEurexHFT"
+                         model="ETIEurex"
+                         extends="BaseETI"
+                         decodeInclude="./eti/EurexDecoder.include"
+                         encodeInclude="./eti/EurexEncoder.include"
+                         decodeGenerator="com.rr.model.generator.emea.eti.ETIDecoderGenerator"
+                         encodeGenerator="com.rr.model.generator.emea.eti.ETIEncoderGenerator">
+
+            <MessageMap id="NewOrderFastLimit"   eventId="NewOrderSingle" messageId="NewOrderRequestSimple" extends="BaseRequest">
+                <Map eventAttr="securityId" field="simpleSecurityID">
+                    <Hook type="encode" code="encodeSimpleSecurityId( msg.getInstrument() )"/>
+                </Map>
+                <!-- enforce price check until price range validation implemented -->
+                <Map field="priceValidityCheckType"><Hook type="encode" code="_builder.encodeByte( (byte)2 )"/></Map>
+                <Map field="applSeqIndicator"><Hook type="encode" code="_builder.encodeByte( (byte)0 )"/></Map>
+                <Hook type="postDecode" code="enrich( msg ) ; msg.setOrdType( OrdType.Limit )"/>
+            </MessageMap>
+
+            <MessageMap id="OrderReplaceFastLimitRequest"   eventId="CancelReplaceRequest" messageId="ReplaceOrderSingleShortRequest" extends="BaseRequest">
+                <Map eventAttr="securityId" field="simpleSecurityID">
+                    <Hook type="encode" code="encodeSimpleSecurityId( msg.getInstrument() )"/>
+                </Map>
+                <!-- enforce price check until price range validation implemented -->
+                <Map field="priceValidityCheckType"><Hook type="encode" code="_builder.encodeByte( (byte)2 )"/></Map>
+                <Hook type="postDecode" code="msg.setOrdType( OrdType.Limit )"/>
+            </MessageMap>
+
+            <MessageMap id="OrderAckLean"   eventId="NewOrderAck"    messageId="NewOrderLeanResponse" extends="BaseExec">
+                <Hook type="preDecode" code="if ( _nanoStats ) msg.setAckReceived( _received )"/>
+            </MessageMap>
+
+            <MessageMap id="ReplaceResponseLean"         eventId="Replaced"    messageId="ReplaceOrderLeanResponse"     key1="execType"  val1="5" extends="BaseExec"/>
+            <MessageMap id="OrderReplaceCancelledLean"   eventId="Cancelled"   messageId="ReplaceOrderLeanResponse"     key1="execType"  val1="4" extends="BaseExec"/>
+            <MessageMap id="OrderCancelledLean"          eventId="Cancelled"   messageId="CancelOrderLeanResponse"      key1="ordStatus" val1="4" extends="BaseExec"/>
+        </BinaryCodec>
+
+        <BinaryCodec id="ETIEurexLFT"
+                         model="ETIEurex"
+                         extends="BaseETI"
+                         decodeInclude="./eti/EurexDecoder.include"
+                         encodeInclude="./eti/EurexEncoder.include"
+                         decodeGenerator="com.rr.model.generator.emea.eti.ETIDecoderGenerator"
+                         encodeGenerator="com.rr.model.generator.emea.eti.ETIEncoderGenerator">
+            <!-- Complex ETI Messages to Standard Event Mappings -->
+
+            <MessageMap id="NewOrder"   eventId="NewOrderSingle" messageId="NewOrderRequest" extends="BaseRequest">
+                <Map field="marketSegmentID"><Hook type="encode" code="encodeMarketSegmentID( msg.getInstrument() )"/></Map>
+                <Map field="simpleSecurityID"><Hook type="encode" code="encodeSimpleSecurityId( msg.getInstrument() )"/></Map>
+
+                <!-- enforce price check until price range validation implemented -->
+                <Map field="priceValidityCheckType"><Hook type="encode" code="_builder.encodeByte( (byte)2 )"/></Map>
+                <Map field="applSeqIndicator"><Hook type="encode" code="_builder.encodeByte( (byte)1 )"/></Map>
+                <Map field="positionEffect"><Hook type="encode" code="_builder.encodeChar( (byte)'C' )"/></Map>
+
+                <!-- add tradingSessionSubID=4 for closing Auction, when TimeInForce=7 !! -->
+
+                <Hook type="postDecode" code="enrich( msg )"/>
+            </MessageMap>
+
+            <MessageMap id="OrderReplaceRequest"   eventId="CancelReplaceRequest" messageId="ReplaceOrderSingleRequest" extends="BaseRequest">
+                <Map field="marketSegmentID"><Hook type="encode" code="encodeMarketSegmentID( msg.getInstrument() )"/></Map>
+                <Map field="simpleSecurityID"><Hook type="encode" code="encodeSimpleSecurityId( msg.getInstrument() )"/></Map>
+
+                <!-- enforce price check until price range validation implemented -->
+                <Map field="priceValidityCheckType"><Hook type="encode" code="_builder.encodeByte( (byte)2 )"/></Map>
+                <Map field="applSeqIndicator"><Hook type="encode" code="_builder.encodeByte( (byte)1 )"/></Map>
+                <Map field="positionEffect"><Hook type="encode" code="_builder.encodeChar( (byte)'C' )"/></Map>
+
+                <!-- add tradingSessionSubID=4 for closing Auction, when TimeInForce=7 !! -->
+            </MessageMap>
+
+            <MessageMap id="OrderAck"   eventId="NewOrderAck"    messageId="NewOrderStandardResponse" extends="BaseExec">
+                <Hook type="preDecode" code="if ( _nanoStats ) msg.setAckReceived( _received )"/>
+            </MessageMap>
+
+            <MessageMap id="ReplaceResponse"       eventId="Replaced"     messageId="ReplaceOrderStandardResponse"  key1="execType" val1="5" extends="BaseExec"/>
+            <MessageMap id="OrderReplaceCancelled" eventId="Cancelled"    messageId="ReplaceOrderStandardResponse"  key1="execType" val1="4" extends="BaseExec"/>
+            <MessageMap id="OrderCancelled"        eventId="Cancelled"    messageId="CancelOrderStandardResponse"  key1="ordStatus" val1="4" extends="BaseExec"/>
+
+        </BinaryCodec>
+
+@SECTION EUREX_ETI_BINARY_CODEC END
+

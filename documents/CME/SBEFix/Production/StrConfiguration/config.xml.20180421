@@ -1,0 +1,375 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<configuration environment="PROD" updated="2018/04/19-21:18:02">
+  <channel id="200" label="CME Credit OTC">
+    <products/>
+   <connections>
+    <connection id="200IA">
+      <type feed-type="I">Incremental</type>
+      <protocol>UDP/IP</protocol>
+      <ip>233.119.160.6</ip>
+      <host-ip>205.209.220.69</host-ip>
+      <host-ip>205.209.222.69</host-ip>
+      <port>14200</port>
+      <feed>A</feed>
+    </connection>
+    <connection id="200IB">
+      <type feed-type="I">Incremental</type>
+      <protocol>UDP/IP</protocol>
+      <ip>233.119.160.67</ip>
+      <host-ip>205.209.213.45</host-ip>
+      <host-ip>205.209.214.39</host-ip>
+      <port>15200</port>
+      <feed>B</feed>
+    </connection>
+    <connection id="200H2A">
+      <type feed-type="H">Historical Replay</type>
+      <protocol>TCP/IP</protocol>
+      <host-ip>205.209.222.61</host-ip>
+      <host-ip>205.209.220.61</host-ip>
+      <port>9000</port>
+      <feed>A</feed>
+    </connection>
+   </connections>
+  </channel>
+  <channel id="201" label="CME Cleared OTC">
+    <products/>
+   <connections>
+    <connection id="201IA">
+      <type feed-type="I">Incremental</type>
+      <protocol>UDP/IP</protocol>
+      <ip>233.119.160.7</ip>
+      <host-ip>205.209.220.69</host-ip>
+      <host-ip>205.209.222.69</host-ip>
+      <port>14201</port>
+      <feed>A</feed>
+    </connection>
+    <connection id="201IB">
+      <type feed-type="I">Incremental</type>
+      <protocol>UDP/IP</protocol>
+      <ip>233.119.160.70</ip>
+      <host-ip>205.209.213.45</host-ip>
+      <host-ip>205.209.214.39</host-ip>
+      <port>15201</port>
+      <feed>B</feed>
+    </connection>
+    <connection id="201H2A">
+      <type feed-type="H">Historical Replay</type>
+      <protocol>TCP/IP</protocol>
+      <host-ip>205.209.222.61</host-ip>
+      <host-ip>205.209.220.61</host-ip>
+      <port>9000</port>
+      <feed>A</feed>
+    </connection>
+   </connections>
+  </channel>
+  <channel id="210" label="S&amp;P Indexes">
+    <products/>
+   <connections>
+    <connection id="210IA">
+      <type feed-type="I">Incremental</type>
+      <protocol>UDP/IP</protocol>
+      <ip>233.119.160.1</ip>
+      <host-ip>69.50.115.69</host-ip>
+      <host-ip>69.50.115.70</host-ip>
+      <port>14210</port>
+      <feed>A</feed>
+    </connection>
+    <connection id="210IB">
+      <type feed-type="I">Incremental</type>
+      <protocol>UDP/IP</protocol>
+      <ip>233.119.160.64</ip>
+      <host-ip>69.50.119.45</host-ip>
+      <host-ip>69.50.119.46</host-ip>
+      <port>15210</port>
+      <feed>B</feed>
+    </connection>
+    <connection id="210H2A">
+      <type feed-type="H">Historical Replay</type>
+      <protocol>TCP/IP</protocol>
+      <host-ip>205.209.222.61</host-ip>
+      <host-ip>205.209.220.61</host-ip>
+      <port>9000</port>
+      <feed>A</feed>
+    </connection>
+   </connections>
+  </channel>
+  <channel id="211" label="Dow Jones Indexes">
+    <products/>
+   <connections>
+    <connection id="211IA">
+      <type feed-type="I">Incremental</type>
+      <protocol>UDP/IP</protocol>
+      <ip>233.119.160.2</ip>
+      <host-ip>69.50.115.69</host-ip>
+      <host-ip>69.50.115.70</host-ip>
+      <port>14211</port>
+      <feed>A</feed>
+    </connection>
+    <connection id="211IB">
+      <type feed-type="I">Incremental</type>
+      <protocol>UDP/IP</protocol>
+      <ip>233.119.160.65</ip>
+      <host-ip>69.50.119.45</host-ip>
+      <host-ip>69.50.119.46</host-ip>
+      <port>15211</port>
+      <feed>B</feed>
+    </connection>
+    <connection id="211H2A">
+      <type feed-type="H">Historical Replay</type>
+      <protocol>TCP/IP</protocol>
+      <host-ip>205.209.222.61</host-ip>
+      <host-ip>205.209.220.61</host-ip>
+      <port>9000</port>
+      <feed>A</feed>
+    </connection>
+   </connections>
+  </channel>
+  <channel id="212" label="Bloomberg Indexes">
+    <products/>
+   <connections>
+    <connection id="212IA">
+      <type feed-type="I">Incremental</type>
+      <protocol>UDP/IP</protocol>
+      <ip>233.119.160.3</ip>
+      <host-ip>69.50.115.69</host-ip>
+      <host-ip>69.50.115.70</host-ip>
+      <port>14212</port>
+      <feed>A</feed>
+    </connection>
+    <connection id="212IB">
+      <type feed-type="I">Incremental</type>
+      <protocol>UDP/IP</protocol>
+      <ip>233.119.160.66</ip>
+      <host-ip>69.50.119.45</host-ip>
+      <host-ip>69.50.119.46</host-ip>
+      <port>15212</port>
+      <feed>B</feed>
+    </connection>
+    <connection id="212H2A">
+      <type feed-type="H">Historical Replay</type>
+      <protocol>TCP/IP</protocol>
+      <host-ip>205.209.222.61</host-ip>
+      <host-ip>205.209.220.61</host-ip>
+      <port>9000</port>
+      <feed>A</feed>
+    </connection>
+   </connections>
+  </channel>
+  <channel id="213" label="CME CF Rates and Indexes">
+    <products/>
+   <connections>
+    <connection id="213IA">
+      <type feed-type="I">Incremental</type>
+      <protocol>UDP/IP</protocol>
+      <ip>233.119.160.17</ip>
+      <host-ip>69.50.115.69</host-ip>
+      <host-ip>69.50.115.70</host-ip>
+      <port>14213</port>
+      <feed>A</feed>
+    </connection>
+    <connection id="213IB">
+      <type feed-type="I">Incremental</type>
+      <protocol>UDP/IP</protocol>
+      <ip>233.119.160.81</ip>
+      <host-ip>69.50.119.45</host-ip>
+      <host-ip>69.50.119.46</host-ip>
+      <port>15213</port>
+      <feed>B</feed>
+    </connection>
+    <connection id="213H2A">
+      <type feed-type="H">Historical Replay</type>
+      <protocol>TCP/IP</protocol>
+      <host-ip>205.209.222.61</host-ip>
+      <host-ip>205.209.220.61</host-ip>
+      <port>9000</port>
+      <feed>A</feed>
+    </connection>
+   </connections>
+  </channel>
+  <channel id="230" label="CME Block Trades">
+    <products/>
+   <connections>
+    <connection id="230IA">
+      <type feed-type="I">Incremental</type>
+      <protocol>UDP/IP</protocol>
+      <ip>233.119.160.8</ip>
+      <host-ip>205.209.220.69</host-ip>
+      <host-ip>205.209.222.69</host-ip>
+      <port>14230</port>
+      <feed>A</feed>
+    </connection>
+    <connection id="230IB">
+      <type feed-type="I">Incremental</type>
+      <protocol>UDP/IP</protocol>
+      <ip>233.119.160.72</ip>
+      <host-ip>205.209.213.45</host-ip>
+      <host-ip>205.209.214.39</host-ip>
+      <port>15230</port>
+      <feed>B</feed>
+    </connection>
+    <connection id="230H2A">
+      <type feed-type="H">Historical Replay</type>
+      <protocol>TCP/IP</protocol>
+      <host-ip>205.209.222.61</host-ip>
+      <host-ip>205.209.220.61</host-ip>
+      <port>9000</port>
+      <feed>A</feed>
+    </connection>
+   </connections>
+  </channel>
+  <channel id="231" label="CBOT Block Trades">
+    <products/>
+   <connections>
+    <connection id="231IA">
+      <type feed-type="I">Incremental</type>
+      <protocol>UDP/IP</protocol>
+      <ip>233.119.160.9</ip>
+      <host-ip>205.209.220.69</host-ip>
+      <host-ip>205.209.222.69</host-ip>
+      <port>14231</port>
+      <feed>A</feed>
+    </connection>
+    <connection id="231IB">
+      <type feed-type="I">Incremental</type>
+      <protocol>UDP/IP</protocol>
+      <ip>233.119.160.73</ip>
+      <host-ip>205.209.213.45</host-ip>
+      <host-ip>205.209.214.39</host-ip>
+      <port>15231</port>
+      <feed>B</feed>
+    </connection>
+    <connection id="231H2A">
+      <type feed-type="H">Historical Replay</type>
+      <protocol>TCP/IP</protocol>
+      <host-ip>205.209.222.61</host-ip>
+      <host-ip>205.209.220.61</host-ip>
+      <port>9000</port>
+      <feed>A</feed>
+    </connection>
+   </connections>
+  </channel>
+  <channel id="232" label="NYMEX Block Trades">
+    <products/>
+   <connections>
+    <connection id="232IA">
+      <type feed-type="I">Incremental</type>
+      <protocol>UDP/IP</protocol>
+      <ip>233.119.160.10</ip>
+      <host-ip>205.209.220.69</host-ip>
+      <host-ip>205.209.222.69</host-ip>
+      <port>14232</port>
+      <feed>A</feed>
+    </connection>
+    <connection id="232IB">
+      <type feed-type="I">Incremental</type>
+      <protocol>UDP/IP</protocol>
+      <ip>233.119.160.74</ip>
+      <host-ip>205.209.213.45</host-ip>
+      <host-ip>205.209.214.39</host-ip>
+      <port>15232</port>
+      <feed>B</feed>
+    </connection>
+    <connection id="232H2A">
+      <type feed-type="H">Historical Replay</type>
+      <protocol>TCP/IP</protocol>
+      <host-ip>205.209.222.61</host-ip>
+      <host-ip>205.209.220.61</host-ip>
+      <port>9000</port>
+      <feed>A</feed>
+    </connection>
+   </connections>
+  </channel>
+  <channel id="233" label="COMEX Block Trades">
+    <products/>
+   <connections>
+    <connection id="233IA">
+      <type feed-type="I">Incremental</type>
+      <protocol>UDP/IP</protocol>
+      <ip>233.119.160.11</ip>
+      <host-ip>205.209.220.69</host-ip>
+      <host-ip>205.209.222.69</host-ip>
+      <port>14233</port>
+      <feed>A</feed>
+    </connection>
+    <connection id="233IB">
+      <type feed-type="I">Incremental</type>
+      <protocol>UDP/IP</protocol>
+      <ip>233.119.160.75</ip>
+      <host-ip>205.209.213.45</host-ip>
+      <host-ip>205.209.214.39</host-ip>
+      <port>15233</port>
+      <feed>B</feed>
+    </connection>
+    <connection id="233H2A">
+      <type feed-type="H">Historical Replay</type>
+      <protocol>TCP/IP</protocol>
+      <host-ip>205.209.222.61</host-ip>
+      <host-ip>205.209.220.61</host-ip>
+      <port>9000</port>
+      <feed>A</feed>
+    </connection>
+   </connections>
+  </channel>
+  <channel id="234" label="DME Block Trades">
+    <products/>
+   <connections>
+    <connection id="234IA">
+      <type feed-type="I">Incremental</type>
+      <protocol>UDP/IP</protocol>
+      <ip>233.119.160.12</ip>
+      <host-ip>205.209.220.69</host-ip>
+      <host-ip>205.209.222.69</host-ip>
+      <port>14234</port>
+      <feed>A</feed>
+    </connection>
+    <connection id="234IB">
+      <type feed-type="I">Incremental</type>
+      <protocol>UDP/IP</protocol>
+      <ip>233.119.160.76</ip>
+      <host-ip>205.209.213.45</host-ip>
+      <host-ip>205.209.214.39</host-ip>
+      <port>15234</port>
+      <feed>B</feed>
+    </connection>
+    <connection id="234H2A">
+      <type feed-type="H">Historical Replay</type>
+      <protocol>TCP/IP</protocol>
+      <host-ip>205.209.222.61</host-ip>
+      <host-ip>205.209.220.61</host-ip>
+      <port>9000</port>
+      <feed>A</feed>
+    </connection>
+   </connections>
+  </channel>
+  <channel id="246" label="Eris Exchange">
+    <products/>
+   <connections>
+    <connection id="246IA">
+      <type feed-type="I">Incremental</type>
+      <protocol>UDP/IP</protocol>
+      <ip>233.119.160.14</ip>
+      <host-ip>205.209.220.69</host-ip>
+      <host-ip>205.209.222.69</host-ip>
+      <port>14246</port>
+      <feed>A</feed>
+    </connection>
+    <connection id="246IB">
+      <type feed-type="I">Incremental</type>
+      <protocol>UDP/IP</protocol>
+      <ip>233.119.160.78</ip>
+      <host-ip>205.209.213.45</host-ip>
+      <host-ip>205.209.214.39</host-ip>
+      <port>15246</port>
+      <feed>B</feed>
+    </connection>
+    <connection id="246H2A">
+      <type feed-type="H">Historical Replay</type>
+      <protocol>TCP/IP</protocol>
+      <host-ip>205.209.222.61</host-ip>
+      <host-ip>205.209.220.61</host-ip>
+      <port>9000</port>
+      <feed>A</feed>
+    </connection>
+   </connections>
+  </channel>
+</configuration>

@@ -1,0 +1,235 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" elementFormDefault="qualified">
+  <xs:element name="Model">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element ref="InternalModel"/>
+        <xs:element ref="FixModels"/>
+        <xs:element ref="Codecs"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="InternalModel">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element ref="Sizes"/>
+        <xs:element maxOccurs="unbounded" ref="Instruction"/>
+        <xs:element ref="Types"/>
+        <xs:element ref="Events"/>
+      </xs:sequence>
+      <xs:attribute name="root" use="required" type="xs:NCName"/>
+      <xs:attribute name="version" use="required" type="xs:NMTOKEN"/>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="Sizes">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element maxOccurs="unbounded" ref="DefaultSize"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="DefaultSize">
+    <xs:complexType>
+      <xs:attribute name="id" use="required" type="xs:NCName"/>
+      <xs:attribute name="val" use="required" type="xs:integer"/>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="Instruction" type="xs:NCName"/>
+  <xs:element name="Types">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element maxOccurs="unbounded" ref="Type"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="Type">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element ref="Description"/>
+        <xs:element minOccurs="0" ref="Default"/>
+        <xs:element maxOccurs="unbounded" ref="Entry"/>
+      </xs:sequence>
+      <xs:attribute name="id" use="required" type="xs:NCName"/>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="Default">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element ref="Attribute"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="Events">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element ref="Base"/>
+        <xs:element maxOccurs="unbounded" ref="Event"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="Base">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element maxOccurs="unbounded" ref="Attribute"/>
+      </xs:sequence>
+      <xs:attribute name="id" use="required" type="xs:NCName"/>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="Event">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element minOccurs="0" maxOccurs="unbounded" ref="Attribute"/>
+      </xs:sequence>
+      <xs:attribute name="extends" type="xs:NCName"/>
+      <xs:attribute name="id" use="required" type="xs:NCName"/>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="FixModels">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element ref="FixVersion"/>
+        <xs:element maxOccurs="unbounded" ref="FixModel"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="FixVersion">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element maxOccurs="unbounded" ref="Entry"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="FixModel">
+    <xs:complexType>
+      <xs:sequence minOccurs="0">
+        <xs:element maxOccurs="unbounded" ref="Attribute"/>
+        <xs:element ref="Dictionary"/>
+        <xs:element ref="StrandardHeader"/>
+        <xs:element ref="StandardTrailer"/>
+        <xs:element maxOccurs="unbounded" ref="FixMessage"/>
+      </xs:sequence>
+      <xs:attribute name="id" use="required" type="xs:decimal"/>
+      <xs:attribute name="modelVersionNumber" use="required" type="xs:decimal"/>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="Dictionary">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element maxOccurs="unbounded" ref="Tag"/>
+      </xs:sequence>
+      <xs:attribute name="id" use="required" type="xs:decimal"/>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="StrandardHeader">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element maxOccurs="unbounded" ref="Tag"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="StandardTrailer">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element ref="Tag"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="FixMessage">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element maxOccurs="unbounded" ref="Tag"/>
+      </xs:sequence>
+      <xs:attribute name="extends" type="xs:NCName"/>
+      <xs:attribute name="id" use="required" type="xs:NCName"/>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="Codecs">
+    <xs:complexType>
+      <xs:complexContent>
+        <xs:extension base="Codec">
+          <xs:sequence>
+            <xs:element ref="ExchangeCodecs"/>
+            <xs:element ref="ClientCodecs"/>
+          </xs:sequence>
+        </xs:extension>
+      </xs:complexContent>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="ExchangeCodecs" type="Codec"/>
+  <xs:element name="ClientCodecs" type="Codec"/>
+  <xs:element name="Description" type="xs:string"/>
+  <xs:element name="Entry">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element minOccurs="0" ref="Attribute"/>
+      </xs:sequence>
+      <xs:attribute name="name" use="required" type="xs:NMTOKEN"/>
+      <xs:attribute name="value" use="required"/>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="Attribute">
+    <xs:complexType>
+      <xs:attribute name="name" use="required" type="xs:NCName"/>
+      <xs:attribute name="typeId" use="required" type="xs:NCName"/>
+      <xs:attribute name="value" use="required" type="xs:NCName"/>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="Attribute">
+    <xs:complexType>
+      <xs:attribute name="mandatory" type="xs:NCName"/>
+      <xs:attribute name="name" type="xs:NCName"/>
+      <xs:attribute name="tag" type="xs:integer"/>
+      <xs:attribute name="typeId" use="required"/>
+      <xs:attribute name="value" type="xs:NMTOKEN"/>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="Tag">
+    <xs:complexType>
+      <xs:attribute name="id" use="required" type="xs:integer"/>
+      <xs:attribute name="mand" type="xs:NCName"/>
+      <xs:attribute name="name" type="xs:NCName"/>
+      <xs:attribute name="src" type="xs:NCName"/>
+      <xs:attribute name="type" type="xs:NCName"/>
+    </xs:complexType>
+  </xs:element>
+  <xs:complexType name="Codec">
+    <xs:sequence>
+      <xs:element ref="Codec"/>
+    </xs:sequence>
+  </xs:complexType>
+  <xs:element name="Codec">
+    <xs:complexType>
+      <xs:choice>
+        <xs:element ref="Map"/>
+        <xs:sequence>
+          <xs:element maxOccurs="unbounded" ref="ComplexType"/>
+          <xs:element ref="MessageMap"/>
+        </xs:sequence>
+      </xs:choice>
+      <xs:attribute name="extends" type="xs:NCName"/>
+      <xs:attribute name="fix" use="required" type="xs:decimal"/>
+      <xs:attribute name="id" use="required" type="xs:NCName"/>
+      <xs:attribute name="type" type="xs:NCName"/>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="Map">
+    <xs:complexType>
+      <xs:attribute name="decode" use="required"/>
+      <xs:attribute name="fixMessageId" use="required" type="xs:NCName"/>
+      <xs:attribute name="tagId" use="required" type="xs:integer"/>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="ComplexType">
+    <xs:complexType>
+      <xs:attribute name="tag" use="required" type="xs:integer"/>
+      <xs:attribute name="typeId" use="required" type="xs:NCName"/>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="MessageMap">
+    <xs:complexType>
+      <xs:attribute name="eventId" use="required" type="xs:NCName"/>
+      <xs:attribute name="fixMessageId" use="required" type="xs:NCName"/>
+      <xs:attribute name="id" use="required" type="xs:NCName"/>
+    </xs:complexType>
+  </xs:element>
+</xs:schema>

@@ -1,59 +1,66 @@
-/*******************************************************************************
- * Copyright (c) 2015 Low Latency Trading Limited  :  Author Richard Rose
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at	http://www.apache.org/licenses/LICENSE-2.0
- * Unless required by applicable law or agreed to in writing,  software distributed under the License 
- * is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and limitations under the License.
- *******************************************************************************/
 package com.rr.model.generated.internal.events.interfaces;
 
-import com.rr.core.model.Currency;
-import com.rr.core.model.SecurityIDSource;
+/*
+Copyright 2015 Low Latency Trading Limited
+Author Richard Rose
+*/
+
 import com.rr.model.internal.type.ExecType;
 import com.rr.model.generated.internal.type.OrdStatus;
 import com.rr.model.generated.internal.type.Side;
 import com.rr.model.generated.internal.type.OrderCapacity;
-import com.rr.core.lang.ViewString;
-import com.rr.core.lang.ReusableString;
-import com.rr.core.model.Message;
+import com.rr.core.utils.Utils;
+import com.rr.core.lang.*;
+import com.rr.core.model.*;
+import com.rr.core.annotations.*;
 
-public interface CommonExecRpt extends CommonExchangeHeader, Message {
+@SuppressWarnings( { "unused", "override"  })
+
+public interface CommonExecRpt extends CommonExchangeHeader, Event {
 
    // Getters and Setters
-    public ViewString getExecId();
+    ViewString getExecId();
 
-    public ViewString getClOrdId();
+    ViewString getClOrdId();
 
-    public ViewString getSecurityId();
+    ViewString getSecurityId();
 
-    public ViewString getSymbol();
+    ViewString getSymbol();
 
-    public Currency getCurrency();
+    Currency getCurrency();
 
-    public SecurityIDSource getSecurityIDSource();
+    SecurityIDSource getSecurityIDSource();
 
-    public ViewString getOrderId();
+    ViewString getOrderId();
 
-    public ExecType getExecType();
+    ExecType getExecType();
 
-    public OrdStatus getOrdStatus();
+    OrdStatus getOrdStatus();
 
-    public int getLeavesQty();
+    long getTransactTime();
 
-    public int getCumQty();
+    double getLeavesQty();
 
-    public double getAvgPx();
+    double getCumQty();
 
-    public int getOrderQty();
+    double getAvgPx();
 
-    public double getPrice();
+    double getOrderQty();
 
-    public Side getSide();
+    double getPrice();
 
-    public OrderCapacity getMktCapacity();
+    Side getSide();
 
-    @Override
-    public void dump( ReusableString out );
+    ViewString getText();
+
+    OrderCapacity getMktCapacity();
+
+    ViewString getParentClOrdId();
+
+    ViewString getStratId();
+
+    ViewString getOrigStratId();
+
+    @Override void dump( ReusableString out );
 
 }

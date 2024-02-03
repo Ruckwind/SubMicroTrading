@@ -1,0 +1,50 @@
+dependencies {
+
+    api project(':Core')
+    api project(':CoreMD')
+    api project(':Generated')
+    api project(':smtopt')
+
+    testImplementation project(':Core').sourceSets.test.output
+    testImplementation project(':CoreMD').sourceSets.test.output
+}
+
+sourceSets {
+    test {
+        runtimeClasspath += project(':Core').sourceSets.main.output
+    }
+
+    perfTests {
+        java {
+            compileClasspath += main.output + test.output
+            runtimeClasspath += main.output + test.output
+        }
+
+        java.srcDir file('src/perf/java')
+        resources.srcDir file('src/perf/resources')
+
+        compileClasspath += sourceSets.test.compileClasspath
+        runtimeClasspath += sourceSets.test.runtimeClasspath
+    }
+}
+
+test {
+    exclude '**/DumpFixInstrumentSpreads.*'
+    exclude '**/TestSocketSessionBlocking.*'
+}
+
+//  gradle --info :OM:perfTests |& tee ../perf.${TODAY}.log
+
+task perfTests(type: Test) {
+    maxParallelForks = 1
+    maxHeapSize = "16G"
+
+    testClassesDirs = sourceSets.perfTests.output.classesDirs
+    classpath = sourceSets.perfTests.runtimeClasspath
+}
+
+idea {
+    module {
+        testSourceDirs += sourceSets.perfTests.java.srcDirs
+    }
+}

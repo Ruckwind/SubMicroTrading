@@ -1,44 +1,43 @@
-/*******************************************************************************
- * Copyright (c) 2015 Low Latency Trading Limited  :  Author Richard Rose
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at	http://www.apache.org/licenses/LICENSE-2.0
- * Unless required by applicable law or agreed to in writing,  software distributed under the License 
- * is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and limitations under the License.
- *******************************************************************************/
 package com.rr.model.generated.internal.events.interfaces;
 
-import com.rr.core.model.SecurityIDSource;
-import com.rr.model.generated.internal.events.interfaces.MDSnapEntry;
-import com.rr.core.lang.ReusableString;
-import com.rr.core.model.Message;
+/*
+Copyright 2015 Low Latency Trading Limited
+Author Richard Rose
+*/
 
-public interface MDSnapshotFullRefresh extends BaseMDResponse, Message {
+import com.rr.model.generated.internal.events.interfaces.MDSnapEntry;
+import com.rr.core.utils.Utils;
+import com.rr.core.lang.*;
+import com.rr.core.model.*;
+import com.rr.core.annotations.*;
+
+@SuppressWarnings( { "unused", "override"  })
+
+public interface MDSnapshotFullRefresh extends BaseMDResponseWrite, Event {
 
    // Getters and Setters
-    public long getSendingTime();
+    long getReceived();
 
-    public long getReceived();
+    int getLastMsgSeqNumProcessed();
 
-    public int getLastMsgSeqNumProcessed();
+    int getTotNumReports();
 
-    public int getTotNumReports();
+    int getRptSeq();
 
-    public int getRptSeq();
+    int getMdBookType();
 
-    public int getMdBookType();
+    SecurityIDSource getSecurityIDSource();
 
-    public SecurityIDSource getSecurityIDSource();
+    ViewString getSecurityID();
 
-    public long getSecurityID();
+    ExchangeCode getSecurityExchange();
 
-    public int getMdSecurityTradingStatus();
+    int getMdSecurityTradingStatus();
 
-    public int getNoMDEntries();
+    int getNoMDEntries();
 
-    public MDSnapEntry getMDEntries();
+    MDSnapEntry getMDEntries();
 
-    @Override
-    public void dump( ReusableString out );
+    @Override void dump( ReusableString out );
 
 }

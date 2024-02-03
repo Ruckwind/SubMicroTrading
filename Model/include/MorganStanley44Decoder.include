@@ -1,0 +1,167 @@
+
+/**
+ * HAND GENERATED TRANSFORMS
+ */
+
+@INCLUDE StandardDecoder44.include
+
+
+    private void preDecode( BaseOrderRequest req ) {
+        ReflectUtils.setMember( req, "_targetDest", OrdDestType.DMA );
+    }
+
+    private void targetSubId( final BaseOrderRequest msg ) {
+        int start = _idx;
+        int valLen = getValLength();
+
+        _tmpLookupKey.setValue( _fixMsg, start, valLen );
+
+        if ( _tmpLookupKey.equals( "DMA" ) ) {
+
+            ReflectUtils.setMember( msg, "_targetDest", OrdDestType.DMA );
+
+        } else if ( _tmpLookupKey.equals( "SORT" ) ) {
+
+            ReflectUtils.setMember( msg, "_targetDest", OrdDestType.SORT_DMA );
+
+        } else if ( _tmpLookupKey.equals( "MBA" ) ) {
+
+            ReflectUtils.setMember( msg, "_targetDest", OrdDestType.ALGO );
+        }
+    }
+
+    private void stratParam( final OrderRequest msg, final int tag ) {
+
+        final ReusableString stratParams = (ReusableString)msg.getStratParams();
+
+        int start = _idx;
+        int valLen = getValLength();
+
+        _tmpLookupKey.setValue( _fixMsg, start, valLen );
+
+        switch( tag ) {
+        case FixDictionaryMS44.futTraderId:
+            /* fixed */
+            break;
+        case FixDictionaryMS44.urgency:
+            if ( _tmpLookupKey.equals( "ULTRALOW" ) )       StringParamsHelper.set( "UltraLow",  StratParamKeys.Urgency.name(), stratParams );
+            else if ( _tmpLookupKey.equals( "LOW" ) )       StringParamsHelper.set( "Low",       StratParamKeys.Urgency.name(), stratParams );
+            else if ( _tmpLookupKey.equals( "MEDIUM" ) )    StringParamsHelper.set( "Medium",    StratParamKeys.Urgency.name(), stratParams );
+            else if ( _tmpLookupKey.equals( "HIGH" ) )      StringParamsHelper.set( "High",      StratParamKeys.Urgency.name(), stratParams );
+            else if ( _tmpLookupKey.equals( "ULTRAHIGH" ) ) StringParamsHelper.set( "UltraHigh", StratParamKeys.Urgency.name(), stratParams );
+            break;
+        case FixDictionaryMS44.benchStrategy:
+            if ( _tmpLookupKey.equals( "TWAP" ) ) {
+                ReflectUtils.setMember( msg, "_targetStrategy", TargetStrategy.TWAP );
+                ReflectUtils.setMember( msg, "_targetDest", OrdDestType.ALGO );
+            } else if ( _tmpLookupKey.equals( "VWAP" ) ) {
+                ReflectUtils.setMember( msg, "_targetStrategy", TargetStrategy.VWAP );
+                ReflectUtils.setMember( msg, "_targetDest", OrdDestType.ALGO );
+            } else if ( _tmpLookupKey.equals( "CLOSE" ) ) {
+                ReflectUtils.setMember( msg, "_targetStrategy", TargetStrategy.Close );
+                ReflectUtils.setMember( msg, "_targetDest", OrdDestType.ALGO );
+            } else {
+                throw new RuntimeDecodingException( "MorganStanleyDecoder not configured for strategy " + _tmpLookupKey.toString() );
+            }
+            break;
+        case FixDictionaryMS44.maxPercentTradeVol:
+            StringParamsHelper.set( _tmpLookupKey, StratParamKeys.MaxPercentageByVolume.name(), stratParams );
+            break;
+        case FixDictionaryMS44.visibleToCoreDesk:
+            /* fixed */
+            break;
+        case FixDictionaryMS44.vwapNearSideOnly:
+            StringParamsHelper.set( _tmpLookupKey, StratParamKeys.NearSideOnly.name(), stratParams );
+            break;
+        case FixDictionaryMS44.msFixSpecVerNum:
+            /* fixed */
+            break;
+        case FixDictionaryMS44.triggerPrice:
+            StringParamsHelper.set( _tmpLookupKey, StratParamKeys.TriggerPrice.name(), stratParams );
+            break;
+        case FixDictionaryMS44.sortStrategy:
+            if ( _tmpLookupKey.equals( "SmartPegged" ) || _tmpLookupKey.equals( "Pegged" ) ) {
+                ReflectUtils.setMember( msg, "_targetStrategy", TargetStrategy.PEG );
+                ReflectUtils.setMember( msg, "_targetDest", OrdDestType.SORT_DMA );
+                StringParamsHelper.set( PegType.NEAR.name(), StratParamKeys.PegType.name(), stratParams ); // default
+            } else if ( _tmpLookupKey.equals( "NIGHTVISION" ) ) {
+                ReflectUtils.setMember( msg, "_targetDest", OrdDestType.SORT_DARK );
+            } else if ( _tmpLookupKey.equals( "SORTDMA" ) ) {
+                ReflectUtils.setMember( msg, "_targetDest", OrdDestType.SORT_DMA );
+            } else if ( _tmpLookupKey.equals( "NextAuction" ) ) {
+                ReflectUtils.setMember( msg, "_targetStrategy", TargetStrategy.OpenAuction );
+                ReflectUtils.setMember( msg, "_targetDest", OrdDestType.ALGO );
+            } else {
+                throw new RuntimeDecodingException( "MorganStanleyDecoder not configured for strategy " + _tmpLookupKey.toString() );
+            }
+            break;
+        case FixDictionaryMS44.pegToNear:
+            StringParamsHelper.set( PegType.NEAR.name(), StratParamKeys.PegType.name(), stratParams );
+            break;
+        case FixDictionaryMS44.displaySizePercentage:
+            StringParamsHelper.set( _tmpLookupKey, StratParamKeys.DisplaySizePercentage.name(), stratParams );
+            break;
+        case FixDictionaryMS44.displayRandomPercentage:
+            StringParamsHelper.set( _tmpLookupKey, StratParamKeys.DisplaySizeRandomPercentage.name(), stratParams );
+            break;
+        case FixDictionaryMS44.randomClipDelay:
+            StringParamsHelper.set( _tmpLookupKey, StratParamKeys.RandomClipDelay.name(), stratParams );
+            break;
+        }
+    }
+
+    private void stratParam( final CancelRequest msg, final int tag ) {
+
+        int start = _idx;
+        int valLen = getValLength();
+
+        _tmpLookupKey.setValue( _fixMsg, start, valLen );
+
+        switch( tag ) {
+        case FixDictionaryMS44.benchStrategy:
+            if ( _tmpLookupKey.equals( "VWAP" ) || _tmpLookupKey.equals( "TWAP" ) || _tmpLookupKey.equals( "CLOSE" ) ) {
+                ReflectUtils.setMember( msg, "_targetDest", OrdDestType.ALGO );
+            } else {
+                throw new RuntimeDecodingException( "MorganStanleyDecoder not configured for strategy " + _tmpLookupKey.toString() );
+            }
+            break;
+        case FixDictionaryMS44.sortStrategy:
+            if ( _tmpLookupKey.equals( "SmartPegged" ) || _tmpLookupKey.equals( "Pegged" ) ) {
+                ReflectUtils.setMember( msg, "_targetDest", OrdDestType.SORT_DMA );
+            } else if ( _tmpLookupKey.equals( "NIGHTVISION" ) ) {
+                ReflectUtils.setMember( msg, "_targetDest", OrdDestType.SORT_DARK );
+            } else if ( _tmpLookupKey.equals( "SORTDMA" ) ) {
+                ReflectUtils.setMember( msg, "_targetDest", OrdDestType.SORT_DMA );
+            } else if ( _tmpLookupKey.equals( "NextAuction" ) ) {
+                ReflectUtils.setMember( msg, "_targetStrategy", TargetStrategy.OpenAuction );
+                ReflectUtils.setMember( msg, "_targetDest", OrdDestType.ALGO );
+            } else {
+                throw new RuntimeDecodingException( "MorganStanleyDecoder not configured for strategy " + _tmpLookupKey.toString() );
+            }
+            break;
+        }
+    }
+
+    private void postDecode( ClientNewOrderSingleImpl nos ) {
+        enrich( nos );
+    }
+
+    private void postDecode( ClientCancelReplaceRequestImpl rep ) {
+        enrich( rep );
+    }
+
+    private void postDecode( ClientCancelRequestImpl can ) {
+        enrich( can );
+    }
+
+    private void postDecode( NewOrderSingleImpl nos ) {
+        enrich( nos );
+    }
+
+    private void postDecode( CancelReplaceRequestImpl rep ) {
+        enrich( rep );
+    }
+
+    private void postDecode( CancelRequestImpl can ) {
+        enrich( can );
+    }

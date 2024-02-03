@@ -1,0 +1,58 @@
+/*------------------------------------------------------------------------------
+ * Copyright (c) 2015 Low Latency Trading Limited  :  Author Richard Rose
+ ------------------------------------------------------------------------------*/
+package com.rr.core.lang.stats;
+
+public enum SizeType {
+    DEFAULT_MIN_MEMCPY_LENGTH( 10 ),
+    DEFAULT_STRING_LENGTH( 16 ),
+    DEFAULT_ACCOUNT_LENGTH( 5 ),
+    DEFAULT_CLIENTID_LENGTH( 5 ),
+    DEFAULT_CLORDID_LENGTH( 16 ),
+    DEFAULT_EXDESTINATION_LENGTH( 3 ),
+    DEFAULT_EXECID_LENGTH( 10 ),
+    DEFAULT_ORDER_MAP_SIZE( 64 ),
+    DEFAULT_EXECID_MAP_SIZE( 64 ),
+    DEFAULT_MARKETORDERID_LENGTH( 12 ),
+    DEFAULT_SECURITYID_LENGTH( 12 ),
+    DEFAULT_SENDERCOMPID_LENGTH( 5 ),
+    DEFAULT_SENDERSUBID_LENGTH( 5 ),
+    DEFAULT_COMPANYNAME_LENGTH( 20 ),
+    DEFAULT_ONBEHALFOFID_LENGTH( 10 ),
+    DEFAULT_EXECBROKER_LENGTH( 10 ),
+    DEFAULT_SYMBOL_LENGTH( 66 ),
+    DEFAULT_RIC_LENGTH( 12 ),
+    DEFAULT_TARGETCOMPID_LENGTH( 5 ),
+    DEFAULT_TARGETSUBID_LENGTH( 5 ),
+    DEFAULT_SENDERLOCID_LENGTH( 8 ),
+    DEFAULT_TEXT_LENGTH( 2 ),
+    DEFAULT_BENCHMARK_LENGTH( 16 ),
+    DEFAULT_USERNAME( 10 ),
+    DEFAULT_PASSWORD( 10 ),
+    DEFAULT_LASTMKT_LENGTH( 3 ),
+    DEFAULT_SECURITYEXCH_LENGTH( 3 ),
+    DEFAULT_SUBPARTYGRPID_LENGTH( 10 ),
+    DEFAULT_MATURITYMONTHYEAR_LENGTH( 6 ),
+    DEFAULT_MATURITYDAY_LENGTH( 2 ),
+    DEFAULT_VIEW_NOS_BUFFER( 400 ), // default size of the buffer backing the ViewStrings in a NOS - holds all input msg 
+    DEFAULT_MAX_MSG_BUFFER( 480 ),
+    DEFAULT_MAX_SESSION_BUFFER( 32768 ),
+    DEFAULT_LOG_EVENT_SMALL( 100 ),
+    DEFAULT_LOG_EVENT_LARGE( 500 ),
+    DEFAULT_LOG_EVENT_HUGE( 2048 ),
+    DEFAULT_LOG_MAX_QUEUE_SIZE( 131072 ),
+    DEFAULT_CHAIN_SIZE( 100 ),
+    DEFAULT_EXEC_ID_SET_SIZE_PER_BOOK( 128 ),
+    DEFAULT_LIQ_DELTA_LVLS( 50 ),
+    DEFAULT_BOOK_LVLS( 10 ),
+    DEFAULT_MAX_LOG_CHAINS( 5000 ),
+    DEFAULT_PERF_BLOCK_SIZE( 10000 );
+
+    private int _size;
+
+    SizeType( int val ) {
+        _size = val;
+    }
+
+    public int getSize() { return _size; }
+}

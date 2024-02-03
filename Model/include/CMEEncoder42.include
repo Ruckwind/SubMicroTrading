@@ -1,0 +1,82 @@
+@INCLUDE FixEncoder.include
+
+@INCLUDE Fix42ExtraEncoder.include
+
+@INCLUDE TickToTradeStatsEncoder.include
+
+//    private final ZString _systemName    = new ViewString( "SMT" );
+//    private final ZString _vendorVersion = new ViewString( "1.1" );
+//    private final ZString _vender        = new ViewString( "LLT" );
+
+    private final ZString _systemName    = new ViewString( "ORS" );
+    private final ZString _vendorVersion = new ViewString( "1.1" );
+    private final ZString _vender        = new ViewString( "ILLUMINATI" );
+    
+
+/*
+ * HANDCODED ENCODER METHDOS
+ */
+ 
+    private com.rr.core.session.socket.SeqNumSession _session;
+    
+    public void setSession( com.rr.core.session.socket.SeqNumSession session ) {
+        _session = session;
+    }
+
+    private void setLastMsgSeqNumProcessed( final Event msg ) {
+        if ( _session != null ) {
+//            _builder.encodeInt( 369, _session.getLastSeqNumProcessed() );        
+            _builder.encodeInt( 369, 0 );        
+        }
+    }
+
+    private void setOrigSendingTime( SessionHeader msg, long msFromStartDayUTC ) {
+        if ( msg.isFlagSet( MsgFlag.PossDupFlag ) ) _builder.encodeUTCTimestamp( 122, msFromStartDayUTC );
+    }
+
+    private void enrich( SessionHeader msg, long now ) {
+        long time = msg.getEventTimestamp();
+        if ( time == Constants.UNSET_LONG ) time = now;
+        
+        setOrigSendingTime( msg,  time );
+        setLastMsgSeqNumProcessed( msg );        
+    }
+    
+    private void enrich( NewOrderSingle msg ) {
+        if ( msg.getTimeInForce() == TimeInForce.FillOrKill ) {
+            _builder.encodeByte( 110, (byte)'1' ); // MIN QTY
+        }
+//        setLastMsgSeqNumProcessed( msg );        
+        _builder.encodeByte( 1028, (byte)'N' ); // tag1028 - Automated
+        _builder.encodeByte( 204, (byte)'1' );  // tag204 - Firm
+        _builder.encodeByte( 9702, (byte)'1' ); // tag9702 -  Broker/Trader
+        _builder.encodeString( FixDictionary42.SecurityDesc, msg.getInstrument().getSecurityDesc() ); // tag107
+        _builder.encodeBytes( FixDictionary42.SecurityType, msg.getInstrument().getSecurityType().getVal() ); // tag167
+        if ( msg.isFlagSet( MsgFlag.PossDupFlag ) ) _builder.encodeUTCTimestamp( 122, msg.getEventTimestamp() );
+    }
+
+    private void enrich( CancelReplaceRequest msg ) {
+//        setLastMsgSeqNumProcessed( msg );        
+        _builder.encodeByte( 1028, (byte)'N' ); // tag1028
+        _builder.encodeByte( 204, (byte)'1' ); // tag204
+        _builder.encodeByte( 9702, (byte)'1' ); // tag9702
+        _builder.encodeByte( 9768, (byte)'Y' ); // tag9768 - In Flight Mitigation (IFM) ... 
+        _builder.encodeString( FixDictionary42.SecurityDesc, msg.getInstrument().getSecurityDesc() ); // tag107
+        _builder.encodeBytes( FixDictionary42.SecurityType, msg.getInstrument().getSecurityType().getVal() ); // tag167
+        if ( msg.isFlagSet( MsgFlag.PossDupFlag ) ) _builder.encodeUTCTimestamp( 122, msg.getEventTimestamp() );
+    }
+
+    private void enrich( CancelRequest msg ) {
+//        setLastMsgSeqNumProcessed( msg );        
+//        _builder.encodeEmpty( 9717 ); // tag9717 - correlationId
+        _builder.encodeByte( 1028, (byte)'N' ); // tag1028
+        _builder.encodeByte( FixDictionary42.Side, msg.getSide().getVal() );        // tag54
+        final Instrument inst = msg.getInstrument();
+        if ( inst != null ) {
+            _builder.encodeString( FixDictionary42.SecurityDesc, inst.getSecurityDesc() ); // tag107
+            _builder.encodeBytes( FixDictionary42.SecurityType, inst.getSecurityType().getVal() ); // tag167
+        }
+        if ( msg.isFlagSet( MsgFlag.PossDupFlag ) ) _builder.encodeUTCTimestamp( 122, msg.getTransactTime() );
+    }
+
+    

@@ -1,0 +1,1527 @@
+
+
+
+========================================
+
+
+1) SMTMain running with proper inst loader ... but need inst data for that
+change to
+
+inst.type=dummy
+
+2) HighFreqSimpleRecoveryController
+
+RecOrder._sess was null .... check it gets set when created
+
+3) not logging events in ETI encoder
+
+4) fix login is sending login msg again as soon as get reply
+
+5) smtExchangeSim using ETI and smt.properties down sess using CME
+
+6) error in CME decoder
+
+    private void preExecMessageDetermination() {
+        if ( _execTransType == null ) return;
+
+7) MemMapPersister.persist 
+
+        _curPage.putShort( (short)length );
+
+null pointer
+
+./persist/daily/ClientSIM/client1_down_out/out/client1_DOWN_OUT.dat
+(as if open() not called)
+PageManager has no pages mapped
+
+8) add mem map bullet proofing
+
+        public void unmapNextPageAndGetNewNext( int nextPageToFetch ) {
+           
+            if ( _nextPage.getPageNo() != nextPageToFetch && _nextPage.getPageNo() >= 0 ) {
+                if ( _nextPage.getMappedByteBuf() != null ) {
+                    Page page = new Page();
+                    move( page, _nextPage );
+                    _freeList.add( page );
+                }
+            }
+
+..... should log if this happens as logic bug
+
+
+
+
+TODO
+
+b) get client NOS thru to exchange ... getting rejected
+c) find why sending 3 LogOn to SMT from clientSim
+
+... sending a NullMessage and its causing the sendNow to invoke CMEEncoder which does NOT handle encoding a message its not expecting ... need fix that too
+
+d) add to BaseMemMapPersister logging for open and close persistence ... could be persistence was closed and not reopened ... maybe add to internal connect check persisetnce open
+Need flag to show if persister open ... should be able to open and close multiple times
+
+e) DirectDispatcher
+
+    @Override
+    public void dispatch( Message msg ) {
+        if ( msg.getReusableType() != CoreReusableType.NullMessage ) {
+
+    public void dispatchForSync( Message msg ) {
+        if ( msg.getReusableType() != CoreReusableType.NullMessage ) {
+
+f) a number of warmup threads in SMTMain havent terminated
+
+g) exchange sim seems to be getting no response from heartbeat from SMT
+
+
+
+============================================
+
+ 
+
+============================================
+
+
+now need two seperate distributeables 
+
+deploy to linux and check still works !  ... copy setup.sh from server and put back into subversion
+
+run the T1 benchmark again
+
+
+1) Open source new project ... all system must compile / run without the jar and so
+==> LinuxSocketImpl, LinuxLiteServerSocketImpl 
+==> put the whole c files in here
+http://www.open-mpi.org/projects/hwloc/license.php
+
+2) Ensure system runs and loads the optional module
+
+4) Add to exchange sim .. fill both sides of order.
+
+5) Get linux email working ... email on startup with hostname
+    ... email to contain property file and list of components as well as contact name as set in config
+
+====
+
+Approach universities ... suggest option to build a finance course around the system
+Approach banks and get "mentors" happy to supply advice to students on course
+Ask for feedback on following :-
+
+Flesh out with coding excercise :-
+
+Low Level java programming and relevance to finance 
+    Garbage Collection Explained
+    Avoiding GC with object reuse
+    Coding Excercise : use ReusableString 
+
+RUP / UML / Scrum Methodologies
+    
+Unit testing (over 600 unit tests in 250,000+ lines of code)
+
+Investment Banking overview .. front/middle/back office
+    Market making
+
+Key trading entities Instruments, Books, Orders, Fills, Traders
+
+Asset classes, cash equities, derivatives, CDS, FX
+    Coding Excercise : refactor Instrument class, extract derivative specific methods to DerivInstrument interface ... add FXInstrument interface
+
+Code Generation 
+
+The FIX standard and exchange/client connectivity ... using the fix engine to connect order manager to exchange
+
+Binary exchange protocols ... looking at ETI used in Eurex/Xetra/BSE
+    Coding Excercise : add new field "clientSecClOrdId" to the new order request in ETI, echo the field back in the exchange ACK
+
+Market Data multicast protocols ... itch, FastFix, SBE
+    Coding Excercise : see if you can improve the time to decode itch message in the ITCH perf test which sends message between simple client and server 
+
+Using the trading GUI
+
+Order Management, lifecycle of an order
+    Coding Excercise : add order cache eviction from OMS when order is terminal, reload if a late fill comes in
+
+Front office trading, orders / quotes and market making
+    Coding Excercise : enhance the trade correction to support
+
+Resilience and High Availability 
+    Coding Excercise : Add H/A support to the FixEngine by writing a new persister to use UDP or TCP protocol to sync secondary passive instances. 
+                       Add admin commands to switch a passive fix engine into the active fix engine
+    
+Extending the exchange simulator
+    Coding Excercise : add Quote to fix encoder/decoder and to exchange simulator
+                       write GUI to show visualisation of books at exchange with orders/quotes as they come and go
+
+Proprietary Trading Companies and Hedge Funds
+    Coding Excercise : Using the example arbitrage strategy as a base, extend it to support three leg spreads, write unit test to illustrate it working
+    
+Benchmarking ultra low latency
+
+
+=========================
+
+SFTP temp file download
+
+http://www.cerberusftp.com/products/features/public-file-sharing.html
+
+====================================================================
+
+
+====================
+
+Low Latency Programming
+
+Design is key
+
+1) Minimise object creation by avoiding Methods that return objects
+
+Invoking a method which returns an object either means the object has just been created (adding to GC) or grabbed from a pool.
+
+Where possible  instead of returning result
+
+    public MyMap buildMap( ... ) {
+        MyMap x = new MyMap();
+        ... populate MyMap        
+        return x;
+    }
+
+Pass in resultHolder into the method
+
+    public void buildMap( final MyMap dest, ... ) {
+        ... populate MyMap        
+    }
+
+So the caller is responsible for determining how MyMap can be reused.    
+
+2) Avoid Immutable objects
+
+Immutable objects are great for thread safety and dont require synchronisation, but they cant be reused so should be used only where it wont impact GC too much
+
+3) Avoid GC 
+
+Doesnt mean never under any circumstances GC, instead aim for no GC under expected and pretested conditions ... eg if process upto 1,000,000 orders per day, test no gc with 10 million.
+Dont make all objects created from pools, only those that would cause GC eg ticks / orders / trades 
+
+4) Presize collections and pools ... ideally store pool / collection size at EOD and on next startup / day reaload and add X% spare margin
+
+Growing collections is painful, HashMap has to create a new array and rehash all entries .... for big arrays a noticable perf hit. Presizing mitigates this.
+
+5) Write code to be single threaded and only use multithreaded code where essential.
+
+Forcing code to be single threaded allows instance variables to be safely reused, common example is a ByteBuffer used to read next entry from file/socket. 
+As opposed to creating a new ByteBuffer / byte array per invocation of readNext()
+
+6) Keep socket/file reading / writing to single thread so dont need synchronisation overhead on each read/write. Use async queue to dispatch to the resource adapter.
+
+7) Multi Threaded Pipelining is faster than single threaded system when 
+   (a) the outbound write can delay the next inbound read or 
+   (b) next inbound packet arrives before the previous packet invocation has finished 
+
+8) Use final keyword where possible to help the compiler optimise code
+
+9) Best way to avoid JIT is run system 24 * 7 and accept the JIT hit on day one
+
+10) Alternatively mitigate JIT by writing warmup code ... or use -Xcomp to force class compilation as they are run ... but code will be slower
+    Alternately try out latest Azul Systems : Zing JVM  
+    Just in time compilation allows optimisations that a static compiler such as C/C++ cannot, so my advice is use it !    
+
+11) Avoid maps where ever possible ideally in a tick to trade process should be only one or two map lookups. Use POJO's instead of maps for items such as orders, books etc.
+
+11) Biggest cause of latency in trading applications other than object creation and map overuse is big switch statements.
+
+    Switch( a ) {
+    case 10 : doAStuff(); break;
+    case 20 : doBStuff(); break;
+    case 30 : doCStuff(); break;
+    case 40 : doDStuff(); break;
+    ...
+    }   
+    
+    is same as
+    
+    if ( a == 10 ) doAStuff
+    else if ( a == 20 ) doBStuff 
+    else if ( a == 30 ) doBStuff 
+    else if ( a == 40 ) doBStuff 
+    
+    If you pad the case statements so there are no gaps, then the compiler will generate a jump table and invoke the routine at array index 'a'.
+    
+    This has a massive perf hit for example in decoding fix messages.
+
+12) Keep code simple, if the code looks complex it is complex and the compiler will find it hard to optimise, this can cause bad optimisation choices at runtime 
+which can cause a routine to be recompiled multiple times.
+ 
+13) Dont over focus on P99.9 latency, I mentioned elsewhere this is generally a misnomer, the key stats are P50, P95 ... if you are the fastest 95% of the time your strat will be making the most money.
+    Make sure you have compiler logging turned on, and in a trading app where you think you have lost arb op then log the event and correlate against the JIT log to prove if that was the impact .. if it was then write warmup code / simplify the routine.
+    Seen alot of money wasted with focus on latency in areas that didnt matter ignoring much more glaring issues ... eg not using Solarflare open onload drivers !
+
+14) Every app is different, you need reproducable scenario's and controlled environment for proper tuning. I suggest capture market data with tcpdump then replay with tcpreplay. 
+    Note JVM args should be tuned against all the main use cases of the system.
+
+15) Latency figures are generally quoted for a scenario. If however tick to trade latency for a test which uses market data which is predominantly from 1 book then the results could be very different to a test with 10,000 books. Common sense really
+
+16) Dont overfocus on micro benchmarks, in trading its the end to end time that counts eg from packet being available at the switch to order packet being written to the wire. These should be verified using appropriate tools eg network monitor.
+
+I am skeptical on the true performance of the highbred systems which use FPGA to process market data, then write an algo in C++ with an FPGA exchange session manager. The key figure is not how quick the FPGA card can decode a fast fix message ... java can decode over 700,000 fast fix messages per core ... how many do you really need ? As stated previously the key is what is the end to end latency and is it reliable. 
+No point having a half implemented TCP stack that fails with exchange burst traffic.
+
+         
+
+--> put all sun specialised code / collections in it ... also the C code
+--> covered by GPL
+
+
+
+
+--> add file header to each file
+    copyright notice and author
+
+
+
+
+=============
+
+1) create smt openinfra
+
+--> add file header to each file
+    copyright notice and author
+
+--> include anti spring and minimum code from core to make anti spring work
+--> change use of superpools to be via interface allowing other implementations
+--> put all sun specialised code / collections in it ... also the C code
+--> covered by GPL
+
+        GNU General Public License (GPL), version 2.
+
+Restrictions
+==> excludes code generator
+
+==> dont change header, use the jar file 
+==> how can I add restriction that for non trading use, 
+    if used in production environment need organisation regional (EMEA/US/ASIA) production license at 2K/month which also entitles to free updates / bug fixes / email support
+    
+
+
+==============
+
+Write BSETradingSessionController which keeps snapshot sessions down until market open
+
+add trading session status support to BSE ... dont process MD if not in trading / preopen
+
+om startup join snaphot ...when all book snapped LEAVE channel then suspend session
+
+check if spreads only update BBO on snapshot ! ... pick one and see differences in snapshots and if any MDIncRefresh for them ... eg 72058345657204745
+
+WHY NO MAIL ON STARTUP
+
+===================================================================
+
+TwoLegArb_BSXNOVDEC14
+
+[spread 16600 x 155.0 - 170.0 x 33043, legA 15 x 28111.75 - 28113.0 x 360, legB 150 x 28270.5 - 28273.25 x 75] 
+
+buying the spread means in effect :  selling leg1 and buying leg2
+
+synthBuy, cross spread sellLeg1 @ 28111.75 ... cross spread buyLeg2 @ 28273.25   ..... 28273.25 - 28111.75 = 161.5 
+synthSell, cross spread buyLeg1 @ 28113.0 ... cross spread sellLeg2 @ 28270.5  ...... 28270.5 - 28113.0    = 157.5
+
+spread 16600 x 155.0 - 170.0 x 33043,
+ legA 15 x 28111.75 - 28113.0 x 360,
+ legB 150 x 28270.5 - 28273.25 x 75 
+
+synth spread  157.5 - 161.5
+
+Arb Op should be
+   sellSynth - buySpread > cost :  157.5 - 170.0 = -12.5
+   sellSpread - buySynth > cost :  155.0 - 161.5 = -6.5
+  
+Note the spread on the cal spread itself is 15 .... much wider than the legs 2.25 and 2.75 ... so should be alot of scope for quoting and when you get hit trading out the legs ...
+Eg if instead of crossing spread, put in a offer at 169 and it was hit would make 169 - 161.5 ie 7.5   .... I assume do that alot and the spreads will simply tighten.
+
+
+
+   
+
+
+
+
+==================
+
+add to BSE inst scripts a tag for segment type so can differentiate EQD from CD inst
+
+3) check that following restrict works for EQ Derivs with different naming convention
+
+    private boolean restrictToCalSpread( boolean allow, String leg1SecDesc, String leg2SecDesc ) {
+        String part1 = leg1SecDesc.substring( 0, leg1SecDesc.length() - 2 );
+        String part2 = leg2SecDesc.substring( 0, leg2SecDesc.length() - 2 );
+
+
+check if any spreads are buy-sell ... if so which
+
+    component.algoMgr%{TYPE}.properties.allowBuyLeg1SellLeg2=true
+
+=============
+
+add encrypt string function
+add javamail with setText using encypted string
+
+================
+
+400 spreads, need several pipes for EQD algos ....
+
+C0 - UNIX
+C1 - CD_MDInc1
+C2 - CD_MDInc2
+C3 - CD_BookController
+C4 - CD_AlgoMplex1
+C5 - share
+C6 - share
+C7 - share
+
+C8  - ED_MDInc1
+C9  - ED_MDInc2
+C10 - ED_BookController
+C11 - ED_AlgoMplex1
+C12 - ED_AlgoMplex2
+C13 - ED_AlgoMplex3
+C14 - share
+C15 - share
+
+
+=========================
+
+check .. note change of secGrp and DUMMY id ..... invalid instrument ? .. .screws up seq nums ?
+ 
+===============
+
+
+1) Email HTML reporting
+
+2) Write hard wired decoder for MDIncRefresh and MAYBE .. MDSnapshot ... need use the shared dictionary
+
+3) Setup equities / BSE eq derivs 
+
+
+
+
+======================
+
+
+1) replay pcap into TWO leg strat at x10 and check for gap issues 
+
+a) write instrument fix file generator for equity derivs (0.5)
+b) write instrument fix file generator for equities (0.5)
+c) specialise two leg strat for pricing override and unit test (1)
+d) write new strategy loader to pick up all CFS spreads and create strategies (1)
+e) set up new components for subscriptions to equity / derivs market data, and new market data controller (1)
+
+
+========================
+
+Execution costs
+
+Futures  = 936 INR/CR
+Options = 6700 INR/CR
+Cash equities = 1836 INR/CR
+Currency = 160 INR/CR
+BSE Currency = 40 INR/CR
+
+1CR = 10,000,000 (10 million)
+
+===============================
+
+check logs for errors
+
+============
+
+add unit test to check BOTH old and new for incremental with null, and X ... X init should be X-1
+
+CHECK DELTA MANTISSA/EXPONENT SUBFIELD IS INIT with ZERO !!
+
+
+---------------------
+
+
+
+==================================================
+
+Example of setting up ssh tunnel thru two boxes to connect to exchange
+ssh -C -p 2222 -L 10508:localhost:10508 moi@222.222.110.147 ssh -C -L 10508:10.222.222.222:10508 -nNT trading@192.168.22.22
+ssh -C -p 2222 -L 10509:localhost:10509 moi@222.222.110.147 ssh -C -L 10509:10.222.222.222:10509 -nNT trading@192.168.22.22
+
+
+===================
+
+DATE = restart process daily .. still need fix the local issue .... look at below :-
+
+2) Look at fixing the date issue ... eg change to number of ms since midnight 00:00:01 on Monday AM
+   or change to long
+
+MAX  =                                 51539607528   
+1day =   1000 * 60 * 60 * 24 =            86400000
+
+Number of ms from start of year
+1year =  1000 * 60 * 60 * 24 * 365     31536000000
+
+in calendar keep 
+numMSToStartYearUTC
+
+startTodayLocalMS
+startTodayUTCMS
+endTodayLocalMS
+endTodayUTCMS
+
+in date encoders check in between start and end bound and if so encode as today else call expensive method
+need work out how to keep todayLocal and todayUTC string correct across day
+
+
+5) run with A and B feed and put markDirty back on .. check gaps, also check
+6) run with A and B feed and A and B snap feed and put markDirty back on .. check gaps, also check RECALCs
+
+=> check gap replay
+
+    with MAX enqueue 10 and only channel A :-
+        $ grep QUEUE A* >x
+    ==> check auto recover
+        $ grep "ENQUEUE REPLAY" x | wc -l
+        88
+    ==> check max queue size hit so force replay of when we have
+        $ grep "ENQUEUE FORCE REPLAY" x | wc -l
+        241
+
+=> get count of RECALCs .. only invoked when BBO price changes
+    $ grep RECALC A* | sed -e "s/^.*action //" -e "s/ .*$//" | sort | uniq -c
+       8570 TwoLegArb_10YGS840SEPOCT14
+       6301 TwoLegArb_10YGS883SEPOCT14
+      45908 TwoLegArb_GBPSEPOCT14
+          1 TwoLegArb_USDAPRMAY15
+       7365 TwoLegArb_USDDECJAN15
+         13 TwoLegArb_USDFEBMAR15
+         17 TwoLegArb_USDJANFEB15
+          1 TwoLegArb_USDJULAUG15
+          1 TwoLegArb_USDJUNJUL15
+          5 TwoLegArb_USDMARAPR15
+          1 TwoLegArb_USDMAYJUN15
+      37332 TwoLegArb_USDSEPOCT14
+
+=> to get the spread contracts
+    grep TwoLegArb_USDAPRMAY15 A*  
+=> to get each generated fix message
+    grep '48=72057598332895308\|48=1002080\|48=1002270' A* >x
+=> to get each bid/offer
+    grep 35= x | grep '269=0\|269=1' |grep 1002270 | tr '\001' '|' | sed -e "s/^.* 35=/35=/"
+
+
+
+
+ETI TESTING
+=============
+
+get sample messages and replace with broken tests in ETICodecTest as version is now 1.0 not 0.1
+
+CLEAN PERSISTENCE
+
+Sample Instruments from SIM ENV
+35=d22=848=7205759833289532655=USDMARAUG15107=USDMARAUG15200=201527167=FUT1180=1969=25000980=A58=840GS20241300=71151=1461=F555=2600=USDINR15MARFUT602=1001709603=8624=2600=USDINR15AUGFUT602=1002928603=8624=1
+35=d22=848=100170955=USDINR15MARFUT107=USDINR15MARFUT200=20150327167=FUT1180=1969=25000980=A58=USDINR1300=71151=1461=F
+35=d22=848=100292855=USDINR15AUGFUT107=USDINR15AUGFUT200=20150827167=FUT1180=1969=25000980=A58=USDINR1300=71151=1461=F
+
+
+MKT
+8=FIX.4.2;9=207;35=D;49=1T1234N;52=20130812-11:26:40.313;56=CME;40=1;11=2000004;21=1;38=5;100=BO;48=1001709;22=8;50=1234;54=1;57=G;59=0;60=20130812-11:26:40;107=USDINR15MARFUT;142=IN;167=FUT;204=1;1028=N;9702=1;10=220;
+8=FIX.4.2;9=207;35=D;49=1T1234N;52=20130812-11:26:40.313;56=CME;40=1;11=2100004;21=1;38=5;100=BO;48=1001709;22=8;50=1234;54=2;57=G;59=0;60=20130812-11:26:40;107=USDINR15MARFUT;142=IN;167=FUT;204=1;1028=N;9702=1;10=220;
+8=FIX.4.2;9=207;35=D;49=1T1234N;52=20130812-11:26:40.313;56=CME;40=1;11=3000002;21=1;38=5;100=BO;48=1002928;22=8;50=1234;54=1;57=G;59=0;60=20130812-11:26:40;107=USDINR15AUGFUT;142=IN;167=FUT;204=1;1028=N;9702=1;10=220;
+
+LIMIT
+8=FIX.4.2;9=207;35=D;49=1T1234N;52=20130812-11:26:40.313;56=CME;40=2;11=4000002;21=1;38=5;44=9950.000000;55=USDMARAUG15=4895;107=USDMARAUG15;100=BO;48=72057598332895326;22=8;50=1234;54=1;57=G;59=0;60=20130812-11:26:40;142=IN;167=FUT;204=1;1028=N;9702=1;10=220;
+8=FIX.4.2;9=207;35=D;49=1T1234N;52=20130812-11:26:40.313;56=CME;40=2;11=5000002;21=1;38=5;44=9950.000000;100=BO;48=1001709;22=8;50=1234;54=1;57=G;59=0;60=20130812-11:26:40;107=USDINR15MARFUT;142=IN;167=FUT;204=1;1028=N;9702=1;10=220;
+8=FIX.4.2;9=207;35=D;49=1T1234N;52=20130812-11:26:40.313;56=CME;40=2;11=6000002;21=1;38=5;44=9950.000000;100=BO;48=1002928;22=8;50=1234;54=1;57=G;59=0;60=20130812-11:26:40;107=USDINR15AUGFUT;142=IN;167=FUT;204=1;1028=N;9702=1;10=220;
+
+
+
+
+
+capture inject messages and ready for ETI replay
+
+lower the trading threshold to 0.5 to generate real orders using SIM mdSess
+... use injection to populate empty book
+
+===============
+
+add email logging and trading report 
+
+===============
+
+Add admin command to set BBO in book ... string  qty x px - px x qty
+
+====================
+
+Write program to generate classes from the soft template .. generate incremental and snapshot
+
+T{templateId}[Reader|Writer]
+
+
+DICTIONARY CANT BE SHARED DUE TO DIFF OPERATORS
+
+=================
+
+write new fastfix which shares dictionary ... replace _previous with FieldValWrapper _dictEntryForPrevValue
+give FieldValWrapper an int id() and add equals/hashcode
+copy the fastfix.field to fastfix.indirect.field
+rename the fastfix.field to fastfix.direct.field
+copy all the unit tests
+
+a) BSE dict made from Set<FieldValWrapper> ... reset iterates over this
+b) component factory needs check init value is the same for fields sharing dict entry
+
+=================================================================
+
+
+1) fix unit tests
+
+2) check all errors in the log
+
+3) look at QUEUE, MDINC entries see if recovery working
+
+
+
+WARMUP - BSE
+
+==============================
+
+Make the BSE packet GAP configurable ... so it doesnt wipe all books
+
+Get the BSE MArfketDataController only updating books that have listeners
+
+skipping all 272 spreads
+a) looks like sell leg1, buy leg2 ..
+CHANGE SCRIPT
+
+b) dont look like call spreads, eg spread=USDOCTFEB15  leg1 USDINR14OCTFUT, leg2 USDINR15FEBFUT 
+.....perhaps change script to add a secDesc of CME format 
+SPECIALISE FOR BSE OVERRIDE CHECK FOR CCY SPREAD 
+
+===================================
+
+try connect from PC to 
+
+
+
+write unit test taking in a list of hex messages, decoding to POJO, then sending to controller using a book change verifier
+
+
+=> workout why
+
+TestFixMultiSocketSessions1 breaks when add
+
+        ,"8=FIX.4.4;9=153;35=D;49=WARMUPCLIENT1;56=LLT1_IN;52=20100810-13:00:50.316;34=859;40=2;54=1;55=X;11=99999910000000002;21=1;60=20100810-13:00:50.316;38=2;44=1.1;59=0;22=5;48=VODl.CHI;10=202;"
+        ,"8=FIX.4.4;9=153;35=F;49=WARMUPCLIENT1;56=LLT1_IN;52=20100810-13:00:52.316;34=859;40=2;54=1;55=X;11=99999960000000000;41=99999910000000002;21=1;60=20100810-13:00:52.316;38=3;44=1.2;59=0;22=5;48=VODl.CHI;10=202;"
+
+
+MON
+c) add warmup for SBE codec 
+
+
+TEST PCAP FROM BSE
+
+a) where to get tick size of CME instrument
+b)
+
+
+===========================================
+
+
+DANG - WRITE STRAT WARMUP CODE
+
+==================
+
+
+==================================================
+
+
+2) look at TestWarmupCMEFastFixSession .... why is it running the WARM_OMETIEurex
+
+
+=========================
+
+fix remaining unit tests
+
+test CMEFastFixFileSession
+
+get BSE MD reader deployed and run it
+
+==================
+
+BEFORE RELEASE NEW CODE REBENCH with X5680 as Algo server
+
+
+==================
+
+add end of day stats .... for each book log  segment and #ticks
+
+
+==============
+
+SafeL2Book .... compare performance of synchronised versus the 2 CAS calls
+
+    --> end of day send email with status report ... add bcc to smt
+
+check all use of System.currentTimeMillis() and encapsulate
+
+UNIT TESTS FOR Strat order state machine
+
+
+rename Recovery* to Simple* for events
+
+
+-------------
+
+add immutable session events to model, which are not recycled and hence can be send to all inbound routes sharing exchange session via MultiSourceFromExchangeRouter
+-> throttle limit exceeded, disconnected, out of hours
+
+
+When wiring ... if detect algo subscribing to more than 1 producer check q can handle
+
+add canHandleMultiProducer to MessageQueue
+
+
+=================
+
+TODO
+
+
+===========
+
+
+BACKUP CODE
+
+End of day stats to CMESession ... channelId + #events
+
+
+How do you want to specify the strategy instances and the products to be used?
+
+From a file that could be parsed by CMEStrategyBuilder and be generated like :-
+
+# algoId | pipelineId | securityDescriptionList | parameter1 | ... | parameterN
+# parameters applied using reflection
+
+ALGO1 | P1 | YOV4,YOV5,YOV4-YOV5 | stratP1=x | stratP2=y
+ALGO1 | P2 | DACK4,DACZ4,DACK4-DACZ4 | stratP1=r | stratP2=s
+
+....
+
+The pipelines will be defined in config .. initially 1 to 1 with market data controller
+
+algo.algoId
+algo.algoId.class
+algo.algoId.default.*
+
+
+algo base params also in config
+
+Pipeline1 : MktDataController1
+
+AlgoLoader will preparse to get list of all instruments 
+which it will sort into channelList which is supplied to the SessionBuilder
+the channelList is then sorted into pipelines
+For each pipeline get the mktDataController and subscribe to the list .. ensure the subscribe add secDesc to the valid list
+
+    
+
+
+So CMEStrategyBuilder will know complete list of securityDescriptions required.
+
+From this we could dynamically create required CME sessions and load balance / plug session thu market data controller to strategy instance.
+
+Note load balancing at moment is round robin which I dont like, we need some weigthing eg numTicks/day to help appropriate load balancing. OR manually assign a pipeline id ?
+
+This is obviously CME specific and would need more work for any other exchange.  ..... trying to avoid creating lots of config that has to be manually massaged.
+
+
+
+=================
+
+
+
+
+===================================================================================
+************** GET RID of INT dates based on MS from MIDNIGHT and USE LONG
+===================================================================================
+
+
+
+=========================
+
+
+Binaries free for eval
+Source free with license contract of min length ???
+disclaimer code is not in use in production, so you are responsible for full test cycle before deployment
+production usage requires active license 
+NDA not to discuss project except to other registered projects within org
+
+Bronze License
+1k per org plus 1k per project ... org charge is against first project
+Need register each project and project contact
+java source code, excluding code generator
+bug patches as available, email support for setup queries, response within 1 week 
+email bug reporting
+
+Silver license: 1k per org plus 1.5K/month, 
+java source code, excluding code generator
+bug patches as available, email support for setup queries, response within 5 working days 
+email queries on how to use the api
+email bug reporting
+
+Gold license: 1k per org plus 2K/month, 
+java source code, including code generator
+bug patches as available, email support for setup queries, response within 1 working day
+email queries on how to use the api
+email bug reporting
+email queries on design implementation and design advice for extensions  
+ 
+Site license 5k per month
+unlimited projects, all org queries via nominated contact within org
+bug patches as available, email support for setup queries, response within 1 week 
+java source code, including code generator
+bug patches as available, email support for setup queries, response within 1 working day
+email queries on how to use the api
+email bug reporting
+email queries on design implementation and design advice for extensions  
+
+================
+
+
+add persister that flushes per write to index and memmap
+
+
+
+
+======================
+
+warmup code for OM .... dont write until after tests on the new ivy bridge
+Can be multiple input sessions and dont want multiple warmup for each session
+
+=============================
+
+1) add tag527 to tradeBase .... Xetra ?
+
+
+on 150=1/150=2
+
+    execId = (37 contains TN ) ? substrTNOnwards : tag37
+    decodeTag527 ... set value
+
+    
+switch( tag442 )
+case 2:
+case 3:
+default:
+
+=====================
+
+BENCHMARK T1 USING bookLevels=1 / 2 / 5 / 10 ... check diff
+
+===========================
+
+Fix CME spread trade cancel .. write unit test 
+
+====================================
+
+
+get IP entry camera system
+
+======================
+
+change way heartbeats are generated so can go back to 1C1P queues
+
+========================
+
+ADD NON LOCKING EXCHANGE SPECIFIC InstrumentLocator 
+
+optimise out the exchange map lookup and locks from instrument loader
+
+THIS IS KEY FOR SMT AS IT WILL BE ADDING OVERHEAD !!!!!
+
+
+
+==================================
+
+CHECK WHY INSTEAD OF 1mill results got 600,000 ! 
+
+4) GETTING JIT CHECK WHERE ... check no GC
+
+
+
+============================
+
+TEST : Debug and check that return from write with CPUWARM=true IS the number of bytes and not 0
+
+========================
+
+
+1) run solarflare benchmark on my and office h/w .. use TCP with 180byte .. set all 1..n based on index
+2) run tcpPing on UBS kit (PCI3 on both)
+3) draw diagram and write up results
+
+6) run T1 on TradeServer (x8,x100)
+
+4) run SMT as OMS on UBS
+5) run SMT as OMS on T1 server
+5) run SMT as OMS on TradeServer server
+
+6) turn off CPU overclocking on T1 server
+7) turn off memory overclocking on T1 server
+
+
+==================
+
+==================
+
+http://www.ibm.com/developerworks/library/l-sockpit/
+
+==================
+
+
+why using blocking socket in exchange server ... use debugger
+
+
+
+==========
+
+
+======================================
+
+cat /proc/sys/net/ipv4/tcp_syncookies
+-> 5.5 off
+-> 5.10 on 
+
+disable : 
+sysctl -w net.ipv4.tcp_syncookies=0
+sysctl -w net.ipv4.tcp_sack=0
+sysctl -w net.ipv4.tcp_dsack=0
+sysctl -w net.ipv4.tcp_timestamps=0
+sysctl -w net.ipv4.tcp_window_scaling=0
+
+make bufferMap size same on both servers
+
+
+vm.dirty_ratio ??
+
+
+
+
+============
+
+
+
+test without open onload ... do I still get spike ?
+
+
+WARMUP Heartbeat error
+
+
+
+1) change from 60 to 1000000
+2) change SIM TCP to 8MB no windows
+
+
+
+==> delays in mapping in exchange sim
+logs/ExchangeSIM_20131124_0421_1.log:04:23:01.885 [Warn]  MemMapPageMgr SYNC getPage delay us=97655 page=303
+
+
+[smt@SMT-NEWSIM dist]$ grep -i  pageSize logs/* | grep -v WARM
+logs/ExchangeSIM_20131124_0554_1.log:05:54:43.644 [info]  MemMapPersister exchange1_UP_IN, filePreSize=2 663 448 576, pageSize=10 000 000
+logs/ExchangeSIM_20131124_0554_1.log:05:54:43.644 [info]  MemMapPersister exchange1_UP_IN, maxRecSize=4087, pageSize=10000000, initFileSize=2 663 448 576
+logs/ExchangeSIM_20131124_0554_1.log:05:54:43.645 [info]  MemMapPersister IDX_exchange1_UP_IN, filePreSize=167448576, pageSize=2097152
+logs/ExchangeSIM_20131124_0554_1.log:05:54:43.647 [info]  IndexMMPersister IDX_exchange1_UP_IN, preSize=167 448 576, recSize=16, entriesPage=131072, pageSize=2 097 152
+
+logs/ExchangeSIM_20131124_0554_1.log:05:54:43.647 [info]  MemMapPersister exchange1_UP_OUT, filePreSize=2663448576, pageSize=10000000
+logs/ExchangeSIM_20131124_0554_1.log:05:54:43.648 [info]  MemMapPersister exchange1_UP_OUT, maxRecSize=4087, pageSize=10000000, initFileSize=2663448576
+logs/ExchangeSIM_20131124_0554_1.log:05:54:43.648 [info]  MemMapPersister IDX_exchange1_UP_OUT, filePreSize=167448576, pageSize=2097152
+logs/ExchangeSIM_20131124_0554_1.log:05:54:43.648 [info]  IndexMMPersister IDX_exchange1_UP_OUT, preSize=167448576, recSize=16, entriesPage=131072, pageSize=2097152
+
+
+
+
+test profiler with exchange using concQueues and setting maxInterrupt for SFC from 60 to 100000
+
+if get large latency spikes but its NOT monitors then rerun with CPU profiling enabled
+
+check for the log messages from memmap .... check its warning if have to wait for memmap
+
+
+
+=================
+
+rn cmeExchange and fastFixSim in multi mode all on socket0 ... check cme generator threads are correct 
+
+==> use single CPU mask file for client and exchange
+==> write version for 16cores, 12cores, 6cores
+
+==> PROFILE ... run JProfiler with just monitor tracking on
+
+
+-XX:+UseLargePages, 
+# cat /proc/meminfo | grep Huge
+# echo 1536 > /proc/sys/vm/nr_hugepages 
+
+
+replace all synchronisation with ReentractLock
+
+=========================
+
+using 8MB bufferMap size change the coalesce value to 1000000000 and rerun ...should disable interrupt
+
+rerun with JIT checking using tcpreplay
+
+rerun using the standard s/w with conc link queue and with dummy persister 
+
+check the read/write thread for possible blocks ... ensure they are logged
+
+========================
+
+check all locks .. add logging especially in multisession control threads ... change waits from 500ms to 10ms
+
+check every sleep and every wait and add logging with logSleep switch
+
+retry T1 with simulator 
+
+retry tcpreplay WITH JIT logging on
+
+
+===========================
+
+change template sender to ALWAYS populate the templateId ... change the codec / builder to do this
+
+check pagesSize change from 4096 to 32768 ?
+
+-----
+
+check no errors 
+check impact of CMECodec warmup 
+added inst processing to MktDataController ... rerun test
+
+a) PERF Tests - run with good jvm args
+    com.rr.md.fastfix.cme.PerfTestDecodeMdIncRefresh
+    com.rr.md.fastfix.cme.PerfTestTickDecodeBookUpdate
+    com.rr.md.fastfix.cme.PerfTestTickToTrade
+
+
+=====================
+
+
+21:22:58.501 [ERROR] [SEC200] Error opening socket:  WARMM_OM2CLT Failed to create server NIO socket: Address already in use, host=127.0.0.1, port=14171
+Address already in use
+      com.rr.core.socket.LinuxSocketImpl.bind(Native Method)
+      com.rr.core.socket.LinuxLiteServerSocketImpl.bind(LinuxLiteServerSocketImpl.java:110)
+      com.rr.core.session.socket.AbstractSocketSession.bindServerInterface(AbstractSocketSession.java:708)
+      com.rr.core.session.socket.AbstractSocketSession.serverNIOConnect(AbstractSocketSession.java:637)
+      com.rr.core.session.socket.AbstractSocketSession.connectSocket(AbstractSocketSession.java:462)
+      com.rr.core.session.socket.AbstractSocketSession.internalConnect(AbstractSocketSession.java:186)
+      com.rr.core.session.MultiSessionThreadedReceiver$SocketConnector.run(MultiSessionThreadedReceiver.java:52)
+
+
+replay all data and regenerate the test fast fix files .. at moment has a bad record
+
+    
+    ================
+    
+
+kernel.sched_rt_runtime_us=-1
+
+
+try -Xcomp with 
+-XX:PerMethodRecompilationCutoff=1
+
+try -Xserver with 
+-XX:PerMethodRecompilationCutoff=1 / 2 / 4
+(no TieredCompilation)
+
+
+-------------------------
+
+
+23:28:38.814 [ERROR] [SEC200] Error opening socket:  WARMM_OM2CLT Failed to create server NIO socket: Address already in use, host=127.0.0.1, port=14171
+Address already in use
+
+looks like something causing 40ms latency after 3 or 4 minutes into test run, JIT or OS ?
+
+IS THE WARMUP WORKING ??
+
+Note in multi session mode looks like loosing orders !  the numbers are different !
+
+Rebench jdk1.7.4 now turned off aging of code .. check size of code segment and increase if too small
+
+=============================
+
+check impact of the changes
+
+session.up.testfastfix1.enableSendSpinLock=false
+session.up.testfastfix1.queue=BlockingSync
+
+session.down.exchange1.enableReceiverSpinLock=false
+
+cant have non blocking write with blocking read so need at least 4 cores
+
+======================================
+
+use the quad core setup
+
+======================================
+
+CHECK IN CODE
+
+======================================
+
+refactor so that if priority is Other do NOT cpu spin / use blocking
+problem on hexcore is too many threads spinning .. eg Session1 Output and Session2 input
+
+use the solarflare tuning recommendations and get rid of my overrides in modprobe.conf
+
+test with NonBlockingIO and 2 cores, 1 for session, 1 for processor
+
+
+=======================================
+
+
+test latency  with logging OFF in T1
+
+-XX:+AggressiveOpts
+
+-XX:PerMethodRecompilationCutoff=4
+-> redump all the messages
+-> -XX:-UseCounterDecay
+-> -XX:MaxInlineSize=150  {def=35}
+-> -XX:PreBlockSpin=20    {def=10}
+-> -XX:+UseSpinning
+-> -XX:-ClipInlining
+-> -XX:CounterHalfLifeTime=?  {30 .. in secs}
+-> -XX:CounterDecayMinIntervalLength   ???  {Min. ms. between invocation of CounterDecay - 500}
+-> -XX:GuaranteedSafepointInterval=0   {Guarantee a safepoint (at least) every so many milliseconds  default 1000ms}
+-> -XX:MaxTrivialSize=12  {maximum bytecode size of a trivial method to be inlined .. default 6}
+-> -XX:-UseOnStackReplacement  {try disabling and see what happens}
+CompileThreshold     number of method invocations/branches before (re-)compiling (def 10000)
+Tier2CompileThreshold
+Tier2BackEdgeThreshold
+
+# JAVA DEV OPTIONS .. NOT IN PROD
+# CompileTheWorld
+# CompileTheWorldPreloadClasses
+# -> -XX:CIStop=???   {the id of the last compilation to permit  ... -1 ... USE TO STOP COMP!!}
+# -> -XX:CIStopOSR=?? {id of last OSR to allow .. on stack replacement of code}
+
+
+
+-> check performance using seperate session for B feed
+-> check perf with non blocking ... 
+
+
+root:~# route add -net 225.0.7.10 netmask 255.255.255.255 dev eth0
+root:~# route add -net 225.0.8.10 netmask 255.255.255.255 dev eth1
+
+Then, while you program is running, you should be able to see what groups at listened to on what interface with netstat -ng.
+
+Try using NonBlockingFastFixSocketSession 
+setup config for using non blocking CME session 
+write warmup CME non blocking
+test on linux .. check the read doesnt block !!
+
+write mkObfusicatedJar.sh
+
+try and use the switch with IGMP
+
+-> upgrade open onload and solarflare driver / BIOS
+-> install Centos 6.4 on new server
+
+1) redeploy
+2) tcpreplayed into T1 on PC via
+
+    tcpreplay --intf1=%2 --oneatatime cme.ab.channel7-3Apr2012.8.30am.pcap
+        send 1000, then 10000 ... can take 30secs to send
+
+NOTE CAN TAKE 30secs FOR PACKETS TO BE SENT
+
+Add leave to session stop and change FastFixSocketSession.stop to leave its mcast channels
+
+
+cat  /proc/net/igmp
+
+=================
+
+BSE Infrastructure
+JUMP BOX:
+External IP address: 122.170.110.147 on port 2212
+Linux username: rrose
+Passowrd: deneville3
+
+ssh -Y -C -p 2212 rrose@122.170.110.147
+
+
+
+==============
+
+1) get network setup on new server
+2) install T1 on server ... setup cpumasks for 6core
+3) get tcpreplay running and benchmark
+        x1, x2, x4, x8, x16, MAX
+4) check for JIT         
+
+
+work out why tag58 not encoded on exec report Rejected ... it is for Standard44 but not standard42 
+
+
+STATS
+
+a) PERF Tests - run with good jvm args
+    com.rr.md.fastfix.cme.PerfTestDecodeMdIncRefresh
+    com.rr.md.fastfix.cme.PerfTestTickDecodeBookUpdate
+    com.rr.md.fastfix.cme.PerfTestTickToTrade
+   
+BUG
+
+
+ssh -l smt 10.0.0.11 // SMT-T1
+ssh -l smt 10.0.0.12 // SMT-NEWSIM
+
+===========================================
+
+2) check run scripts
+3) write new optimal test single process  .. based on PerfCMEFastFix ?  
+a) write shell script to run PerfCMEFastFix ... add support for spinning queues for T1 .. check dispatchers
+ 
+-> setup config for CME T1 (incA, incB, snap, inst) (Sun 20/10)
+   TURN LOGGING OFF ... DONT LOG EVENTS just the logs to generate nano stats in sims
+
+-> write config assuming (Sat 19/10)
+    (a) six cores,     T1=C7MDIncA+C7MDIncB, T2=snap/inst, T3=C7BookHandler, T4=Processor, T5=FixSession
+     
+    (b) twelve cores   T1=MDIncA, T2=MDIncB, T3=snap/inst, T4=BookHandler1, T5=Processor/FixSession, T6=other 
+                       T7=MDIncA, T8=MDIncB, T9=snap/inst, T10=BookHandler2, T11=Processor/FixSession, T12=other 
+-> warmup code ... replay messages from file into client which pushes out multicast ... same as warmup fix socket session ... (Mon 21/10) 
+               ... take from the data/cme/cmeSample.log
+               
+04:13:44.135 [info]  [4406979] [s#1] [t#83]  00 43 3E C3 01 C0 D3 02 0C 7D C3 23 5E 6C 66 55 63 5A 9E 09 4C 06 D3 82 BE 81 B1 49 2D 5A E8 01 53 BD 03 05 54 B6 08 4C 80 00 DD 95 A0 89 01 C8 0B EF 01 D7
+               
+HAND CODE THE SNAPSHOT TEMPLATES
+
+-> write CME instrument loader (Tue 22/10)
+-> CHECK ALL MD CODE SWITCH STATEMENTS FOR GAPS (Wed 23/10)        
+-> LINUX try tuning the socket bufferMap size, QOS params, spinning (Thu 24/10)
+-> check no JIT (Fri 25/10, Sat 26/10, Sun 27/10)
+-> make config so can have multiple MDSession to multiple book handlers  ... either via router or just via config (Mon 28/10)   
+-> NEED ENSURE THAT THE bookSnaps go to same BookHandler as inc msgs  (Tue 29/10)
+-> FIX the NonBlockingFastFixSession ... it IS blocking on receive (ref MulticastSocket) ... check if linux version is same ! (Wed 30/10)
+-> TUNING (Thu 31/10)
+
+Test the latency with 2 non blocking sessions .. all the way upto the 100 sessions in the CME config file (write script to generate SMT session config from CME config)
+
+INCREASE THE MAX SIZE FOR INLINE
+    om.rr.core.codec.binary.fastfix.FastFixDecodeBuilder::decodeMandUInt (140 bytes)   too big
+
+
+====================================
+
+
+security definition has mdFeedType & marketDepth
+
+write SecurityUpdate facility to the Instrument manager
+
+write reflective data generator for warmup tests (1 day)   (W 25/9)
+
+write sample warmup test for the sample writer and reader and reflective data generator (1 day)  (Th 26/9)
+
+finish off the loader and generator and test loader and warmup code (5 days)  (Th 3/10)
+
+write L2 book manager and tests (2 days)  (Sa 5/10)
+
+write perf test for L2 book manger (1 day)  (Su 6/10)
+
+implement packet skip based on subscribed sectors using header before Fast fix message (1 day)  (Fr 11/10)
+
+make generated CME codec available to session loader (1 day) (We 16/10)
+
+write CME exchange and session (1 day)  (Th 17/10)
+
+write MD arb Book processor and test (2 days)  (Fr 19/10)
+
+write strat container accepting Book change event and snapping book (1 day)  (Sa 20/10)
+
+setup 2 CME MD sessions and subscribe to A and B feeds (1 day)  (Su 21/10)
+
+test using 1, 2, 3, 4 MD arb processors with a stateless router inbetween (2 days) (Tu 23/10)
+
+================
+
+NOTES
+
+1) advantage of pipeline is dont blindly process every tick in the algo .. snap to get latest data 
+..... better then single thread which may generate orders for old ticks if MD packs in multiple updates to same packet
+..... how does atomic snapping work for FPGA ? 
+..... the key is not how fast MD processed but how the whole system operates, once data is sent out the FPGA whats the real gain for the key use cases like tick to trade ?
+..... show bandwidth s/w can do ... eg 10,000,000 million ticks per second 
+..... dont focus on the maximum jitter, look at the 95th and 99th percentiles better to be faster 99% of the time than just 1% of the time. 
+
+
+
+==========================
+
+
+
+
+========
+
+
+
+==================
+
+
+check fallthru switch .... still act as a jump table ... perf same or better ?
+
+
+
+
+
+==================================================
+
+change l3 locking to use spinning and not synchronisation
+
+Need think about book locking ... L3Book which uses event can use thread locking ... L2 
+
+rename L3BookFactory to L3IntBookFactory 
+
+need sort out the DummyInstrumentLoader usage into one place
+
+do I need to lookup the instrument in the decoder when create book ... or look it up in the book factory ?
+
+need be able to add imports to generated Decoder/Encoder .. ITCH
+
+ensure only create book IF in subscription list ..
+.. infact DONT create the event if not subscribed FOR THIS TEST WILL PROCESS ALL TICKS SO DO A
+
+
+======================
+
+add fast fix support
+
+move to spring, rewrite loaders
+
+write crosser
+
+write appropriate recovery for crosser
+
+
+
+=================================================
+
+test the recovery and the session reject morph
+
+retest ETI recovery
+
+11:01:51.355 [Warn]  DownstreamOrderRequest missing upstream link id, downClOrdId=1200000000036595554, sess=exchange1, persistKey=1922
+
+
+
+===========================
+
+write fast fix builder
+
+fill in ETI form
+
+test stopping/starting SMT/EX etc ensure seqNums correct on reconnect
+
+create patch and checkin
+
+get sample instrument and make work with that
+
+decompile and check switch still using array lookup .... check event processor and binary decoder at message switch and field level
+
+write unit test to decode trade new with 3 fills
+
+write unit test to prove multiple trades can go through the processor
+
+
+==> CHECK HOW TO PROCESS THE cxlQty 
+
+track message ids and add gap replay
+
+--> NOTE ImmediateExecutionReponse means order is aggressive so can set as aggressor
+----> for passive fill set as egressed
+
+add instrument download (if not done that day)
+
+add product encoding for NOS
+
+add unit test using pcap file for sample data
+
+add proper sequence number tracking
+
+add recovery
+
+add support for ETI change throttle message
+
+
+add support for secondary IP / port ..... initially via flag and admin commands
+
+1) CHECK PRECISION FOR PRICE IN RATES AND FX, ie MAX num decimal places .. need update SMT !!!
+    Constants
+        public static final double  KEEP_DECIMAL_PLACE_FACTOR = 1000000D;
+        public static final double  WEIGHT            = 0.00000000001;
+        public static final double  TICK_WEIGHT       = 0.00000001;
+
+1) write encoder helper test
+2) write decoder helper
+3) write decoder helper test
+4) get encoder / decoder working
+5) write unit test for logon
+
+
+
+
+
+ADD NULL TESTS TO EACH builder encoder/decoder helper method
+
+
+
+
+Add to change release notes that Decoder decode can now create chain of Messages
+-> changed recovery controller and the session dispatch inbound which is POST session state seq num checking
+
+
+============================================================
+
+Add Flag as type to the event model ... check attr is member of MsgFlags, need special encode/decode
+then remove the PosDup get/set from events
+
+Reconcile - add tests
+
+    order expired
+    order stopped 
+    unsol cancel (eg auto expire)
+        
+bulk reconcile test
+    generate X orders each with cancel 
+
+check exchange is open before sending cancels
+
+!!! on date roll make sure persistence files are rolled to avoid replay next day !!
+
+Edge cases
+
+
+
+Code CHANGES
+============
+
+No HUB reconciliation, instead make HUB a sequenced socket session and add recovery state machine akin to FIX ... or even use FixSocketSession !
+
+Amend, mkt side cancel reject ... check doesnt affect last acked sess
+
+check how making a clOrdId unique for client ... ie prepend with client prefix
+why is clOrdId in NOS view and in amendReq its ReusableString
+
+C13) Reconciliation
+
+
+     
+b) unit test for Mkt NOS setting of linkId for fix 4.4     
+-> check recovery decoder/encoder work for srcLinkId
+c) unit test for Mkt NOS setting of linkId for fix 4.2     
+d) unit test for Mkt NOS setting of linkId for UTP      
+e) add to encoder, hasLinkageID (true fix 4.4) ... if false then invoke boolean getLinkageId( Message msg, ReusableString out )
+f) recovery decoder should populate linkageId of NOS/Amend/Can      
+     
+
+pass one used to sequence events
+
+
+
+     read in all records keep key info like clOrdId, persistentKey (so can reread), srcSession (will be exchange or client)
+     process into correct state then reread records required to populate orderMap or possibly just to generate cancels back to client
+
+     a) mass order status (2 days) .. dont need if always cancel on disconnect
+     b) mass trade request support (2 days)
+     c) memmap persistence for socket session (2 days) - only persist seqNums, clOrdId ... other fields required for cancelling orders
+     d) recovery controller
+        -> replay events from session persistence files into order model (3 days)
+        -> reconcile & cancel all open if cancelOnRecovery (3 days)
+
+     ENSURE HAVE REQUIRED RECONCILIATION TAGS FOR MATCH UP, so out session always persists as extra keys
+       MNOS --- SecondaryClOrdId (526) - CNOS clOrdId
+       MNOS --- DeliverToCompID (128)  - destination (so on reconciliation can sticky)
+       ACK --- ClientID( 109 )        
+
+C05) rewrite to use spring ?
+     MAJOR rework loaders, multiFix ....dont want multiUTP and multiMillenium instead add property
+     refactor multi code from multiFIX to multiSession
+     add support for Millenium and UTP non blocking sessions ... reuse code ... ie create Abstract and extend
+     extract the session creation to SessionFactory
+C07) add segmentId for millenium used to populate appId in outbound messages
+C08) write throttler - required for LSE
+C09) add date roll to session and reset seqNums !
+C10) move the hard coded ignore fields from BaseBinaryEncoder to the model dictionary
+C11) if drop copy send fails then ensure on reconnect that message wasnt lost and is resent first
+C12) add attach/detach to Reusable, make final ... change recyclers to invoke
+C14) 24*7 mode, with scheduled end of trading and end of day events .. recycle, .. check each IDGenerator to see if it requires reseeding
+C15) add UTP trading session status processing to disable/enable orders via instrument sector .. allow inst sector to be picked by different codes eg ENXSectorCode
+C16) add market doesnt support amend, so morph into cancel/new, add unit test
+C17) check CHIX and FIX spec for mismatch seqNum behaviour .... SMT is prolly too lenient ... fine for test but not prod
+C18) HUB PROCESS  (10 days)       
+        -> add Hub send to session
+        a) socket session unit test for normal chain and async chain
+        b) write Hub process use multiplexed IO session (3 days)
+        c) accept and batch persist messages            (2 days)
+        d) send events to Hub process                   (1 day)
+        e) recover open orders from hub process         (3 days)
+        f) get last trade id / time from hub
+        f) all errors goto hub process                  (1 day)
+C19) add SMTThread which has a Recycler ... so can safely recycle with no overhead
+C20) start and end of day events and event scheduler (3 days) - check recycle ALL (2 days)
+C21) dont try connect to exchange out of hours
+C22) add expired and done for day events
+C23) Refactor ALL warmup code, replace use of String appName and String[] args, with warmupPropertyBase
+     add Warmable interface with <? extends Warmup> getWarmupClass() 
+   
+     Add warmupUTP ... only invoked IF codec configured in a session ... 
+
+            add Warmable interface, in static {} method register string warmup class with WarmupManager
+            WarmupManager iterates over Warmable objects, instantiates them and runs them concurrently on different threads
+
+C24) add property to recover using supplied lastExecId/Seqnum/time
+C25) write program to check all classes and ensure dont assign a factory/recycler as static !
+C03) add support to model to encode/decode fix repeating groups
+C04) add pass thru tags as ReusableString
+C26) persist superpool stats and reload next day
+
+VERIFY
+======
+
+V1) check no bugs in multi exchange and standard client on sim server
+V2) check for slow consumer in exchange/client
+V3) check using multi for all 3
+V4) run test with all non blocking
+V8) when start MultSMT first, after 10 connect attempts only exchange1 will keep retrying
+
+
+
+
+OTHER
+=====
+
+O1) rebenchmark - changed OrderMap to be ConcurrentOrderMap, also using jdk 1.7.4 (upload to servers)
+     add to smt.properties
+     proc.queue=RingBuffer1C
+     proc.queuePresize=${RING_BUFFER_PROC_QUEUE_SIZE}
+     
+O2) install new solarflare drivers
+O3) On linux verify pooling performance
+
+    WINDOWS Run 2 batch=10000, generics=267, cast=247, explicit=138, arr=245
+    LINUX   Run 4              generics=732, cast=557, explicit=101, arr=3
+
+    replace all pools with Generic use, not missing finals in pools .... assuming benchmarks hold up
+    replace all pools with arrays and rebenchmark onlinux
+
+
+    

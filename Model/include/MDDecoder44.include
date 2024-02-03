@@ -1,0 +1,12 @@
+@INCLUDE FixDecoder.include
+
+
+/*
+ * HANDCODED DECODER METHDOS
+ */
+
+    private ExchangeCode _defaultExchange = ExchangeCode.UNKNOWN;
+    public void setDefaultExchange( ExchangeCode ex ) { _defaultExchange = ex ; }
+    public ExchangeCode getDefaultExchange() {
+        return _defaultExchange;
+    }

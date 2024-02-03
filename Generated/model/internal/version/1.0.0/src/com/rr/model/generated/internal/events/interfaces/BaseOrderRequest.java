@@ -1,50 +1,67 @@
-/*******************************************************************************
- * Copyright (c) 2015 Low Latency Trading Limited  :  Author Richard Rose
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at	http://www.apache.org/licenses/LICENSE-2.0
- * Unless required by applicable law or agreed to in writing,  software distributed under the License 
- * is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and limitations under the License.
- *******************************************************************************/
 package com.rr.model.generated.internal.events.interfaces;
 
-import com.rr.core.model.Instrument;
-import com.rr.core.model.ClientProfile;
-import com.rr.core.model.Currency;
-import com.rr.core.model.SecurityIDSource;
-import com.rr.model.generated.internal.type.Side;
-import com.rr.core.lang.ViewString;
-import com.rr.core.lang.ReusableString;
-import com.rr.core.model.Message;
+/*
+Copyright 2015 Low Latency Trading Limited
+Author Richard Rose
+*/
 
-public interface BaseOrderRequest extends CommonClientHeader, Message {
+import com.rr.model.generated.internal.type.Side;
+import com.rr.model.generated.internal.type.OrdDestType;
+import com.rr.core.utils.Utils;
+import com.rr.core.lang.*;
+import com.rr.core.model.*;
+import com.rr.core.annotations.*;
+
+@SuppressWarnings( { "unused", "override"  })
+
+public interface BaseOrderRequest extends CommonClientHeader, Event {
 
    // Getters and Setters
-    public Instrument getInstrument();
+    Instrument getInstrument();
 
-    public ClientProfile getClient();
+    ClientProfile getClient();
 
-    public ViewString getClOrdId();
+    ViewString getClOrdId();
 
-    public ViewString getOrigClOrdId();
+    ViewString getOrigClOrdId();
 
-    public ViewString getSecurityId();
+    ViewString getSecurityId();
 
-    public ViewString getSymbol();
+    ViewString getSymbol();
 
-    public Currency getCurrency();
+    /**
+     *format YYYYMMDD
+     */
+    int getMaturityMonthYear();
 
-    public SecurityIDSource getSecurityIDSource();
+    Currency getCurrency();
 
-    public int getTransactTime();
+    SecurityIDSource getSecurityIDSource();
 
-    public int getSendingTime();
+    long getTransactTime();
 
-    public Side getSide();
+    Side getSide();
 
-    public ViewString getSrcLinkId();
+    double getCurPos();
 
-    @Override
-    public void dump( ReusableString out );
+    double getCurRefPx();
+
+    OrdDestType getTargetDest();
+
+    ViewString getExDest();
+
+    ExchangeCode getSecurityExchange();
+
+    PartyID getBroker();
+
+    PartyID getClearer();
+
+    ViewString getParentClOrdId();
+
+    ViewString getStratId();
+
+    ViewString getOrigStratId();
+
+    @Override void dump( ReusableString out );
 
 }

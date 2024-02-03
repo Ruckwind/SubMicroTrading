@@ -1,44 +1,41 @@
-/*******************************************************************************
- * Copyright (c) 2015 Low Latency Trading Limited  :  Author Richard Rose
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at	http://www.apache.org/licenses/LICENSE-2.0
- * Unless required by applicable law or agreed to in writing,  software distributed under the License 
- * is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and limitations under the License.
- *******************************************************************************/
 package com.rr.model.generated.internal.events.interfaces;
 
-import com.rr.core.model.SecurityIDSource;
-import com.rr.model.generated.internal.type.SecurityTradingStatus;
-import com.rr.core.lang.ReusableString;
+/*
+Copyright 2015 Low Latency Trading Limited
+Author Richard Rose
+*/
 
-public interface SecurityStatusWrite extends BaseMDResponse, SecurityStatus {
+import com.rr.model.generated.internal.type.SecurityTradingStatus;
+import com.rr.core.utils.Utils;
+import com.rr.core.lang.*;
+import com.rr.core.model.*;
+import com.rr.core.annotations.*;
+
+@SuppressWarnings( { "unused", "override"  })
+
+public interface SecurityStatusWrite extends BaseMDResponseWrite, SecurityStatus {
 
    // Getters and Setters
-    public void setSecurityIDSource( SecurityIDSource val );
+    void setSecurityIDSource( SecurityIDSource val );
 
-    public void setSecurityID( long val );
+    void setSecurityID( byte[] buf, int offset, int len );
+    ReusableString getSecurityIDForUpdate();
 
-    public void setTradeDate( int val );
+    void setTradeDate( int val );
 
-    public void setHighPx( double val );
+    void setHighPx( double val );
 
-    public void setLowPx( double val );
+    void setLowPx( double val );
 
-    public void setSecurityTradingStatus( SecurityTradingStatus val );
+    void setSecurityTradingStatus( SecurityTradingStatus val );
 
-    public void setHaltReason( int val );
+    void setHaltReason( int val );
 
-    public void setSecurityTradingEvent( int val );
+    void setSecurityTradingEvent( int val );
 
-    public void setSymbol( byte[] buf, int offset, int len );
-    public ReusableString getSymbolForUpdate();
+    void setSymbol( byte[] buf, int offset, int len );
+    ReusableString getSymbolForUpdate();
 
-    public void setSecurityExchange( byte[] buf, int offset, int len );
-    public ReusableString getSecurityExchangeForUpdate();
-
-    public void setMsgSeqNum( int val );
-
-    public void setPossDupFlag( boolean val );
+    void setSecurityExchange( ExchangeCode val );
 
 }

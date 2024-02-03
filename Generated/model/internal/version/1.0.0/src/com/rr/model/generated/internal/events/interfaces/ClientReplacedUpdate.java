@@ -1,50 +1,66 @@
-/*******************************************************************************
- * Copyright (c) 2015 Low Latency Trading Limited  :  Author Richard Rose
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at	http://www.apache.org/licenses/LICENSE-2.0
- * Unless required by applicable law or agreed to in writing,  software distributed under the License 
- * is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and limitations under the License.
- *******************************************************************************/
 package com.rr.model.generated.internal.events.interfaces;
+
+/*
+Copyright 2015 Low Latency Trading Limited
+Author Richard Rose
+*/
 
 import com.rr.model.internal.type.ExecType;
 import com.rr.model.generated.internal.type.OrdStatus;
 import com.rr.model.generated.internal.type.OrderCapacity;
-import com.rr.core.lang.ReusableString;
+import com.rr.core.utils.Utils;
+import com.rr.core.lang.*;
+import com.rr.core.model.*;
+import com.rr.core.annotations.*;
+
+@SuppressWarnings( { "unused", "override"  })
 
 public interface ClientReplacedUpdate extends CommonExecRpt, Replaced {
 
    // Getters and Setters
-    public void setOrigClOrdId( byte[] buf, int offset, int len );
-    public ReusableString getOrigClOrdIdForUpdate();
+    void setOrigClOrdId( byte[] buf, int offset, int len );
+    ReusableString getOrigClOrdIdForUpdate();
 
-    public void setExecId( byte[] buf, int offset, int len );
-    public ReusableString getExecIdForUpdate();
+    void setExecId( byte[] buf, int offset, int len );
+    ReusableString getExecIdForUpdate();
 
-    public void setOrderId( byte[] buf, int offset, int len );
-    public ReusableString getOrderIdForUpdate();
+    void setOrderId( byte[] buf, int offset, int len );
+    ReusableString getOrderIdForUpdate();
 
-    public void setExecType( ExecType val );
+    void setExecType( ExecType val );
 
-    public void setOrdStatus( OrdStatus val );
+    void setOrdStatus( OrdStatus val );
 
-    public void setLeavesQty( int val );
+    void setTransactTime( long val );
 
-    public void setCumQty( int val );
+    void setLeavesQty( double val );
 
-    public void setAvgPx( double val );
+    void setCumQty( double val );
 
-    public void setMktCapacity( OrderCapacity val );
+    void setAvgPx( double val );
 
-    public void setMsgSeqNum( int val );
+    void setText( byte[] buf, int offset, int len );
+    ReusableString getTextForUpdate();
 
-    public void setPossDupFlag( boolean val );
+    void setMktCapacity( OrderCapacity val );
 
-    public void setSendingTime( int val );
+    void setParentClOrdId( byte[] buf, int offset, int len );
+    ReusableString getParentClOrdIdForUpdate();
+
+    void setStratId( byte[] buf, int offset, int len );
+    ReusableString getStratIdForUpdate();
+
+    void setOrigStratId( byte[] buf, int offset, int len );
+    ReusableString getOrigStratIdForUpdate();
+
+    @Override void setMsgSeqNum( int val );
+
+    void setPossDupFlag( boolean val );
+
+    void setEventTimestamp( long val );
 
 
-    public void setSrcEvent( OrderRequest request );
-    public OrderRequest getSrcEvent();
+    void setSrcEvent( OrderRequest request );
+    OrderRequest getSrcEvent();
 
 }

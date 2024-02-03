@@ -1,0 +1,845 @@
+<!--suppress ALL -->
+<Data>
+
+    @SECTION EVENTS START
+
+    <Base id="CommonHeader" src="both">
+        <Attribute typeId="int" tag="34" name="msgSeqNum" mandatory="Y" outbound="seperate"/>
+        <Attribute typeId="boolean" tag="43" name="possDupFlag" mandatory="Y" outbound="seperate"/>
+        <Attribute typeId="UTCTimestamp" tag="52" name="eventTimestamp" mandatory="Y" outbound="seperate"/>
+    </Base>
+
+    <Base id="CommonClientHeader" src="client" extends="CommonHeader">
+        <!-- from Header -->
+        <!-- senderCompId (49), senderSubId(50), targetCompId(56), targetSubId(57) -->
+
+        <Attribute typeId="string[COMPID_LENGTH]" tag="49" name="senderCompId" mandatory="Y" outbound="delegate"/>
+        <Attribute typeId="viewstring[COMPID_LENGTH]" tag="115" name="onBehalfOfId" mandatory="N" outbound="delegate"/>
+    </Base>
+
+    <Base id="CommonExchangeHeader" src="exchange" extends="CommonHeader">
+        <!-- from Header -->
+        <!-- senderCompId (49), senderSubId(50), targetCompId(56), targetSubId(57) -->
+
+        <Attribute typeId="viewstring[COMPID_LENGTH]" tag="115" name="onBehalfOfId" mandatory="N" outbound="delegate"/>
+    </Base>
+
+
+    <!--
+        SESSION LEVEL MESSAGES
+     -->
+
+    <Base id="SessionHeader" src="both" extends="CommonHeader">
+    </Base>
+
+    <Event id="Heartbeat" extends="SessionHeader" src="both">
+        <Attribute typeId="string[TESTRECID_LENGTH]" tag="112" name="testReqID" mandatory="N" outbound="seperate"/>
+    </Event>
+
+    <Event id="EndOfSession" extends="SessionHeader" src="both"/>
+
+    <Event id="LogoutRequest" extends="SessionHeader" src="both"/>
+
+    <Event id="TestRequest" extends="SessionHeader" src="both">
+        <Attribute typeId="string[TESTRECID_LENGTH]" tag="112" name="testReqID" mandatory="N" outbound="seperate"/>
+    </Event>
+
+
+    <Event id="Logon" extends="SessionHeader" src="both">
+        <Attribute typeId="string[COMPID_LENGTH]" tag="49" name="senderCompId" mandatory="Y" outbound="seperate"/>
+        <Attribute typeId="string[COMPID_LENGTH]" tag="50" name="senderSubId" mandatory="N" outbound="seperate"/>
+        <Attribute typeId="string[COMPID_LENGTH]" tag="56" name="targetCompId" mandatory="Y" outbound="seperate"/>
+        <Attribute typeId="string[COMPID_LENGTH]" tag="57" name="targetSubId" mandatory="N" outbound="seperate"/>
+        <Attribute typeId="string[COMPID_LENGTH]" tag="115" name="onBehalfOfId" mandatory="N" outbound="seperate"/>
+
+        <Attribute typeId="EncryptMethod" tag="98" name="encryptMethod" outbound="seperate" defaultVal="NoneOrOther"/>
+        <Attribute typeId="int" tag="108" name="heartBtInt" outbound="seperate"/>
+        <Attribute typeId="int" tag="95" name="rawDataLen" outbound="seperate"/>
+        <Attribute typeId="string[USERNAME_LENGTH]" tag="96" name="rawData" outbound="seperate"/>
+        <Attribute typeId="boolean" tag="141" name="resetSeqNumFlag" outbound="seperate"/>
+
+        <!--  from fix4.4 -->
+        <Attribute typeId="int" tag="789" name="nextExpectedMsgSeqNum" outbound="seperate"/>
+
+    </Event>
+
+    <Event id="Logout" extends="SessionHeader" src="both">
+        <Attribute typeId="string[COMPID_LENGTH]" tag="49" name="senderCompId" mandatory="Y" outbound="seperate"/>
+        <Attribute typeId="string[COMPID_LENGTH]" tag="50" name="senderSubId" mandatory="N" outbound="seperate"/>
+        <Attribute typeId="string[COMPID_LENGTH]" tag="56" name="targetCompId" mandatory="Y" outbound="seperate"/>
+        <Attribute typeId="string[COMPID_LENGTH]" tag="57" name="targetSubId" mandatory="N" outbound="seperate"/>
+        <Attribute typeId="string[COMPID_LENGTH]" tag="115" name="onBehalfOfId" mandatory="N" outbound="seperate"/>
+
+        <Attribute typeId="string[TEXT_LENGTH]" tag="58" name="text" mandatory="N" outbound="seperate"/>
+
+        <Attribute typeId="int" tag="369" name="lastMsgSeqNumProcessed" mandatory="N" outbound="seperate"/>
+        <Attribute typeId="int" tag="789" name="nextExpectedMsgSeqNum" mandatory="N" outbound="seperate"/>
+    </Event>
+
+    <Event id="SessionReject" extends="SessionHeader" src="both">
+        <Attribute typeId="int" tag="45" name="refSeqNum" outbound="seperate"/>
+        <Attribute typeId="int" tag="371" name="refTagID" outbound="seperate"/>
+        <Attribute typeId="string[TAG_LEN]" tag="372" name="refMsgType" outbound="seperate"/>
+        <Attribute typeId="SessionRejectReason" tag="373" outbound="seperate"/>
+        <Attribute typeId="string[TEXT_LENGTH]" tag="58" name="text" mandatory="N" outbound="seperate"/>
+    </Event>
+
+    <Event id="ResendRequest" extends="SessionHeader" src="both">
+        <Attribute typeId="int" tag="7" name="beginSeqNo" mandatory="Y" outbound="seperate"/>
+        <Attribute typeId="int" tag="16" name="endSeqNo" mandatory="Y" outbound="seperate"/>
+    </Event>
+
+    <Event id="ClientResyncSentMsgs" src="both" extends="CommonHeader">  <!--  internal message to resend missing msgs to client -->
+        <Attribute typeId="int" tag="7" name="beginSeqNo" mandatory="Y" outbound="seperate"/>
+        <Attribute typeId="int" tag="16" name="endSeqNo" mandatory="Y" outbound="seperate"/>
+    </Event>
+
+    <Event id="SequenceReset" extends="SessionHeader" src="both">
+        <Attribute typeId="boolean" tag="123" name="gapFillFlag" outbound="seperate"/>
+        <Attribute typeId="int" tag="36" name="newSeqNo" outbound="seperate"/>
+    </Event>
+
+    <Event id="TradingSessionStatus" extends="SessionHeader" src="both">
+        <Attribute typeId="int" tag="1300" name="marketSegmentID" outbound="seperate"/>
+        <Attribute typeId="TradingSessionID" tag="336" name="tradingSessionID" outbound="seperate"/>
+        <Attribute typeId="TradingSessionSubID" tag="625" outbound="seperate"/>
+        <Attribute typeId="TradSesStatus" tag="340" mandatory="Y" outbound="seperate"/>
+        <Attribute typeId="UTCTimestamp" tag="60" name="transactTime" mandatory="Y" outbound="delegate"/>
+    </Event>
+
+    <SubEvent id="SecMassStatGrp">
+        <Attribute typeId="string[SECURITYID_LENGTH]" tag="48" name="securityId" mandatory="Y" outbound="seperate"/>
+        <Attribute typeId="SecurityIDSource" tag="22" mandatory="Y" outbound="seperate"/>
+        <Attribute typeId="SecurityTradingStatus" tag="326" mandatory="N" outbound="seperate"/>
+        <Attribute typeId="boolean" tag="965" name="securityStatus" mandatory="N" outbound="seperate"/>
+    </SubEvent>
+
+    <Event id="MassInstrumentStateChange" extends="SessionHeader" src="both"> <!-- "CO" -->
+        <Attribute typeId="int" tag="1300" name="marketSegmentID" outbound="seperate"/>
+        <Attribute typeId="int" tag="1544" name="instrumentScopeProductComplex" outbound="seperate"/>
+        <Attribute typeId="int" tag="1679" name="securityMassTradingStatus" outbound="seperate"/>
+        <Attribute typeId="UTCTimestamp" tag="60" name="transactTime" mandatory="Y" outbound="delegate"/>
+
+        <Attribute typeId="int" name="numRelatedSym" tag="146" mandatory="Y" outbound="seperate"/>
+
+        <Attribute typeId="SecMassStatGrp" name="instState" mandatory="Y" outbound="seperate" min="1" max="99" counter="numRelatedSym"/>
+    </Event>
+
+
+    // ORDER EVENTS
+
+    <Base id="BaseOrderRequest" src="client" extends="CommonClientHeader">
+        <!--  common to all messages -->
+        <Attribute typeId="Instrument" name="instrument" mandatory="Y" outbound="delegate"/>
+        <Attribute typeId="ClientProfile" name="client" mandatory="Y" outbound="delegate"/>
+        <Attribute typeId="viewstring[CLORDID_LENGTH]" tag="11" name="clOrdId" mandatory="Y" outbound="delegate"/>
+        <Attribute typeId="viewstring[CLORDID_LENGTH]" tag="41" name="origClOrdId" mandatory="Y" outbound="delegate"/>
+        <Attribute typeId="viewstring[SECURITYID_LENGTH]" tag="48" name="securityId" mandatory="Y" outbound="delegate"/>
+        <Attribute typeId="viewstring[SYMBOL_LENGTH]" tag="55" name="symbol" mandatory="Y" outbound="delegate"/>
+        <Attribute typeId="int" tag="200" name="maturityMonthYear" mandatory="N" outbound="seperate" desc="format YYYYMMDD"/>
+        <Attribute typeId="Currency" tag="15" name="currency" mandatory="N" outbound="seperate"/>
+        <Attribute typeId="SecurityIDSource" tag="22" mandatory="Y" outbound="delegate"/>
+        <Attribute typeId="UTCTimestamp" tag="60" name="transactTime" mandatory="Y" outbound="delegate"/>
+        <Attribute typeId="Side" tag="54" mandatory="Y" outbound="delegate"/>
+        <Attribute typeId="double" name="curPos" mandatory="N" outbound="seperate"/>
+        <Attribute typeId="double" name="curRefPx" mandatory="N" outbound="seperate"/>
+        <Attribute typeId="OrdDestType" name="targetDest" mandatory="N" outbound="seperate"/>
+
+        <Attribute typeId="viewstring[EXDESTINATION_LENGTH]" tag="100" name="exDest" mandatory="N" outbound="delegate"/>
+        <Attribute typeId="ExchangeCode" tag="207" name="securityExchange" mandatory="N" outbound="seperate"/>
+
+        <Attribute typeId="PartyID" name="broker" mandatory="N" outbound="delegate"/>
+        <Attribute typeId="PartyID" name="clearer" mandatory="N" outbound="delegate"/>
+
+        <!--
+            srcLinkOrdId is used to link order in a strategy to an order in a src/upstream strategy
+            in fix 44 its secClOrdId (526), in fix 4.2 its held in text (58) in ENX held in NOS FreeText1, in LSE stored as context in outbound persistence file (no space in millenium NOS rec)
+
+            the src for the cancel request is the request of the origClOrdId of the client
+            certain keys like srcLinkId need to be overwritten
+        -->
+        <Attribute typeId="viewstring[CLORDID_LENGTH]" name="parentClOrdId" mandatory="N" outbound="seperate" desc="links this order to a parent order"/>
+        <Attribute typeId="viewstring[STRAT_DEF_ID_LEN]" name="stratId" mandatory="N" outbound="seperate" desc="id of strat that generated order"/>
+        <Attribute typeId="viewstring[STRAT_DEF_ID_LEN]" name="origStratId" mandatory="N" outbound="seperate" desc="src / originating strategy id"/>
+    </Base>
+
+    <Base id="OrderRequest" src="client" extends="BaseOrderRequest">
+
+        <!-- need origClOrdId so can act as base for ClientAmend -->
+        <Attribute typeId="viewstring[ACCOUNT_LENGTH]" tag="1" name="account" mandatory="N" outbound="delegate"/>
+        <Attribute typeId="viewstring[TEXT_LENGTH]" tag="58" name="text" mandatory="N" outbound="delegate"/>
+
+        <Attribute typeId="double" tag="44" name="price" mandatory="Y" outbound="seperate"/>
+        <Attribute typeId="double" tag="38" name="orderQty" mandatory="Y" outbound="seperate"/>
+
+        <Attribute typeId="RefPriceType" outbound="seperate" desc="optional ref price type for limit price generation"/>
+        <Attribute typeId="int" name="tickOffset" outbound="seperate" desc="optional offset for limit price generation"/>
+
+        <Attribute typeId="ExecInst" tag="18" outbound="delegate"/>
+        <Attribute typeId="HandlInst" tag="21" outbound="delegate"/>
+        <Attribute typeId="OrderCapacity" tag="528" outbound="seperate"/>
+        <Attribute typeId="OrdType" tag="40" mandatory="Y" outbound="delegate"/>
+        <Attribute typeId="SecurityType" tag="167" outbound="delegate"/>
+        <Attribute typeId="TimeInForce" tag="59" outbound="delegate"/>
+        <Attribute typeId="BookingType" tag="775" outbound="delegate"/>
+
+        <Attribute typeId="TargetStrategy" tag="847" outbound="delegate"/>
+        <Attribute typeId="viewstring[STRATPARAM_LENGTH]" tag="848" name="StratParams" outbound="seperate"/>
+
+        <Attribute typeId="UTCTimestamp" tag="168" name="effectiveTime" outbound="delegate"/>
+        <Attribute typeId="UTCTimestamp" tag="126" name="expireTime" outbound="delegate"/>
+
+        <Attribute typeId="long" name="orderReceived" mandatory="Y" outbound="delegate"/>
+        <Attribute typeId="long" name="orderSent" mandatory="Y" outbound="delegateGetAndSet"/>
+    </Base>
+
+    <Base id="BaseTransientLimitOrder" src="both" extends="SessionHeader">
+        <Attribute typeId="Instrument" name="instrument" mandatory="Y" outbound="seperate"/>
+        <Attribute typeId="string[CLORDID_LENGTH]" tag="11" name="clOrdId" mandatory="Y" outbound="seperate"/>
+        <Attribute typeId="Side" tag="54" mandatory="Y" outbound="seperate"/>
+    </Base>
+
+    <Base id="LimitOrderRequest" src="both" extends="BaseTransientLimitOrder">
+        <Attribute typeId="double" tag="44" name="price" mandatory="Y" outbound="seperate"/>
+        <Attribute typeId="double" tag="38" name="orderQty" mandatory="Y" outbound="seperate"/>
+
+        <Attribute typeId="TimeInForce" tag="59" outbound="seperate"/>
+
+        <Attribute typeId="long" name="orderReceived" mandatory="Y" outbound="seperate"/>
+        <Attribute typeId="long" name="orderSent" mandatory="Y" outbound="seperate"/>
+    </Base>
+
+    <Event id="NewOrderSingle" extends="OrderRequest" src="client">
+        <!-- note ALL NoS fields must be in SharedOrderFields -->
+        <Attribute typeId="viewstring[CLORDID_LENGTH]" tag="11" name="clOrdId" mandatory="Y" outbound="seperate"/>
+    </Event>
+
+    <Event id="CancelReplaceRequest" extends="OrderRequest" src="client">
+        <Attribute typeId="string[CLORDID_LENGTH]" tag="11" name="clOrdId" mandatory="Y" outbound="seperate"/>
+        <Attribute typeId="string[CLORDID_LENGTH]" tag="41" name="origClOrdId" mandatory="Y" outbound="seperate"/>
+        <Attribute typeId="viewstring[EXDESTINATION_LENGTH]" tag="100" name="exDest" mandatory="N" outbound="delegate"/>
+        <Attribute typeId="ExchangeCode" tag="207" name="securityExchange" mandatory="N" outbound="seperate"/>
+        <Attribute typeId="string[ORDERID_LENGTH]" tag="37" name="orderId" mandatory="Y" outbound="seperate"/>
+    </Event>
+
+    <Event id="CancelRequest" extends="BaseOrderRequest" src="client">
+        <Attribute typeId="viewstring[ACCOUNT_LENGTH]" tag="1" name="account" mandatory="N" outbound="delegate"/>
+        <Attribute typeId="string[CLORDID_LENGTH]" tag="11" name="clOrdId" mandatory="Y" outbound="seperate"/>
+        <Attribute typeId="string[CLORDID_LENGTH]" tag="41" name="origClOrdId" mandatory="Y" outbound="seperate"/>
+        <Attribute typeId="string[ORDERID_LENGTH]" tag="37" name="orderId" mandatory="Y" outbound="seperate"/>
+    </Event>
+
+    <Event id="ForceCancel" extends="CommonHeader" src="client">
+        <Attribute typeId="string[CLORDID_LENGTH]" tag="11" name="clOrdId" mandatory="Y" outbound="seperate"/>
+        <Attribute typeId="string[CLORDID_LENGTH]" tag="41" name="origClOrdId" mandatory="Y" outbound="seperate"/>
+        <Attribute typeId="string[ORDERID_LENGTH]" tag="37" name="orderId" mandatory="Y" outbound="seperate"/>
+        <Attribute typeId="Side" tag="54" outbound="seperate"/>
+        <Attribute typeId="int" tag="34" name="msgSeqNum" mandatory="Y" outbound="seperate"/>
+        <Attribute typeId="boolean" tag="43" name="possDupFlag" mandatory="Y" outbound="seperate"/>
+    </Event>
+
+    <!-- some exchanges cant generate specific rejects for cancel, new, amend ... in this case use VagueOrderReject -->
+    <Event id="VagueOrderReject" extends="CommonExchangeHeader" src="exchange">
+        <Attribute typeId="string[ORDERID_LENGTH]" tag="37" name="orderId" mandatory="N" outbound="seperate"/>
+        <Attribute typeId="string[CLORDID_LENGTH]" tag="11" name="clOrdId" mandatory="Y" outbound="seperate"/>
+        <Attribute typeId="string[TEXT_LENGTH]" tag="58" name="text" mandatory="N" outbound="seperate"/>
+        <Attribute typeId="boolean" name="isTerminal" mandatory="N" outbound="seperate"/>
+    </Event>
+
+    <Event id="CancelReject" extends="CommonExchangeHeader" src="exchange">
+        <Attribute typeId="string[ORDERID_LENGTH]" tag="37" name="orderId" mandatory="Y" outbound="seperate"/>
+        <Attribute typeId="string[CLORDID_LENGTH]" tag="11" name="clOrdId" mandatory="Y" outbound="seperate"/>
+        <Attribute typeId="string[CLORDID_LENGTH]" tag="41" name="origClOrdId" mandatory="Y" outbound="seperate"/>
+        <Attribute typeId="CxlRejReason" tag="102" mandatory="N" outbound="seperate"/>
+        <Attribute typeId="CxlRejResponseTo" tag="434" mandatory="Y" outbound="seperate"/>
+        <Attribute typeId="OrdStatus" tag="39" mandatory="Y" outbound="seperate"/>
+        <Attribute typeId="string[TEXT_LENGTH]" tag="58" name="text" mandatory="N" outbound="seperate"/>
+        <Attribute typeId="viewstring[SECURITYID_LENGTH]" tag="48" name="securityId" mandatory="N" outbound="clientDelegateIgnoreMktSide"/>
+        <Attribute typeId="viewstring[SYMBOL_LENGTH]" tag="55" name="symbol" mandatory="N" outbound="clientDelegateIgnoreMktSide"/>
+        <Attribute typeId="SecurityIDSource" tag="22" mandatory="Y" outbound="clientDelegateIgnoreMktSide"/>
+    </Event>
+
+    <Base id="CommonExecRpt" extends="CommonExchangeHeader" src="exchange">
+        <!-- to synt a mkt caancel for unknown order need clOrdId and Side -->
+
+        <Attribute typeId="string[EXECID_LENGTH]" tag="17" name="execId" mandatory="Y" outbound="seperate"/>
+        <Attribute typeId="string[CLORDID_LENGTH]" tag="11" name="clOrdId" mandatory="N" outbound="clientDelegateMktSeperate"/>
+        <Attribute typeId="viewstring[SECURITYID_LENGTH]" tag="48" name="securityId" mandatory="Y" outbound="clientDelegateIgnoreMktSide"/>
+        <Attribute typeId="viewstring[SYMBOL_LENGTH]" tag="55" name="symbol" mandatory="Y" outbound="clientDelegateIgnoreMktSide"/>
+        <Attribute typeId="Currency" tag="15" name="currency" mandatory="N" outbound="clientDelegateIgnoreMktSide"/>
+        <Attribute typeId="SecurityIDSource" tag="22" mandatory="Y" outbound="clientDelegateIgnoreMktSide"/>
+
+        <Attribute typeId="string[ORDERID_LENGTH]" tag="37" name="orderId" mandatory="Y" outbound="seperate"/>
+        <Attribute typeId="ExecType" tag="150" mandatory="Y" outbound="seperate"/>
+        <Attribute typeId="OrdStatus" tag="39" mandatory="Y" outbound="seperate"/>
+        <Attribute typeId="UTCTimestamp" tag="60" name="transactTime" mandatory="Y" outbound="seperate"/>
+        <Attribute typeId="double" tag="151" name="leavesQty" mandatory="Y" outbound="seperate"/>
+        <Attribute typeId="double" tag="14" name="cumQty" mandatory="Y" outbound="seperate"/>
+        <Attribute typeId="double" tag="6" name="avgPx" mandatory="Y" outbound="seperate"/>
+        <Attribute typeId="double" tag="38" name="orderQty" mandatory="Y" outbound="clientDelegateIgnoreMktSide"/>
+        <Attribute typeId="double" tag="44" name="price" mandatory="Y" outbound="clientDelegateIgnoreMktSide"/>
+        <Attribute typeId="Side" tag="54" mandatory="Y" outbound="clientDelegateMktSeperate"/>
+
+        <Attribute typeId="string[TRADE_TEXT_LENGTH]" tag="58" name="text" mandatory="N" outbound="seperate"/>
+        <Attribute typeId="OrderCapacity" name="mktCapacity" outbound="seperate"/>
+        <Attribute typeId="string[CLORDID_LENGTH]" name="parentClOrdId" mandatory="N" outbound="seperate" desc="links this order to a parent order"/>
+        <Attribute typeId="string[STRAT_DEF_ID_LEN]" name="stratId" mandatory="N" outbound="seperate" desc="id of strat that generated order"/>
+        <Attribute typeId="string[STRAT_DEF_ID_LEN]" name="origStratId" mandatory="N" outbound="seperate" desc="src / originating strategy id"/>
+        <Attribute typeId="string[TEXT_LENGTH]" tag="58" name="text" mandatory="N" outbound="seperate"/>
+    </Base>
+
+    <Event id="NewOrderAck" extends="CommonExecRpt" src="exchange">
+        <Attribute typeId="long" name="ackReceived" mandatory="Y" outbound="seperate"/>
+        <Attribute typeId="long" name="orderReceived" mandatory="Y" outbound="clientDelegateIgnoreMktSide"/>
+        <Attribute typeId="long" name="orderSent" mandatory="Y" outbound="clientDelegateIgnoreMktSide"/>
+    </Event>
+
+    <Base id="TradeBase" extends="CommonExecRpt" src="exchange">
+        <Attribute typeId="double" tag="32" name="lastQty" mandatory="Y" outbound="seperate"/>
+        <Attribute typeId="double" tag="31" name="lastPx" mandatory="Y" outbound="seperate"/>
+        <Attribute typeId="LiquidityInd" tag="851" name="liquidityInd" mandatory="Y" outbound="seperate"/>
+
+        <Attribute typeId="MultiLegReportingType" tag="442" name="multiLegReportingType" mandatory="N" outbound="seperate"/>
+
+        <Attribute typeId="string[LASTMKT_LENGTH]" tag="30" name="lastMkt" mandatory="N" outbound="seperate"/>
+        <Attribute typeId="string[INST_SEC_DESC_LENGTH]" tag="107" name="securityDesc" mandatory="N" outbound="seperate"/>
+
+    </Base>
+
+    <Event id="TradeNew" extends="TradeBase" src="exchange">
+    </Event>
+
+    <Event id="Rejected" extends="CommonExecRpt" src="exchange">
+        <Attribute typeId="string[CLORDID_LENGTH]" tag="41" name="origClOrdId" mandatory="Y" outbound="seperate"/>
+        <Attribute typeId="OrdRejReason" tag="103" name="ordRejReason" outbound="seperate"/>
+        <Attribute typeId="TradingStatus" tag="1700" name="tradingStatus" mandatory="N" outbound="seperate"
+                   desc="Contains internal code for internal reject reason"/>
+    </Event>
+
+    <Event id="Cancelled" extends="CommonExecRpt" src="exchange">
+        <Attribute typeId="string[CLORDID_LENGTH]" tag="11" name="clOrdId" mandatory="Y" outbound="seperate"/>
+        <Attribute typeId="string[CLORDID_LENGTH]" tag="41" name="origClOrdId" mandatory="Y" outbound="seperate"/>
+    </Event>
+
+    <Event id="Replaced" extends="CommonExecRpt" src="exchange">
+        <Attribute typeId="string[CLORDID_LENGTH]" tag="41" name="origClOrdId" mandatory="Y" outbound="seperate"/>
+    </Event>
+
+    <!-- types for other messages
+        <Attribute typeId="OrderRestrictions"             tag="529"                                     outbound="delegate"/>
+        <Attribute typeId="PartyIDSource"                 tag="447"                                     outbound="delegate"/>
+        <Attribute typeId="OrdRejReason" 		          tag="103"/>
+        <Attribute typeId="EncryptMethod"                 tag="98"                                      outbound="delegate"/>
+        <Attribute typeId="PositionEffect"                tag="77"                                      outbound="delegate"/>
+    -->
+
+    <Event id="DoneForDay" extends="CommonExecRpt" src="exchange">
+    </Event>
+
+    <Event id="Stopped" extends="CommonExecRpt" src="exchange">
+        <Attribute typeId="double" tag="32" name="lastQty" mandatory="Y" outbound="seperate"/>
+        <Attribute typeId="double" tag="31" name="lastPx" mandatory="Y" outbound="seperate"/>
+    </Event>
+
+    <Event id="Expired" extends="CommonExecRpt" src="exchange">
+    </Event>
+
+    <Event id="Suspended" extends="CommonExecRpt" src="exchange">
+    </Event>
+
+    <Event id="Restated" extends="CommonExecRpt" src="exchange">
+
+        <Attribute typeId="ExecRestatementReason" tag="378"/>
+    </Event>
+
+    <Event id="TradeCorrect" extends="TradeBase" src="exchange">
+        <Attribute typeId="string[EXECID_LENGTH]" tag="19" name="execRefID" mandatory="Y" outbound="seperate"/>
+        <Attribute typeId="double" name="origQty" outbound="seperate"/>
+        <Attribute typeId="double" name="origPx" outbound="seperate"/>
+    </Event>
+
+    <Event id="TradeCancel" extends="TradeBase" src="exchange">
+        <Attribute typeId="string[EXECID_LENGTH]" tag="19" name="execRefID" mandatory="Y" outbound="seperate"/>
+    </Event>
+
+    <Event id="PendingCancel" extends="CommonExecRpt" src="exchange">
+        <Attribute typeId="string[CLORDID_LENGTH]" tag="41" name="origClOrdId" mandatory="Y" outbound="seperate"/>
+    </Event>
+
+    <Event id="PendingReplace" extends="CommonExecRpt" src="exchange">
+        <Attribute typeId="string[CLORDID_LENGTH]" tag="41" name="origClOrdId" mandatory="Y" outbound="seperate"/>
+    </Event>
+
+    <Event id="PendingNew" extends="CommonExecRpt" src="exchange">
+    </Event>
+
+    <Event id="OrderStatus" extends="CommonExecRpt" src="exchange">
+    </Event>
+
+    <Event id="IgnoredExec" extends="CommonExecRpt" src="exchange">
+    </Event>
+
+    <Event id="Calculated" extends="CommonExecRpt" src="exchange">
+    </Event>
+
+    <!--  Alerts -->
+
+    <Base id="Alert" extends="CommonExchangeHeader" src="exchange">
+        <Attribute typeId="viewstring[CLORDID_LENGTH]" tag="11" name="clOrdId" mandatory="N" outbound="clientDelegateIgnoreMktSide"/>
+        <Attribute typeId="viewstring[SECURITYID_LENGTH]" tag="48" name="securityId" mandatory="Y" outbound="clientDelegateIgnoreMktSide"/>
+        <Attribute typeId="viewstring[SYMBOL_LENGTH]" tag="55" name="symbol" mandatory="Y" outbound="clientDelegateIgnoreMktSide"/>
+        <Attribute typeId="Currency" tag="15" name="currency" mandatory="N" outbound="clientDelegateIgnoreMktSide"/>
+        <Attribute typeId="SecurityIDSource" tag="22" mandatory="Y" outbound="clientDelegateIgnoreMktSide"/>
+        <Attribute typeId="string[TEXT_LENGTH]" tag="58" name="text" mandatory="N" outbound="seperate"/>
+
+        <Attribute typeId="double" tag="38" name="orderQty" mandatory="Y" outbound="clientDelegateIgnoreMktSide"/>
+        <Attribute typeId="double" tag="44" name="price" mandatory="Y" outbound="clientDelegateIgnoreMktSide"/>
+        <Attribute typeId="Side" tag="54" mandatory="Y" outbound="clientDelegateIgnoreMktSide"/>
+        <Attribute typeId="Currency" tag="58" name="currency" mandatory="N" outbound="clientDelegateIgnoreMktSide"/>
+    </Base>
+
+    <Event id="AlertLimitBreach" extends="Alert" src="exchange">
+    </Event>
+
+    <Event id="AlertTradeMissingOrders" extends="Alert" src="exchange">
+        <Attribute typeId="string[ORDERID_LENGTH]" tag="37" name="orderId" mandatory="Y" outbound="seperate"/>
+        <Attribute typeId="ExecType" tag="150" mandatory="Y" outbound="seperate"/>
+        <Attribute typeId="OrdStatus" tag="39" mandatory="Y" outbound="seperate"/>
+        <Attribute typeId="double" tag="32" name="lastQty" mandatory="Y" outbound="seperate"/>
+        <Attribute typeId="double" tag="31" name="lastPx" mandatory="Y" outbound="seperate"/>
+        <Attribute typeId="string[LASTMKT_LENGTH]" tag="30" name="lastMkt" mandatory="N" outbound="seperate"/>
+    </Event>
+
+    <!--
+        ******  FIX MD EVENTS
+    -->
+
+    <Base id="BaseMDRequest" src="both">
+        <!-- msgSeqNum and possBupFlag are required to allow events to be treated as Message -->
+        <Attribute typeId="int" name="msgSeqNum" mandatory="N" outbound="seperate"/>
+        <Attribute typeId="boolean" name="possDupFlag" mandatory="N" outbound="seperate"/>
+        <Attribute typeId="UTCTimestamp" tag="52" name="eventTimestamp" mandatory="Y" outbound="seperate"/>
+    </Base>
+
+    <Base id="BaseMDResponse" src="both">
+        <!-- msgSeqNum and possBupFlag are required to allow events to be treated as Message -->
+        <Attribute typeId="int" name="msgSeqNum" mandatory="N" outbound="seperate"/>
+        <Attribute typeId="boolean" name="possDupFlag" mandatory="N" outbound="seperate"/>
+        <Attribute typeId="UTCTimestamp" tag="52" name="eventTimestamp" mandatory="Y" outbound="seperate"/>
+    </Base>
+
+    <SubEvent id="SymbolRepeatingGrp">
+        <Attribute typeId="string[SYMBOL_LENGTH]" name="symbol" tag="55" mandatory="Y" outbound="seperate"/>
+    </SubEvent>
+
+    <Event id="MDRequest" extends="BaseMDRequest" src="both">
+        <Attribute typeId="string[MD_REQ_LEN]" name="mdReqId" tag="262" mandatory="Y" outbound="seperate"/>
+        <Attribute typeId="SubsReqType" name="subsReqType" tag="263" mandatory="Y" outbound="seperate"/>
+        <Attribute typeId="int" name="marketDepth" tag="264" mandatory="Y" outbound="seperate"/>
+        <Attribute typeId="int" name="numRelatedSym" tag="146" mandatory="Y" outbound="seperate"/>
+
+        <Attribute typeId="SymbolRepeatingGrp" name="symbolGrp" mandatory="Y" outbound="seperate" min="1" max="99" counter="numRelatedSym"/>
+    </Event>
+
+    <SubEvent id="TickUpdate">
+        <Attribute typeId="MDEntryType" name="mdEntryType" tag="269" mandatory="Y" outbound="seperate"/>
+        <Attribute typeId="double" name="mdEntryPx" tag="270" mandatory="Y" outbound="seperate"/>
+        <Attribute typeId="int" name="mdEntrySize" tag="271" mandatory="Y" outbound="seperate"/>
+
+        <!-- trade only fields -->
+        <Attribute typeId="long" name="tradeTime" tag="273" mandatory="N" outbound="seperate"/>
+        <Attribute typeId="Side" name="tickDirection" tag="274" mandatory="N" outbound="seperate"/>
+
+        <!-- snapshot only fields -->
+        <Attribute typeId="int" name="numberOfOrders" tag="346" mandatory="N" outbound="seperate"/>
+    </SubEvent>
+
+    <Event id="MDUpdate" extends="BaseMDResponse" src="both">
+        <Attribute typeId="string[MD_REQ_LEN]" name="mdReqId" tag="262" mandatory="N" outbound="seperate"/>
+        <Attribute typeId="Book" name="book" mandatory="Y" outbound="seperate"/>
+        <Attribute typeId="int" name="noMDEntries" tag="268" mandatory="Y" outbound="seperate"/>
+
+        <Attribute typeId="TickUpdate" name="tickUpdates" mandatory="Y" outbound="seperate" min="1" max="99" counter="noMDEntries"/>
+    </Event>
+
+    <!--
+      EVENTS FROM FAST FIX eg CME ... put SubEvents before Events
+    -->
+
+    <SubEvent id="SecDefEvent" extraInterfaces="com.rr.core.model.InstrumentEvent">
+        <Attribute typeId="SecDefEventType" name="eventType" tag="865" mandatory="N" outbound="seperate"/>
+        <Attribute typeId="long" name="eventDate" tag="866" mandatory="N" outbound="seperate"/>
+        <Attribute typeId="long" name="eventTime" tag="1145" mandatory="Y" outbound="seperate"/>
+    </SubEvent>
+
+    <SubEvent id="SecurityAltID">
+        <Attribute typeId="string[SYMBOL_LENGTH]" name="securityAltID" tag="455" mandatory="N" outbound="seperate"/>
+        <Attribute typeId="SecurityIDSource" name="securityAltIDSource" tag="456" mandatory="N" outbound="seperate"/>
+    </SubEvent>
+
+    <SubEvent id="SDFeedType">
+        <Attribute typeId="string[INST_FEED_TYPE_LENGTH]" name="feedType" tag="1022" mandatory="N" outbound="seperate"/>
+        <Attribute typeId="int" name="marketDepth" tag="264" mandatory="N" outbound="seperate"/>
+    </SubEvent>
+
+    <SubEvent id="SecDefLeg" extraInterfaces="com.rr.core.model.LegInstrument">
+        <Attribute typeId="string[SYMBOL_LENGTH]" name="legSymbol" tag="600" mandatory="N" outbound="seperate"/>
+        <Attribute typeId="string[SYMBOL_LENGTH]" name="legSecurityID" tag="602" mandatory="Y" outbound="seperate"/>
+        <Attribute typeId="SecurityIDSource" name="legSecurityIDSource" tag="603" mandatory="Y" outbound="seperate" defaultVal="ExchangeSymbol"/>
+        <Attribute typeId="int" name="legRatioQty" tag="623" mandatory="N" outbound="seperate"/>
+        <Attribute typeId="string[INST_SEC_DESC_LENGTH]" name="legSecurityDesc" tag="620" mandatory="N" outbound="seperate"/>
+        <Attribute typeId="Side" name="legSide" tag="624" mandatory="N" outbound="seperate"/>
+        <Attribute typeId="ExchangeInstrument" name="instrument" mandatory="N" outbound="seperate"/>
+    </SubEvent>
+
+    <SubEvent id="MDEntry">
+        <Attribute typeId="SecurityIDSource" name="securityIDSource" tag="22" mandatory="Y" outbound="seperate" defaultVal="ExchangeSymbol"/>
+        <Attribute typeId="string[SYMBOL_LENGTH]" name="securityID" tag="48" mandatory="Y" outbound="seperate"/>
+        <Attribute typeId="ExchangeCode" name="securityExchange" tag="207" mandatory="N" outbound="seperate"/>
+
+        <Attribute typeId="MDUpdateAction" name="mdUpdateAction" tag="279" mandatory="Y" outbound="seperate"/>
+        <Attribute typeId="int" name="repeatSeq" tag="83" mandatory="Y" outbound="seperate"/>
+        <Attribute typeId="int" name="numberOfOrders" tag="346" mandatory="Y" outbound="seperate"/>
+        <Attribute typeId="int" name="mdPriceLevel" tag="1023" mandatory="N" outbound="seperate"/>
+        <Attribute typeId="MDEntryType" name="mdEntryType" tag="269" mandatory="Y" outbound="seperate"/>
+
+        <Attribute typeId="double" name="mdEntryPx" tag="270" mandatory="N" outbound="seperate"/>
+        <Attribute typeId="int" name="mdEntrySize" tag="271" mandatory="N" outbound="seperate"/>
+
+        <!-- trade only fields -->
+        <Attribute typeId="int" name="mdEntryTime" tag="273" mandatory="N" outbound="seperate"/>
+
+        <Attribute typeId="TradingSessionID" tag="336" mandatory="N" outbound="seperate"/>
+
+    </SubEvent>
+
+    <SubEvent id="MDSnapEntry">
+        <Attribute typeId="int" name="mdPriceLevel" tag="1023" mandatory="N" outbound="seperate"/>
+        <Attribute typeId="MDEntryType" name="mdEntryType" tag="269" mandatory="Y" outbound="seperate"/>
+
+        <Attribute typeId="double" name="mdEntryPx" tag="270" mandatory="N" outbound="seperate"/>
+        <Attribute typeId="int" name="mdEntrySize" tag="271" mandatory="N" outbound="seperate"/>
+
+        <!-- trade only fields -->
+        <Attribute typeId="int" name="mdEntryTime" tag="273" mandatory="N" outbound="seperate"/>
+        <Attribute typeId="TickDirection" name="tickDirection" tag="274" mandatory="N" outbound="seperate"/>
+        <Attribute typeId="int" name="tradeVolume" tag="1020" mandatory="N" outbound="seperate"/>
+    </SubEvent>
+
+    <Event id="MsgSeqNumGap" src="both">
+        <Attribute typeId="int" name="channelId" mandatory="N" outbound="seperate"/>
+        <Attribute typeId="int" name="msgSeqNum" mandatory="N" outbound="seperate"/>
+        <Attribute typeId="int" name="prevSeqNum" mandatory="N" outbound="seperate"/>
+        <Attribute typeId="boolean" name="possDupFlag" mandatory="N" outbound="seperate"/>
+        <Attribute typeId="UTCTimestamp" name="eventTimestamp" tag="52" mandatory="Y" outbound="seperate"/>
+    </Event>
+
+    <Event id="MDIncRefresh" extends="BaseMDResponse" src="both"> <!-- msgType="X" -->
+        <Attribute typeId="long" name="received" mandatory="N" outbound="seperate"/>
+        <Attribute typeId="int" name="noMDEntries" tag="268" mandatory="Y" outbound="seperate"/>
+
+        <Attribute typeId="MDEntry" name="MDEntries" mandatory="Y" outbound="seperate" min="1" max="99" counter="noMDEntries"/>
+    </Event>
+
+    <Event id="MDSnapshotFullRefresh" extends="BaseMDResponse" src="both"> <!-- msgType="W" -->
+        <Attribute typeId="long" name="received" mandatory="N" outbound="seperate"/>
+        <Attribute typeId="int" name="lastMsgSeqNumProcessed" tag="369" mandatory="Y" outbound="seperate"/>
+        <Attribute typeId="int" name="totNumReports" tag="911" mandatory="Y" outbound="seperate"/>
+        <Attribute typeId="int" name="rptSeq" tag="83" mandatory="Y" outbound="seperate"/>
+        <Attribute typeId="int" name="mdBookType" tag="1021" mandatory="Y" outbound="seperate"/>
+
+        <Attribute typeId="SecurityIDSource" name="securityIDSource" tag="22" mandatory="Y" outbound="seperate" defaultVal="ExchangeSymbol"/>
+        <Attribute typeId="string[SYMBOL_LENGTH]" name="securityID" tag="48" mandatory="Y" outbound="seperate"/>
+        <Attribute typeId="ExchangeCode" name="securityExchange" tag="207" mandatory="N" outbound="seperate"/>
+
+        <Attribute typeId="int" name="mdSecurityTradingStatus" tag="1682" mandatory="N" outbound="seperate"/>
+
+        <Attribute typeId="int" name="noMDEntries" tag="268" mandatory="Y" outbound="seperate"/>
+        <Attribute typeId="MDSnapEntry" name="MDEntries" mandatory="Y" outbound="seperate" min="1" max="99" counter="noMDEntries"/>
+    </Event>
+
+    <Event id="SecurityDefinition" extends="BaseMDResponse" src="both"> <!--  msgType="d" -->
+
+        <Attribute typeId="int" name="totNumReports" tag="911" mandatory="N" outbound="seperate"/>
+        <Attribute typeId="SecurityTradingStatus" tag="326" mandatory="N" outbound="seperate"/>
+
+        <Attribute typeId="SecurityType" name="securityType" tag="167" outbound="seperate"/>
+
+        <Attribute typeId="long" name="uniqueInstId" tag="9814" mandatory="N" outbound="seperate"/>
+        <Attribute typeId="long" name="secDefId" mandatory="N" outbound="seperate"/>
+        <Attribute typeId="long" name="exchangeLongId" mandatory="N" outbound="seperate"/>
+        <Attribute typeId="SecurityIDSource" name="securityIDSource" tag="22" mandatory="Y" outbound="seperate"/>
+        <Attribute typeId="string[SYMBOL_LENGTH]" name="securityID" tag="48" mandatory="Y" outbound="seperate"/>
+
+        <Attribute typeId="string[SYMBOL_LENGTH]" name="symbol" tag="55" mandatory="N" outbound="seperate" desc="BB ticker for equity and futures"/>
+
+        <Attribute typeId="int" name="noEvents" tag="864" mandatory="N" outbound="seperate"/>
+        <Attribute typeId="SecDefEvent" name="events" mandatory="N" outbound="seperate" min="1" max="99" counter="noEvents"/>
+
+        <Attribute typeId="SecurityUpdateAction" name="securityUpdateAction" tag="980" outbound="seperate"/>
+
+        <Attribute typeId="int" name="noLegs" tag="555" mandatory="N" outbound="seperate"/>
+        <Attribute typeId="SecDefLeg" name="legs" mandatory="N" outbound="seperate" min="1" max="99" counter="noLegs"/>
+
+        <Attribute typeId="double" name="tradingReferencePrice" tag="1150" mandatory="N" outbound="seperate"/>
+        <Attribute typeId="double" name="highLimitPx" tag="1149" mandatory="N" outbound="seperate"/>
+        <Attribute typeId="double" name="lowLimitPx" tag="1148" mandatory="N" outbound="seperate"/>
+        <Attribute typeId="double" name="futPointValue" tag="1700" mandatory="N" outbound="seperate"/>
+        <Attribute typeId="double" name="minPriceIncrement" tag="969" mandatory="N" outbound="seperate"/>
+        <Attribute typeId="double" name="minPriceIncrementAmount" tag="1146" mandatory="N" outbound="seperate"/>
+
+        <Attribute typeId="string[INST_SEC_GRP_LEN]" name="securityGroup" tag="1151" mandatory="N" outbound="seperate"/>
+        <Attribute typeId="string[INST_SEC_DESC_LENGTH]" name="securityDesc" tag="107" mandatory="N" outbound="seperate"/>
+        <Attribute typeId="string[INST_SEC_LDESC_LENGTH]" name="securityLongDesc" tag="9800" mandatory="N" outbound="seperate"/>
+        <Attribute typeId="string[INST_CFI_CODE_LENGTH]" name="CFICode" tag="461" mandatory="N" outbound="seperate"/>
+        <Attribute typeId="ProductComplex" name="underlyingProduct" tag="462" mandatory="N" outbound="seperate"/>
+        <Attribute typeId="ExchangeCode" name="securityExchange" tag="207" mandatory="Y" outbound="seperate"/>
+
+        <Attribute typeId="SecurityIDSource" name="underlyingSecurityIDSource" tag="9801" mandatory="N" outbound="seperate"/>
+        <Attribute typeId="string[SYMBOL_LENGTH]" name="underlyingSecurityID" tag="9802" mandatory="N" outbound="seperate"/>
+        <Attribute typeId="ExchangeCode" name="underlyingScurityExchange" tag="9803" mandatory="N" outbound="seperate"/>
+        <Attribute typeId="ExchangeCode" name="primarySecurityExchange" tag="9804" mandatory="N" outbound="seperate"/>
+
+        <Attribute typeId="int" name="tickRule" tag="6350" mandatory="N" outbound="seperate"/>
+        <Attribute typeId="int" name="noSecurityAltID" tag="454" mandatory="N" outbound="seperate"/>
+        <Attribute typeId="SecurityAltID" name="securityAltIDs" mandatory="N" outbound="seperate" min="1" max="99" counter="noSecurityAltID"/>
+
+        <Attribute typeId="double" name="strikePrice" tag="202" mandatory="N" outbound="seperate"/>
+        <Attribute typeId="Currency" name="strikeCurrency" tag="947" mandatory="N" outbound="clientDelegateIgnoreMktSide"/>
+        <Attribute typeId="Currency" name="currency" tag="15" mandatory="N" outbound="clientDelegateIgnoreMktSide"/>
+        <Attribute typeId="Currency" name="settlCurrency" tag="120" mandatory="N" outbound="clientDelegateIgnoreMktSide"/>
+        <Attribute typeId="long" name="minTradeVol" tag="562" mandatory="N" outbound="seperate"/>
+        <Attribute typeId="long" name="maxTradeVol" tag="1140" mandatory="N" outbound="seperate"/>
+
+        <Attribute typeId="int" name="noSDFeedTypes" tag="1141" mandatory="N" outbound="seperate"/>
+        <Attribute typeId="SDFeedType" name="SDFeedTypes" mandatory="N" outbound="seperate" min="1" max="99" counter="noSDFeedTypes"/>
+
+        <Attribute typeId="int" name="maturityMonthYear" tag="200" mandatory="N" outbound="seperate" desc="format YYYYMMDD"/>
+
+        <Attribute typeId="string[INST_APPL_ID_LENGTH]" name="applID" tag="1180" mandatory="N" outbound="seperate"/>
+
+        <Attribute typeId="double" name="displayFactor" tag="9787" mandatory="N" outbound="seperate"/>
+        <Attribute typeId="double" name="priceRatio" tag="5770" mandatory="N" outbound="seperate"/>
+
+        <Attribute typeId="int" name="contractMultiplierType" tag="1435" mandatory="N" outbound="seperate"/>
+        <Attribute typeId="double" name="contractMultiplier" tag="231" mandatory="N" outbound="seperate" defaultVal="1"/>
+        <Attribute typeId="int" name="openInterestQty" tag="5792" mandatory="N" outbound="seperate"/>
+        <Attribute typeId="int" name="tradingReferenceDate" tag="5796" mandatory="N" outbound="seperate"/>
+
+        <Attribute typeId="int" name="minQty" tag="110" mandatory="N" outbound="seperate" defaultVal="1"/>
+        <Attribute typeId="double" name="pricePrecision" tag="1200" mandatory="N" outbound="seperate"/>
+
+        <Attribute typeId="UnitOfMeasure" name="unitOfMeasure" tag="996" mandatory="N" outbound="seperate"/>
+        <Attribute typeId="double" name="unitOfMeasureQty" tag="1147" mandatory="N" outbound="seperate"/>
+
+        <Attribute typeId="string[COMPANY_NAME_LEN]" name="companyName" tag="9811" mandatory="N" outbound="seperate"/>
+
+        <Attribute typeId="double" name="sharesOutstanding" mandatory="Y" outbound="seperate"/>
+
+        <Attribute typeId="long" name="commonSecurityId" tag="9805" mandatory="N" outbound="seperate"/>
+        <Attribute typeId="long" name="parentCompanyId" tag="9806" mandatory="N" outbound="seperate"/>
+        <Attribute typeId="long" name="gicsCode" tag="9812" mandatory="N" outbound="seperate"/>
+        <Attribute typeId="UTCTimestamp" name="getOutDate" tag="9813" mandatory="N" outbound="seperate"/>
+        <Attribute typeId="UTCTimestamp" name="deadTimestamp" tag="9815" mandatory="N" outbound="seperate"/>
+        <Attribute typeId="UTCTimestamp" name="startTimestamp" tag="9817" mandatory="N" outbound="seperate" desc="version start timestamp"/>
+        <Attribute typeId="UTCTimestamp" name="endTimestamp" tag="9816" mandatory="N" outbound="seperate" desc="version end timestamp"/>
+
+        <Attribute typeId="DataSrc" name="dataSrc" tag="9818" mandatory="N" outbound="seperate" defaultVal="UNS"/>
+        <Attribute typeId="SecDefSpecialType" tag="9819" mandatory="N" outbound="seperate" defaultVal="Standard"/>
+        <Attribute typeId="CompanyStatusType" tag="9820" mandatory="N" outbound="seperate"/>
+
+    </Event>
+
+    <Event id="SecurityDefinitionUpdate" extends="SecurityDefinition" src="both"> <!--  msgType="BP" -->
+    </Event>
+
+    <Event id="ProductSnapshot" extends="BaseMDResponse" src="both"> <!--  msgType="BU" -->
+        <Attribute typeId="SecurityIDSource" name="securityIDSource" tag="22" mandatory="Y" outbound="seperate" defaultVal="ExchangeSymbol"/>
+        <Attribute typeId="string[SYMBOL_LENGTH]" name="securityID" tag="48" mandatory="Y" outbound="seperate"/>
+    </Event>
+
+    <Event id="SecurityStatus" extends="BaseMDResponse" src="both"> <!-- msgType="f" -->
+        <Attribute typeId="SecurityIDSource" tag="22" mandatory="Y" outbound="seperate" defaultVal="ExchangeSymbol"/>
+        <Attribute typeId="string[SYMBOL_LENGTH]" name="securityID" tag="48" mandatory="Y" outbound="seperate"/>
+        <Attribute typeId="int" name="TradeDate" tag="75" mandatory="N" outbound="seperate"/>
+
+        <Attribute typeId="double" name="highPx" tag="332" mandatory="N" outbound="seperate"/>
+        <Attribute typeId="double" name="lowPx" tag="333" mandatory="N" outbound="seperate"/>
+
+        <Attribute typeId="SecurityTradingStatus" tag="326" mandatory="N" outbound="seperate"/>
+        <Attribute typeId="int" name="haltReason" tag="327" mandatory="N" outbound="seperate"/>
+        <Attribute typeId="int" name="SecurityTradingEvent" tag="1174" mandatory="N" outbound="seperate"/>
+
+        <Attribute typeId="string[SYMBOL_LENGTH]" name="symbol" tag="55" mandatory="N" outbound="seperate"/>
+        <Attribute typeId="ExchangeCode" name="securityExchange" tag="207" mandatory="N" outbound="seperate"/>
+    </Event>
+
+    <Event id="SettlementPriceEvent" extends="CommonHeader" extraInterfaces="com.rr.core.model.InstRefDataEvent&lt;SettlementPriceEvent&gt;" src="both">
+        <Attribute typeId="DataSrc" mandatory="N" outbound="seperate" defaultVal="UNS"/>
+        <Attribute typeId="Instrument" name="instrument" outbound="seperate"/>
+        <Attribute typeId="string[SUBJECT_LEN]" name="subject" outbound="seperate"/>
+        <Attribute typeId="long" name="dataSeqNum" outbound="seperate" desc="optional sequence number which scopes update to instrument"/>
+        <Attribute typeId="double" name="settlementPrice" outbound="seperate"/>
+        <Attribute typeId="SettlementPriceType" mandatory="Y" outbound="seperate" defaultVal="Unknown"/>
+        <Attribute typeId="UTCTimestamp" name="settleDateTime" mandatory="N" outbound="seperate"/>
+    </Event>
+
+    <Event id="ClosingPriceEvent" extends="CommonHeader" extraInterfaces="com.rr.core.model.InstRefDataEvent&lt;ClosingPriceEvent&gt;" src="both">
+        <Attribute typeId="DataSrc" mandatory="N" outbound="seperate" defaultVal="UNS"/>
+        <Attribute typeId="Instrument" name="instrument" outbound="seperate"/>
+        <Attribute typeId="string[SUBJECT_LEN]" name="subject" outbound="seperate"/>
+        <Attribute typeId="long" name="dataSeqNum" outbound="seperate" desc="optional sequence number which scopes update to instrument"/>
+        <Attribute typeId="double" name="price" outbound="seperate"/>
+        <Attribute typeId="ClosingPriceType" mandatory="Y" outbound="seperate" defaultVal="Unknown"/>
+        <Attribute typeId="UTCTimestamp" name="closeDateTime" mandatory="N" outbound="seperate"/>
+    </Event>
+
+    <Event id="OpenPriceEvent" extends="CommonHeader" extraInterfaces="com.rr.core.model.InstRefDataEvent&lt;OpenPriceEvent&gt;" src="both">
+        <Attribute typeId="DataSrc" mandatory="N" outbound="seperate" defaultVal="UNS"/>
+        <Attribute typeId="Instrument" name="instrument" outbound="seperate"/>
+        <Attribute typeId="string[SUBJECT_LEN]" name="subject" outbound="seperate"/>
+        <Attribute typeId="long" name="dataSeqNum" outbound="seperate" desc="optional sequence number which scopes update to instrument"/>
+        <Attribute typeId="double" name="openPrice" outbound="seperate"/>
+        <Attribute typeId="UTCTimestamp" name="openDateTime" mandatory="N" outbound="seperate"/>
+    </Event>
+
+    <Event id="OpenInterestEvent" extends="CommonHeader" extraInterfaces="com.rr.core.model.InstRefDataEvent&lt;OpenInterestEvent&gt;" src="both">
+        <Attribute typeId="DataSrc" mandatory="N" outbound="seperate" defaultVal="UNS"/>
+        <Attribute typeId="Instrument" name="instrument" outbound="seperate"/>
+        <Attribute typeId="string[SUBJECT_LEN]" name="subject" outbound="seperate"/>
+        <Attribute typeId="long" name="dataSeqNum" outbound="seperate" desc="optional sequence number which scopes update to instrument"/>
+        <Attribute typeId="double" name="openInterest" outbound="seperate"/>
+        <Attribute typeId="double" name="netOpenInterest" outbound="seperate"/>
+        <Attribute typeId="double" name="prevOpenInterest" outbound="seperate"/>
+        <Attribute typeId="UTCTimestamp" name="openInterestDateTime" mandatory="N" outbound="seperate"/>
+        <Attribute typeId="UTCTimestamp" name="prevOpenInterestDateTime" mandatory="N" outbound="seperate"/>
+    </Event>
+
+    <Event id="News" extends="CommonHeader" extraInterfaces="com.rr.core.model.InstRefDataEvent&lt;News&gt;" src="both">
+        <Attribute typeId="DataSrc" mandatory="N" outbound="seperate" defaultVal="UNS"/>
+        <Attribute typeId="Instrument" name="instrument" outbound="seperate"/>
+        <Attribute typeId="long" name="dataSeqNum" outbound="seperate" desc="optional sequence number which scopes update to instrument"/>
+        <Attribute typeId="string[SUBJECT_LEN]" name="subject" outbound="seperate"/>
+
+        <Attribute typeId="string[SHORT_NEWS_LEN]" name="shortText" outbound="seperate"/>
+        <Attribute typeId="string[LONG_NEWS_LEN]" name="longText" outbound="seperate"/>
+    </Event>
+
+    <Event id="CorporateActionEvent" extends="CommonHeader" extraInterfaces="com.rr.core.model.InstRefDataEvent&lt;CorporateActionEvent&gt;" src="both">
+        <Attribute typeId="DataSrc" mandatory="N" outbound="seperate" defaultVal="UNS"/>
+        <Attribute typeId="Instrument" name="instrument" mandatory="Y" override="Y" outbound="seperate"/>
+        <Attribute typeId="long" name="dataSeqNum" mandatory="Y" outbound="seperate"
+                   desc="mandatory GLOBAL unique sequence number for event ... doesnt change on update"/>
+        <Attribute typeId="string[SUBJECT_LEN]" name="subject" outbound="seperate"/>
+
+        <Attribute typeId="SecurityIDSource" name="idSource" outbound="seperate" defaultVal="ExchangeSymbol"/>
+        <Attribute typeId="string[SYMBOL_LENGTH]" name="securityId" outbound="seperate"/>
+
+        <Attribute typeId="ExchangeCode" name="securityExchange" mandatory="N" outbound="seperate"/>
+
+        <Attribute typeId="CorporateActionClassification" name="type" mandatory="N" outbound="seperate"/>
+
+        <Attribute typeId="UTCTimestamp" name="announceTimestamp" annotations="@TimestampMS" mandatory="N" outbound="seperate"
+                   desc="declaration / announcement of event"/>
+        <Attribute typeId="UTCTimestamp" name="qualifyTimestamp" annotations="@TimestampMS" mandatory="N" outbound="seperate"
+                   desc="qualifying timestamp threshold eg exDivDate"/>
+        <Attribute typeId="UTCTimestamp" name="recordTimestamp" annotations="@TimestampMS" mandatory="N" outbound="seperate"
+                   desc="date the company factors the action into its shares"/>
+        <Attribute typeId="UTCTimestamp" name="actionTimestamp" annotations="@TimestampMS" mandatory="N" outbound="seperate"
+                   desc="effective date when action is applied eg payDate/splitDate"/>
+
+        <Attribute typeId="Currency" name="ccy" mandatory="N" outbound="seperate" desc="adjustment ccy"/>
+        <Attribute typeId="AdjustmentType" name="adjustType" mandatory="N" outbound="seperate" defaultVal="Factor"/>
+        <Attribute typeId="double" name="priceAdjustVal" outbound="seperate" desc="value to adjust by, defined by adjustType"/>
+    </Event>
+
+    <Event id="InstrumentSimData" extends="CommonHeader" extraInterfaces="com.rr.core.model.InstRefData" src="both">
+        <Attribute typeId="Instrument" name="instrument" mandatory="Y" override="Y" outbound="seperate"/>
+        <Attribute typeId="long" name="dataSeqNum" outbound="seperate" desc="optional sequence number which scopes update to instrument"/>
+
+        <Attribute typeId="SecurityIDSource" name="idSource" outbound="seperate" defaultVal="ExchangeSymbol"/>
+        <Attribute typeId="string[SYMBOL_LENGTH]" name="contract" outbound="seperate"/>
+
+        <Attribute typeId="ExchangeCode" name="securityExchange" mandatory="N" outbound="seperate"/>
+
+        <Attribute typeId="double" name="bidSpreadEstimate" outbound="seperate"/>
+        <Attribute typeId="double" name="limitStratImproveEst" outbound="seperate"/>
+    </Event>
+
+    <Event id="RefPriceEvent" extends="CommonHeader" extraInterfaces="com.rr.core.model.InstRefDataEvent&lt;RefPriceEvent&gt;" src="both">
+        <Attribute typeId="DataSrc" mandatory="N" outbound="seperate" defaultVal="UNS"/>
+        <Attribute typeId="Instrument" name="instrument" outbound="seperate"/>
+        <Attribute typeId="long" name="dataSeqNum" outbound="seperate" desc="optional sequence number which scopes update to instrument"/>
+        <Attribute typeId="string[SUBJECT_LEN]" name="subject" outbound="seperate"/>
+
+        <Attribute typeId="string[CODE_LEN]" name="code" outbound="seperate" desc="some code"/>
+        <Attribute typeId="double" name="val" outbound="seperate" desc="value for code"/>
+    </Event>
+
+    <Event id="BrokerLoanResponse" extends="CommonHeader" extraInterfaces="com.rr.core.model.CoreBrokerLoanResponse" src="both">
+        <Attribute typeId="DataSrc" mandatory="N" outbound="seperate" defaultVal="UNS"/>
+        <Attribute typeId="Instrument" name="instrument" outbound="seperate"/>
+        <Attribute typeId="long" name="dataSeqNum" outbound="seperate" desc="optional sequence number which scopes update to instrument"/>
+        <Attribute typeId="string[SUBJECT_LEN]" name="subject" outbound="seperate"/>
+
+        <Attribute typeId="SecurityIDSource" name="idSource" outbound="seperate" defaultVal="ISIN"/>
+        <Attribute typeId="string[SYMBOL_LENGTH]" name="securityId" outbound="seperate"/>
+        <Attribute typeId="string[LOAN_RESPONSE_LEN]" name="reference" outbound="seperate"/>
+        <Attribute typeId="boolean" name="isDisabled" outbound="seperate"/>
+
+        <Attribute typeId="ExchangeCode" name="securityExchange" mandatory="N" outbound="seperate"/>
+
+        <Attribute typeId="double" name="approveQty" outbound="seperate"/>
+        <Attribute typeId="double" name="amount" outbound="seperate"/>
+        <Attribute typeId="LoanRateType" name="type" outbound="seperate"/>
+        <Attribute typeId="PartyID" name="broker" outbound="seperate"/>
+    </Event>
+
+    <Event id="PriceLimitCollarEvent" extends="CommonHeader" extraInterfaces="com.rr.core.model.InstRefDataEvent&lt;PriceLimitCollarEvent&gt;" src="both">
+        <Attribute typeId="DataSrc" mandatory="N" outbound="seperate" defaultVal="UNS"/>
+        <Attribute typeId="Instrument" name="instrument" mandatory="Y" override="Y" outbound="seperate"/>
+        <Attribute typeId="string[SUBJECT_LEN]" name="subject" outbound="seperate"/>
+        <Attribute typeId="long" name="dataSeqNum" mandatory="Y" outbound="seperate" desc="optional sequence number which scopes update to instrument"/>
+        <Attribute typeId="double" name="lowLimitPrice" outbound="seperate"/>
+        <Attribute typeId="double" name="highLimitPrice" outbound="seperate"/>
+    </Event>
+
+    <Event id="SecurityTradingStatusEvent" extends="CommonHeader" extraInterfaces="com.rr.core.model.InstRefDataEvent&lt;SecurityTradingStatusEvent&gt;"
+           src="both">
+        <Attribute typeId="DataSrc" mandatory="N" outbound="seperate" defaultVal="UNS"/>
+        <Attribute typeId="Instrument" name="instrument" mandatory="Y" override="Y" outbound="seperate"/>
+        <Attribute typeId="string[SUBJECT_LEN]" name="subject" outbound="seperate"/>
+        <Attribute typeId="long" name="dataSeqNum" mandatory="Y" outbound="seperate" desc="optional sequence number which scopes update to instrument"/>
+        <Attribute typeId="SecurityTradingStatus" name="tradingStatus" outbound="seperate"/>
+    </Event>
+
+    <Event id="LeanHogIndexEvent" extends="CommonHeader" extraInterfaces="com.rr.core.model.InstRefDataEvent&lt;LeanHogIndexEvent&gt;" src="both">
+        <Attribute typeId="DataSrc" mandatory="N" outbound="seperate" defaultVal="UNS"/>
+        <Attribute typeId="Instrument" name="instrument" mandatory="Y" override="Y" outbound="seperate"/>
+        <Attribute typeId="string[SUBJECT_LEN]" name="subject" outbound="seperate"/>
+        <Attribute typeId="long" name="dataSeqNum" mandatory="Y" outbound="seperate" desc="optional sequence number which scopes update to instrument"/>
+        <Attribute typeId="int" name="indexDate" mandatory="Y" outbound="seperate" desc="the date the index is being published for"/>
+        <Attribute typeId="double" name="negotHeadCount" outbound="seperate"/>
+        <Attribute typeId="double" name="negotAverageNetPrice" outbound="seperate"/>
+        <Attribute typeId="double" name="negotAverageCarcWt" outbound="seperate"/>
+        <Attribute typeId="double" name="spmfHeadCount" outbound="seperate"/>
+        <Attribute typeId="double" name="spmfAverageNetPrice" outbound="seperate"/>
+        <Attribute typeId="double" name="spmfAverageCarcWt" outbound="seperate"/>
+        <Attribute typeId="double" name="negotSpmfHeadCount" outbound="seperate"/>
+        <Attribute typeId="double" name="negotSpmfAverageNetPrice" outbound="seperate"/>
+        <Attribute typeId="double" name="negotSpmfAverageCarcWt" outbound="seperate"/>
+        <Attribute typeId="double" name="dailyWeightedPrice" outbound="seperate"/>
+        <Attribute typeId="double" name="indexValue" outbound="seperate"/>
+    </Event>
+
+    <!--
+      JMX COMMAND RELATED EVENTS
+    -->
+
+    <Event id="ForceFlattenCommand" extends="CommonHeader" src="both">
+        <Attribute typeId="string[STRAT_DEF_ID_LEN]" name="stratId" outbound="seperate"/>
+    </Event>
+
+    @SECTION EVENTS END
+
+</Data>

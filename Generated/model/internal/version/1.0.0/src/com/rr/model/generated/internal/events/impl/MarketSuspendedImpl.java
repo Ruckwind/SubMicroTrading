@@ -1,52 +1,46 @@
-/*******************************************************************************
- * Copyright (c) 2015 Low Latency Trading Limited  :  Author Richard Rose
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at	http://www.apache.org/licenses/LICENSE-2.0
- * Unless required by applicable law or agreed to in writing,  software distributed under the License 
- * is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and limitations under the License.
- *******************************************************************************/
 package com.rr.model.generated.internal.events.impl;
 
-import com.rr.core.model.Currency;
-import com.rr.core.model.SecurityIDSource;
+/*
+Copyright 2015 Low Latency Trading Limited
+Author Richard Rose
+*/
+
 import com.rr.model.internal.type.ExecType;
 import com.rr.model.generated.internal.type.OrdStatus;
 import com.rr.model.generated.internal.type.Side;
 import com.rr.model.generated.internal.type.OrderCapacity;
-import com.rr.core.lang.ViewString;
-import com.rr.core.lang.ReusableString;
-import com.rr.core.lang.AssignableString;
-import com.rr.core.lang.ViewString;
-import com.rr.core.lang.Constants;
-import com.rr.core.model.MsgFlag;
-import com.rr.core.lang.ReusableType;
-import com.rr.core.lang.Reusable;
-import com.rr.core.model.Message;
-import com.rr.core.model.MessageHandler;
+import com.rr.core.utils.Utils;
+import com.rr.core.lang.*;
+import com.rr.core.model.*;
+import com.rr.core.annotations.*;
 import com.rr.model.internal.type.*;
 import com.rr.model.generated.internal.core.ModelReusableTypes;
 import com.rr.model.generated.internal.core.SizeType;
 import com.rr.model.generated.internal.core.EventIds;
 import com.rr.model.generated.internal.events.interfaces.*;
 
-@SuppressWarnings( "unused" )
+@SuppressWarnings( { "unused", "override"  })
 
 public final class MarketSuspendedImpl implements CommonExecRpt, MarketSuspendedWrite, Reusable<MarketSuspendedImpl> {
 
    // Attrs
 
-    private          MarketSuspendedImpl _next = null;
-    private volatile Message        _nextMessage    = null;
-    private          MessageHandler _messageHandler = null;
+    private transient          MarketSuspendedImpl _next = null;
+    private transient volatile Event        _nextMessage    = null;
+    private transient          EventHandler _messageHandler = null;
     private final ReusableString _execId = new ReusableString( SizeType.EXECID_LENGTH.getSize() );
     private final ReusableString _clOrdId = new ReusableString( SizeType.CLORDID_LENGTH.getSize() );
     private final ReusableString _orderId = new ReusableString( SizeType.ORDERID_LENGTH.getSize() );
-    private int _leavesQty = Constants.UNSET_INT;
-    private int _cumQty = Constants.UNSET_INT;
+    @TimestampMS private long _transactTime = Constants.UNSET_LONG;
+    private double _leavesQty = Constants.UNSET_DOUBLE;
+    private double _cumQty = Constants.UNSET_DOUBLE;
     private double _avgPx = Constants.UNSET_DOUBLE;
+    private final ReusableString _text = new ReusableString( SizeType.TRADE_TEXT_LENGTH.getSize() );
+    private final ReusableString _parentClOrdId = new ReusableString( SizeType.CLORDID_LENGTH.getSize() );
+    private final ReusableString _stratId = new ReusableString( SizeType.STRAT_DEF_ID_LEN.getSize() );
+    private final ReusableString _origStratId = new ReusableString( SizeType.STRAT_DEF_ID_LEN.getSize() );
     private int _msgSeqNum = Constants.UNSET_INT;
-    private int _sendingTime = Constants.UNSET_INT;
+    @TimestampMS private long _eventTimestamp = Constants.UNSET_LONG;
 
     private ExecType _execType;
     private OrdStatus _ordStatus;
@@ -54,7 +48,7 @@ public final class MarketSuspendedImpl implements CommonExecRpt, MarketSuspended
     private OrderCapacity _mktCapacity;
 
     private OrderRequest  _srcEvent;
-    private byte           _flags          = 0;
+    private int           _flags          = 0;
 
    // Getters and Setters
     @Override public final ViewString getExecId() { return _execId; }
@@ -90,16 +84,19 @@ public final class MarketSuspendedImpl implements CommonExecRpt, MarketSuspended
     @Override public final OrdStatus getOrdStatus() { return _ordStatus; }
     @Override public final void setOrdStatus( OrdStatus val ) { _ordStatus = val; }
 
-    @Override public final int getLeavesQty() { return _leavesQty; }
-    @Override public final void setLeavesQty( int val ) { _leavesQty = val; }
+    @Override public final long getTransactTime() { return _transactTime; }
+    @Override public final void setTransactTime( long val ) { _transactTime = val; }
 
-    @Override public final int getCumQty() { return _cumQty; }
-    @Override public final void setCumQty( int val ) { _cumQty = val; }
+    @Override public final double getLeavesQty() { return _leavesQty; }
+    @Override public final void setLeavesQty( double val ) { _leavesQty = val; }
+
+    @Override public final double getCumQty() { return _cumQty; }
+    @Override public final void setCumQty( double val ) { _cumQty = val; }
 
     @Override public final double getAvgPx() { return _avgPx; }
     @Override public final void setAvgPx( double val ) { _avgPx = val; }
 
-    @Override public int getOrderQty() { throw new IllegalFieldAccess( "Getter for orderQty event Suspended is a delegate field from order request base" ); }
+    @Override public double getOrderQty() { throw new IllegalFieldAccess( "Getter for orderQty event Suspended is a delegate field from order request base" ); }
 
 
     @Override public double getPrice() { throw new IllegalFieldAccess( "Getter for price event Suspended is a delegate field from order request base" ); }
@@ -108,8 +105,28 @@ public final class MarketSuspendedImpl implements CommonExecRpt, MarketSuspended
     @Override public final Side getSide() { return _side; }
     @Override public final void setSide( Side val ) { _side = val; }
 
+    @Override public final ViewString getText() { return _text; }
+
+    @Override public final void setText( byte[] buf, int offset, int len ) { _text.setValue( buf, offset, len ); }
+    @Override public final ReusableString getTextForUpdate() { return _text; }
+
     @Override public final OrderCapacity getMktCapacity() { return _mktCapacity; }
     @Override public final void setMktCapacity( OrderCapacity val ) { _mktCapacity = val; }
+
+    @Override public final ViewString getParentClOrdId() { return _parentClOrdId; }
+
+    @Override public final void setParentClOrdId( byte[] buf, int offset, int len ) { _parentClOrdId.setValue( buf, offset, len ); }
+    @Override public final ReusableString getParentClOrdIdForUpdate() { return _parentClOrdId; }
+
+    @Override public final ViewString getStratId() { return _stratId; }
+
+    @Override public final void setStratId( byte[] buf, int offset, int len ) { _stratId.setValue( buf, offset, len ); }
+    @Override public final ReusableString getStratIdForUpdate() { return _stratId; }
+
+    @Override public final ViewString getOrigStratId() { return _origStratId; }
+
+    @Override public final void setOrigStratId( byte[] buf, int offset, int len ) { _origStratId.setValue( buf, offset, len ); }
+    @Override public final ReusableString getOrigStratIdForUpdate() { return _origStratId; }
 
     @Override public ViewString getOnBehalfOfId() { throw new IllegalFieldAccess( "Getter for onBehalfOfId event Suspended is a delegate field from order request base" ); }
 
@@ -117,8 +134,8 @@ public final class MarketSuspendedImpl implements CommonExecRpt, MarketSuspended
     @Override public final int getMsgSeqNum() { return _msgSeqNum; }
     @Override public final void setMsgSeqNum( int val ) { _msgSeqNum = val; }
 
-    @Override public final int getSendingTime() { return _sendingTime; }
-    @Override public final void setSendingTime( int val ) { _sendingTime = val; }
+    @Override public final long getEventTimestamp() { return _eventTimestamp; }
+    @Override public final void setEventTimestamp( long val ) { _eventTimestamp = val; }
 
 
     @Override public final boolean getPossDupFlag() { return isFlagSet( MsgFlag.PossDupFlag ); }
@@ -133,13 +150,18 @@ public final class MarketSuspendedImpl implements CommonExecRpt, MarketSuspended
         _orderId.reset();
         _execType = null;
         _ordStatus = null;
-        _leavesQty = Constants.UNSET_INT;
-        _cumQty = Constants.UNSET_INT;
+        _transactTime = Constants.UNSET_LONG;
+        _leavesQty = Constants.UNSET_DOUBLE;
+        _cumQty = Constants.UNSET_DOUBLE;
         _avgPx = Constants.UNSET_DOUBLE;
         _side = null;
+        _text.reset();
         _mktCapacity = null;
+        _parentClOrdId.reset();
+        _stratId.reset();
+        _origStratId.reset();
         _msgSeqNum = Constants.UNSET_INT;
-        _sendingTime = Constants.UNSET_INT;
+        _eventTimestamp = Constants.UNSET_LONG;
         _flags = 0;
         _next = null;
         _nextMessage = null;
@@ -167,22 +189,22 @@ public final class MarketSuspendedImpl implements CommonExecRpt, MarketSuspended
     }
 
     @Override
-    public final Message getNextQueueEntry() {
+    public final Event getNextQueueEntry() {
         return _nextMessage;
     }
 
     @Override
-    public final void attachQueue( Message nxt ) {
+    public final void attachQueue( Event nxt ) {
         _nextMessage = nxt;
     }
 
     @Override
-    public final MessageHandler getMessageHandler() {
+    public final EventHandler getEventHandler() {
         return _messageHandler;
     }
 
     @Override
-    public final void setMessageHandler( MessageHandler handler ) {
+    public final void setEventHandler( EventHandler handler ) {
         _messageHandler = handler;
     }
 
@@ -190,7 +212,7 @@ public final class MarketSuspendedImpl implements CommonExecRpt, MarketSuspended
    // Helper methods
     @Override
     public void setFlag( MsgFlag flag, boolean isOn ) {
-        _flags = (byte) MsgFlag.setFlag( _flags, flag, isOn );
+        _flags = MsgFlag.setFlag( _flags, flag, isOn );
     }
 
     @Override
@@ -199,29 +221,55 @@ public final class MarketSuspendedImpl implements CommonExecRpt, MarketSuspended
     }
 
     @Override
-    public String toString() {
-        ReusableString buf = new ReusableString();
-        dump( buf );
-        return buf.toString();
+    public int getFlags() {
+        return _flags;
     }
 
     @Override
-    public final void dump( ReusableString out ) {
+    public String toString() {
+        ReusableString buf = TLC.instance().pop();
+        dump( buf );
+        String rs = buf.toString();
+        TLC.instance().pushback( buf );
+        return rs;
+    }
+
+    @Override
+    public final void dump( final ReusableString out ) {
         out.append( "MarketSuspendedImpl" ).append( ' ' );
-        out.append( ", execId=" ).append( getExecId() );
-        out.append( ", clOrdId=" ).append( getClOrdId() );
-        out.append( ", orderId=" ).append( getOrderId() );
-        out.append( ", execType=" );
-        if ( getExecType() != null ) getExecType().id( out );
-        out.append( ", ordStatus=" ).append( getOrdStatus() );
-        out.append( ", leavesQty=" ).append( getLeavesQty() );
-        out.append( ", cumQty=" ).append( getCumQty() );
-        out.append( ", avgPx=" ).append( getAvgPx() );
-        out.append( ", side=" ).append( getSide() );
-        out.append( ", mktCapacity=" ).append( getMktCapacity() );
-        out.append( ", msgSeqNum=" ).append( getMsgSeqNum() );
+        if ( getExecId().length() > 0 )             out.append( ", execId=" ).append( getExecId() );
+        if ( getClOrdId().length() > 0 )             out.append( ", clOrdId=" ).append( getClOrdId() );
+        if ( getOrderId().length() > 0 )             out.append( ", orderId=" ).append( getOrderId() );
+        if ( getExecType() != null )             out.append( ", execType=" );
+        if ( getExecType() != null ) out.append( getExecType().id() );
+        if ( getOrdStatus() != null )             out.append( ", ordStatus=" ).append( getOrdStatus() );
+        if ( Constants.UNSET_LONG != getTransactTime() && 0 != getTransactTime() ) {
+            out.append( ", transactTime=" );
+            TimeUtilsFactory.safeTimeUtils().unixTimeToLocalTimestamp( out, getTransactTime() );
+            out.append( " / " );
+            TimeUtilsFactory.safeTimeUtils().unixTimeToUTCTimestamp( out, getTransactTime() );
+            out.append( " ( " );
+            out.append( getTransactTime() ).append( " ) " );
+        }
+        if ( Utils.hasVal( getLeavesQty() ) ) out.append( ", leavesQty=" ).append( getLeavesQty() );
+        if ( Utils.hasVal( getCumQty() ) ) out.append( ", cumQty=" ).append( getCumQty() );
+        if ( Utils.hasVal( getAvgPx() ) ) out.append( ", avgPx=" ).append( getAvgPx() );
+        if ( getSide() != null )             out.append( ", side=" ).append( getSide() );
+        if ( getText().length() > 0 )             out.append( ", text=" ).append( getText() );
+        if ( getMktCapacity() != null )             out.append( ", mktCapacity=" ).append( getMktCapacity() );
+        if ( getParentClOrdId().length() > 0 )             out.append( ", parentClOrdId=" ).append( getParentClOrdId() );
+        if ( getStratId().length() > 0 )             out.append( ", stratId=" ).append( getStratId() );
+        if ( getOrigStratId().length() > 0 )             out.append( ", origStratId=" ).append( getOrigStratId() );
+        if ( Constants.UNSET_INT != getMsgSeqNum() && 0 != getMsgSeqNum() )             out.append( ", msgSeqNum=" ).append( getMsgSeqNum() );
         out.append( ", possDupFlag=" ).append( getPossDupFlag() );
-        out.append( ", sendingTime=" ).append( getSendingTime() );
+        if ( Constants.UNSET_LONG != getEventTimestamp() && 0 != getEventTimestamp() ) {
+            out.append( ", eventTimestamp=" );
+            TimeUtilsFactory.safeTimeUtils().unixTimeToLocalTimestamp( out, getEventTimestamp() );
+            out.append( " / " );
+            TimeUtilsFactory.safeTimeUtils().unixTimeToUTCTimestamp( out, getEventTimestamp() );
+            out.append( " ( " );
+            out.append( getEventTimestamp() ).append( " ) " );
+        }
     }
 
 }

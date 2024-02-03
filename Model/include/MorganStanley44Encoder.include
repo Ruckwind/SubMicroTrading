@@ -1,0 +1,315 @@
+/**
+ * HAND GENERATED TRANSFORMS
+ */
+
+    private String _lei = com.rr.core.properties.AppProps.instance().getProperty( "AQUA_LEGAL_ENTITY_IDENTIFIER", false, "AQUALEI" );
+
+    private ReusableString  _secId      = new ReusableString();
+
+    private void postEncodeOrdReq( BaseOrderRequest req ) {
+
+         com.rr.core.model.Instrument instrument = req.getInstrument();
+
+         if ( instrument == null ) throw new RuntimeEncodingException( "Missing instrument, unable to encode" );
+
+         if ( ! (instrument instanceof ExchangeInstrument) ) {
+             throw new RuntimeEncodingException( "instrument is not exchange instrument, unable to encode" );
+         }
+
+         ExchangeInstrument e = (ExchangeInstrument)instrument;
+
+         SecurityType securityType = e.getSecurityType();
+
+         OrdDestType destType = req.getTargetDest();
+         TargetStrategy strat = null;
+
+         TimeInForce tif = null;
+
+         ViewString stratParams = null;
+
+         if ( req instanceof OrderRequest ) {
+             OrderRequest o = (OrderRequest) req;
+
+             strat = o.getTargetStrategy();
+
+             stratParams = o.getStratParams();
+
+             OrdType ordType = o.getOrdType();
+
+             tif = o.getTimeInForce();
+
+             _builder.encodeByte( FixDictionaryMS44.OrdType, ordType.getVal() ); // tag40
+         }
+
+        _builder.encodeString( FixDictionaryMS44.legalEntityIdentifer, _lei );                                       // tag20013
+        _builder.encodeString( FixDictionaryMS44.clientID, "AQUA" ); // traderId .. required for ICE and CME
+        _builder.encodeString( FixDictionaryMS44.SenderLocationID, "GB" );
+
+        if ( securityType == SecurityType.Future ) {
+
+            handleFutureOrdReq( (ExchDerivInstrument)e, securityType, destType, strat, stratParams, tif );
+
+        } else {
+            handleEquityOrdReq( e, destType, strat, stratParams, tif );
+        }
+    }
+
+    private void handleEquityOrdReq( final ExchangeInstrument e, final OrdDestType destType, final TargetStrategy strat, final ViewString stratParams, final TimeInForce tif ) {
+        if ( destType != null ) {
+            switch( destType ) {
+            case DMA:
+                _builder.encodeString( FixDictionaryMS44.TargetSubID, "DMA" );                              // tag57
+                break;
+            case SORT_DARK:
+                _builder.encodeString( FixDictionaryMS44.TargetSubID, "SORT" );                             // tag57
+                _builder.encodeString( FixDictionaryMS44.sortStrategy,"NightVision" );                      // tag15001
+                break;
+            case SORT_DMA:
+                _builder.encodeString( FixDictionaryMS44.TargetSubID, "SORT" );                             // tag57
+                if ( strat != TargetStrategy.PEG ) {
+                    _builder.encodeString( FixDictionaryMS44.sortStrategy, "SORTDMA" );                    // tag15001
+                }
+                break;
+            case ALGO:
+                if ( strat == TargetStrategy.OpenAuction ) {
+                    _builder.encodeString( FixDictionaryMS44.TargetSubID, "SORT" );                              // tag57
+
+                } else {
+                    _builder.encodeString( FixDictionaryMS44.TargetSubID, "MBA" );                              // tag57
+                }
+                break;
+            default:
+                throw new RuntimeEncodingException( "Unsupported OrdDestType of " + destType );
+            }
+        } else {
+            throw new RuntimeEncodingException( "order Missing OrdDestType" );
+        }
+
+        if ( e.getISIN().length() == 0 ) {
+            throw new RuntimeEncodingException( "instrument " + e.id() + " has no ISIN, unable to encode" );
+        }
+
+        _builder.encodeByte( FixDictionaryMS44.SecurityIDSource, SecurityIDSource.ISIN.getVal() );       // tag22
+        _builder.encodeString( FixDictionaryMS44.SecurityID, e.getISIN() );                              // tag48
+        _builder.encodeString( FixDictionaryMS44.Symbol, e.getExchangeSymbol() );                        // tag55
+        _builder.encodeBytes( FixDictionaryMS44.ExDest, e.getPrimaryExchangeCode().getVal() ); // tag100
+
+        if ( strat != null ) {
+            _builder.encodeString( FixDictionaryMS44.msFixSpecVerNum, "5.10" );                      // tag11945
+            setStratParams( e, strat, stratParams, false, tif );
+        } else if ( tif != null ) {
+            _builder.encodeByte( FixDictionaryMS44.TimeInForce, tif.getVal() );        // tag59
+        }
+    }
+
+    private void handleFutureOrdReq( final ExchDerivInstrument e, final SecurityType securityType, final OrdDestType destType, final TargetStrategy strat, final ViewString stratParams, final TimeInForce tif ) {
+        if ( destType != null ) {
+            switch( destType ) {
+            case DMA:
+                _builder.encodeString( FixDictionaryMS44.TargetSubID, "DMA" );                              // tag57
+                break;
+            case SORT_DMA:
+                _builder.encodeString( FixDictionaryMS44.TargetSubID, "SORT" );                             // tag57
+                if ( strat != TargetStrategy.PEG ) {
+                    _builder.encodeString( FixDictionaryMS44.sortStrategy, "SORTDMA" );                     // tag15001
+                }
+                break;
+            case ALGO:
+                _builder.encodeString( FixDictionaryMS44.TargetSubID,   "MBA" );                            // tag57
+                break;
+            case SORT_DARK:
+            default:
+                throw new RuntimeEncodingException( "Unsupported OrdDestType of " + destType );
+            }
+        } else {
+            throw new RuntimeEncodingException( "order Missing OrdDestType" );
+        }
+
+        SecurityIDSource idSrc = SecurityIDSource.BloombergTicker;
+
+        e.getKey( idSrc, _secId );
+
+        if ( _secId.length() == 0 ) {
+            idSrc = SecurityIDSource.ISIN;
+
+            e.getKey( idSrc, _secId );
+
+            if ( _secId.length() == 0 ) {
+                idSrc = SecurityIDSource.ExchangeSymbol;
+
+                e.getKey( idSrc, _secId );
+            }
+        }
+
+        if ( _secId.length() == 0 ) {
+            throw new RuntimeEncodingException( "instrument " + e.id() + " has no valid BBGCode/ISIN/Symbol, unable to encode" );
+        }
+
+        _builder.encodeBytes( FixDictionaryMS44.SecurityType, securityType.getVal() ); // tag167
+        _builder.encodeInt( 200, e.getMaturityMonthYear() );                                     // tag55
+
+        _builder.encodeByte( FixDictionaryMS44.SecurityIDSource, idSrc.getVal() ); // tag22
+        _builder.encodeString( FixDictionaryMS44.SecurityID, _secId );                                 // tag48
+        _builder.encodeString( FixDictionaryMS44.Symbol, _secId );                                     // tag55
+        _builder.encodeBytes( FixDictionaryMS44.ExDest, e.getPrimaryExchangeCode().getVal() ); // tag100
+
+        if ( strat != null ) {
+            _builder.encodeString( FixDictionaryMS44.msFixSpecVerNum, "FUT3.5" );                      // tag11945
+            setStratParams( e, strat, stratParams, true, tif );
+        } else if ( tif != null ) {
+            _builder.encodeByte( FixDictionaryMS44.TimeInForce, tif.getVal() );        // tag59
+        }
+    }
+
+    private void setStratParams( final ExchangeInstrument e, final TargetStrategy strat, final ViewString stratParams, boolean isFut, final TimeInForce tif ) {
+        if ( strat != null ) {
+            _builder.encodeByte( FixDictionaryMS44.TimeInForce, TimeInForce.Day.getVal() );        // tag59
+
+            switch( strat ) {
+            case PEG:
+                if ( isFut ) {
+                    _builder.encodeString( FixDictionaryMS44.sortStrategy, "SmartPegged" );                   // tag15001
+                } else {
+                    _builder.encodeString( FixDictionaryMS44.sortStrategy, "Pegged" );                        // tag15001
+                }
+                break;
+            case VWAP: {
+                double  maxPercentTrade = StringParamsHelper.getDblVal( stratParams, StratParamKeys.MaxPercentageByVolume );
+                if ( Utils.hasNonZeroVal( maxPercentTrade ) ) {
+                    _builder.encodePrice( FixDictionaryMS44.maxPercentTradeVol, maxPercentTrade );              // tag7560
+                }
+
+                _builder.encodeString( FixDictionaryMS44.benchStrategy,    "VWAP" );                          // tag7505
+                boolean nearSideOnly = StringParamsHelper.getBoolVal( stratParams, StratParamKeys.NearSideOnly, false );
+                _builder.encodeBool( FixDictionaryMS44.vwapNearSideOnly, nearSideOnly );                     // tag11747
+
+                break;
+            }
+            case TWAP: {
+                double  maxPercentTrade = StringParamsHelper.getDblVal( stratParams, StratParamKeys.MaxPercentageByVolume );
+                if ( Utils.hasNonZeroVal( maxPercentTrade ) ) {
+                    _builder.encodePrice( FixDictionaryMS44.maxPercentTradeVol, maxPercentTrade );              // tag7560
+                }
+
+                _builder.encodeString( FixDictionaryMS44.benchStrategy,    "TWAP" );                          // tag7505
+                boolean nearSideOnly = StringParamsHelper.getBoolVal( stratParams, StratParamKeys.NearSideOnly, false );
+                _builder.encodeBool( FixDictionaryMS44.vwapNearSideOnly, nearSideOnly );                     // tag11747
+
+                break;
+            }
+            case Close: {
+                _builder.encodeString( FixDictionaryMS44.benchStrategy,    "CLOSE" );                          // tag7505
+
+                final Urgency urgency = encodeUrgency( stratParams );
+
+                encodeCloseStratMaxPercents( stratParams );
+
+                if ( urgency != Urgency.UltraHigh ) {
+                    encodeCloseStratRefPriceParams( stratParams );
+                }
+
+                break;
+            }
+            case OpenAuction: {
+                _builder.encodeString( FixDictionaryMS44.sortStrategy,    "NextAuction" );                          // tag15001
+
+                _builder.encodeString( 10868,    "2" );                          // MS AuctionType - Open
+                break;
+            }
+            default:
+                throw new RuntimeEncodingException( "Target stratgegy " + strat + " not supported for MS" );
+            }
+        }
+    }
+
+    private Urgency encodeUrgency( final ViewString stratParams ) {
+        String urgencyStr = StringParamsHelper.getStrVal( stratParams, StratParamKeys.Urgency );
+        if ( urgencyStr == null ) throw new RuntimeEncodingException( "Missing urgency param" );
+        Urgency urgency = Urgency.valueOf( urgencyStr );
+
+        switch( urgency ) {
+        case UltraLow:
+        case Low:
+        case Medium:
+        case High:
+        case UltraHigh:
+            _builder.encodeString( FixDictionaryMS44.urgency, urgencyStr.toUpperCase() );  // tag7504
+            break;
+        default:
+            throw new RuntimeEncodingException( "Missing valid urgency param, cant use " + urgencyStr );
+        }
+
+        return urgency;
+    }
+
+    private void encodeCloseStratMaxPercents( final ViewString stratParams ) {
+        double  maxPercentTrade = StringParamsHelper.getDblVal( stratParams, StratParamKeys.PreTradeMaxPercentByVolume );
+        if ( Utils.hasNonZeroVal( maxPercentTrade ) ) {
+            _builder.encodePrice( FixDictionaryMS44.maxPercentTradeVol, maxPercentTrade );              // tag7560 - pre trade max percent !
+        }
+
+        double  maxAuctionPercent = StringParamsHelper.getDblVal( stratParams, StratParamKeys.MaxPercentageByVolume );
+        if ( Utils.hasNonZeroVal( maxAuctionPercent ) ) {
+            _builder.encodePrice( FixDictionaryMS44.maxAuctionVol, maxAuctionPercent );              // tag11131 - pre trade max percent !
+        }
+    }
+
+    private void encodeCloseStratRefPriceParams( final ViewString stratParams ) {
+        String refPriceTypeStr = StringParamsHelper.getStrVal( stratParams, StratParamKeys.RefPriceType );
+
+        if ( refPriceTypeStr != null && refPriceTypeStr.length() > 0 ) {
+            final RefPriceType refPriceType = RefPriceType.valueOf( refPriceTypeStr );
+
+            switch( refPriceType ) {
+            case LastPrice:
+                _builder.encodeString( FixDictionaryMS44.ladderRefPrice, "lastPx" );  // tag14981
+                break;
+            case OpenPrice:
+                _builder.encodeString( FixDictionaryMS44.ladderRefPrice, "openPx" );  // tag14981
+                break;
+            case ArrivalPrice:
+                _builder.encodeString( FixDictionaryMS44.ladderRefPrice, "arrivalPx" );  // tag14981
+                break;
+            case VWAPDay:
+                _builder.encodeString( FixDictionaryMS44.ladderRefPrice, "VWAPday" );  // tag14981
+                break;
+            case VWAPLastTenMin:
+                _builder.encodeString( FixDictionaryMS44.ladderRefPrice, "VWAP10min" );  // tag14981
+                break;
+            case Auto:
+                _builder.encodeString( FixDictionaryMS44.ladderRefPrice, "auto" );  // tag14981
+                break;
+            default:
+                throw new RuntimeEncodingException( "Unsupported ladder ref price type " + refPriceTypeStr );
+            }
+
+            double  offset = StringParamsHelper.getDblVal( stratParams, StratParamKeys.RefPriceOffset );
+            if ( Utils.hasNonZeroVal( offset ) ) {
+                _builder.encodePrice( FixDictionaryMS44.ladderPriceOffset, offset );              // tag14982
+
+                String priceOffType = StringParamsHelper.getStrVal( stratParams, StratParamKeys.RefPriceOffsetType );
+
+                if ( priceOffType != null ) {
+                    final OffsetType refPriceOffType = OffsetType.valueOf( priceOffType );
+
+                    if ( refPriceOffType != null ) {
+
+                        switch( refPriceOffType ) {
+                        case BPS:
+                            _builder.encodeString( FixDictionaryMS44.ladderOffsetType, "bps" );  // tag14983
+                            break;
+                        default:
+                            throw new RuntimeEncodingException( "MS unsupported ladder ref price offsett type " + refPriceOffType );
+                        }
+                    } else {
+                        throw new RuntimeEncodingException( "MS unsupported ladder ref price offsett type " + refPriceOffType );
+                    }
+                }
+            }
+        }
+    }
+
+
+
+@INCLUDE StandardEncoder44.include
+    

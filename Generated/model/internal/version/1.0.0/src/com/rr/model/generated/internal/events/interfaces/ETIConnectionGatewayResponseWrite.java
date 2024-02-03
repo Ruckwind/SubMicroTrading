@@ -1,37 +1,36 @@
-/*******************************************************************************
- * Copyright (c) 2015 Low Latency Trading Limited  :  Author Richard Rose
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at	http://www.apache.org/licenses/LICENSE-2.0
- * Unless required by applicable law or agreed to in writing,  software distributed under the License 
- * is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and limitations under the License.
- *******************************************************************************/
 package com.rr.model.generated.internal.events.interfaces;
+
+/*
+Copyright 2015 Low Latency Trading Limited
+Author Richard Rose
+*/
 
 import com.rr.model.generated.internal.type.ETISessionMode;
 import com.rr.model.generated.internal.type.ETIEnv;
+import com.rr.core.utils.Utils;
+import com.rr.core.lang.*;
+import com.rr.core.model.*;
+import com.rr.core.annotations.*;
 
-public interface ETIConnectionGatewayResponseWrite extends BaseETIResponse, ETIConnectionGatewayResponse {
+@SuppressWarnings( { "unused", "override"  })
+
+public interface ETIConnectionGatewayResponseWrite extends BaseETIResponseWrite, ETIConnectionGatewayResponse {
 
    // Getters and Setters
-    public void setRequestTime( int val );
+    void setRequestTime( long val );
 
-    public void setSendingTime( int val );
+    @Override void setMsgSeqNum( int val );
 
-    public void setMsgSeqNum( int val );
+    void setGatewayID( int val );
 
-    public void setGatewayID( int val );
+    void setGatewaySubID( int val );
 
-    public void setGatewaySubID( int val );
+    void setSecGatewayID( int val );
 
-    public void setSecGatewayID( int val );
+    void setSecGatewaySubID( int val );
 
-    public void setSecGatewaySubID( int val );
+    void setSessionMode( ETISessionMode val );
 
-    public void setSessionMode( ETISessionMode val );
-
-    public void setTradSesMode( ETIEnv val );
-
-    public void setPossDupFlag( boolean val );
+    void setTradSesMode( ETIEnv val );
 
 }

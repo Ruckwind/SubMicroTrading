@@ -1,0 +1,399 @@
+<!--suppress ALL -->
+
+@SECTION LSE_MILLENIUM_CONSTANTS START
+        <!-- Millenium constants -->
+
+            <DefaultSize id="MILL_USER_NAME_LENGTH"         val="25"/>
+            <DefaultSize id="MILL_PASSWORD_LENGTH"          val="25"/>
+            <DefaultSize id="MILL_PASSWORD_EXPIRY_LENGTH"   val="30"/>
+            <DefaultSize id="MILL_REASON_LENGTH"            val="20"/>
+            <DefaultSize id="MILL_REJECT_REASON_LENGTH"     val="30"/>
+            <DefaultSize id="MILL_CLORDID_LENGTH"           val="20"/>
+            <DefaultSize id="MILL_ORDERID_LENGTH"           val="12"/>
+            <DefaultSize id="MILL_ACCOUNT_LENGTH"           val="10"/>
+            <DefaultSize id="MILL_EXECID_LENGTH"            val="12"/>
+            <DefaultSize id="MILL_CPARTY_LENGTH"            val="11"/>
+@SECTION LSE_MILLENIUM_CONSTANTS END
+
+@SECTION LSE_MILLENIUM_TYPES START
+        <!-- MILLENIUM Types -->
+
+            <Type id="MilleniumMissedMsgReqAckType">
+                <Description>Code to identify reply to missed message request</Description>
+                <Entry name="Successful"                    value="0"/>
+                <Entry name="RecoveryRequestLimitReached"   value="1"/>
+                <Entry name="InvalidAppID"                  value="2"/>
+            </Type>
+
+            <Type id="MilleniumMissedMsgReportType">
+                <Description>Code to identify status of resend requests</Description>
+                <Entry name="DownloadComplete"      value="0"/>
+                <Entry name="Incomplete"            value="1"/>
+            </Type>
+@SECTION LSE_MILLENIUM_TYPES END
+
+
+@SECTION LSE_MILLENIUM_EVENTS START
+        <!-- MILLENIUM EVENTS -->
+
+            <Base id="BaseMillenium" src="both">
+                <!-- msgSeqNum and possBupFlag are required to allow Millenium events to be treated as Message -->
+                <Attribute typeId="int"                            name="msgSeqNum"     mandatory="N"  outbound="seperate"/>
+                <Attribute typeId="boolean"                        name="possDupFlag"   mandatory="N"  outbound="seperate"/>
+                <Attribute typeId="UTCTimestamp"                   name="eventTimestamp"    mandatory="Y"  outbound="seperate"/>
+            </Base>
+
+            <Event id="MilleniumLogon" extends="BaseMillenium" src="both">
+                <Attribute typeId="int"                            name="lastMsgSeqNum"  mandatory="Y"        outbound="seperate"/>
+                <Attribute typeId="string[MILL_USER_NAME_LENGTH]"  name="userName"       mandatory="Y"        outbound="seperate"/>
+                <Attribute typeId="string[MILL_PASSWORD_LENGTH]"   name="password"       mandatory="Y"        outbound="seperate"/>
+                <Attribute typeId="string[MILL_PASSWORD_LENGTH]"   name="newPassword"    mandatory="Y"        outbound="seperate"/>
+            </Event>
+
+            <Event id="MilleniumLogonReply" extends="BaseMillenium" src="both">
+                <Attribute typeId="int"                                 name="rejectCode"        mandatory="Y"        outbound="seperate"/>
+                <Attribute typeId="string[MILL_PASSWORD_EXPIRY_LENGTH]" name="pwdExpiryDayCount" mandatory="Y"        outbound="seperate"/>
+            </Event>
+
+            <Event id="MilleniumLogout" extends="BaseMillenium" src="both">
+                <Attribute typeId="string[MILL_REASON_LENGTH]"      name="reason" mandatory="Y"        outbound="seperate"/>
+            </Event>
+
+            <Event id="MilleniumMissedMessageRequest" extends="BaseMillenium" src="both">
+                <Attribute typeId="char"      name="appId"          mandatory="Y"        outbound="seperate"/>
+                <Attribute typeId="int"       name="lastMsgSeqNum"  mandatory="Y"        outbound="seperate"/>
+            </Event>
+
+            <Event id="MilleniumMissedMsgRequestAck" extends="BaseMillenium" src="both">
+                <Attribute typeId="MilleniumMissedMsgReqAckType"    name="missedMsgReqAckType"      mandatory="Y"        outbound="seperate"/>
+            </Event>
+
+            <Event id="MilleniumMissedMsgReport" extends="BaseMillenium" src="both">
+                <Attribute typeId="MilleniumMissedMsgReportType"    name="missedMsgReportType"      mandatory="Y"        outbound="seperate"/>
+            </Event>
+@SECTION LSE_MILLENIUM_EVENTS END
+
+
+@SECTION LSE_MILLENIUM_MODEL START
+
+            <Model id="MilleniumLSE" modelVersionNumber="1.0">
+                <Attribute name="BinaryVersion" value="2"/> <!-- protocol version is 2 -->
+
+                <Dictionary>
+                    <!-- certain tags are special and have specific optimised codec code eg fixVersion.msgType -->
+                    <!--  type should be external facing not internal type mapping -->
+                    <!--  for name try and use the internal event field name so it can be auto matched to the event -->
+
+                    <!-- valid types zstr(fixed len str)|str(with len as max)|ch|price|uByte|sShort|sInt|sLong|
+                                     timestampLocal|timestampUTC|timeLocal|timeUTC -->
+
+
+                    <Field id="msgStart"            type="uByte"            comment="message start, binary protocol version"/>
+                    <Field id="msgLen"              type="sShort"           comment="total message length"/>
+                    <Field id="msgType"             type="uByte"            comment="message type"/>
+                    <Field id="userName"            type="zstr"             len="MILL_USER_NAME_LENGTH"/>
+                    <Field id="password"            type="zstr"             len="MILL_PASSWORD_LENGTH"/>
+                    <Field id="newPassword"         type="zstr"             len="MILL_PASSWORD_LENGTH"/>
+                    <Field id="msgVersion"          type="uByte"            comment="always set to 1"/>
+                    <Field id="rejectCode"          type="sInt"             />
+                    <Field id="pwdExpiryDayCount"   type="zstr"             len="MILL_PASSWORD_EXPIRY_LENGTH"/>
+                    <Field id="reason"              type="zstr"             len="MILL_REASON_LENGTH"/>
+                    <Field id="appId"               type="uByte"/>
+                    <Field id="lastMsgSeqNum"       type="sInt"/>
+                    <Field id="missedMsgReqAckType" type="uByte"/>
+                    <Field id="missedMsgReportType" type="uByte"/>
+                    <Field id="rejectReason"        type="zstr"             len="MILL_REJECT_REASON_LENGTH"/>
+                    <Field id="rejectMsgType"       type="uByte"/>
+
+                    <!-- order fields -->
+
+                    <Field id="clOrdId"             type="zstr"             len="MILL_CLORDID_LENGTH"/>
+                    <Field id="account"             type="zstr"             len="MILL_ACCOUNT_LENGTH"/>
+                    <Field id="clearingAccount"     type="uByte"/>
+                    <Field id="instrumentId"        type="sInt"/>
+                    <Field id="mesQualifier"        type="uByte"/>
+                    <Field id="ordType"             type="uByte"/>
+                    <Field id="timeInForce"         type="uByte"/>
+                    <Field id="expireDateTime"      type="sInt"/>
+                    <Field id="side"                type="uByte"/>
+                    <Field id="orderQty"            type="sInt"/>
+                    <Field id="displayQty"          type="sInt"/>
+                    <Field id="price"               type="price"/>
+                    <Field id="orderCapacity"       type="uByte"/>    <!-- clearing acccount type -->
+                    <Field id="autoCancel"          type="uByte"/>
+                    <Field id="ordSubType"          type="uByte"/>
+                    <Field id="anonymity"           type="uByte"/>
+                    <Field id="stopPrice"           type="price"/>
+                    <Field id="origClOrdId"         type="zstr"             len="MILL_CLORDID_LENGTH"/>
+                    <Field id="orderId"             type="zstr"             len="MILL_ORDERID_LENGTH"/>
+
+                    <!-- response messages -->
+
+                    <Field id="msgSeqNum"           type="sInt"/>
+                    <Field id="execId"              type="zstr"             len="MILL_EXECID_LENGTH"/>
+                    <Field id="execType"            type="ch"/>
+                    <Field id="execRefID"           type="zstr"             len="MILL_EXECID_LENGTH"/>
+                    <Field id="ordStatus"           type="uByte"/>
+                    <Field id="lastPx"              type="price"/>
+                    <Field id="lastQty"             type="sInt"/>
+                    <Field id="leavesQty"           type="sInt"/>
+                    <Field id="container"           type="uByte"/>
+                    <Field id="counterparty"        type="zstr"             len="MILL_CPARTY_LENGTH"/>
+                    <Field id="liquidityInd"        type="uByte"/>
+                    <Field id="tradeMatchId"        type="sLong"/>
+                    <Field id="sendingTime"         type="timestampUTC"/>
+
+                </Dictionary>
+
+                <!-- NOTE mandatory field indicates the field MUST be present in the internal event ! -->
+
+                <StandardHeader>
+                    <!-- these special header fields are deemed not mandatory in the sense that they dont need to be populated by events -->
+                    <Field id="msgStart"            mand="N"/>
+                    <Field id="msgLen"              mand="N"/>
+                    <Field id="msgType"             mand="N"/>
+                </StandardHeader>
+
+                <StandardTrailer>
+                </StandardTrailer>
+
+                <!-- SESSION and ADMIN MESSAGES -->
+                <!-- any id starting with filler will form a fixed width field of specified len, multiple fillers per msg allowed but must have unique ids -->
+                <Message id="Logon"                 msgType="A">
+                    <Field id="userName"            mand="Y"/>
+                    <Field id="password"            mand="Y"/>
+                    <Field id="newPassword"         mand="Y"/>
+                    <Field id="msgVersion"          mand="N"/>
+                </Message>
+
+                <Message id="LogonReply"            msgType="B">
+                    <Field id="rejectCode"          mand="Y"/>
+                    <Field id="pwdExpiryDayCount"   mand="Y"/>
+                </Message>
+
+                <Message id="Logout"                msgType="5">
+                    <Field id="reason"              mand="Y"/>
+                </Message>
+
+                <Message id="Heartbeat"             msgType="0">
+                </Message>
+
+                <Message id="MissedMessageRequest"  msgType="M">
+                    <Field id="appId"               mand="Y"/>
+                    <Field id="lastMsgSeqNum"       mand="Y"/>
+                </Message>
+
+                <Message id="MissedMsgRequestAck"   msgType="N">
+                    <Field id="missedMsgReqAckType" mand="Y"/>
+                </Message>
+
+                <Message id="MissedMsgReport"       msgType="P">
+                    <Field id="missedMsgReportType" mand="Y"/>
+                </Message>
+
+                <Message id="Reject"                msgType="3">
+                    <Field id="rejectCode"          mand="N"/>
+                    <Field id="rejectReason"        mand="Y"/>
+                    <Field id="rejectMsgType"       mand="Y"/>
+                    <Field id="clOrdId"             mand="N"/>
+                </Message>
+
+                <Message id="NewOrder"            msgType="D">
+                    <Field id="clOrdId"           mand="Y"/>
+                    <Field id="filler1"           len="11"/>    <!-- traderID -->
+                    <Field id="account"           mand="N"/>
+                    <Field id="clearingAccount"   mand="N"/>
+                    <Field id="instrumentId"      mand="N"/>    <!-- derived from instrument in codec mapping -->
+                    <Field id="mesQualifier"      mand="N"/>
+                    <Field id="filler2"           len="1"/>
+                    <Field id="ordType"           mand="Y"/>
+                    <Field id="timeInForce"       mand="N"/>
+                    <Field id="expireDateTime"    mand="N"/>
+                    <Field id="side"              mand="Y"/>
+                    <Field id="orderQty"          mand="Y"/>
+                    <Field id="displayQty"        mand="N"/>
+                    <Field id="price"             mand="N"/>
+                    <Field id="orderCapacity"     mand="N"/>    <!-- clearing acccount type -->
+                    <Field id="autoCancel"        mand="N"/>
+                    <Field id="ordSubType"        mand="N"/>
+                    <Field id="anonymity"         mand="N"/>
+                    <Field id="stopPrice"         mand="N"/>
+                    <Field id="filler3"           len="10"/>
+                </Message>
+
+                <Message id="OrderReplaceRequest" msgType="G">
+                    <Field id="clOrdId"           mand="Y"/>
+                    <Field id="origClOrdId"       mand="Y"/>
+                    <Field id="orderId"           mand="Y"/>
+                    <Field id="instrumentId"      mand="N"/>
+                    <Field id="filler1"           len="2"/>
+                    <Field id="expireDateTime"    mand="N"/>
+                    <Field id="orderQty"          mand="Y"/>
+                    <Field id="displayQty"        mand="N"/>
+                    <Field id="price"             mand="N"/>
+                    <Field id="account"           mand="N"/>
+                    <Field id="timeInForce"       mand="N"/>
+                    <Field id="side"              mand="Y"/>
+                    <Field id="stopPrice"         mand="N"/>
+                    <Field id="filler2"           len="10"/>
+                </Message>
+
+                <Message id="OrderCancelRequest"  msgType="F">
+                    <Field id="clOrdId"           mand="Y"/>
+                    <Field id="origClOrdId"       mand="Y"/>
+                    <Field id="orderId"           mand="Y"/>
+                    <Field id="instrumentId"      mand="N"/>
+                    <Field id="filler1"           len="2"/>
+                    <Field id="side"              mand="Y"/>
+                    <Field id="filler2"           len="10"/>
+                </Message>
+
+                <Message id="ExecutionReport"     msgType="8">
+                    <Field id="appId"             mand="N"/>
+                    <Field id="msgSeqNum"         mand="Y"/>
+                    <Field id="execId"            mand="Y"/>
+                    <Field id="clOrdId"           mand="Y"/>
+                    <Field id="orderId"           mand="Y"/>
+                    <Field id="execType"          mand="Y"/>
+                    <Field id="execRefID"         mand="N"/>
+                    <Field id="ordStatus"         mand="N"/>
+                    <Field id="rejectCode"        mand="N"/>
+                    <Field id="lastPx"            mand="N"/>
+                    <Field id="lastQty"           mand="N"/>
+                    <Field id="leavesQty"         mand="N"/>
+                    <Field id="container"         mand="N"/>
+                    <Field id="displayQty"        mand="N"/>
+                    <Field id="instrumentId"      mand="N"/>
+                    <Field id="filler1"           len="2"/>
+                    <Field id="side"              mand="N"/>
+                    <Field id="filler2"           len="8"/>
+                    <Field id="counterparty"      mand="N"/>
+                    <Field id="liquidityInd"      mand="N"/>
+                    <Field id="tradeMatchId"      mand="N"/>
+                    <Field id="sendingTime"       mand="Y"/>
+                    <Field id="filler3"           len="10"/>
+                </Message>
+
+                <Message id="CancelReject"        msgType="9">
+                    <Field id="appId"             mand="N"/>
+                    <Field id="msgSeqNum"         mand="Y"/>
+                    <Field id="clOrdId"           mand="Y"/>
+                    <Field id="orderId"           mand="Y"/>
+                    <Field id="rejectCode"        mand="N"/>
+                    <Field id="sendingTime"       mand="N"/>
+                    <Field id="filler"            len="8"/>
+                </Message>
+
+                <Message id="BusinessReject"      msgType="j">
+                    <Field id="appId"             mand="N"/>
+                    <Field id="msgSeqNum"         mand="Y"/>
+                    <Field id="rejectCode"        mand="N"/>
+                    <Field id="clOrdId"           mand="N"/>
+                    <Field id="orderId"           mand="N"/>
+                    <Field id="sendingTime"       mand="N"/>
+                    <Field id="filler"            len="10"/>
+                </Message>
+
+            </Model>
+@SECTION LSE_MILLENIUM_MODEL END
+
+
+@SECTION LSE_MILLENIUM_BINARY_CODEC START
+            <BinaryCodec id="MilleniumLSE"
+                         model="MilleniumLSE"
+                         decodeInclude="./millenium/LSEDecoder.include"
+                         encodeInclude="./millenium/LSEEncoder.include"
+                         decodeGenerator="com.rr.model.generator.emea.millenium.MilleniumDecoderGenerator"
+                         encodeGenerator="com.rr.model.generator.emea.millenium.MilleniumEncoderGenerator">
+
+                <!-- precendence in TypeTransform is important, decoding from an external val to internal val with mult matches will
+                     match LAST entry -->
+
+                <TypeTransform typeId="OrderCapacity" transform="map" nonMatchedEncode="2" nonMatchedDecode="P">
+                    <Map internal="R" external="1" comment="Riskless Principle"/>
+                    <Map internal="P" external="2" comment="Principal/House"/>
+                    <Map internal="W" external="3" comment="AgentForOtherMember/RelatedParty"/>
+                </TypeTransform>
+
+                <TypeTransform typeId="LiquidityInd" transform="map" nonMatchedEncode="reject" nonMatchedDecode="reject">
+                    <Map internal="1" external="A" comment="AddedLiquidity"/>
+                    <Map internal="2" external="R" comment="RemovedLiquidity"/>
+                    <Map internal="4" external="C" comment="Opening Trade or Trade Created by MO"/>
+                </TypeTransform>
+
+                <MessageMap id="CommonMilleniumLSE" messageId="" ignore="true">
+                    <Map field="sendingTime"  eventAttr="eventTimestamp"/>
+                </MessageMap>
+
+                <MessageMap id="Logon"                  eventId="MilleniumLogon"                messageId="Logon" extends="CommonMilleniumLSE">
+                    <Map field="msgVersion"><Hook type="encode" code="_builder.encodeByte( (byte)'1' )"/></Map>
+                </MessageMap>
+
+                <MessageMap id="LogonReply"             eventId="MilleniumLogonReply"           messageId="LogonReply"  extends="CommonMilleniumLSE"/>
+                <MessageMap id="Logout"                 eventId="MilleniumLogout"               messageId="Logout"      extends="CommonMilleniumLSE"/>
+
+                <MessageMap id="MissedMessageRequest"   eventId="MilleniumMissedMessageRequest" messageId="MissedMessageRequest"    extends="CommonMilleniumLSE"/>
+                <MessageMap id="MissedMsgRequestAck"    eventId="MilleniumMissedMsgRequestAck"  messageId="MissedMsgRequestAck"     extends="CommonMilleniumLSE"/>
+                <MessageMap id="MissedMsgReport"        eventId="MilleniumMissedMsgReport"      messageId="MissedMsgReport"         extends="CommonMilleniumLSE"/>
+
+                <MessageMap id="Heartbeat"              eventId="Heartbeat"                 messageId="Heartbeat"       extends="CommonMilleniumLSE"/>
+
+                <MessageMap id="NewOrder"   eventId="NewOrderSingle" messageId="NewOrder" extends="CommonMilleniumLSE">
+                    <Map field="clearingAccount"><Hook type="encode" code="_builder.encodeByte( (msg.getOrderCapacity() == OrderCapacity.AgentForOtherMember) ? (byte)1 : (byte)3 )"/></Map>
+                    <Map field="mesQualifier"><Hook type="encode" code="_builder.encodeByte( (byte)0 )"/></Map>
+                    <Map field="instrumentId"><Hook type="encode" code="encodeSymbol( msg.getInstrument() )"/></Map>
+                    <Map field="displayQty"><Hook type="encode" code="_builder.encodeInt( -1 )"/></Map>
+                    <Map field="autoCancel"><Hook type="encode" code="_builder.encodeByte( (byte)1 )"/></Map>
+                    <Map field="ordSubType"><Hook type="encode" code="_builder.encodeByte( (byte)0 )"/></Map>
+                    <Map field="anonymity"><Hook type="encode" code="_builder.encodeByte( (byte)0 )"/></Map>
+                    <Map field="stopPrice"><Hook type="encode" code="_builder.encodeFiller( 8 )"/></Map>
+                    <Hook type="postDecode" code="enrich( msg )"/>
+                </MessageMap>
+
+                <MessageMap id="OrderCancelRequest"   eventId="CancelRequest"      messageId="OrderCancelRequest"   extends="CommonMilleniumLSE"/>
+                <MessageMap id="CancelReject"         eventId="CancelReject"       messageId="CancelReject"         extends="CommonMilleniumLSE">
+                    <Map field="appId"><Hook type="encode" code="_builder.encodeByte( (byte)0 )"/></Map>
+                </MessageMap>
+
+                <MessageMap id="Reject"               eventId="SessionReject"      messageId="Reject"               extends="CommonMilleniumLSE">
+                    <Map eventAttr="refMsgType" field="rejectMsgType"/>
+                    <Map eventAttr="text"       field="rejectReason"/> <!-- use function to append clOrdId and rejectCode -->
+                </MessageMap>
+
+                <MessageMap id="BusinessReject"         eventId="VagueOrderReject"       messageId="BusinessReject" extends="CommonMilleniumLSE">
+                    <Map eventAttr="text"       field="rejectCode"/>
+                    <Map field="appId"><Hook type="encode" code="_builder.encodeByte( (byte)0 )"/></Map>
+                </MessageMap>
+
+                <MessageMap id="OrderReplaceRequest"   eventId="CancelReplaceRequest" messageId="OrderReplaceRequest"   extends="CommonMilleniumLSE">
+                    <Map field="clearingAccount"><Hook type="encode" code="_builder.encodeByte( (msg.getOrderCapacity() == OrderCapacity.AgentForOtherMember) ? (byte)1 : (byte)3 )"/></Map>
+                    <Map field="mesQualifier"><Hook type="encode" code="_builder.encodeByte( (byte)0 )"/></Map>
+                    <Map field="instrumentId"><Hook type="encode" code="encodeSymbol( msg.getInstrument() )"/></Map>
+                    <Map field="displayQty"><Hook type="encode" code="_builder.encodeInt( -1 )"/></Map>
+                    <Map field="autoCancel"><Hook type="encode" code="_builder.encodeByte( (byte)1 )"/></Map>
+                    <Map field="ordSubType"><Hook type="encode" code="_builder.encodeByte( (byte)0 )"/></Map>
+                    <Map field="anonymity"><Hook type="encode" code="_builder.encodeByte( (byte)0 )"/></Map>
+                    <Map field="stopPrice"><Hook type="encode" code="_builder.encodeFiller( 8 )"/></Map>
+                </MessageMap>
+
+                <MessageMap id="BaseExec" messageId="" ignore="true"    extends="CommonMilleniumLSE">
+                    <!-- exchange sim always encodes appId of 0 -->
+                    <Map field="appId"><Hook type="encode" code="_builder.encodeByte( (byte)0 )"/></Map>
+                </MessageMap>
+
+                <MessageMap id="OrderAck"   eventId="NewOrderAck"    messageId="ExecutionReport" key1="execType" val1="0" extends="BaseExec">
+                    <Hook type="preDecode" code="if ( _nanoStats ) msg.setAckReceived( _received )"/>
+                </MessageMap>
+
+                <MessageMap id="OrderCancelled"   eventId="Cancelled"      messageId="ExecutionReport" key1="execType" val1="4" extends="BaseExec"/>
+                <MessageMap id="OrderReplaced"    eventId="Replaced"       messageId="ExecutionReport" key1="execType" val1="5" extends="BaseExec"/>
+                <MessageMap id="OrderRejected"    eventId="Rejected"       messageId="ExecutionReport" key1="execType" val1="8" extends="BaseExec"/>
+                <MessageMap id="OrderExpired"     eventId="Expired"        messageId="ExecutionReport" key1="execType" val1="C" extends="BaseExec"/>
+                <MessageMap id="OrderRestated"    eventId="Restated"       messageId="ExecutionReport" key1="execType" val1="D" extends="BaseExec"/>
+                <MessageMap id="Trade"            eventId="TradeNew"       messageId="ExecutionReport" key1="execType" val1="F" extends="BaseExec"/>
+                <MessageMap id="TradeCorrect"     eventId="TradeCorrect"   messageId="ExecutionReport" key1="execType" val1="G" extends="BaseExec"/>
+                <MessageMap id="TradeCancel"      eventId="TradeCancel"    messageId="ExecutionReport" key1="execType" val1="H" extends="BaseExec"/>
+                <MessageMap id="Suspended"        eventId="Suspended"      messageId="ExecutionReport" key1="execType" val1="9" extends="BaseExec"/>
+
+            </BinaryCodec>
+@SECTION LSE_MILLENIUM_BINARY_CODEC END

@@ -1,42 +1,41 @@
-/*******************************************************************************
- * Copyright (c) 2015 Low Latency Trading Limited  :  Author Richard Rose
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at	http://www.apache.org/licenses/LICENSE-2.0
- * Unless required by applicable law or agreed to in writing,  software distributed under the License 
- * is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and limitations under the License.
- *******************************************************************************/
 package com.rr.model.generated.internal.events.interfaces;
 
-import com.rr.model.generated.internal.type.ETIOrderProcessingType;
-import com.rr.core.lang.ViewString;
-import com.rr.core.lang.ReusableString;
-import com.rr.core.model.Message;
+/*
+Copyright 2015 Low Latency Trading Limited
+Author Richard Rose
+*/
 
-public interface ETISessionLogonRequest extends BaseETIRequest, Message {
+import com.rr.model.generated.internal.type.ETIOrderProcessingType;
+import com.rr.core.utils.Utils;
+import com.rr.core.lang.*;
+import com.rr.core.model.*;
+import com.rr.core.annotations.*;
+
+@SuppressWarnings( { "unused", "override"  })
+
+public interface ETISessionLogonRequest extends BaseETIRequestWrite, Event {
 
    // Getters and Setters
-    public int getHeartBtIntMS();
+    int getHeartBtIntMS();
 
-    public int getPartyIDSessionID();
+    int getPartyIDSessionID();
 
-    public ViewString getDefaultCstmApplVerID();
+    ViewString getDefaultCstmApplVerID();
 
-    public ViewString getPassword();
+    ViewString getPassword();
 
-    public ETIOrderProcessingType getApplUsageOrders();
+    ETIOrderProcessingType getApplUsageOrders();
 
-    public ETIOrderProcessingType getApplUsageQuotes();
+    ETIOrderProcessingType getApplUsageQuotes();
 
-    public boolean getOrderRoutingIndicator();
+    boolean getOrderRoutingIndicator();
 
-    public ViewString getApplicationSystemName();
+    ViewString getApplicationSystemName();
 
-    public ViewString getApplicationSystemVer();
+    ViewString getApplicationSystemVer();
 
-    public ViewString getApplicationSystemVendor();
+    ViewString getApplicationSystemVendor();
 
-    @Override
-    public void dump( ReusableString out );
+    @Override void dump( ReusableString out );
 
 }

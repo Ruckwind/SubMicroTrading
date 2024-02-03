@@ -1,47 +1,47 @@
-/*******************************************************************************
- * Copyright (c) 2015 Low Latency Trading Limited  :  Author Richard Rose
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at	http://www.apache.org/licenses/LICENSE-2.0
- * Unless required by applicable law or agreed to in writing,  software distributed under the License 
- * is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and limitations under the License.
- *******************************************************************************/
 package com.rr.model.generated.internal.type;
+
+/*
+Copyright 2015 Low Latency Trading Limited
+Author Richard Rose
+*/
 
 
 /**
  Identifies current status of order
-                  In an execution report the OrdStatus is used to convey the current state of the order. If an order simultaneously exists in more than one order state, the value
-                  with highest precedence is the value that is reported in the OrdStatus field. The order statuses are as follows (in highest to lowest precedence):
-               
-                     11 - Pending Cancel
-                     10 - Pending Replace
-                      9 - Done for Day    (Order not, or partially, filled; no further executions forthcoming for the trading day)
-                      8 - Calculated      (Order has been completed for the day (either filled or done for day). 
-                      7 - Filled          (Order completely filled, no remaining quantity)
-                      6 - Stopped         (Order has been stopped at the exchange. Used when guranteeing or protecting a price and quantity)
-                      5 - Suspended       (Order has been placed in suspended state at the request of the client.)
-                      4 - Canceled        (Canceled order with or without executions)
-                      4 - Expired         (Order has been canceled in broker's system due to time in force instructions.)
-                      3 - Partially Filled (Outstanding order with executions and remaining quantity)
-                      2 - New              (Outstanding order with no executions)
-                      2 - Rejected         (Order has been rejected by sell-side (broker, exchange, ECN). 
-                                            NOTE: An order can be rejected subsequent to order acknowledgment,
-                                            i.e. an order can pass from New to Rejected status.
-                      2 - Pending New       (Order has been received by sell-side's (broker, exchange, ECN) system 
-                                            but not yet accepted for execution. An execution message
-                                            with this status will only be sent in response to a Status Request message.)
-                      1 - Accepted for bidding  (Order has been received and is being evaluated for pricing. 
-                                                It is anticipated that this status will only be used with the
-                                                "Disclosed" BidType List Order Trading model.)
+            
+            In an execution report the OrdStatus is used to convey the current state of the order. If an order simultaneously exists in more than one order
+            state, the value
+            with highest precedence is the value that is reported in the OrdStatus field. The order statuses are as follows (in highest to lowest precedence):
+
+            11 - Pending Cancel
+            10 - Pending Replace
+            9 - Done for Day (Order not, or partially, filled; no further executions forthcoming for the trading day)
+            8 - Calculated (Order has been completed for the day (either filled or done for day).
+            7 - Filled (Order completely filled, no remaining quantity)
+            6 - Stopped (Order has been stopped at the exchange. Used when guranteeing or protecting a price and quantity)
+            5 - Suspended (Order has been placed in suspended state at the request of the client.)
+            4 - Canceled (Canceled order with or without executions)
+            4 - Expired (Order has been canceled in broker's system due to time in force instructions.)
+            3 - Partially Filled (Outstanding order with executions and remaining quantity)
+            2 - New (Outstanding order with no executions)
+            2 - Rejected (Order has been rejected by sell-side (broker, exchange, ECN).
+            NOTE: An order can be rejected subsequent to order acknowledgment,
+            i.e. an order can pass from New to Rejected status.
+            2 - Pending New (Order has been received by sell-side's (broker, exchange, ECN) system
+            but not yet accepted for execution. An execution message
+            with this status will only be sent in response to a Status Request message.)
+            1 - Accepted for bidding (Order has been received and is being evaluated for pricing.
+            It is anticipated that this status will only be used with the
+            "Disclosed" BidType List Order Trading model.)
 */
 
+import com.rr.core.utils.*;
 import com.rr.model.internal.type.*;
 import com.rr.core.model.*;
 import com.rr.core.codec.RuntimeDecodingException;
 import com.rr.model.generated.internal.type.TypeIds;
 
-@SuppressWarnings( "unused" )
+@SuppressWarnings( { "unused", "override"  })
 
 public enum OrdStatus implements SingleByteLookup {
 

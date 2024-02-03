@@ -1,0 +1,39 @@
+
+@INCLUDE FixDecoder.include
+
+    private void preExecMessageDetermination() {
+        switch( _execTransType.getID() ) {
+        case TypeIds.EXECTRANSTYPE_NEW:
+            if ( _execType == ExecType.PartialFill || _execType == ExecType.Fill ){
+                _execType = ExecType.Trade;
+                return;
+            }
+            break;
+        case TypeIds.EXECTRANSTYPE_CANCEL:
+            _execType = ExecType.TradeCancel;
+            break;
+        case TypeIds.EXECTRANSTYPE_CORRECT:
+            _execType = ExecType.TradeCorrect;
+            break;
+        case TypeIds.EXECTRANSTYPE_STATUS:
+            _execType = ExecType.OrderStatus;
+            break;
+        case TypeIds.EXECTRANSTYPE_UNKNOWN:
+            throwDecodeException( "ExecRpt missing valid ExecTransType " );
+            break;
+        }
+    }
+
+    private OrderCapacity decodeRule47A( byte b ) {
+        if ( b == 'P' ) {
+            return OrderCapacity.Principal;
+        } else if ( b == 'A' ){
+            return OrderCapacity.AgentForOtherMember;
+        }
+        return OrderCapacity.Principal;
+    }
+
+/*
+ * HANDCODED DECODER METHDOS
+ */
+

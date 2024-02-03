@@ -1,0 +1,214 @@
+
+INSTALL hwloc 1.0.2
+===================
+
+http://www.open-mpi.org/projects/hwloc/
+put the zip into a temp build dir
+
+sudo apt-get install build-essential linux-headers-`uname -r`
+sudo apt-get install gawk
+
+shell$ ./configure --prefix=/home/smt/tools/hwloc
+shell$ make
+shell$ make install
+
+typeset -x HWLOC_HOME=/cygdrive/c/Working/dev/hwloc
+on windows use PATH, onlinux set LD_LIBRARY_PATH
+typeset -x PATH=$JAVA_HOME/bin:$PATH:$HWLOC_HOME/lib:$HWLOC_HOME/bin
+
+find the cflags an ldlibs requirements and add to Makefile
+CFLAGS += -I${HWLOC_HOME}/include
+LDLIBS += -L${HWLOC_HOME}/lib -lhwloc
+
+
+
+============================================================
+
+4Ghz, 1.6Ghz FSB (Profile 2)
+
+Base Clock (blck) / cpu frequency       200
+PCIE freq           100
+cpu multiplier      20
+QPI                 4.8Ghz  (actually be 7.2, as 133 mult increased to 200)
+MemFFreq            1066
+CPU Uncore          15 * multiplier
+
+Voltage, memory all on AUTO
+
+Disable HT, turbo, (speedstep - actually can leave this on)
+
+MemoryRate = 1600 (1066/133 * BCLK)
+
+=============================
+
+4Ghz, 1.6Ghz FSB (Profile 3)
+
+cpu frequency       200
+PCIE freq           100
+cpu multiplier      20
+QPI                 4.8Ghz  (actually be 7.2, as 133 mult increased to 200)
+MemFFreq            1066
+CPU Uncore          18 * multiplier
+
+Voltage, memory all on AUTO
+
+==> changing the CPU Uncore from 15 to 18 reduced latency test from 66 to 61 
+
+==> DONT NEED DISABLE SPEEDSTEP
+============================
+
+
+CL6-9-6-24
+Frequency 1000 Mhz
+6   - tCL - CAS latency
+10   - tRCD
+6   - tRP
+25  - tRAS
+40  - tRC
+1   - command rate
+1.65 V
+
+(reported by HWinFo)
+Voltage                                                  1.65V
+CAS                                                      6
+Min SDRam cycle time                            (tCK)    1
+Min CAS Latency time                            (tAA)    6
+Min RAS# to CAS# Delay Time                     (tRCD)   9
+Min Row Precharge Delay Time                    (tRP)    6
+Min Active to Precharge Delay Time              (tRAS)   24
+Min CAS Write Latency Time                      (tCWL)   9
+Min Write Recovery Time                         (tWR)    10
+Min Active to Active/Refresh Delay Time         (tRC)    40
+Max (Average Periodic Refresh interval)         (tREFI)  9
+Min Refresh Recovery Delay Time                 (tRFC)   110
+Min Internal Read to Precharge Cmd Delay Time   (tRTP)   7
+Min Row Active to Row Active Delay Time         (tRRD)   6
+Min Four Activate Window Delay time             (tFAW)   30
+Min Internal Write to Read Command Delay Time   (tWTR)   6
+Supported Module Timing at 1000  Mhz                     6-9-6-24
+Read to Write CMD Turn Around Time Opt                   No adjust
+Write to Read CMD Turn Around Time Opt                   No adjust
+Back to Back CMD Turn Around Time Opt                    No adjust
+System Command Rate Mode                                 2N
+
+                   
+
+
+
+
+(Profile 4)
+
+As mem runnning at 1600 as oppposed to rated 2000, can reduce CAS from 6 to 5
+Changed tCL to 6 from 8, tRP to 6 from 8
+
+On the memory chips, it has profile :-
+XMP-2000 : 1000Ghz, RAstoCAS=10, tRAS=25, tRC=40, commandRate=1T, voltage=1.65, CASLatency=6, RASPrecharge=6
+
+Changing command rate to 1T reduced late ncy from 61 to 60
+
+===========================================
+
+Stability Issues then use following
+
+base clock 160
+cpu multiplier x25
+QPI 4.8
+uncore multiplier x15
+memory 1333
+
+
+That will set the core, L1 and L2 to 4GHz and the RAM to 1600MHz.
+Meanwhile the uncore will be 2.6GHz (standard 2.7GHz) and the QPI bus will be 6.7GHz (standard 6.4GHz).
+
+If everything is good with those settings then increase the uncore multiplier to x20 (3.2 GHz).
+
+=======================
+
+base clock 160
+cpu multiplier x25
+QPI 4.8
+uncore multiplier x18
+memory 1333
+MCH_STRAP=1867Mhz
+6-9-6-24 cmdRate=1
+
+(errors in memtest with MCH_STRAP=1600)
+(MCH_STRAP=1867 failed to boot)
+
+SiS Latency 78ns, speed factor 78
+
+
+
+=========================================
+
+TRADE SERVER with 2Ghz Memory A50 BIOS
+--------------------------------------
+base clock 180
+cpu multiplier x22
+QPI 4.8
+memory 1333
+MCH_STRAP=1333Mhz
+uncore multiplier x20
+Memory Settings all Auto
+
+==> Memory will run at (1333/origBase) * 180 = 1800 Mhz
+==> Uncore at 3.6Ghz
+==> QPI at (4800 / origBase) * 180 = 36 * 180 = 6400 
+
+    SiS Sandra : 
+        Mem Latency Benchmark   
+            Mem latency  (low best)             64ns
+            Speed Factor (low best)             63
+        Cache Memory
+            Cache/Mem Bandwidth (high best)     258GB/s
+            Speed Factor (low best)             34
+            
+        Memory Bandwidth (higher)               39
+        
+        Processor Arithmetic                    
+            Aggregate (higher)                  234
+            Drystone (higher)                   316
+            Whetstone (higher)                  152
+            
+        Multi Core Efficiency
+            Inter Core Bandwidth (higher)       46 GB/s
+            Inter Core Latency (lower)          37ns        
+            
+
+
+SIM SERVER with 1.3Ghz ECC Memory A50 BIOS
+------------------------------------------
+base clock 166
+cpu multiplier x24
+QPI 4.8
+memory 1066
+MCH_STRAP=1333Mhz
+uncore multiplier x20
+Memory Settings all Auto
+
+==> QPI at (4800/ origBase) * 166 = 36 * 166 = 5967
+(QPI 5.6 wouldnt start every time) 
+==> Memory will run at (1066/origBase) * 166 =  8 * 166 = 1328 Mhz
+
+    SiS Sandra : 
+        Mem Latency Benchmark   
+            Mem latency  (low best)             72ns
+            Speed Factor (low best)             71
+        Cache Memory
+            Cache/Mem Bandwidth (high best)     225GB/s
+            Speed Factor (low best)             44
+            
+        Memory Bandwidth (higher)               35
+        
+        Processor Arithmetic                    
+            Aggregate (higher)                  242
+            Drystone (higher)                   330
+            Whetstone (higher)                  154
+            
+        Multi Core Efficiency
+            Inter Core Bandwidth (higher)       42 GB/s
+            Inter Core Latency (lower)          40ns        
+            
+
+
+

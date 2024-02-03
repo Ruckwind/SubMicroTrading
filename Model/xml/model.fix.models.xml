@@ -1,0 +1,992 @@
+<!--suppress ALL -->
+
+
+@SECTION FIX_MODELS START
+
+            <FixModel id="4.4" modelVersionNumber="1.0">
+                <Attribute name="FixVersion" value="4.4"/>
+                <Attribute name="FixHelper" value="com.rr.fix.codec.helper.FixCodecHelper44"/>
+
+                <Dictionary>
+                    <!-- certain tags are special and have specific optimised codec code eg fixVersion.msgType -->
+                    <!--  type should be fixed facing not internal type mapping -->
+
+                    <!-- type ::= string | price | number | length | quantity | currency | ch | bool | seqNum | UTCTimestamp -->
+
+                    <Tag id="1"     name="Account"                  type="string"/>
+                    <Tag id="6"     name="AvgPx"                    type="price"/>
+                    <Tag id="7"     name="BeginSeqNo"               type="number"/>
+                    <Tag id="8"     name="BeginString"              type="fixVersion"/>
+                    <Tag id="9"     name="BodyLength"               type="length"/>
+                    <Tag id="10"    name="CheckSum"                 type="string"/>
+                    <Tag id="11"    name="ClOrdId"                  type="string"/>
+                    <Tag id="14"    name="CumQty"                   type="quantity"/>
+                    <Tag id="15"    name="Currency"                 type="currency"/>
+                    <Tag id="16"    name="EndSeqNo"                 type="number"/>
+                    <Tag id="17"    name="ExecID"                   type="string"/>
+                    <Tag id="19"    name="ExecRefID"                type="string"/>
+                    <Tag id="18"    name="ExecInst"                 type="ch"/>
+                    <Tag id="21"    name="HandlInst"                type="ch"/>
+                    <Tag id="22"    name="SecurityIDSource"         type="ch"/>
+                    <Tag id="30"    name="LastMkt"                  type="string"/>
+                    <Tag id="31"    name="LastPx"                   type="price"/>
+                    <Tag id="32"    name="LastQty"                  type="quantity"/>
+                    <Tag id="34"    name="MsgSeqNum"                type="seqnum"/>
+                    <Tag id="35"    name="MsgType"                  type="msgType"/>
+                    <Tag id="36"    name="NewSeqNo"                 type="seqnum"/>
+                    <Tag id="37"    name="OrderId"                  type="string"/>
+                    <Tag id="38"    name="OrderQty"                 type="quantity"/>
+                    <Tag id="39"    name="OrdStatus"                type="ch"/>
+                    <Tag id="40"    name="OrdType"                  type="ch"/>
+                    <Tag id="41"    name="OrigClOrdId"              type="string"/>
+                    <Tag id="43"    name="PossDupFlag"              type="bool"/>
+                    <Tag id="44"    name="Price"                    type="price"/>
+                    <Tag id="45"    name="RefSeqNum"                type="seqnum"/>
+                    <Tag id="48"    name="SecurityID"               type="string"/>
+                    <Tag id="49"    name="SenderCompID"             type="string"/>
+                    <Tag id="50"    name="SenderSubID"              type="string"/>
+                    <Tag id="52"    name="SendingTime"              type="UTCTimestamp"/>
+                    <Tag id="54"    name="Side"                     type="ch"/>
+                    <Tag id="55"    name="Symbol"                   type="string"/>
+                    <Tag id="56"    name="TargetCompID"             type="string"/>
+                    <Tag id="57"    name="TargetSubID"              type="string"/>
+                    <Tag id="58"    name="Text"                     type="string"/>
+                    <Tag id="59"    name="TimeInForce"              type="ch"/>
+                    <Tag id="60"    name="TransactTime"             type="UTCTimestamp"/>
+                    <Tag id="77"    name="PositionEffect"           type="ch"/>
+                    <Tag id="89"    name="Signature"                type="data"/>
+                    <Tag id="93"    name="SignatureLength"          type="length"/>
+                    <Tag id="95"    name="RawDataLen"               type="length"/>
+                    <Tag id="96"    name="RawData"                  type="string"/>
+                    <Tag id="97"    name="PossResend"               type="bool"/>
+                    <Tag id="98"    name="EncryptMethod"            type="ch"/>
+                    <Tag id="100"   name="ExDest"                   type="string"/>
+                    <Tag id="102"   name="CxlRejReason"             type="string"/>
+                    <Tag id="103"   name="OrdRejReason"             type="ch"/>
+                    <Tag id="107"   name="SecurityDesc"             type="string"/>
+                    <Tag id="108"   name="heartBtInt"               type="length"/>
+                    <Tag id="109"   name="clientID"                 type="string"/>
+                    <Tag id="111"   name="displayQty"               type="quantity"/>
+                    <Tag id="112"   name="testReqID"                type="string"/>
+                    <Tag id="115"   name="OnBehalfOfCompID"         type="string"/>
+                    <Tag id="116"   name="OnBehalfOfSubID"          type="string"/>
+                    <Tag id="120"   name="settlCurrency"            type="currency"/>
+                    <Tag id="122"   name="OrigSendingTime"          type="UTCTimestamp"/>
+                    <Tag id="123"   name="GapFillFlag"              type="bool"/>
+                    <Tag id="126"   name="expireTime"               type="UTCTimestamp"/>
+                    <Tag id="128"   name="DeliverToCompID"          type="string"/>
+                    <Tag id="129"   name="DeliverToSubID"           type="string"/>
+                    <Tag id="141"   name="ResetSeqNumFlag"          type="bool"/>
+                    <Tag id="142"   name="SenderLocationID"         type="string"/>
+                    <Tag id="143"   name="TargetLocationID"         type="string"/>
+                    <Tag id="144"   name="OnBehalfOfLocationID"     type="string"/>
+                    <Tag id="145"   name="DeliverToLocationID"      type="string"/>
+                    <Tag id="146"   name="numRelatedSym"            type="number"/>
+                    <Tag id="150"   name="ExecType"                 type="ch"/>
+                    <Tag id="151"   name="LeavesQty"                type="quantity"/>
+                    <Tag id="167"   name="SecurityType"             type="string"/>
+                    <Tag id="168"   name="effectiveTime"            type="UTCTimestamp"/>
+                    <Tag id="200"   name="maturityMonthYear"        type="number"/>
+                    <Tag id="207"   name="SecurityExchange"         type="exchange"/>
+                    <Tag id="211"   name="PegOffsetValue"           type="price"/>
+                    <Tag id="262"   name="mdReqId"                  type="string"/>
+                    <Tag id="263"   name="subsReqType"              type="ch"/>
+                    <Tag id="264"   name="marketDepth"              type="number"/>
+                    <Tag id="267"   name="numMDEntryTypes"          type="number"/>
+                    <Tag id="268"   name="noMDEntries"              type="number"/>
+                    <Tag id="269"   name="mdEntryType"              type="ch"/>
+                    <Tag id="270"   name="mdEntryPx"                type="price"/>
+                    <Tag id="271"   name="mdEntrySize"              type="quantity"/>
+                    <Tag id="273"   name="tradeTime"                type="number"/>
+                    <Tag id="274"   name="tickDirection"            type="ch"/>
+                    <Tag id="346"   name="numberOfOrders"           type="number"/>
+                    <Tag id="369"   name="lastMsgSeqNumProcessed"   type="number"/>
+                    <Tag id="371"   name="RefTagID"                 type="number"/>
+                    <Tag id="372"   name="RefMsgType"               type="string"/>
+                    <Tag id="373"   name="SessionRejectReason"      type="string"/>
+                    <Tag id="378"   name="ExecRestatementReason"    type="ch"/>
+                    <Tag id="434"   name="CxlRejResponseTo"         type="ch"/>
+                    <Tag id="442"   name="MultiLegReportingType"    type="ch"/>
+                    <Tag id="447"   name="PartyIDSource"            type="ch"/>
+                    <Tag id="526"   name="parentClOrdId"            type="ch"/>  <!-- SecondaryClOrdId is used as the linkage id between parent and child orders .. required for recovery -->
+                    <Tag id="528"   name="OrderCapacity"            type="ch"/>
+                    <Tag id="529"   name="OrderRestrictions"        type="ch"/>
+                    <Tag id="775"   name="BookingType"              type="ch"/>
+                    <Tag id="789"   name="NextExpectedMsgSeqNum"    type="seqnum"/>
+                    <Tag id="847"   name="TargetStrategy"           type="number"/>
+                    <Tag id="848"   name="StratParams"              type="string"/>
+                    <Tag id="851"   name="LiquidityInd"             type="ch"/>
+
+                    <!--
+                    to save creating a new FIX model add assts with different names to event then only map in codecs where they are wanted
+                    -->
+                    <Tag id="1601"   name="strategyId"              type="string"/>
+                    <Tag id="1602"   name="origStrategyId"          type="string"/>
+
+                    <Tag id="1603"   name="TradingSystemName"       type="string"/>
+                    <Tag id="1604"   name="TradingSystemVersion"    type="string"/>
+                    <Tag id="1605"   name="TradingSystemVendor"     type="string"/>
+
+                    <Tag id="1700"   name="TradingStatus"           type="ch"/>
+
+                    <Tag id="11611" name="AckStats" type="AckStats" src="SMT"/>
+
+                </Dictionary>
+
+                <StandardHeader>
+                    <Tag id="8" mand="Y"/>
+                    <Tag id="9" mand="Y"/>
+                    <Tag id="35" mand="Y"/>
+                    <Tag id="49" mand="Y"/>
+                    <Tag id="56" mand="Y"/>
+                    <Tag id="115"/>
+                    <Tag id="128"/>
+                    <Tag id="142"/>
+                    <Tag id="34" mand="Y"/>
+                    <Tag id="50"/>
+                    <Tag id="57"/>
+                    <Tag id="116"/>
+                    <Tag id="129"/>
+                    <Tag id="43" mand="Y"/>
+                    <Tag id="52" mand="N"/> <!--  on decode we want to ignore for execs & cancels -->
+                </StandardHeader>
+
+                <StandardTrailer>
+                    <Tag id="10" mand="Y"/>
+                </StandardTrailer>
+
+                <FixMessage id="NewOrderSingle" msgType="D">
+                    <Tag id="11" mand="Y"/>
+                    <Tag id="59"/>
+                    <Tag id="22"/>
+                    <Tag id="48"/>
+                    <Tag id="38"/>
+                    <Tag id="44"/>
+                    <Tag id="15" mand="N"/>
+                    <Tag id="40" mand="Y"/>
+                    <Tag id="54" mand="Y"/>
+                    <Tag id="55" mand="Y"/>
+                    <Tag id="200"/>
+                    <Tag id="21"/>
+                    <Tag id="60" mand="Y"/>
+                    <Tag id="100"/>
+                    <Tag id="107"/>
+                    <Tag id="1"/>
+                    <Tag id="528"/>
+                    <Tag id="58"/>
+                    <Tag id="207"/>
+                    <Tag id="775"/>
+                    <Tag id="847"/>
+                    <Tag id="168"/>
+                    <Tag id="126"/>
+                    <Tag id="526"/>
+                    <Tag id="1601"/>
+                    <Tag id="1602"/>
+                </FixMessage>
+
+                <FixMessage id="CancelReplaceRequest" msgType="G">
+                    <Tag id="11" mand="Y"/>
+                    <Tag id="41" mand="Y"/>
+                    <Tag id="37"/>
+                    <Tag id="59"/>
+                    <Tag id="22"/>
+                    <Tag id="48"/>
+                    <Tag id="38"/>
+                    <Tag id="44"/>
+                    <Tag id="15" mand="N"/>
+                    <Tag id="40" mand="Y"/>
+                    <Tag id="54" mand="Y"/>
+                    <Tag id="55" mand="Y"/>
+                    <Tag id="200"/>
+                    <Tag id="21"/>
+                    <Tag id="60" mand="Y"/>
+                    <Tag id="100"/>
+                    <Tag id="107"/>
+                    <Tag id="1"/>
+                    <Tag id="528"/>
+                    <Tag id="58"/>
+                    <Tag id="207"/>
+                    <Tag id="775"/>
+                    <Tag id="847"/>
+                    <Tag id="168"/>
+                    <Tag id="126"/>
+                    <Tag id="526"/>
+                    <Tag id="1601"/>
+                    <Tag id="1602"/>
+                </FixMessage>
+
+                <FixMessage id="CancelRequest" msgType="F">
+                    <Tag id="11" mand="Y"/>
+                    <Tag id="41" mand="Y"/>
+                    <Tag id="37"/>
+                    <Tag id="22"/>
+                    <Tag id="48"/>
+                    <Tag id="15" mand="N"/>
+                    <Tag id="38"/>
+                    <Tag id="55" mand="Y"/>
+                    <Tag id="200"/>
+                    <Tag id="60" mand="Y"/>
+                    <Tag id="1"/>
+                    <Tag id="100"/>
+                    <Tag id="107"/>
+                    <Tag id="207"/>
+                    <Tag id="526"/>
+                    <Tag id="1601"/>
+                    <Tag id="1602"/>
+                </FixMessage>
+
+                <FixMessage id="CancelReject" msgType="9">
+                    <Tag id="37" mand="Y"/>
+                    <Tag id="11" mand="Y"/>
+                    <Tag id="41" mand="Y"/>
+                    <Tag id="39" mand="Y"/>
+                    <Tag id="102" mand="N"/>
+                    <Tag id="434" mand="Y"/>
+                    <Tag id="58"/>
+                </FixMessage>
+
+                <FixMessage id="BaseExecRpt">
+                    <Tag id="11" mand="Y"/> <!-- not mand in fix spec but expected by clients -->
+                    <Tag id="17"/>
+                    <Tag id="37" mand="Y"/>
+                    <Tag id="39" mand="Y"/>
+                    <Tag id="150" mand="Y"/>
+                    <Tag id="38"/>
+                    <Tag id="44"/>
+                    <Tag id="54" mand="Y"/>
+                    <Tag id="55"/>
+                    <Tag id="15"/>
+                    <Tag id="1"/>
+                    <Tag id="40"/>
+                    <Tag id="59"/>
+                    <Tag id="22"/>
+                    <Tag id="48"/>
+                    <Tag id="60"/>
+                    <Tag id="6"/>
+                    <Tag id="14"/>
+                    <Tag id="58"/>
+                    <Tag id="151"/>
+                    <Tag id="526"/>
+                    <Tag id="1601"/>
+                    <Tag id="1602"/>
+                </FixMessage>
+
+                <FixMessage id="NewOrderAck" extends="BaseExecRpt" msgType="8" execType="New">
+                    <Tag id="11611"/>
+                </FixMessage>
+
+                <FixMessage id="BaseTrade" extends="BaseExecRpt">
+                    <Tag id="32"/>
+                    <Tag id="31"/>
+                    <Tag id="30"/>
+                    <Tag id="107"/>
+                    <Tag id="120"/>
+                    <Tag id="442"/>
+                    <Tag id="851"/>
+                </FixMessage>
+
+                <FixMessage id="Trade" extends="BaseTrade" msgType="8" execType="Trade">
+                </FixMessage>
+
+                <FixMessage id="TradeCorrect" extends="BaseTrade" msgType="8" execType="TradeCorrect">
+                    <Tag id="19"/>
+                </FixMessage>
+
+                <FixMessage id="TradeCancel" extends="BaseTrade" msgType="8" execType="TradeCancel">
+                    <Tag id="19"/>
+                </FixMessage>
+
+                <FixMessage id="Rejected"    extends="BaseExecRpt" msgType="8" execType="Rejected">
+                    <Tag id="58"/>
+                    <Tag id="1700"/>
+                </FixMessage>
+
+                <FixMessage id="Cancelled"   extends="BaseExecRpt" msgType="8" execType="Canceled">
+                    <Tag id="41"/>
+                </FixMessage>
+                <FixMessage id="Replaced"    extends="BaseExecRpt" msgType="8" execType="Replaced">
+                    <Tag id="41"/>
+                </FixMessage>
+                <FixMessage id="DoneForDay"  extends="BaseExecRpt" msgType="8" execType="DoneForDay"/>
+                <FixMessage id="Stopped"     extends="BaseExecRpt" msgType="8" execType="Stopped"/>
+                <FixMessage id="Suspended"   extends="BaseExecRpt" msgType="8" execType="Suspended"/>
+                <FixMessage id="Expired"     extends="BaseExecRpt" msgType="8" execType="Expired"/>
+                <FixMessage id="OrderStatus" extends="BaseExecRpt" msgType="8" execType="OrderStatus"/>
+
+                <FixMessage id="Restated"    extends="BaseExecRpt" msgType="8" execType="Restated">
+                    <Tag id="378"/>
+                </FixMessage>
+
+                <FixMessage id="Calculated"     extends="BaseExecRpt" msgType="8" execType="Calculated"/>
+                <FixMessage id="PendingCancel"  extends="BaseExecRpt" msgType="8" execType="PendingCancel">
+                    <Tag id="41"/>
+                </FixMessage>
+                <FixMessage id="PendingNew"     extends="BaseExecRpt" msgType="8" execType="PendingNew"/>
+                <FixMessage id="PendingReplace" extends="BaseExecRpt" msgType="8" execType="PendingReplace">
+                    <Tag id="41"/>
+                </FixMessage>
+
+                <FixMessage id="Heartbeat" msgType="0">
+                    <Tag id="112"/>
+                </FixMessage>
+
+                <FixMessage id="Logon" msgType="A">
+                    <Tag id="98"/>
+                    <Tag id="108"/>
+                    <Tag id="95"/>
+                    <Tag id="96"/>
+                    <Tag id="141"/>
+                    <Tag id="789"/>
+                    <Tag id="1603"/>
+                    <Tag id="1604"/>
+                    <Tag id="1605"/>
+                </FixMessage>
+
+                <FixMessage id="Logout" msgType="5">
+                    <Tag id="58"/>
+                    <Tag id="369"/>
+                    <Tag id="789"/>
+                </FixMessage>
+
+                <FixMessage id="SessionReject" msgType="3">
+                    <Tag id="45"/>
+                    <Tag id="371"/>
+                    <Tag id="372"/>
+                    <Tag id="373"/>
+                    <Tag id="58"/>
+                </FixMessage>
+
+                <FixMessage id="ResendRequest" msgType="2">
+                    <Tag id="7"/>
+                    <Tag id="16"/>
+                </FixMessage>
+
+                <FixMessage id="SequenceReset" msgType="4">
+                    <Tag id="123"/>
+                    <Tag id="36"/>
+                </FixMessage>
+
+                <FixMessage id="TestRequest" msgType="1">
+                    <Tag id="112"/>
+                </FixMessage>
+
+            </FixModel>
+
+            <FixModel id="5.0" modelVersionNumber="1.0" extends="4.4">
+            <Attribute name="FixVersion" value="5.0"/>
+            </FixModel>
+
+                    <!--  Fix 4.2
+
+                            note tag 20 is in exec rpt ExecTransType
+                            note tag 47 is rule80A / OrderCapacity in NOS (528 in 4.4) & Amend
+                    -->
+
+            <FixModel id="4.2" modelVersionNumber="1.0" extends="4.4">
+            <Attribute name="FixVersion" value="4.2"/>
+            <Attribute name="FixHelper" value="com.rr.fix.codec.helper.FixCodecHelper42"/>
+
+            <Dictionary>
+                <Tag id="20"    name="ExecTransType"         type="ch"/>
+                <Tag id="47"    name="Rule80A"               type="ch"/>
+                <Tag id="58"    name="text"                  type="ch"/>  
+
+                <Tag id="526"                                type="ch"/>  <!-- not supported in 4.2, blank out from inherited 4.4 dict -->
+            </Dictionary>
+
+            <FixMessage id="NewOrderSingle" msgType="D">
+                <Tag id="11" mand="Y"/>
+                <Tag id="59"/>
+                <Tag id="22"/>
+                <Tag id="48"/>
+                <Tag id="38"/>
+                <Tag id="44"/>
+                <Tag id="15" mand="N"/>
+                <Tag id="40" mand="Y"/>
+                <Tag id="54" mand="Y"/>
+                <Tag id="55" mand="Y"/>
+                <Tag id="21"/>
+                <Tag id="60" mand="Y"/>
+                <Tag id="100"/>
+                <Tag id="107"/>
+                <Tag id="1"/>
+                <Tag id="47"/>
+                <Tag id="58"/>
+                <Tag id="207"/>
+                <Tag id="775"/>
+                <Tag id="847"/>
+                <Tag id="168"/>
+                <Tag id="126"/>
+            </FixMessage>
+
+            <FixMessage id="CancelReplaceRequest" msgType="G">
+                <Tag id="11" mand="Y"/>
+                <Tag id="41" mand="Y"/>
+                <Tag id="37"/>
+                <Tag id="59"/>
+                <Tag id="22"/>
+                <Tag id="48"/>
+                <Tag id="38"/>
+                <Tag id="44"/>
+                <Tag id="15" mand="Y"/>
+                <Tag id="40" mand="Y"/>
+                <Tag id="54" mand="Y"/>
+                <Tag id="55" mand="Y"/>
+                <Tag id="21"/>
+                <Tag id="60" mand="Y"/>
+                <Tag id="100"/>
+                <Tag id="107"/>
+                <Tag id="1"/>
+                <Tag id="47"/>
+                <Tag id="58"/>
+                <Tag id="207"/>
+                <Tag id="775"/>
+                <Tag id="847"/>
+                <Tag id="168"/>
+                <Tag id="126"/>
+            </FixMessage>
+
+            <FixMessage id="CancelRequest" msgType="F">
+                <Tag id="11" mand="Y"/>
+                <Tag id="41" mand="Y"/>
+                <Tag id="37"/>
+                <Tag id="22"/>
+                <Tag id="48"/>
+                <Tag id="15" mand="N"/>
+                <Tag id="38"/>
+                <Tag id="55" mand="Y"/>
+                <Tag id="60" mand="Y"/>
+                <Tag id="100"/>
+                <Tag id="107"/>
+                <Tag id="1"/>
+                <Tag id="207"/>
+                <Tag id="58"/>
+            </FixMessage>
+
+            <FixMessage id="BaseExecRpt">
+                <Tag id="11" mand="Y"/> <!-- not mand in fix spec but expected by clients -->
+                <Tag id="17"/>
+                <Tag id="20" mand="Y"/>
+                <Tag id="37" mand="Y"/>
+                <Tag id="39" mand="Y"/>
+                <Tag id="150" mand="Y"/>
+                <Tag id="38"/>
+                <Tag id="44"/>
+                <Tag id="32"/>
+                <Tag id="31"/>
+                <Tag id="54" mand="Y"/>
+                <Tag id="55"/>
+                <Tag id="15"/>
+                <Tag id="1"/>
+                <Tag id="40"/>
+                <Tag id="59"/>
+                <Tag id="22"/>
+                <Tag id="48"/>
+                <Tag id="60"/>
+                <Tag id="6"/>
+                <Tag id="14"/>
+                <Tag id="151"/>
+                <Tag id="58"/>
+            </FixMessage>
+
+            <FixMessage id="PartialFill" extends="BaseTrade" msgType="8" execType="PartialFill"/>
+            <FixMessage id="Fill"        extends="BaseTrade" msgType="8" execType="Fill"/>
+            </FixModel>
+
+                    <!--  MD Fix 4.4
+                    -->
+
+            <FixModel id="MD4.4" modelVersionNumber="1.0">
+            <Attribute name="FixVersion" value="MD4.4"/>
+            <Attribute name="FixHelper" value="com.rr.fix.codec.helper.FixCodecHelperMD44"/>
+
+            <Dictionary>
+                <!-- certain tags are special and have specific optimised codec code eg fixVersion.msgType -->
+                <!--  type should be fixed facing not internal type mapping -->
+
+                <Tag id="7"     name="BeginSeqNo"               type="number"/>
+                <Tag id="8"     name="BeginString"              type="fixVersion"/>
+                <Tag id="9"     name="BodyLength"               type="length"/>
+                <Tag id="10"    name="CheckSum"                 type="string"/>
+                <Tag id="15"    name="Currency"                 type="currency"/>
+                <Tag id="16"    name="EndSeqNo"                 type="number"/>
+                <Tag id="22"    name="securityIDSource"         type="number"/>
+                <Tag id="34"    name="MsgSeqNum"                type="seqnum"/>
+                <Tag id="35"    name="MsgType"                  type="msgType"/>
+                <Tag id="36"    name="NewSeqNo"                 type="seqnum"/>
+                <Tag id="43"    name="PossDupFlag"              type="bool"/>
+                <Tag id="44"    name="Price"                    type="price"/>
+                <Tag id="45"    name="RefSeqNum"                type="seqnum"/>
+                <Tag id="48"    name="securityID"               type="number"/>
+                <Tag id="49"    name="SenderCompID"             type="string"/>
+                <Tag id="50"    name="SenderSubID"              type="string"/>
+                <Tag id="52"    name="SendingTime"              type="UTCTimestamp"/>
+                <Tag id="54"    name="Side"                     type="ch"/>
+                <Tag id="55"    name="Symbol"                   type="string"/>
+                <Tag id="56"    name="TargetCompID"             type="string"/>
+                <Tag id="57"    name="TargetSubID"              type="string"/>
+                <Tag id="58"    name="Text"                     type="string"/>
+                <Tag id="60"    name="TransactTime"             type="UTCTimestamp"/>
+                <Tag id="75"    name="TradeDate"                type="number"/>
+                <Tag id="83"    name="repeatSeq"                type="number"/>
+                <Tag id="95"    name="RawDataLen"               type="length"/>
+                <Tag id="96"    name="RawData"                  type="string"/>
+                <Tag id="97"    name="PossResend"               type="bool"/>
+                <Tag id="98"    name="EncryptMethod"            type="ch"/>
+                <Tag id="100"   name="ExDest"                   type="string"/>
+                <Tag id="107"   name="securityDesc"             type="string"/>
+                <Tag id="108"   name="heartBtInt"               type="length"/>
+                <Tag id="110"   name="minQty"                   type="number"/>
+                <Tag id="112"   name="testReqID"                type="string"/>
+                <Tag id="115"   name="OnBehalfOfCompID"         type="string"/>
+                <Tag id="116"   name="OnBehalfOfSubID"          type="string"/>
+                <Tag id="120"   name="settlCurrency"            type="currency"/>
+                <Tag id="123"   name="GapFillFlag"              type="bool"/>
+                <Tag id="128"   name="DeliverToCompID"          type="string"/>
+                <Tag id="129"   name="DeliverToSubID"           type="string"/>
+                <Tag id="141"   name="ResetSeqNumFlag"          type="bool"/>
+                <Tag id="142"   name="SenderLocationID"         type="string"/>
+                <Tag id="143"   name="TargetLocationID"         type="string"/>
+                <Tag id="144"   name="OnBehalfOfLocationID"     type="string"/>
+                <Tag id="145"   name="DeliverToLocationID"      type="string"/>
+                <Tag id="146"   name="numRelatedSym"            type="number"/>
+                <Tag id="167"   name="securityType"             type="string"/>
+                <Tag id="200"   name="maturityMonthYear"        type="number"/>
+                <Tag id="202"   name="strikePrice"              type="price"/>
+                <Tag id="207"   name="securityExchange"         type="string"/>
+                <Tag id="231"   name="contractMultiplier"       type="price"/>
+                <Tag id="262"   name="mdReqId"                  type="string"/>
+                <Tag id="263"   name="subsReqType"              type="ch"/>
+                <Tag id="264"   name="marketDepth"              type="number"/>
+                <Tag id="267"   name="numMDEntryTypes"          type="number"/>
+                <Tag id="268"   name="noMDEntries"              type="number"/>
+                <Tag id="269"   name="mdEntryType"              type="ch"/>
+                <Tag id="270"   name="mdEntryPx"                type="price"/>
+                <Tag id="271"   name="mdEntrySize"              type="quantity"/>
+                <Tag id="273"   name="tradeTime"                type="number"/>
+                <Tag id="273"   name="mdEntryTime"              type="number"/>
+                <Tag id="274"   name="tickDirection"            type="ch"/>
+                <Tag id="279"   name="mdUpdateAction"           type="number"/>
+                <Tag id="326"   name="securityTradingStatus"    type="number"/>
+                <Tag id="327"   name="haltReason"               type="number"/>
+                <Tag id="332"   name="highPx"                   type="price"/>
+                <Tag id="333"   name="lowPx"                    type="price"/>
+                <Tag id="336"   name="TradingSessionID"         type="ch"/>
+                <Tag id="340"   name="TradSesStatus"            type="ch"/>
+                <Tag id="346"   name="numberOfOrders"           type="number"/>
+                <Tag id="369"   name="lastMsgSeqNumProcessed"   type="number"/>
+                <Tag id="371"   name="RefTagID"                 type="number"/>
+                <Tag id="372"   name="RefMsgType"               type="string"/>
+                <Tag id="373"   name="SessionRejectReason"      type="string"/>
+                <Tag id="421"   name="Country"                  type="string"/>
+                <Tag id="451"   name="netChangePrevDay"         type="price"/>
+                <Tag id="454"   name="noSecurityAltID"          type="number"/>
+                <Tag id="455"   name="securityAltID"            type="string"/>
+                <Tag id="456"   name="securityAltIDSource"      type="number"/>
+                <Tag id="461"   name="CFICode"                  type="string"/>
+                <Tag id="462"   name="underlyingProduct"        type="string"/>
+                <Tag id="555"   name="noLegs"                   type="number"/>
+                <Tag id="562"   name="minTradeVol"              type="number"/>
+                <Tag id="566"   name="LegPrice"                 type="price"/>
+                <Tag id="600"   name="legSymbol"                type="string"/>
+                <Tag id="602"   name="legSecurityID"            type="string"/>
+                <Tag id="603"   name="legSecurityIDSource"      type="ch"/>
+                <Tag id="620"   name="legSecurityDesc"          type="string"/>
+                <Tag id="623"   name="legRatioQty"              type="number"/>
+                <Tag id="624"   name="legSide"                  type="ch"/>
+                <Tag id="625"   name="TradingSessionSubID"      type="ch"/>
+                <Tag id="789"   name="NextExpectedMsgSeqNum"    type="seqnum"/>
+                <Tag id="851"   name="LiquidityInd"         type="ch"/>
+                <Tag id="864"   name="noEvents"                 type="number"/>
+                <Tag id="865"   name="eventType"                type="number"/>
+                <Tag id="866"   name="eventDate"                type="number"/>
+                <Tag id="911"   name="totNumReports"            type="number"/>
+                <Tag id="947"   name="strikeCurrency"           type="currency"/>
+                <Tag id="965"   name="securityStatus"           type="currency"/>
+                <Tag id="969"   name="minPriceIncrement"        type="price"/>
+                <Tag id="980"   name="SecurityUpdateAction"     type="ch"/>
+                <Tag id="996"    name="unitOfMeasure"           type="string"/>
+                <Tag id="1020"   name="tradeVolume"             type="number"/>
+                <Tag id="1021"   name="mdBookType"              type="number"/>
+                <Tag id="1022"   name="feedType"                type="string"/>
+                <Tag id="1023"   name="mdPriceLevel"            type="number"/>
+                <Tag id="1128"   name="applVerID"               type="string"/>
+                <Tag id="1140"   name="maxTradeVol"             type="number"/>
+                <Tag id="1141"   name="noSDFeedTypes"           type="number"/>
+                <Tag id="1145"   name="eventTime"               type="number"/>
+                <Tag id="1146"   name="minPriceIncrementAmount" type="price"/>
+                <Tag id="1147"   name="unitOfMeasureQty"        type="price"/>
+                <Tag id="1148"   name="lowLimitPx"              type="price"/>
+                <Tag id="1149"   name="highLimitPx"             type="price"/>
+                <Tag id="1150"   name="tradingReferencePrice"   type="price"/>
+                <Tag id="1151"   name="securityGroup"           type="string"/>
+                <Tag id="1174"   name="SecurityTradingEvent"    type="number"/>
+                <Tag id="1180"   name="applID"                  type="string"/>
+                <Tag id="1200"   name="pricePrecision"          type="price"/>
+                <Tag id="1300"   name="marketSegmentId"         type="string"/>
+                <Tag id="1435"   name="contractMultiplierType"  type="number"/>
+                <Tag id="1544"   name="instrumentScopeProductComplex"  type="number"/>
+                <Tag id="1679"   name="securityMassTradingStatus"  type="number"/>
+                <Tag id="1682"   name="mdSecurityTradingStatus" type="number"/>
+                <Tag id="1700"   name="futPointValue "          type="price"/>
+                <Tag id="5770"   name="priceRatio"              type="price"/>
+                <Tag id="5792"   name="openInterestQty"         type="number"/>
+                <Tag id="5796"   name="tradingReferenceDate"    type="number"/>
+                <Tag id="5797"   name="aggressorSide"           type="number"/>
+                <Tag id="5799"   name="MatchEventIndicator"     type="string"/>
+                <Tag id="6350"  name="TickRule"                 type="number"/>
+                <Tag id="9787"   name="displayFactor"           type="price"/>
+                <Tag id="9800"   name="securityLongDesc"        type="string"/>
+                <Tag id="9801"   name="underlyingSecurityIDSource"  type="number"/>
+                <Tag id="9802"   name="underlyingSecurityID"        type="string"/>
+                <Tag id="9803"   name="underlyingScurityExchange"   type="string"/>
+                <Tag id="9804"   name="primarySecurityExchange"   type="string"/>
+                <Tag id="9805"   name="commonSecurityId"   type="number"/>
+                <Tag id="9806"   name="parentCompanyId"   type="number"/>
+                <Tag id="9807"   name="securityStartDate"   type="UTCTimestamp"/>
+                <Tag id="9808"   name="securityEndDate"   type="UTCTimestamp"/>
+                <Tag id="9809"   name="isinStartDate"   type="UTCTimestamp"/>
+                <Tag id="9810"   name="isinEndDate"   type="UTCTimestamp"/>
+                <Tag id="9811"   name="companyName"   type="string"/>
+                <Tag id="9812"   name="gicsCode"   type="number"/>
+                <Tag id="9813"   name="getOutDate"   type="UTCTimestamp"/>
+                <Tag id="9814"   name="uniqueInstId"   type="number"/>
+                <Tag id="9815"   name="deadTimestamp"   type="UTCTimestamp"/>
+                <Tag id="9816"   name="endTimestamp"   type="UTCTimestamp"/>
+                <Tag id="9817"   name="startTimestamp"   type="UTCTimestamp"/>
+                <Tag id="9818"   name="dataSrc"   type="string"/>
+                <Tag id="9819"   name="SecDefSpecialType"   type="string"/>
+                <Tag id="9820"   name="CompanyStatusType"   type="string"/>
+
+                <Tag id="11611"  name="AckStats"                type="AckStats" src="SMT"/>
+
+            </Dictionary>
+
+            <!-- 1128=9|35=X|49=CME|34=5457711|52=20120403194342222 ... MD update, no checksum, no len field -->
+            <!-- 1128=9|9=587|35=d|49=CME|34=918|52=20130922161002479 security update HAS checksum and len field -->
+
+            <StandardHeader>
+                <Tag id="1128" mand="N"/>
+                <Tag id="8" mand="N"/>
+                <Tag id="9" mand="N"/>
+                <Tag id="35" mand="Y"/>
+                <Tag id="49" mand="Y"/>
+                <Tag id="56" mand="N"/>
+                <Tag id="34" mand="Y"/>
+                <Tag id="52" mand="N"/>
+            </StandardHeader>
+
+            <StandardTrailer>
+                <Tag id="10" mand="N"/>
+            </StandardTrailer>
+
+            <SubFixMessage id="SymbolRepeatingGrp">
+                <Tag id="55"/>
+            </SubFixMessage>
+
+            <FixMessage id="MDRequest" msgType="V">
+                <Tag id="262"/>
+                <Tag id="263"/>
+                <Tag id="264"/>
+                <Tag id="146" subGrp="SymbolRepeatingGrp" modelAttr="symbolGrp"/>
+            </FixMessage>
+
+            <SubFixMessage id="TickUpdate">
+                <Tag id="269"/>
+                <Tag id="270"/>
+                <Tag id="271"/>
+                <Tag id="273"/>
+                <Tag id="274"/>
+                <Tag id="346"/>
+            </SubFixMessage>
+
+            <SubFixMessage id="MDEntry">
+                <Tag id="279"/>
+                <Tag id="1023"/>
+                <Tag id="269"/>
+                <Tag id="273"/>
+                <Tag id="22"/>
+                <Tag id="48"/>
+                <Tag id="83"/>
+                <Tag id="270"/>
+                <Tag id="271"/>
+                <Tag id="346"/>
+                <Tag id="336"/>
+                <Tag id="451"/>
+                <Tag id="1020"/>
+                <Tag id="5797"/>
+                <Tag id="5799"/>
+            </SubFixMessage>
+
+            <FixMessage id="MDIncRefresh" msgType="X">
+                <Tag id="268" subGrp="MDEntry" modelAttr="MDEntries"/>
+            </FixMessage>
+
+            <SubFixMessage id="MDSnapEntry">
+                <Tag id="269"/>
+                <Tag id="270"/>
+                <Tag id="271"/>
+                <Tag id="273"/>
+                <Tag id="274"/>
+                <Tag id="1020"/>
+                <Tag id="1023"/>
+                <Tag id="346"/>
+            </SubFixMessage>
+
+            <FixMessage id="MDSnapshotFullRefresh" msgType="W">
+                <Tag id="369"/>
+                <Tag id="911"/>
+                <Tag id="83"/>
+                <Tag id="1021"/>
+                <Tag id="22"/>
+                <Tag id="48"/>
+                <Tag id="1682"/>
+                <Tag id="268" subGrp="MDSnapEntry" modelAttr="MDEntries"/>
+            </FixMessage>
+
+            <SubFixMessage id="SecDefEvent">
+                <Tag id="865"/>
+                <Tag id="866"/>
+                <Tag id="1145"/>
+            </SubFixMessage>
+
+            <SubFixMessage id="SecurityAltID">
+                <Tag id="455"/>
+                <Tag id="456"/>
+            </SubFixMessage>
+
+            <SubFixMessage id="SDFeedType">
+                <Tag id="1022"/>
+                <Tag id="264"/>
+            </SubFixMessage>
+
+            <SubFixMessage id="SecDefLeg">
+                <Tag id="600"/>
+                <Tag id="620"/>
+                <Tag id="623"/>
+                <Tag id="624"/>
+                <Tag id="602"/>
+                <Tag id="603"/>
+                <Tag id="566"/>
+            </SubFixMessage>
+
+            <FixMessage id="SecurityDefinition" msgType="d">
+                <Tag id="9814"/>
+                <Tag id="911"/>
+                <Tag id="22"/>
+                <Tag id="48"/>
+                <Tag id="55"/>
+                <Tag id="167"/>
+                <Tag id="9800"/>
+
+                <Tag id="864" subGrp="SecDefEvent" modelAttr="events"/>
+
+                <Tag id="980"/>
+
+                <Tag id="555" subGrp="SecDefLeg"    modelAttr="legs"/>
+
+                <Tag id="1150"/>
+                <Tag id="1149"/>
+                <Tag id="1148"/>
+
+                <Tag id="6350"/>
+                <Tag id="1700"/>
+                <Tag id="969"/>
+                <Tag id="996"/>
+                <Tag id="1146"/>
+                <Tag id="1147"/>
+                <Tag id="1151"/>
+                <Tag id="107"/>
+                <Tag id="461"/>
+                <Tag id="462"/>
+                <Tag id="207"/>
+                <Tag id="9801"/>
+                <Tag id="9802"/>
+                <Tag id="9803"/>
+                <Tag id="9804"/>
+
+                <Tag id="454" subGrp="SecurityAltID" modelAttr="securityAltIDs"/>
+
+                <Tag id="202"/>
+                <Tag id="947"/>
+                <Tag id="15"/>
+                <Tag id="120"/>
+                <Tag id="562"/>
+                <Tag id="1140"/>
+
+                <Tag id="1141" subGrp="SDFeedType" modelAttr="SDFeedTypes"/>
+
+                <Tag id="200"/>
+                <Tag id="1180"/>
+                <Tag id="9787"/>
+                <Tag id="5770"/>
+                <Tag id="1435"/>
+                <Tag id="231"/>
+                <Tag id="5792"/>
+                <Tag id="5796"/>
+                <Tag id="110"/>
+                <Tag id="1200"/>
+
+                <Tag id="9805"/>
+                <Tag id="9806"/>
+                <Tag id="9807"/>
+                <Tag id="9808"/>
+                <Tag id="9809"/>
+                <Tag id="9810"/>
+                <Tag id="9811"/>
+                <Tag id="9812"/>
+                <Tag id="9813"/>
+                <Tag id="9815"/>
+                <Tag id="9817"/>
+                <Tag id="9816"/>
+                <Tag id="9818"/>
+                <Tag id="9819"/>
+                <Tag id="9820"/>
+
+            </FixMessage>
+
+            <FixMessage id="SecurityStatus" msgType="f">
+                <Tag id="22"/>
+                <Tag id="48"/>
+                <Tag id="75"/>
+                <Tag id="332"/>
+                <Tag id="333"/>
+                <Tag id="326"/>
+                <Tag id="327"/>
+                <Tag id="1174"/>
+                <Tag id="55"/>
+            </FixMessage>
+
+            <FixMessage id="Heartbeat" msgType="0">
+                <Tag id="112"/>
+            </FixMessage>
+
+            <FixMessage id="Logon" msgType="A">
+                <Tag id="98"/>
+                <Tag id="108"/>
+                <Tag id="95"/>
+                <Tag id="96"/>
+                <Tag id="141"/>
+                <Tag id="789"/>
+            </FixMessage>
+
+            <FixMessage id="Logout" msgType="5">
+                <Tag id="58"/>
+            </FixMessage>
+
+            <FixMessage id="SessionReject" msgType="3">
+                <Tag id="45"/>
+                <Tag id="371"/>
+                <Tag id="372"/>
+                <Tag id="373"/>
+                <Tag id="58"/>
+            </FixMessage>
+
+            <FixMessage id="ResendRequest" msgType="2">
+                <Tag id="7"/>
+                <Tag id="16"/>
+            </FixMessage>
+
+            <FixMessage id="SequenceReset" msgType="4">
+                <Tag id="123"/>
+                <Tag id="36"/>
+            </FixMessage>
+
+            <FixMessage id="TestRequest" msgType="1">
+                <Tag id="112"/>
+            </FixMessage>
+
+            <FixMessage id="TradingSessionStatus" msgType="h">
+                <Tag id="1300"/>
+                <Tag id="336"/>
+                <Tag id="625"/>
+                <Tag id="340"/>
+                <Tag id="60"/>
+            </FixMessage>
+
+            <SubFixMessage id="SecMassStatGrp">
+                <Tag id="48"/>
+                <Tag id="22"/>
+                <Tag id="326"/>
+                <Tag id="965"/>
+            </SubFixMessage>
+
+            <FixMessage id="MassInstrumentStateChange" msgType="CO">
+                <Tag id="1300"/>
+                <Tag id="1544"/>
+                <Tag id="1679"/>
+                <Tag id="60"/>
+
+                <Tag id="146" subGrp="SecMassStatGrp" modelAttr="instState"/>
+            </FixMessage>
+
+            </FixModel>
+
+            <FixModel id="MD5.0" modelVersionNumber="1.0" extends="MD4.4">
+            <Attribute name="FixVersion" value="MD5.0"/>
+            <Attribute name="FixHelper" value="com.rr.fix.codec.helper.FixCodecHelperMD50"/>
+
+            <FixMessage id="SecurityDefinitionUpdate" msgType="BP">
+                <Tag id="911"/>
+                <Tag id="22"/>
+                <Tag id="48"/>
+                <Tag id="55"/>
+                <Tag id="167"/>
+
+                <Tag id="864" subGrp="SecDefEvent" modelAttr="events"/>
+
+                <Tag id="980"/>
+
+                <Tag id="555" subGrp="SecDefLeg"    modelAttr="legs"/>
+
+                <Tag id="1150"/>
+                <Tag id="1149"/>
+                <Tag id="1148"/>
+                <Tag id="969"/>
+                <Tag id="996"/>
+                <Tag id="1146"/>
+                <Tag id="1147"/>
+                <Tag id="1151"/>
+                <Tag id="107"/>
+                <Tag id="461"/>
+                <Tag id="462"/>
+                <Tag id="207"/>
+
+                <Tag id="454" subGrp="SecurityAltID" modelAttr="securityAltIDs"/>
+
+                <Tag id="202"/>
+                <Tag id="947"/>
+                <Tag id="15"/>
+                <Tag id="120"/>
+                <Tag id="562"/>
+                <Tag id="1140"/>
+
+                <Tag id="1141" subGrp="SDFeedType" modelAttr="SDFeedTypes"/>
+
+                <Tag id="200"/>
+                <Tag id="1180"/>
+                <Tag id="9787"/>
+                <Tag id="5770"/>
+                <Tag id="1435"/>
+                <Tag id="231"/>
+                <Tag id="5792"/>
+                <Tag id="5796"/>
+
+                <Tag id="110"/>
+                <Tag id="1200"/>
+
+                <Tag id="9815"/>
+                <Tag id="9817"/>
+                <Tag id="9816"/>
+                <Tag id="9818"/>
+                <Tag id="9819"/>
+                <Tag id="9820"/>
+
+            </FixMessage>
+
+            <FixMessage id="ProductSnapshot" msgType="BU">
+                <Tag id="22"/>
+                <Tag id="48"/>
+            </FixMessage>
+        </FixModel>
+@SECTION FIX_MODELS END

@@ -1,0 +1,8 @@
+# algoId | pipelineId | securityDescriptionList | parameter1 , ... , parameterN
+# parameters applied using reflection
+
+#CALARB | P1 | ESH4,ESM4,ESH4-ESM4 | arbThresh=50, trace=true
+#CALARB | P2 | DACK4,DACZ4,DACK4-DACZ4 | arbThresh=5, trace=true
+
+# using T1 data
+CALARB | P1 | QCZ5,QCN7,QCZ5-QCN7 | tradingAllowed=false, arbThresh=0.5, trace=true, maxOrderQty=1, bookLevels=1, maxSlices=10, pnlCutoffThreshold=-1000

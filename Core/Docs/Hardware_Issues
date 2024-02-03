@@ -1,0 +1,10 @@
+ 
+ 2010/10/18 22:16
+ 
+ CPU 0 : Machine Check Exception:   4 Bank 8: 000000000000
+ TSC 0
+ Run through mcelog --ascii to decode
+ Kernal panic - not syncing: Uncorrected machine check
+ 
+ 
+ ==> due to overheating of CPU, use i7z to check core temps

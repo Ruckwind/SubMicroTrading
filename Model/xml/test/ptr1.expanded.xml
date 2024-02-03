@@ -1,0 +1,36 @@
+<?xml version="1.0"?>
+<Model xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:xi="http://www.w3.org/2001/XInclude">
+
+    <!--
+        fix sub groups have now been added, but restrictions are
+        
+        a) the counter must be the first entry directly preceeding the grp as in fast fix sequences
+        b) fix subgroup must have same name as model sub group
+        c) ALL possible fix entries in repeating group must be in the fix sub grp definition
+           otherwise it can trigger early return from sub grp processing which stops on unexpected tag
+           These tags dont need to be added to the internal model tho
+           
+        d) MUST BE CAREFUL, WHEN EXCHANGE CHANGE FIX SUB EVENTS THEY MUST BE UPDATED IN MODEL
+        
+    -->
+    
+	<InternalModel version="1.0.0" >
+
+		<!-- internal model values based on fix 4.4 -->
+
+		<Sizes  xlink:type="simple"> <!-- will be placed into an OM size enum file -->
+
+<DefaultSize id="P2B" val="5"/>
+
+			<DefaultSize id="P1A" val="5"/>
+		    <DefaultSize id="P1B" val="5"/>
+
+<DefaultSize id="P2A" val="5"/>
+
+		</Sizes>
+
+    </InternalModel>
+
+</Model>
+
+	

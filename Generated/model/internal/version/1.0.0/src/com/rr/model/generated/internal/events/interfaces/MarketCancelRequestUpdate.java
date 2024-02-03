@@ -1,41 +1,59 @@
-/*******************************************************************************
- * Copyright (c) 2015 Low Latency Trading Limited  :  Author Richard Rose
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at	http://www.apache.org/licenses/LICENSE-2.0
- * Unless required by applicable law or agreed to in writing,  software distributed under the License 
- * is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and limitations under the License.
- *******************************************************************************/
 package com.rr.model.generated.internal.events.interfaces;
 
-import com.rr.core.model.Currency;
-import com.rr.core.lang.ReusableString;
+/*
+Copyright 2015 Low Latency Trading Limited
+Author Richard Rose
+*/
+
+import com.rr.model.generated.internal.type.OrdDestType;
+import com.rr.core.utils.Utils;
+import com.rr.core.lang.*;
+import com.rr.core.model.*;
+import com.rr.core.annotations.*;
+
+@SuppressWarnings( { "unused", "override"  })
 
 public interface MarketCancelRequestUpdate extends BaseOrderRequest, CancelRequest {
 
    // Getters and Setters
-    public void setClOrdId( byte[] buf, int offset, int len );
-    public ReusableString getClOrdIdForUpdate();
+    void setClOrdId( byte[] buf, int offset, int len );
+    ReusableString getClOrdIdForUpdate();
 
-    public void setOrigClOrdId( byte[] buf, int offset, int len );
-    public ReusableString getOrigClOrdIdForUpdate();
+    void setOrigClOrdId( byte[] buf, int offset, int len );
+    ReusableString getOrigClOrdIdForUpdate();
 
-    public void setOrderId( byte[] buf, int offset, int len );
-    public ReusableString getOrderIdForUpdate();
+    void setOrderId( byte[] buf, int offset, int len );
+    ReusableString getOrderIdForUpdate();
 
-    public void setSrcLinkId( byte[] buf, int offset, int len );
-    public ReusableString getSrcLinkIdForUpdate();
+    void setMaturityMonthYear( int val );
 
-    public void setCurrency( Currency val );
+    void setCurrency( Currency val );
 
-    public void setSendingTime( int val );
+    void setCurPos( double val );
 
-    public void setMsgSeqNum( int val );
+    void setCurRefPx( double val );
 
-    public void setPossDupFlag( boolean val );
+    void setTargetDest( OrdDestType val );
+
+    void setSecurityExchange( ExchangeCode val );
+
+    void setParentClOrdId( byte[] buf, int offset, int len );
+    ReusableString getParentClOrdIdForUpdate();
+
+    void setStratId( byte[] buf, int offset, int len );
+    ReusableString getStratIdForUpdate();
+
+    void setOrigStratId( byte[] buf, int offset, int len );
+    ReusableString getOrigStratIdForUpdate();
+
+    @Override void setMsgSeqNum( int val );
+
+    void setPossDupFlag( boolean val );
+
+    void setEventTimestamp( long val );
 
 
-    public void setSrcEvent( OrderRequest request );
-    public OrderRequest getSrcEvent();
+    void setSrcEvent( OrderRequest request );
+    OrderRequest getSrcEvent();
 
 }

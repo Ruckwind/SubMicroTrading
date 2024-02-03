@@ -1,0 +1,39 @@
+    
+    private       ReusableString  _senderCompId      = new ReusableString();
+    private       ReusableString  _senderSubId       = new ReusableString();
+    private       ReusableString  _senderLocationId  = new ReusableString();
+    private       ReusableString  _targetCompId      = new ReusableString();
+    private       ReusableString  _targetSubId       = new ReusableString();
+    
+    @Override
+    public void setSenderCompId( ZString senderCompId ) {
+        _senderCompId.copy( senderCompId );
+    }
+
+    @Override
+    public void setSenderSubId( ZString senderSubId ) {
+        _senderSubId.copy( senderSubId );
+    }
+
+    @Override
+    public void setSenderLocationId( ZString senderLocationId ) {
+        _senderLocationId.copy( senderLocationId );
+    }
+
+    @Override
+    public void setTargetCompId( ZString targetId ) {
+        _targetCompId.copy( targetId );
+    }
+
+    @Override
+    public void setTargetSubId( ZString targetSubId ) {
+        _targetSubId.copy( targetSubId );
+    }
+
+    public void setCompIds( String senderCompId, String senderSubId,  String targetCompId, String targetSubId ) {
+        setSenderCompId(     new ReusableString( senderCompId ) );
+        setSenderSubId(      new ReusableString( senderSubId  ) );
+        setTargetCompId(     new ReusableString( targetCompId ) );
+        setTargetSubId(      new ReusableString( targetSubId  ) );
+    }
+

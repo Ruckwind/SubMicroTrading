@@ -1,58 +1,48 @@
-/*******************************************************************************
- * Copyright (c) 2015 Low Latency Trading Limited  :  Author Richard Rose
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at	http://www.apache.org/licenses/LICENSE-2.0
- * Unless required by applicable law or agreed to in writing,  software distributed under the License 
- * is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and limitations under the License.
- *******************************************************************************/
 package com.rr.model.generated.internal.events.impl;
 
-import com.rr.core.model.SecurityIDSource;
+/*
+Copyright 2015 Low Latency Trading Limited
+Author Richard Rose
+*/
+
 import com.rr.model.generated.internal.events.interfaces.MDSnapEntry;
-import com.rr.core.lang.ViewString;
-import com.rr.core.lang.ReusableString;
-import com.rr.core.lang.Constants;
-import com.rr.core.model.MsgFlag;
-import com.rr.core.lang.ReusableType;
-import com.rr.core.lang.Reusable;
-import com.rr.core.model.Message;
-import com.rr.core.model.MessageHandler;
+import com.rr.core.utils.Utils;
+import com.rr.core.lang.*;
+import com.rr.core.model.*;
+import com.rr.core.annotations.*;
 import com.rr.model.internal.type.*;
 import com.rr.model.generated.internal.core.ModelReusableTypes;
 import com.rr.model.generated.internal.core.SizeType;
 import com.rr.model.generated.internal.core.EventIds;
 import com.rr.model.generated.internal.events.interfaces.*;
 
-@SuppressWarnings( "unused" )
+@SuppressWarnings( { "unused", "override"  })
 
-public final class MDSnapshotFullRefreshImpl implements BaseMDResponse, MDSnapshotFullRefreshWrite, Reusable<MDSnapshotFullRefreshImpl> {
+public final class MDSnapshotFullRefreshImpl implements BaseMDResponse, MDSnapshotFullRefreshWrite, Copyable<MDSnapshotFullRefresh>, Reusable<MDSnapshotFullRefreshImpl> {
 
    // Attrs
 
-    private          MDSnapshotFullRefreshImpl _next = null;
-    private volatile Message        _nextMessage    = null;
-    private          MessageHandler _messageHandler = null;
-    private long _sendingTime = Constants.UNSET_LONG;
+    private transient          MDSnapshotFullRefreshImpl _next = null;
+    private transient volatile Event        _nextMessage    = null;
+    private transient          EventHandler _messageHandler = null;
     private long _received = Constants.UNSET_LONG;
     private int _lastMsgSeqNumProcessed = Constants.UNSET_INT;
     private int _totNumReports = Constants.UNSET_INT;
     private int _rptSeq = Constants.UNSET_INT;
     private int _mdBookType = Constants.UNSET_INT;
-    private long _securityID = Constants.UNSET_LONG;
+    private final ReusableString _securityID = new ReusableString( SizeType.SYMBOL_LENGTH.getSize() );
     private int _mdSecurityTradingStatus = Constants.UNSET_INT;
     private int _noMDEntries = Constants.UNSET_INT;
     private int _msgSeqNum = Constants.UNSET_INT;
+    @TimestampMS private long _eventTimestamp = Constants.UNSET_LONG;
 
     private SecurityIDSource _securityIDSource = SecurityIDSource.ExchangeSymbol;
+    private ExchangeCode _securityExchange;
     private MDSnapEntry _MDEntries;
 
-    private byte           _flags          = 0;
+    private int           _flags          = 0;
 
    // Getters and Setters
-    @Override public final long getSendingTime() { return _sendingTime; }
-    @Override public final void setSendingTime( long val ) { _sendingTime = val; }
-
     @Override public final long getReceived() { return _received; }
     @Override public final void setReceived( long val ) { _received = val; }
 
@@ -71,8 +61,13 @@ public final class MDSnapshotFullRefreshImpl implements BaseMDResponse, MDSnapsh
     @Override public final SecurityIDSource getSecurityIDSource() { return _securityIDSource; }
     @Override public final void setSecurityIDSource( SecurityIDSource val ) { _securityIDSource = val; }
 
-    @Override public final long getSecurityID() { return _securityID; }
-    @Override public final void setSecurityID( long val ) { _securityID = val; }
+    @Override public final ViewString getSecurityID() { return _securityID; }
+
+    @Override public final void setSecurityID( byte[] buf, int offset, int len ) { _securityID.setValue( buf, offset, len ); }
+    @Override public final ReusableString getSecurityIDForUpdate() { return _securityID; }
+
+    @Override public final ExchangeCode getSecurityExchange() { return _securityExchange; }
+    @Override public final void setSecurityExchange( ExchangeCode val ) { _securityExchange = val; }
 
     @Override public final int getMdSecurityTradingStatus() { return _mdSecurityTradingStatus; }
     @Override public final void setMdSecurityTradingStatus( int val ) { _mdSecurityTradingStatus = val; }
@@ -86,6 +81,9 @@ public final class MDSnapshotFullRefreshImpl implements BaseMDResponse, MDSnapsh
     @Override public final int getMsgSeqNum() { return _msgSeqNum; }
     @Override public final void setMsgSeqNum( int val ) { _msgSeqNum = val; }
 
+    @Override public final long getEventTimestamp() { return _eventTimestamp; }
+    @Override public final void setEventTimestamp( long val ) { _eventTimestamp = val; }
+
 
     @Override public final boolean getPossDupFlag() { return isFlagSet( MsgFlag.PossDupFlag ); }
     @Override public final void setPossDupFlag( boolean val ) { setFlag( MsgFlag.PossDupFlag, val ); }
@@ -94,18 +92,19 @@ public final class MDSnapshotFullRefreshImpl implements BaseMDResponse, MDSnapsh
 
     @Override
     public final void reset() {
-        _sendingTime = Constants.UNSET_LONG;
         _received = Constants.UNSET_LONG;
         _lastMsgSeqNumProcessed = Constants.UNSET_INT;
         _totNumReports = Constants.UNSET_INT;
         _rptSeq = Constants.UNSET_INT;
         _mdBookType = Constants.UNSET_INT;
         _securityIDSource = SecurityIDSource.ExchangeSymbol;
-        _securityID = Constants.UNSET_LONG;
+        _securityID.reset();
+        _securityExchange = null;
         _mdSecurityTradingStatus = Constants.UNSET_INT;
         _noMDEntries = Constants.UNSET_INT;
         _MDEntries = null;
         _msgSeqNum = Constants.UNSET_INT;
+        _eventTimestamp = Constants.UNSET_LONG;
         _flags = 0;
         _next = null;
         _nextMessage = null;
@@ -133,22 +132,22 @@ public final class MDSnapshotFullRefreshImpl implements BaseMDResponse, MDSnapsh
     }
 
     @Override
-    public final Message getNextQueueEntry() {
+    public final Event getNextQueueEntry() {
         return _nextMessage;
     }
 
     @Override
-    public final void attachQueue( Message nxt ) {
+    public final void attachQueue( Event nxt ) {
         _nextMessage = nxt;
     }
 
     @Override
-    public final MessageHandler getMessageHandler() {
+    public final EventHandler getEventHandler() {
         return _messageHandler;
     }
 
     @Override
-    public final void setMessageHandler( MessageHandler handler ) {
+    public final void setEventHandler( EventHandler handler ) {
         _messageHandler = handler;
     }
 
@@ -156,7 +155,7 @@ public final class MDSnapshotFullRefreshImpl implements BaseMDResponse, MDSnapsh
    // Helper methods
     @Override
     public void setFlag( MsgFlag flag, boolean isOn ) {
-        _flags = (byte) MsgFlag.setFlag( _flags, flag, isOn );
+        _flags = MsgFlag.setFlag( _flags, flag, isOn );
     }
 
     @Override
@@ -165,26 +164,34 @@ public final class MDSnapshotFullRefreshImpl implements BaseMDResponse, MDSnapsh
     }
 
     @Override
-    public String toString() {
-        ReusableString buf = new ReusableString();
-        dump( buf );
-        return buf.toString();
+    public int getFlags() {
+        return _flags;
     }
 
     @Override
-    public final void dump( ReusableString out ) {
+    public String toString() {
+        ReusableString buf = TLC.instance().pop();
+        dump( buf );
+        String rs = buf.toString();
+        TLC.instance().pushback( buf );
+        return rs;
+    }
+
+    @Override
+    public final void dump( final ReusableString out ) {
         out.append( "MDSnapshotFullRefreshImpl" ).append( ' ' );
-        out.append( ", sendingTime=" ).append( getSendingTime() );
-        out.append( ", received=" ).append( getReceived() );
-        out.append( ", lastMsgSeqNumProcessed=" ).append( getLastMsgSeqNumProcessed() );
-        out.append( ", totNumReports=" ).append( getTotNumReports() );
-        out.append( ", rptSeq=" ).append( getRptSeq() );
-        out.append( ", mdBookType=" ).append( getMdBookType() );
-        out.append( ", securityIDSource=" );
-        if ( getSecurityIDSource() != null ) getSecurityIDSource().id( out );
-        out.append( ", securityID=" ).append( getSecurityID() );
-        out.append( ", mdSecurityTradingStatus=" ).append( getMdSecurityTradingStatus() );
-        out.append( ", noMDEntries=" ).append( getNoMDEntries() );
+        if ( Constants.UNSET_LONG != getReceived() && 0 != getReceived() )             out.append( ", received=" ).append( getReceived() );
+        if ( Constants.UNSET_INT != getLastMsgSeqNumProcessed() && 0 != getLastMsgSeqNumProcessed() )             out.append( ", lastMsgSeqNumProcessed=" ).append( getLastMsgSeqNumProcessed() );
+        if ( Constants.UNSET_INT != getTotNumReports() && 0 != getTotNumReports() )             out.append( ", totNumReports=" ).append( getTotNumReports() );
+        if ( Constants.UNSET_INT != getRptSeq() && 0 != getRptSeq() )             out.append( ", rptSeq=" ).append( getRptSeq() );
+        if ( Constants.UNSET_INT != getMdBookType() && 0 != getMdBookType() )             out.append( ", mdBookType=" ).append( getMdBookType() );
+        if ( getSecurityIDSource() != null )             out.append( ", securityIDSource=" );
+        if ( getSecurityIDSource() != null ) out.append( getSecurityIDSource().id() );
+        if ( getSecurityID().length() > 0 )             out.append( ", securityID=" ).append( getSecurityID() );
+        if ( getSecurityExchange() != null )             out.append( ", securityExchange=" );
+        if ( getSecurityExchange() != null ) out.append( getSecurityExchange().id() );
+        if ( Constants.UNSET_INT != getMdSecurityTradingStatus() && 0 != getMdSecurityTradingStatus() )             out.append( ", mdSecurityTradingStatus=" ).append( getMdSecurityTradingStatus() );
+        if ( Constants.UNSET_INT != getNoMDEntries() && 0 != getNoMDEntries() )             out.append( ", noMDEntries=" ).append( getNoMDEntries() );
 
         MDSnapEntryImpl tPtrMDEntries = (MDSnapEntryImpl) getMDEntries();
         int tIdxMDEntries=0;
@@ -195,8 +202,82 @@ public final class MDSnapshotFullRefreshImpl implements BaseMDResponse, MDSnapsh
             tPtrMDEntries = tPtrMDEntries.getNext();
         }
 
-        out.append( ", msgSeqNum=" ).append( getMsgSeqNum() );
+        if ( Constants.UNSET_INT != getMsgSeqNum() && 0 != getMsgSeqNum() )             out.append( ", msgSeqNum=" ).append( getMsgSeqNum() );
         out.append( ", possDupFlag=" ).append( getPossDupFlag() );
+        if ( Constants.UNSET_LONG != getEventTimestamp() && 0 != getEventTimestamp() ) {
+            out.append( ", eventTimestamp=" );
+            TimeUtilsFactory.safeTimeUtils().unixTimeToLocalTimestamp( out, getEventTimestamp() );
+            out.append( " / " );
+            TimeUtilsFactory.safeTimeUtils().unixTimeToUTCTimestamp( out, getEventTimestamp() );
+            out.append( " ( " );
+            out.append( getEventTimestamp() ).append( " ) " );
+        }
+    }
+
+    @Override public final void snapTo( MDSnapshotFullRefresh dest ) {
+        ((MDSnapshotFullRefreshImpl)dest).deepCopyFrom( this );
+    }
+
+    /** DEEP copy all members ... INCLUDING subEvents : WARNING CREATES NEW OBJECTS SO MONITOR FOR GC */
+    @Override public final void deepCopyFrom( MDSnapshotFullRefresh src ) {
+        setReceived( src.getReceived() );
+        setLastMsgSeqNumProcessed( src.getLastMsgSeqNumProcessed() );
+        setTotNumReports( src.getTotNumReports() );
+        setRptSeq( src.getRptSeq() );
+        setMdBookType( src.getMdBookType() );
+        setSecurityIDSource( src.getSecurityIDSource() );
+        getSecurityIDForUpdate().copy( src.getSecurityID() );
+        setSecurityExchange( src.getSecurityExchange() );
+        setMdSecurityTradingStatus( src.getMdSecurityTradingStatus() );
+        setNoMDEntries( src.getNoMDEntries() );
+        MDSnapEntryImpl tSrcPtrMDEntries = (MDSnapEntryImpl) src.getMDEntries();
+        MDSnapEntryImpl tNewPtrMDEntries = null;
+        while( tSrcPtrMDEntries != null ) {
+            if ( tNewPtrMDEntries == null ) {
+                tNewPtrMDEntries = new MDSnapEntryImpl();
+                setMDEntries( tNewPtrMDEntries );
+            } else {
+                tNewPtrMDEntries.setNext( new MDSnapEntryImpl() );
+                tNewPtrMDEntries = tNewPtrMDEntries.getNext();
+            }
+            tNewPtrMDEntries.deepCopyFrom( tSrcPtrMDEntries );
+            tSrcPtrMDEntries = tSrcPtrMDEntries.getNext();
+        }
+        setMsgSeqNum( src.getMsgSeqNum() );
+        setPossDupFlag( src.getPossDupFlag() );
+        setEventTimestamp( src.getEventTimestamp() );
+    }
+
+    /** shallow copy all primitive members ... EXCLUDING subEvents */
+    @Override public final void shallowCopyFrom( MDSnapshotFullRefresh src ) {
+        setReceived( src.getReceived() );
+        setLastMsgSeqNumProcessed( src.getLastMsgSeqNumProcessed() );
+        setTotNumReports( src.getTotNumReports() );
+        setRptSeq( src.getRptSeq() );
+        setMdBookType( src.getMdBookType() );
+        setSecurityIDSource( src.getSecurityIDSource() );
+        getSecurityIDForUpdate().copy( src.getSecurityID() );
+        setSecurityExchange( src.getSecurityExchange() );
+        setMdSecurityTradingStatus( src.getMdSecurityTradingStatus() );
+        setMsgSeqNum( src.getMsgSeqNum() );
+        setPossDupFlag( src.getPossDupFlag() );
+        setEventTimestamp( src.getEventTimestamp() );
+    }
+
+    /** shallow copy all primitive members ... EXCLUDING subEvents */
+    @Override public final void shallowMergeFrom( MDSnapshotFullRefresh src ) {
+        if ( Constants.UNSET_LONG != src.getReceived() ) setReceived( src.getReceived() );
+        if ( Constants.UNSET_INT != src.getLastMsgSeqNumProcessed() ) setLastMsgSeqNumProcessed( src.getLastMsgSeqNumProcessed() );
+        if ( Constants.UNSET_INT != src.getTotNumReports() ) setTotNumReports( src.getTotNumReports() );
+        if ( Constants.UNSET_INT != src.getRptSeq() ) setRptSeq( src.getRptSeq() );
+        if ( Constants.UNSET_INT != src.getMdBookType() ) setMdBookType( src.getMdBookType() );
+        if ( getSecurityIDSource() != null )  setSecurityIDSource( src.getSecurityIDSource() );
+        if ( src.getSecurityID().length() > 0 ) getSecurityIDForUpdate().copy( src.getSecurityID() );
+        if ( getSecurityExchange() != null )  setSecurityExchange( src.getSecurityExchange() );
+        if ( Constants.UNSET_INT != src.getMdSecurityTradingStatus() ) setMdSecurityTradingStatus( src.getMdSecurityTradingStatus() );
+        if ( Constants.UNSET_INT != src.getMsgSeqNum() ) setMsgSeqNum( src.getMsgSeqNum() );
+        setPossDupFlag( src.getPossDupFlag() );
+        if ( Constants.UNSET_LONG != src.getEventTimestamp() ) setEventTimestamp( src.getEventTimestamp() );
     }
 
 }

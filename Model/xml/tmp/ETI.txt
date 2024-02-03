@@ -1,0 +1,74 @@
+
+When an incoming order is executed, a Match Event is generated, representing the entire execution. 
+Every price level executed in the match event is called a Match Step, and is assigned a unique Match Step ID.
+
+A Match Step is the total aggregated quantity executed at one price level in a Match Event. 
+For example, Match Step 01 containing a traded volume of 80 at price 17 is generated when incoming Order 4 (Sell 100@16) 
+matches with Orders 2 (Buy 50@17) and 3 (Buy 30@17) in the order book. 
+A second Match Step 02 containing a traded volume of 20 at price 16 is generated 
+when the remaining quantity of Order 4 matches with Order 1 (Buy 20@16). 
+All Match Steps are published in the Public Trade Volume messages.
+
+Each Match Step is broken down into Order Executions, wherein one execution is generated for every order executed at every price level. 
+
+For example:
+
+Order Execution 01, Trader A buys 50 @ 17 (Order 2)
+Order Execution 02, Trader B buys 30 @ 17 (Order 3)
+Order Execution 03, Trader D sells 80 @17 (Order 4)
+Order Execution 04, Trader C buys 20 @ 16 (Order 1)
+Order Execution 05, Trader D sells 20 @ 16 (Order 4)
+
+Order Event messages are sent to the trader for every one of their orders involved in a Match Event, including all its executions. 
+One Order Event message is generated per order, for example, one Order Event to Trader D containing both executions of Order 4.
+Based on Match Steps, Trades are then generated and assigned unique Trade IDs. 
+Trades are aggregates of the quantity traded at each price level. 
+
+For direct simple instrument matches, there is a one-to-one correspondence between Trades and Match Steps 
+(this is not true for complex instrument matches, refer to sections 5.3.2. and 5.3.3)
+
+Each Trade is broken down into Trade Items with unique Trade Item IDs, wherein one Trade Item is generated for every order 
+executed at every price level. Note that for simple instruments, Trade Item IDs will be equal to the Order Execution IDs. 
+A Trade Confirmation is then provided for every Trade Item to each participant involved in a trade.
+
+Each new order received is assigned an Order ID by the exchange, which is unique within a product, 
+and is returned to the participant on all private messages.
+
+For every match event, the new trading architecture assigns identifiers, unique within product and business day, 
+to each aggregated price level (Match Step ID), 
+every order execution (Order Execution ID) 
+and every trade (Trade ID). 
+
+For the matching of a complex order, in addition to the Order Execution ID, 
+an Order Leg Execution ID is provided for each leg of the complex instrument match. 
+The Trade Item ID is the same as the Order Execution ID / Order Leg Execution ID.
+
+IDENTIFIERS
+I1) when reconnect msgSeqNum (34) always 1 ... no seqNum gap recovery ! .... if gap will be disconnected
+
+I2) ApplMsgID (28704) = Application Message Identifier. sent in reply to request, can be used to request retransmit of recoverable data
+The ApplMsgID (28704) has the following characteristics:
+ It is unique per partition and business day.
+ It is ascending during a business day until end-of-stream.
+ Gap detection is not possible.
+ It does not start at any particular number.
+ Consists of 16 bytes, ordered with the highest significant byte first (as in big endian).
+
+I3) ApplSeqNum (1181) Application Message Sequence Number to risk/trade notifications
+
+The ApplSeqNum (1181) has the following characteristics:
+ The first message will be the message sequence number 1.
+ It is ascending during a business day until end-of-stream (Trade Notification).
+ The message sequence will be gapless and allows gap detection.
+ Trade notification: unique per business day, partition and business unit.
+ News: unique per market.
+ Risk Control: unique per business unit.
+
+I4) Appl
+
+
+Message length is always multiple of 8 .. padding is with binary zero
+
+Edge case if disconnect
+
+

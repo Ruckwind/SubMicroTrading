@@ -1,0 +1,419 @@
+RED HAT SUB : cd2c e179 cda0 ace1
+Red Hat Login : denevil C9   
+
+
+Firstly, to DELETE a system that you have previously registered, please do the following:
+
+1) log in to rhn.redhat.com
+2) click on the Systems tab in the red bar
+3) click on the name of each system and this will link you to another page
+4) click on Delete System in the top right corner of this page
+5) make sure to click the Delete Profile button on the next prompted page
+
+Secondly, to re-register your system with Red Hat Network to keep your system up2date, please refer to the following link:
+
+http://www.redhat.com/apps/register/connect/
+
+===================================================
+
+1) install Windows Server (20GB on SSD)
+
+2) set BIOS settings (assumes has 1333Mhz ECC RAM)
+
+Load Optimised Defaults 
+ 
+BIOS Settings : NO overclock
+    Advanced BIOS Features -> SATA Configuration
+                                SATA#1 Configuration            : ENHANCED
+                                
+    Boot Settings -> Boot Settings Configuration
+                                    Bootup Screen Logo          : DISABLED
+                                    
+    Power Management Features -> ACPI -> Chipset ACPI
+                                    APIC ACPI SCI IRQ           : ENABLED
+                                    High Precision Timer        : ENABLED                                      
+
+    Frequency Voltage Control ->CPU Configuration
+                                    Hyper Threading             : Disabled
+                                    Speedstep                   : Disabled
+                                    TurboMode                   : Disabled
+
+    Set to 3pin FAN .. NOT 4 pin, set all fans to manual at 100%
+
+3) install red hat
+
+3a) Partitioning
+
+Remove logical volumes AND swap
+ 
+(hdX,Y) X is drive starting at 0, Y is partition starting at 1 
+  
+SSD#0  /dev/sda
+            /dev/sda1           NTFS    100MB
+            /dev/sda2           NTFS    19900MB
+            /dev/sda3   /boot   ext3    3000MB
+            /dev/sda4   extended partition (added by RedHat when you create the tmp partition)     
+            /dev/sda5   /tmp    ext3    10000MB     
+            /dev/sda6   /home   ext3    18000MB     
+            /dev/sda7   /       ext3    10000MB       
+
+HDD#1  /dev/sdb
+            /dev/sdb1   /usr    ext3    60000MB    
+            /dev/sdb2   /var    ext3    150000MB    
+            
+ 
+3b) For Network fill in details manually from (put internet cable in RIGHT hand slot) :-
+
+enable DHCP on eth0
+
+Set Hostname to SIM-SERVER
+
+3e) Software
+
+DESELECT virtualisation
+ENABLE Software Development
+
+3f) on install reboot
+
+    -> disable firewall
+    -> disable SELinux 
+
+3g) add user smt, full name smt
+
+
+INSTALL FINISHED - REBOOT
+
+4) Check network scripts setup, look at /etc/sysconfig/network-scripts/ifcfg-eth*
+        is the 10Ge adapter eth0 or eth2 ?  ==> use ethtool eth0 to find out
+        
+   For SimServer assume eth0 is the Mellanox (Chelsio would be eth2) 
+   
+Dont setup 10GE yet   
+
+# Marvell Technology Group Ltd. Unknown device 4380
+DEVICE=eth0
+BOOTPROTO=none
+IPADDR=192.168.1.174
+ONBOOT=yes
+TYPE=Ethernet
+NETMASK=255.255.255.0
+GATEWAY=192.168.1.1
+USERCTL=no
+IPV6INIT=no
+PEERDNS=yes
+HWADDR=???????????
+ 
+# Marvell Technology Group Ltd. Unknown device 4380
+DEVICE=eth1
+BOOTPROTO=static
+IPADDR=10.0.0.2
+ONBOOT=yes
+NETMASK=255.0.0.0
+USERCTL=no
+IPV6INIT=no
+HWADDR=?????????????
+#BOOTPROTO=dhcp
+#HWADDR=00:1F:BC:02:8F:75
+#ONBOOT=no
+#HOTPLUG=no
+#TYPE=Ethernet
+
+[IF NETWORK NOT UP]      /etc/init.d/network restart    --> restarts the  network but doesnt get the DNS picked up properly 
+
+
+5) IF didnt connect to network on install run rhn_register
+
+User denevil, pwd=C9
+
+
+6) ISOLCPU  relabel the root partition so its not confused with any other later Unix installs
+
+ SET DEVICE LABEL READY FOR GRUB  (** DONT FORGET UPDATE fstab OR IT WONT BOOT **)
+    e2label /dev/sda7 RH_ROOT
+   edit /etc/fstab
+    LABEL=RH_ROOT          /                       ext3    defaults        1 1
+
+ Also edit the /boot/grub/grub.conf
+         kernel /vmlinuz-2.6.18-194.el5 ro root=LABEL=RH_ROOT isolcpus=1,6,7,8,9,10,11 rhgb
+ 
+6) Upload dist.zip, tools.zip
+ 
+7) create setup.sh and invoke from .bashrc
+
+typeset -x JAVA_HOME=/home/smt/tools/jdk1.6.0_21
+typeset -x HWLOC_HOME=/home/smt/tools/hwloc
+typeset -x PATH=$JAVA_HOME/bin:$PATH:$HWLOC_HOME/bin
+typeset -x LD_LIBRARY_PATH=$JAVA_HOME/lib:$PATH:$HWLOC_HOME/lib:$HOME/dist/lib
+
+8) Disable unwanted services
+
+ /sbin/chkconfig --list | grep "5:on"
+  
+ chkconfig irqbalance off
+ chkconfig anacron off
+ chkconfig atd off
+ chkconfig avahi-daemon off 
+ chkconfig bluetooth off 
+ chkconfig cups off       
+ chkconfig hidd off       
+ chkconfig isdn off       
+ chkconfig pand off       
+ chkconfig rhnsd off      
+ chkconfig sendmail off   
+ chkconfig cpuspeed off   
+
+9) change /etc/inittab default run lvl from 5 to 3    
+        id:3:initdefault
+
+                                    
+A) add /etc/hosts
+
+SIM SERVER
+
+192.168.10.1     TRADE-SERVER-10GE-A
+192.168.12.1     TRADE-SERVER-10GE-B
+127.0.0.1       SIM-SERVER localhost.localdomain localhost HUB-SERVER
+
+
+B) 
+
+echo performance >/sys/devices/system/cpu/cpu0/cpufreq/scaling_governor
+echo performance >/sys/devices/system/cpu/cpu10/cpufreq/scaling_governor
+echo performance >/sys/devices/system/cpu/cpu11/cpufreq/scaling_governor
+echo performance >/sys/devices/system/cpu/cpu1/cpufreq/scaling_governor
+echo performance >/sys/devices/system/cpu/cpu2/cpufreq/scaling_governor
+echo performance >/sys/devices/system/cpu/cpu3/cpufreq/scaling_governor
+echo performance >/sys/devices/system/cpu/cpu4/cpufreq/scaling_governor
+echo performance >/sys/devices/system/cpu/cpu5/cpufreq/scaling_governor
+echo performance >/sys/devices/system/cpu/cpu6/cpufreq/scaling_governor
+echo performance >/sys/devices/system/cpu/cpu7/cpufreq/scaling_governor
+echo performance >/sys/devices/system/cpu/cpu8/cpufreq/scaling_governor
+echo performance >/sys/devices/system/cpu/cpu9/cpufreq/scaling_governor
+
+
+C)setup system files
+
+===> /etc/rc.local 
+
+#!/bin/sh
+#
+# This script will be executed *after* all the other init scripts.
+# You can put your own initialization stuff in here if you don't
+# want to do the full Sys V style init stuff.
+
+touch /var/lock/subsys/local
+
+#sfcaffinity_config auto   
+
+ethtool -C eth2 adaptive-rx off
+ethtool -C eth2 rx-usecs 0 rx-frames 0 rx-usecs-high 0 rx-usecs-low 0 pkt-rate-low 0 pkt-rate-high 0 
+ethtool -C eth2 rx-usecs-irq 60
+ethtool -A eth2 rx off tx off               
+
+ethtool -C eth3 adaptive-rx off
+ethtool -C eth3 rx-usecs 0 rx-frames 0 rx-usecs-high 0 rx-usecs-low 0 pkt-rate-low 0 pkt-rate-high 0  
+ethtool -C eth3 rx-usecs-irq 60
+ethtool -A eth3 rx off tx off               
+
+===> /etc/sysctl.conf
+# Kernel sysctl configuration file for Red Hat Linux
+#
+# For binary values, 0 is disabled, 1 is enabled.  See sysctl(8) and
+# sysctl.conf(5) for more details.
+
+kernel.sysrq = 0
+kernel.core_uses_pid = 1
+
+net.ipv4.tcp_low_latency=1
+
+# Controls the maximum size of a message, in bytes
+kernel.msgmnb = 65536
+
+# Controls the default maxmimum size of a mesage queue
+kernel.msgmax = 65536
+
+# Controls the maximum shared segment size, in bytes
+kernel.shmmax = 68719476736
+
+# Controls the maximum number of shared memory segments, in pages
+kernel.shmall = 4294967296
+
+kernal.isolcpus=6,7,8,9,10,11
+kernel.vsyscall64 = 2
+
+ 
+DONT REBOOT
+
+
+F) Copy the tools and install and dist and *sh from another box or see instructions in linux.txt
+
+
+======================================================================================
+
+SOLARFLARE : 14 June 2011
+-------------------------
+
+onload_uninstall 
+rmmod onload
+rmmod sfc_char
+rmmod sfc_affinity
+rmmod sfc_resource
+rmmod sfc_tune
+rmmod sfc
+cd openonload-201104
+./scripts/onload_install 
+rpm --force -ivh /INSTALL/SOLARFLARE/sfutils-3.0.10.2236-1.rpm 
+onload_tool reload
+sfupdate --force --write
+
+rolled back 3.1.0.47 due to max latency issue
+
+
+SOLARFLARE : 11 June 2011
+-------------------------
+
+mkdir -p /INSTALL/SOLARFLARE
+cd /INSTALL/SOLARFLARE
+
+onload_uninstall 
+rmmod onload
+rmmod sfc_char
+rmmod sfc_affinity
+rmmod sfc_resource
+rmmod sfc_tune
+rmmod sfc
+
+# remove old builds
+ls -l /usr/src/redhat/RPMS/x86_64/kernel-module-sfc-RHEL*
+
+for each run rpm -e 
+(eg   rpm -e /kernel-module-sfc-RHEL5-2.6.18-194.el5-3.1.0.4047-1.x86_64  )
+
+
+rpmbuild --rebuild /INSTALL/SOLARFLARE/sfc-3.1.0.4047-1.src.rpm 
+
+rpm -ivh  /usr/src/redhat/RPMS/x86_64/kernel-module-sfc-RHEL5-2.6.18-194.el5-3.1.0.4047-1.x86_64.rpm
+
+cd openonload-201104
+
+./scripts/onload_install
+
+
+
+onload_install: WARNING: An 'sfc' driver is already loaded.  You should
+onload_install: WARNING: unload and reload (or reboot) to ensure you are
+onload_install: WARNING: using the version supplied with OpenOnload.
+
+onload_install: WARNING: Try:   onload_tool reload
+
+
+rpm -ivh /INSTALL/SOLARFLARE/sfutils-3.1.0.4047-1.rpm 
+(rpm -e any conflicting older version)
+
+sfupdate
+sfupdate --write
+
+onload_tool disable_cstates persist
+
+
+
+==> latency exports in
+/usr/libexec/onload/profiles/latency.opf 
+
+==>  install i7z to monitor CPU core temps
+==> IF coretemp not installed
+  http://blog.zipe.idv.tw/2010_11_01_archive.html
+    rpm -Uvh http://elrepo.org/elrepo-release-0.1-1.el5.elrepo.noarch.rpm #rpm --import http://elrepo.org/RPM-GPG-KEY-elrepo.org
+    yum --enablerepo=elrepo install kmod-coretemp
+    modprobe coretemp
+    service lm_sensors start
+    chkconfig lm_sensors on
+
+
+=======================================================================================
+
+G) OVERCLOCK set BIOS settings (assumes has 1333Mhz ECC RAM)
+
+    http://www.evga.com/forums/tm.aspx?m=268280&high=vcore
+
+    base clock 180
+    cpu multiplier x22
+    QPI 4.8
+    memory 1066 (gives 1066/133=8 multiplier for memory so 8 * 180 = 1444Mhz)
+    MCH_STRAP=1600Mhz (loosens timings as overclocking ECC)
+    uncore multiplier x20
+    Memory Settings all Auto (note expected 1.5V but reported 1.65 on reboot)
+    
+    CPU0 VDroop Control : Without VDroop
+    CPU0 VDroop Control : Without VDroop
+
+    ALL CPU VCore       : 1.30
+
+    All CPU VTT         : 1.35
+    
+    IOH                 : 1.35
+    
+    Signal Tweaks
+    IOH QPI 0 Signal    : -70
+    IOH QPI 1 Signal    : -16    
+    
+
+    ==> QPI at (4800/ origBase) * 180 = 36 * 180
+        (QPI 5.6 wouldnt start every time) 
+    ==> Memory will run at (1066/origBase) * 180 
+
+
+=====================================
+
+FAILED EFFORT TO BUILD JDK
+
+http://icedtea.classpath.org/wiki/FedoraBuildInstructions
+http://icedtea.classpath.org/wiki/BuildRequirements
+
+su - root
+rpm -Uvh http://download.fedora.redhat.com/pub/epel/5/i386/epel-release-5-4.noarch.rpm
+
+yum install yum-utils
+yum install autoconf automake gcc gcc-c++ ant cups-devel xorg-x11-proto-devel libjpeg-devel giflib-devel libXt-devel libXp-devel libXpm-devel libXext-devel libXinerama-devel libXrender-devel libpng-devel libXtst-devel freetype-devel alsa-lib-devel gtk2-devel patch xalan-j2 wget ant-nodeps
+yum install xulrunner-devel-unstable xulrunner-devel libffi-devel llvm-devel systemtap-sdt-devel pulseaudio-libs-devel
+
+su -c 'yum install python-setuptools'  
+su -c 'yum install mercurial'
+su -c 'yum install ant'
+su -c 'yum install rhino'  
+su -c 'yum install cups-devel'
+su -c 'yum install freetype-devel'
+su -c 'yum install libXp-devel'
+su -c 'yum install libXinerama-devel'
+su -c 'yum install libpng-devel'
+su -c 'yum install giflib-devel' 
+su -c 'yum install xalan-j2'
+su -c 'yum install xerces-j2'
+
+cd ~/tools/mercurial
+hg clone https://vogella@bitbucket.org/vogella/hgforest-crew
+
+Create and edit the ~/.hgrc file to minimally contain the following entries:
+[ui]
+username = denevil
+[extensions]
+forest=/home/smt/tools/mercurial/hgforest-crew/forest.py
+fetch=
+
+
+cd /opt
+wget http://www.poolsaboveground.com/apache/ant/binaries/apache-ant-1.8.2-bin.tar.gz
+tar xvfz apache-ant-1.8.2-bin.tar.gz
+
+
+unset JAVA_HOME
+unset LD_LIBRARY_PATH
+cd ~/JDK
+hg clone -r icedtea6-1.10 http://icedtea.classpath.org/hg/release/icedtea6-1.10
+cd icedtea6-1.10
+./autogen.sh
+./configure
+make
+
+
+

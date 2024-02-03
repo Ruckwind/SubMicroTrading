@@ -1,0 +1,23 @@
+@INCLUDE Encoder.include
+
+    @Override
+    public void addStats( ReusableString outBuf, Event msg, long time ) { /* nothing */ }
+
+    @Override
+    public void logStats() { /* nothing */ }
+
+
+    @Override
+    public void logLastMsg() { /* nothing */ }
+
+    @Override
+    public void encodeStartPacket( final SBEPacketHeader h ) {
+        if ( _debug ) _dump.append( "\nField: " ).append( "packetSeqNum" ).append( " : " );
+        _builder.encodeUInt( h._packetSeqNum );
+
+        if ( _debug ) _dump.append( "\nField: " ).append( "sendTimeNanos" ).append( " : " );
+        _builder.encodeULong( h._sendTimeNanos );
+    }
+
+
+

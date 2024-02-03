@@ -1,59 +1,54 @@
-/*******************************************************************************
- * Copyright (c) 2015 Low Latency Trading Limited  :  Author Richard Rose
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at	http://www.apache.org/licenses/LICENSE-2.0
- * Unless required by applicable law or agreed to in writing,  software distributed under the License 
- * is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and limitations under the License.
- *******************************************************************************/
 package com.rr.model.generated.internal.events.impl;
 
-import com.rr.core.model.SecurityIDSource;
+/*
+Copyright 2015 Low Latency Trading Limited
+Author Richard Rose
+*/
+
 import com.rr.model.generated.internal.type.SecurityTradingStatus;
-import com.rr.core.lang.ViewString;
-import com.rr.core.lang.ReusableString;
-import com.rr.core.lang.Constants;
-import com.rr.core.model.MsgFlag;
-import com.rr.core.lang.ReusableType;
-import com.rr.core.lang.Reusable;
-import com.rr.core.model.Message;
-import com.rr.core.model.MessageHandler;
+import com.rr.core.utils.Utils;
+import com.rr.core.lang.*;
+import com.rr.core.model.*;
+import com.rr.core.annotations.*;
 import com.rr.model.internal.type.*;
 import com.rr.model.generated.internal.core.ModelReusableTypes;
 import com.rr.model.generated.internal.core.SizeType;
 import com.rr.model.generated.internal.core.EventIds;
 import com.rr.model.generated.internal.events.interfaces.*;
 
-@SuppressWarnings( "unused" )
+@SuppressWarnings( { "unused", "override"  })
 
-public final class SecurityStatusImpl implements BaseMDResponse, SecurityStatusWrite, Reusable<SecurityStatusImpl> {
+public final class SecurityStatusImpl implements BaseMDResponse, SecurityStatusWrite, Copyable<SecurityStatus>, Reusable<SecurityStatusImpl> {
 
    // Attrs
 
-    private          SecurityStatusImpl _next = null;
-    private volatile Message        _nextMessage    = null;
-    private          MessageHandler _messageHandler = null;
-    private long _securityID = Constants.UNSET_LONG;
+    private transient          SecurityStatusImpl _next = null;
+    private transient volatile Event        _nextMessage    = null;
+    private transient          EventHandler _messageHandler = null;
+    private final ReusableString _securityID = new ReusableString( SizeType.SYMBOL_LENGTH.getSize() );
     private int _TradeDate = Constants.UNSET_INT;
     private double _highPx = Constants.UNSET_DOUBLE;
     private double _lowPx = Constants.UNSET_DOUBLE;
     private int _haltReason = Constants.UNSET_INT;
     private int _SecurityTradingEvent = Constants.UNSET_INT;
     private final ReusableString _symbol = new ReusableString( SizeType.SYMBOL_LENGTH.getSize() );
-    private final ReusableString _securityExchange = new ReusableString( SizeType.SECURITYEXCH_LENGTH.getSize() );
     private int _msgSeqNum = Constants.UNSET_INT;
+    @TimestampMS private long _eventTimestamp = Constants.UNSET_LONG;
 
     private SecurityIDSource _securityIDSource = SecurityIDSource.ExchangeSymbol;
     private SecurityTradingStatus _securityTradingStatus;
+    private ExchangeCode _securityExchange;
 
-    private byte           _flags          = 0;
+    private int           _flags          = 0;
 
    // Getters and Setters
     @Override public final SecurityIDSource getSecurityIDSource() { return _securityIDSource; }
     @Override public final void setSecurityIDSource( SecurityIDSource val ) { _securityIDSource = val; }
 
-    @Override public final long getSecurityID() { return _securityID; }
-    @Override public final void setSecurityID( long val ) { _securityID = val; }
+    @Override public final ViewString getSecurityID() { return _securityID; }
+
+    @Override public final void setSecurityID( byte[] buf, int offset, int len ) { _securityID.setValue( buf, offset, len ); }
+    @Override public final ReusableString getSecurityIDForUpdate() { return _securityID; }
 
     @Override public final int getTradeDate() { return _TradeDate; }
     @Override public final void setTradeDate( int val ) { _TradeDate = val; }
@@ -78,13 +73,14 @@ public final class SecurityStatusImpl implements BaseMDResponse, SecurityStatusW
     @Override public final void setSymbol( byte[] buf, int offset, int len ) { _symbol.setValue( buf, offset, len ); }
     @Override public final ReusableString getSymbolForUpdate() { return _symbol; }
 
-    @Override public final ViewString getSecurityExchange() { return _securityExchange; }
-
-    @Override public final void setSecurityExchange( byte[] buf, int offset, int len ) { _securityExchange.setValue( buf, offset, len ); }
-    @Override public final ReusableString getSecurityExchangeForUpdate() { return _securityExchange; }
+    @Override public final ExchangeCode getSecurityExchange() { return _securityExchange; }
+    @Override public final void setSecurityExchange( ExchangeCode val ) { _securityExchange = val; }
 
     @Override public final int getMsgSeqNum() { return _msgSeqNum; }
     @Override public final void setMsgSeqNum( int val ) { _msgSeqNum = val; }
+
+    @Override public final long getEventTimestamp() { return _eventTimestamp; }
+    @Override public final void setEventTimestamp( long val ) { _eventTimestamp = val; }
 
 
     @Override public final boolean getPossDupFlag() { return isFlagSet( MsgFlag.PossDupFlag ); }
@@ -95,7 +91,7 @@ public final class SecurityStatusImpl implements BaseMDResponse, SecurityStatusW
     @Override
     public final void reset() {
         _securityIDSource = SecurityIDSource.ExchangeSymbol;
-        _securityID = Constants.UNSET_LONG;
+        _securityID.reset();
         _TradeDate = Constants.UNSET_INT;
         _highPx = Constants.UNSET_DOUBLE;
         _lowPx = Constants.UNSET_DOUBLE;
@@ -103,8 +99,9 @@ public final class SecurityStatusImpl implements BaseMDResponse, SecurityStatusW
         _haltReason = Constants.UNSET_INT;
         _SecurityTradingEvent = Constants.UNSET_INT;
         _symbol.reset();
-        _securityExchange.reset();
+        _securityExchange = null;
         _msgSeqNum = Constants.UNSET_INT;
+        _eventTimestamp = Constants.UNSET_LONG;
         _flags = 0;
         _next = null;
         _nextMessage = null;
@@ -132,22 +129,22 @@ public final class SecurityStatusImpl implements BaseMDResponse, SecurityStatusW
     }
 
     @Override
-    public final Message getNextQueueEntry() {
+    public final Event getNextQueueEntry() {
         return _nextMessage;
     }
 
     @Override
-    public final void attachQueue( Message nxt ) {
+    public final void attachQueue( Event nxt ) {
         _nextMessage = nxt;
     }
 
     @Override
-    public final MessageHandler getMessageHandler() {
+    public final EventHandler getEventHandler() {
         return _messageHandler;
     }
 
     @Override
-    public final void setMessageHandler( MessageHandler handler ) {
+    public final void setEventHandler( EventHandler handler ) {
         _messageHandler = handler;
     }
 
@@ -155,7 +152,7 @@ public final class SecurityStatusImpl implements BaseMDResponse, SecurityStatusW
    // Helper methods
     @Override
     public void setFlag( MsgFlag flag, boolean isOn ) {
-        _flags = (byte) MsgFlag.setFlag( _flags, flag, isOn );
+        _flags = MsgFlag.setFlag( _flags, flag, isOn );
     }
 
     @Override
@@ -164,28 +161,99 @@ public final class SecurityStatusImpl implements BaseMDResponse, SecurityStatusW
     }
 
     @Override
-    public String toString() {
-        ReusableString buf = new ReusableString();
-        dump( buf );
-        return buf.toString();
+    public int getFlags() {
+        return _flags;
     }
 
     @Override
-    public final void dump( ReusableString out ) {
+    public String toString() {
+        ReusableString buf = TLC.instance().pop();
+        dump( buf );
+        String rs = buf.toString();
+        TLC.instance().pushback( buf );
+        return rs;
+    }
+
+    @Override
+    public final void dump( final ReusableString out ) {
         out.append( "SecurityStatusImpl" ).append( ' ' );
-        out.append( ", securityIDSource=" );
-        if ( getSecurityIDSource() != null ) getSecurityIDSource().id( out );
-        out.append( ", securityID=" ).append( getSecurityID() );
-        out.append( ", TradeDate=" ).append( getTradeDate() );
-        out.append( ", highPx=" ).append( getHighPx() );
-        out.append( ", lowPx=" ).append( getLowPx() );
-        out.append( ", securityTradingStatus=" ).append( getSecurityTradingStatus() );
-        out.append( ", haltReason=" ).append( getHaltReason() );
-        out.append( ", SecurityTradingEvent=" ).append( getSecurityTradingEvent() );
-        out.append( ", symbol=" ).append( getSymbol() );
-        out.append( ", securityExchange=" ).append( getSecurityExchange() );
-        out.append( ", msgSeqNum=" ).append( getMsgSeqNum() );
+        if ( getSecurityIDSource() != null )             out.append( ", securityIDSource=" );
+        if ( getSecurityIDSource() != null ) out.append( getSecurityIDSource().id() );
+        if ( getSecurityID().length() > 0 )             out.append( ", securityID=" ).append( getSecurityID() );
+        if ( Constants.UNSET_INT != getTradeDate() && 0 != getTradeDate() )             out.append( ", TradeDate=" ).append( getTradeDate() );
+        if ( Utils.hasVal( getHighPx() ) ) out.append( ", highPx=" ).append( getHighPx() );
+        if ( Utils.hasVal( getLowPx() ) ) out.append( ", lowPx=" ).append( getLowPx() );
+        if ( getSecurityTradingStatus() != null )             out.append( ", securityTradingStatus=" ).append( getSecurityTradingStatus() );
+        if ( Constants.UNSET_INT != getHaltReason() && 0 != getHaltReason() )             out.append( ", haltReason=" ).append( getHaltReason() );
+        if ( Constants.UNSET_INT != getSecurityTradingEvent() && 0 != getSecurityTradingEvent() )             out.append( ", SecurityTradingEvent=" ).append( getSecurityTradingEvent() );
+        if ( getSymbol().length() > 0 )             out.append( ", symbol=" ).append( getSymbol() );
+        if ( getSecurityExchange() != null )             out.append( ", securityExchange=" );
+        if ( getSecurityExchange() != null ) out.append( getSecurityExchange().id() );
+        if ( Constants.UNSET_INT != getMsgSeqNum() && 0 != getMsgSeqNum() )             out.append( ", msgSeqNum=" ).append( getMsgSeqNum() );
         out.append( ", possDupFlag=" ).append( getPossDupFlag() );
+        if ( Constants.UNSET_LONG != getEventTimestamp() && 0 != getEventTimestamp() ) {
+            out.append( ", eventTimestamp=" );
+            TimeUtilsFactory.safeTimeUtils().unixTimeToLocalTimestamp( out, getEventTimestamp() );
+            out.append( " / " );
+            TimeUtilsFactory.safeTimeUtils().unixTimeToUTCTimestamp( out, getEventTimestamp() );
+            out.append( " ( " );
+            out.append( getEventTimestamp() ).append( " ) " );
+        }
+    }
+
+    @Override public final void snapTo( SecurityStatus dest ) {
+        ((SecurityStatusImpl)dest).deepCopyFrom( this );
+    }
+
+    /** DEEP copy all members ... INCLUDING subEvents : WARNING CREATES NEW OBJECTS SO MONITOR FOR GC */
+    @Override public final void deepCopyFrom( SecurityStatus src ) {
+        setSecurityIDSource( src.getSecurityIDSource() );
+        getSecurityIDForUpdate().copy( src.getSecurityID() );
+        setTradeDate( src.getTradeDate() );
+        setHighPx( src.getHighPx() );
+        setLowPx( src.getLowPx() );
+        setSecurityTradingStatus( src.getSecurityTradingStatus() );
+        setHaltReason( src.getHaltReason() );
+        setSecurityTradingEvent( src.getSecurityTradingEvent() );
+        getSymbolForUpdate().copy( src.getSymbol() );
+        setSecurityExchange( src.getSecurityExchange() );
+        setMsgSeqNum( src.getMsgSeqNum() );
+        setPossDupFlag( src.getPossDupFlag() );
+        setEventTimestamp( src.getEventTimestamp() );
+    }
+
+    /** shallow copy all primitive members ... EXCLUDING subEvents */
+    @Override public final void shallowCopyFrom( SecurityStatus src ) {
+        setSecurityIDSource( src.getSecurityIDSource() );
+        getSecurityIDForUpdate().copy( src.getSecurityID() );
+        setTradeDate( src.getTradeDate() );
+        setHighPx( src.getHighPx() );
+        setLowPx( src.getLowPx() );
+        setSecurityTradingStatus( src.getSecurityTradingStatus() );
+        setHaltReason( src.getHaltReason() );
+        setSecurityTradingEvent( src.getSecurityTradingEvent() );
+        getSymbolForUpdate().copy( src.getSymbol() );
+        setSecurityExchange( src.getSecurityExchange() );
+        setMsgSeqNum( src.getMsgSeqNum() );
+        setPossDupFlag( src.getPossDupFlag() );
+        setEventTimestamp( src.getEventTimestamp() );
+    }
+
+    /** shallow copy all primitive members ... EXCLUDING subEvents */
+    @Override public final void shallowMergeFrom( SecurityStatus src ) {
+        if ( getSecurityIDSource() != null )  setSecurityIDSource( src.getSecurityIDSource() );
+        if ( src.getSecurityID().length() > 0 ) getSecurityIDForUpdate().copy( src.getSecurityID() );
+        if ( Constants.UNSET_INT != src.getTradeDate() ) setTradeDate( src.getTradeDate() );
+        if ( Utils.hasVal( src.getHighPx() ) ) setHighPx( src.getHighPx() );
+        if ( Utils.hasVal( src.getLowPx() ) ) setLowPx( src.getLowPx() );
+        setSecurityTradingStatus( src.getSecurityTradingStatus() );
+        if ( Constants.UNSET_INT != src.getHaltReason() ) setHaltReason( src.getHaltReason() );
+        if ( Constants.UNSET_INT != src.getSecurityTradingEvent() ) setSecurityTradingEvent( src.getSecurityTradingEvent() );
+        if ( src.getSymbol().length() > 0 ) getSymbolForUpdate().copy( src.getSymbol() );
+        if ( getSecurityExchange() != null )  setSecurityExchange( src.getSecurityExchange() );
+        if ( Constants.UNSET_INT != src.getMsgSeqNum() ) setMsgSeqNum( src.getMsgSeqNum() );
+        setPossDupFlag( src.getPossDupFlag() );
+        if ( Constants.UNSET_LONG != src.getEventTimestamp() ) setEventTimestamp( src.getEventTimestamp() );
     }
 
 }

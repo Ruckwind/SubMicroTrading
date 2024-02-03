@@ -1,0 +1,235 @@
+<!--suppress ALL -->
+
+
+@SECTION FIX_DROP_COPY_MODELS START
+
+                    <!--
+
+                        Drop Copy Fix 4.4 + Extensions eg algo state
+
+                    -->
+
+            <FixModel id="DC4.4" modelVersionNumber="1.0" extends="4.4">
+                <Attribute name="FixVersion" value="DC4.4"/>
+                <Attribute name="FixHelper" value="com.rr.fix.codec.helper.FixCodecHelperDC44"/>
+
+                <Dictionary>
+                    <!-- type ::= string | price | number | length | quantity | currency | ch | bool | seqNum | UTCTimestamp -->
+
+                    <Tag id="9001"    name="idOfExportComponent"                                type="string"/>
+                    <Tag id="9002"    name="timestamp"                              type="UTCTimestamp"/>
+                    <Tag id="9003"    name="algoEventSeqNum"                        type="number"/>
+                    <Tag id="9004"    name="lastTickId"                             type="seqnum"/>
+                    <Tag id="9005"    name="pnl"                                    type="price"/>
+                    <Tag id="9006"    name="noInstEntries"                          type="number"/>
+                    <Tag id="9008"    name="fromLongRealisedTotalQty"               type="number"/>
+                    <Tag id="9009"    name="fromLongRealisedTotalLongValue"         type="price"/>
+                    <Tag id="9010"    name="fromLongRealisedTotalShortValue"        type="price"/>
+                    <Tag id="9011"    name="fromLongRealisedTotalLongAvePrice"      type="price"/>
+                    <Tag id="9012"    name="fromLongRealisedTotalShortAvePrice"     type="price"/>
+                    <Tag id="9013"    name="fromLongRealisedTotalPnL"               type="price"/>
+                    <Tag id="9014"    name="fromShortRealisedTotalQty"              type="number"/>
+                    <Tag id="9015"    name="fromShortRealisedTotalLongValue"        type="price"/>
+                    <Tag id="9016"    name="fromShortRealisedTotalShortValue"       type="price"/>
+                    <Tag id="9017"    name="fromShortRealisedTotalLongAvePrice"     type="price"/>
+                    <Tag id="9018"    name="fromShortRealisedTotalShortAvePrice"    type="price"/>
+                    <Tag id="9019"    name="fromShortRealisedTotalPnL"              type="price"/>
+                    <Tag id="9020"    name="unrealisedTotalValue"                   type="price"/>
+                    <Tag id="9021"    name="unrealisedTotalAvePrice"                type="price"/>
+                    <Tag id="9022"    name="unrealisedTotalPnL"                     type="price"/>
+                    <Tag id="9023"    name="lastPrice"                              type="price"/>
+                    <Tag id="9024"    name="position"                               type="number"/>
+                    <Tag id="9025"    name="totalTradeQty"                          type="number"/>
+                    <Tag id="9026"    name="totalTradeVal"                          type="price"/>
+                    <Tag id="9027"    name="averagePrice"                           type="price"/>
+                    <Tag id="9028"    name="pointValue"                             type="price"/>
+                    <Tag id="9029"    name="totalLongOrders"                        type="number"/>
+                    <Tag id="9030"    name="totalShortOrders"                       type="number"/>
+                    <Tag id="9031"    name="totLongContractsUnwound"                type="number"/>
+                    <Tag id="9032"    name="totShortContractsUnwound"               type="number"/>
+                    <Tag id="9033"    name="bidPx"                                  type="price"/>
+                    <Tag id="9034"    name="askPx"                                  type="price"/>
+                    <Tag id="9035"    name="lastDecidedPosition"                    type="price"/>
+                    <Tag id="9036"    name="unwindPnl"                              type="price"/>
+                    <Tag id="9037"    name="totLongOpenQty"                         type="number"/>
+                    <Tag id="9038"    name="totShortOpenQty"                        type="number"/>
+                    <Tag id="9039"    name="realisedTotalPnL"                       type="price"/>
+                    <Tag id="9040"    name="liveStartTimestamp"                     type="UTCTimestamp"/>
+                    <Tag id="9041"    name="status"                                 type="ch"/>
+                    <Tag id="9042"    name="algoId"                                 type="string"/>
+                    <Tag id="9043"    name="btStartTimestamp"                       type="UTCTimestamp"/>
+                    <Tag id="9044"    name="btEndTimestamp"                         type="UTCTimestamp"/>
+                    <Tag id="9045"    name="strategyDefinition"                     type="string"/>
+                    <Tag id="9046"    name="userName"                               type="string"/>
+                    <Tag id="9047"    name="numTrades"                              type="number"/>
+                    <Tag id="9048"    name="numStrategies"                          type="number"/>
+                    <Tag id="9049"    name="stratTimestamp"                         type="UTCTimestamp"/>
+                    <Tag id="9050"    name="id"                                     type="number"/>
+                    <Tag id="9051"    name="liveEndTimestamp"                       type="UTCTimestamp"/>
+                    <Tag id="9052"    name="publishSeqNum"                          type="number"/>
+                    <Tag id="9053"    name="stratTimeZone"                          type="string"/>
+                    <Tag id="9054"    name="stratStateMsgsInGrp"                    type="number"/>
+                    <Tag id="9055"    name="curStratStateMsgInGrp"                  type="number"/>
+                    <Tag id="9056"    name="isDeltaMode"                            type="bool"/>
+                    <Tag id="9057"    name="isActiveTracker"                        type="bool"/>
+                    <Tag id="9058"    name="unrealisedTotalPnLMin"                  type="price"/>
+                    <Tag id="9059"    name="fromLongRealisedTotalPnLMin"            type="price"/>
+                    <Tag id="9060"    name="fromShortRealisedTotalPnLMin"           type="price"/>
+                    <Tag id="9061"    name="unrealisedTotalPnLMax"                  type="price"/>
+                    <Tag id="9062"    name="fromLongRealisedTotalPnLMax"            type="price"/>
+                    <Tag id="9063"    name="fromShortRealisedTotalPnLMax"           type="price"/>
+                    <Tag id="9064"    name="cashAllocation"                         type="price"/>
+                    <Tag id="9065"    name="leverage"                               type="price"/>
+                    <Tag id="9066"    name="cashBalance"                            type="price"/>
+                    <Tag id="9067"    name="cumCashAdj"                             type="price"/>
+                    <Tag id="9068"    name="sicFlags"                               type="number"/>
+
+                </Dictionary>
+
+                <FixMessage id="AppRun" msgType="U1">
+                    <Tag id="9046"/>
+                    <Tag id="9040"/>
+                    <Tag id="9041"/>
+                    <Tag id="9051"/>
+                    <Tag id="9022"/>
+                    <Tag id="9039"/>
+                    <Tag id="9047"/>
+                    <Tag id="9048"/>
+                </FixMessage>
+
+                <SubFixMessage id="StratInstrument">
+                    <Tag id="22"/>
+                    <Tag id="48"/>
+                    <Tag id="207"/>
+                </SubFixMessage>
+
+                <FixMessage id="StrategyRun" msgType="U2">
+                    <Tag id="9001"/>
+                    <Tag id="9046"/>
+                    <Tag id="9040"/>
+                    <Tag id="9041"/>
+                    <Tag id="9042"/>
+                    <Tag id="9053"/>
+                    <Tag id="9043"/>
+                    <Tag id="9044"/>
+                    <Tag id="9022"/>
+                    <Tag id="9039"/>
+                    <Tag id="9047"/>
+                    <Tag id="9045"/>
+                    <Tag id="9006" subGrp="StratInstrument" modelAttr="instruments"/>
+                </FixMessage>
+
+                <SubFixMessage id="StratInstrumentState">
+                    <Tag id="22"/>
+                    <Tag id="48"/>
+                    <Tag id="207"/>
+                    <Tag id="9004"/>
+                    <Tag id="9008"/>
+                    <Tag id="9009"/>
+                    <Tag id="9010"/>
+                    <Tag id="9011"/>
+                    <Tag id="9012"/>
+                    <Tag id="9013"/>
+                    <Tag id="9014"/>
+                    <Tag id="9015"/>
+                    <Tag id="9016"/>
+                    <Tag id="9017"/>
+                    <Tag id="9018"/>
+                    <Tag id="9019"/>
+                    <Tag id="9020"/>
+                    <Tag id="9021"/>
+                    <Tag id="9022"/>
+                    <Tag id="9023"/>
+                    <Tag id="9024"/>
+                    <Tag id="9025"/>
+                    <Tag id="9026"/>
+                    <Tag id="9027"/>
+                    <Tag id="9028"/>
+                    <Tag id="9029"/>
+                    <Tag id="9030"/>
+                    <Tag id="9031"/>
+                    <Tag id="9032"/>
+                    <Tag id="9033"/>
+                    <Tag id="9034"/>
+                    <Tag id="9035"/>
+                    <Tag id="9036"/>
+                    <Tag id="9037"/>
+                    <Tag id="9038"/>
+                    <Tag id="9049"/>
+                    <Tag id="9052"/>
+                    <Tag id="9057"/>
+                    <Tag id="9058"/>
+                    <Tag id="9059"/>
+                    <Tag id="9060"/>
+                    <Tag id="9061"/>
+                    <Tag id="9062"/>
+                    <Tag id="9063"/>
+                    <Tag id="9064"/>
+                    <Tag id="9065"/>
+                </SubFixMessage>
+
+                <FixMessage id="StrategyState" msgType="U3">
+                    <Tag id="9046"/>
+                    <Tag id="9001"/>
+                    <Tag id="9040"/>
+                    <Tag id="9041"/>
+                    <Tag id="9049"/>
+                    <Tag id="9003"/>
+                    <Tag id="9004"/>
+                    <Tag id="9022"/>
+                    <Tag id="9039"/>
+
+                    <Tag id="9056"/>
+                    <Tag id="9054"/>
+                    <Tag id="9055"/>
+
+                    <Tag id="9006" subGrp="StratInstrumentState" modelAttr="instState"/>
+                </FixMessage>
+
+                <FixMessage id="BaseExecRpt">
+                    <Tag id="11" mand="Y"/> <!-- not mand in fix spec but expected by clients -->
+                    <Tag id="17"/>
+                    <Tag id="37" mand="Y"/>
+                    <Tag id="39" mand="Y"/>
+                    <Tag id="150" mand="Y"/>
+                    <Tag id="38"/>
+                    <Tag id="44"/>
+                    <Tag id="54" mand="Y"/>
+                    <Tag id="55"/>
+                    <Tag id="15"/>
+                    <Tag id="1"/>
+                    <Tag id="40"/>
+                    <Tag id="59"/>
+                    <Tag id="22"/>
+                    <Tag id="48"/>
+                    <Tag id="60"/>
+                    <Tag id="6"/>
+                    <Tag id="14"/>
+                    <Tag id="151"/>
+                    <Tag id="58"/>
+                </FixMessage>
+
+                <FixMessage id="BaseTrade" extends="BaseExecRpt">
+                    <Tag id="32"/>
+                    <Tag id="31"/>
+                    <Tag id="30"/>
+                    <Tag id="107"/>
+                    <Tag id="120"/>
+                    <Tag id="442"/>
+                    <Tag id="851"/>
+                </FixMessage>
+
+                <FixMessage id="Trade" extends="BaseTrade" msgType="8" execType="Trade">
+                </FixMessage>
+
+                <FixMessage id="TradeCorrect" extends="BaseTrade" msgType="8" execType="TradeCorrect">
+                    <Tag id="19"/>
+                </FixMessage>
+
+                <FixMessage id="TradeCancel" extends="BaseTrade" msgType="8" execType="TradeCancel">
+                    <Tag id="19"/>
+                </FixMessage>
+
+            </FixModel>
+
+@SECTION FIX_DROP_COPY_MODELS END

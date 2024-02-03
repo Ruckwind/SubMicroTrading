@@ -1,16 +1,14 @@
-/*******************************************************************************
- * Copyright (c) 2015 Low Latency Trading Limited  :  Author Richard Rose
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at	http://www.apache.org/licenses/LICENSE-2.0
- * Unless required by applicable law or agreed to in writing,  software distributed under the License 
- * is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and limitations under the License.
- *******************************************************************************/
 package com.rr.model.generated.codec;
+
+/*
+Copyright 2015 Low Latency Trading Limited
+Author Richard Rose
+*/
 
 import java.util.HashMap;
 import java.util.Map;
 import com.rr.core.lang.*;
+import com.rr.core.utils.*;
 import com.rr.core.model.*;
 import com.rr.core.pool.SuperpoolManager;
 import com.rr.core.pool.SuperPool;
@@ -48,12 +46,13 @@ public final class CMESimpleBinaryEncoder implements com.rr.core.codec.binary.sb
     private static final byte      DEFAULT_MDEntryType = 0x00;
 
     private final byte[]                  _buf;
+    private final String                  _id;
     private final int                     _offset;
     private final ZString                 _binaryVersion;
 
     private BinaryEncodeBuilder     _builder;
 
-    private       TimeZoneCalculator      _tzCalculator = new TimeZoneCalculator();
+    private       TimeUtils               _tzCalculator = TimeUtilsFactory.createTimeUtils();
     private       SingleByteLookup        _sv;
     private       TwoByteLookup           _tv;
     private       MultiByteLookup         _mv;
@@ -62,10 +61,13 @@ public final class CMESimpleBinaryEncoder implements com.rr.core.codec.binary.sb
     private boolean                 _debug = false;
 
    // Constructors
-    public CMESimpleBinaryEncoder( byte[] buf, int offset ) {
+    public CMESimpleBinaryEncoder( byte[] buf, int offset ) { this( null, buf, offset ); }
+
+    public CMESimpleBinaryEncoder( String id, byte[] buf, int offset ) {
         if ( buf.length < SizeType.MIN_ENCODE_BUFFER.getSize() ) {
             throw new RuntimeException( "Encode buffer too small only " + buf.length + ", min=" + SizeType.MIN_ENCODE_BUFFER.getSize() );
         }
+        _id = id;
         _buf = buf;
         _offset = offset;
         _binaryVersion   = new ViewString( "1");
@@ -76,7 +78,7 @@ public final class CMESimpleBinaryEncoder implements com.rr.core.codec.binary.sb
    // encode methods
 
     @Override
-    public final void encode( final Message msg ) {
+    public final void encode( final Event msg ) {
         switch( msg.getReusableType().getSubId() ) {
         case EventIds.ID_MDINCREFRESH:
             encodeMDIncrementalRefreshReal( (MDIncRefresh) msg );
@@ -90,8 +92,8 @@ public final class CMESimpleBinaryEncoder implements com.rr.core.codec.binary.sb
         case EventIds.ID_SECURITYDEFINITION:
             encodeMDInstrumentDefinition( (SecurityDefinition) msg );
             break;
-        case 82:
-        case 83:
+        case 54:
+        case 55:
             _builder.start();
             break;
         default:
@@ -115,14 +117,14 @@ public final class CMESimpleBinaryEncoder implements com.rr.core.codec.binary.sb
     }
 
     private void setBuilder() {
-        _builder = (_debug) ? new DebugBinaryEncodeBuilder<com.rr.codec.emea.exchange.cme.sbe.SBEEncodeBuilderImpl>( _dump, new com.rr.codec.emea.exchange.cme.sbe.SBEEncodeBuilderImpl( _buf, _offset, _binaryVersion ) )
+        _builder = (_debug) ? new DebugBinaryEncodeBuilder<>( _dump, new com.rr.codec.emea.exchange.cme.sbe.SBEEncodeBuilderImpl( _buf, _offset, _binaryVersion ) )
                             : new com.rr.codec.emea.exchange.cme.sbe.SBEEncodeBuilderImpl( _buf, _offset, _binaryVersion );
     }
 
 
     public final void encodeMDIncrementalRefreshReal( final MDIncRefresh msg ) {
         final int startRootBlockIdx = _builder.getCurrentIndex();
-        final int now = _tzCalculator.getNowUTC();
+        final long now = _tzCalculator.getNowAsInternalTime();
         if ( _debug ) {
             _dump.append( "  encodeMap=" ).append( "MDIncrementalRefreshReal" ).append( "  rootBlockLen=" ).append( "14" ).append( "  eventType=" ).append( "MDIncRefresh" ).append( " : " );
         ((SBEEncodeBuilderImpl)_builder).setNextBlockLen( (short)14 );
@@ -130,7 +132,7 @@ public final class CMESimpleBinaryEncoder implements com.rr.core.codec.binary.sb
         }
 
         if ( _debug ) _dump.append( "\nField: " ).append( "sendingTime" ).append( " : " );
-        _builder.encodeTimestampUTC( (int)msg.getSendingTime() );
+        _builder.encodeFiller( 8 );    // sendingTime
         if ( _debug ) _dump.append( "\nField: " ).append( "TimeBracket" ).append( " : " );
         _builder.encodeInt( Constants.UNSET_INT );    // TimeBracket
         if ( _debug ) _dump.append( "\nField: " ).append( "MatchEventStartIndicator" ).append( " : " );
@@ -153,15 +155,15 @@ public final class CMESimpleBinaryEncoder implements com.rr.core.codec.binary.sb
                 if ( _debug ) _dump.append( "\nField: " ).append( "MDEntryType" ).append( " : " );
                 _builder.encodeByte( transformMDEntryType( tmpMDEntriesReal.getMdEntryType() ) );
                 if ( _debug ) _dump.append( "\nField: " ).append( "SecurityID" ).append( " : " );
-                _builder.encodeInt( (int)tmpMDEntriesReal.getSecurityID() );
+                _builder.encodeStringAsInt( tmpMDEntriesReal.getSecurityID() );
                 if ( _debug ) _dump.append( "\nField: " ).append( "RtpSeq" ).append( " : " );
-                _builder.encodeInt( (int)tmpMDEntriesReal.getRepeatSeq() );
+                _builder.encodeInt( tmpMDEntriesReal.getRepeatSeq() );
                 if ( _debug ) _dump.append( "\nField: " ).append( "MDEntryPx" ).append( " : " );
                 _builder.encodeDecimal( tmpMDEntriesReal.getMdEntryPx() );
                 if ( _debug ) _dump.append( "\nField: " ).append( "MDEntrySize" ).append( " : " );
-                _builder.encodeInt( (int)tmpMDEntriesReal.getMdEntrySize() );
+                _builder.encodeInt( tmpMDEntriesReal.getMdEntrySize() );
                 if ( _debug ) _dump.append( "\nField: " ).append( "NumberOfOrders" ).append( " : " );
-                _builder.encodeInt( (int)tmpMDEntriesReal.getNumberOfOrders() );
+                _builder.encodeInt( tmpMDEntriesReal.getNumberOfOrders() );
                 if ( _debug ) _dump.append( "\nField: " ).append( "MDPriceLevel" ).append( " : " );
                 _builder.encodeByte( (byte)tmpMDEntriesReal.getMdPriceLevel() );
 
@@ -178,7 +180,7 @@ public final class CMESimpleBinaryEncoder implements com.rr.core.codec.binary.sb
 
     public final void encodeMDIncrementalRefreshTrade( final MDIncRefresh msg ) {
         final int startRootBlockIdx = _builder.getCurrentIndex();
-        final int now = _tzCalculator.getNowUTC();
+        final long now = _tzCalculator.getNowAsInternalTime();
         if ( _debug ) {
             _dump.append( "  encodeMap=" ).append( "MDIncrementalRefreshTrade" ).append( "  rootBlockLen=" ).append( "14" ).append( "  eventType=" ).append( "MDIncRefresh" ).append( " : " );
         ((SBEEncodeBuilderImpl)_builder).setNextBlockLen( (short)14 );
@@ -186,7 +188,7 @@ public final class CMESimpleBinaryEncoder implements com.rr.core.codec.binary.sb
         }
 
         if ( _debug ) _dump.append( "\nField: " ).append( "sendingTime" ).append( " : " );
-        _builder.encodeTimestampUTC( (int)msg.getSendingTime() );
+        _builder.encodeFiller( 8 );    // sendingTime
         if ( _debug ) _dump.append( "\nField: " ).append( "TimeBracket" ).append( " : " );
         _builder.encodeInt( Constants.UNSET_INT );    // TimeBracket
         if ( _debug ) _dump.append( "\nField: " ).append( "MatchEventStartIndicator" ).append( " : " );
@@ -207,17 +209,17 @@ public final class CMESimpleBinaryEncoder implements com.rr.core.codec.binary.sb
                 if ( _debug ) _dump.append( "\nField: " ).append( "MDUpdateAction" ).append( " : " );
                 _builder.encodeByte( transformMDUpdateAction( tmpMDEntriesTrade.getMdUpdateAction() ) );
                 if ( _debug ) _dump.append( "\nField: " ).append( "SecurityID" ).append( " : " );
-                _builder.encodeInt( (int)tmpMDEntriesTrade.getSecurityID() );
+                _builder.encodeStringAsInt( tmpMDEntriesTrade.getSecurityID() );
                 if ( _debug ) _dump.append( "\nField: " ).append( "RtpSeq" ).append( " : " );
-                _builder.encodeInt( (int)tmpMDEntriesTrade.getRepeatSeq() );
+                _builder.encodeInt( tmpMDEntriesTrade.getRepeatSeq() );
                 if ( _debug ) _dump.append( "\nField: " ).append( "MDEntryPx" ).append( " : " );
                 _builder.encodeDecimal( tmpMDEntriesTrade.getMdEntryPx() );
                 if ( _debug ) _dump.append( "\nField: " ).append( "MDEntrySize" ).append( " : " );
-                _builder.encodeInt( (int)tmpMDEntriesTrade.getMdEntrySize() );
+                _builder.encodeInt( tmpMDEntriesTrade.getMdEntrySize() );
                 if ( _debug ) _dump.append( "\nField: " ).append( "TradeID" ).append( " : " );
                 _builder.encodeInt( Constants.UNSET_INT );    // TradeID
                 if ( _debug ) _dump.append( "\nField: " ).append( "NumberOfOrders" ).append( " : " );
-                _builder.encodeInt( (int)tmpMDEntriesTrade.getNumberOfOrders() );
+                _builder.encodeInt( tmpMDEntriesTrade.getNumberOfOrders() );
                 if ( _debug ) _dump.append( "\nField: " ).append( "AggressorSide" ).append( " : " );
                 _builder.encodeByte( Constants.UNSET_BYTE );    // AggressorSide
                 if ( _debug ) _dump.append( "\nField: " ).append( "MDEntryTypeTrade" ).append( " : " );
@@ -238,7 +240,7 @@ public final class CMESimpleBinaryEncoder implements com.rr.core.codec.binary.sb
 
     public final void encodeMDIncrementalRefreshVolume( final MDIncRefresh msg ) {
         final int startRootBlockIdx = _builder.getCurrentIndex();
-        final int now = _tzCalculator.getNowUTC();
+        final long now = _tzCalculator.getNowAsInternalTime();
         if ( _debug ) {
             _dump.append( "  encodeMap=" ).append( "MDIncrementalRefreshVolume" ).append( "  rootBlockLen=" ).append( "14" ).append( "  eventType=" ).append( "MDIncRefresh" ).append( " : " );
         ((SBEEncodeBuilderImpl)_builder).setNextBlockLen( (short)14 );
@@ -246,7 +248,7 @@ public final class CMESimpleBinaryEncoder implements com.rr.core.codec.binary.sb
         }
 
         if ( _debug ) _dump.append( "\nField: " ).append( "sendingTime" ).append( " : " );
-        _builder.encodeTimestampUTC( (int)msg.getSendingTime() );
+        _builder.encodeFiller( 8 );    // sendingTime
         if ( _debug ) _dump.append( "\nField: " ).append( "TimeBracket" ).append( " : " );
         _builder.encodeInt( Constants.UNSET_INT );    // TimeBracket
         if ( _debug ) _dump.append( "\nField: " ).append( "MatchEventStartIndicator" ).append( " : " );
@@ -267,11 +269,11 @@ public final class CMESimpleBinaryEncoder implements com.rr.core.codec.binary.sb
                 if ( _debug ) _dump.append( "\nField: " ).append( "MDUpdateAction" ).append( " : " );
                 _builder.encodeByte( transformMDUpdateAction( tmpMDEntriesVolume.getMdUpdateAction() ) );
                 if ( _debug ) _dump.append( "\nField: " ).append( "SecurityID" ).append( " : " );
-                _builder.encodeInt( (int)tmpMDEntriesVolume.getSecurityID() );
+                _builder.encodeStringAsInt( tmpMDEntriesVolume.getSecurityID() );
                 if ( _debug ) _dump.append( "\nField: " ).append( "RtpSeq" ).append( " : " );
-                _builder.encodeInt( (int)tmpMDEntriesVolume.getRepeatSeq() );
+                _builder.encodeInt( tmpMDEntriesVolume.getRepeatSeq() );
                 if ( _debug ) _dump.append( "\nField: " ).append( "MDEntrySize" ).append( " : " );
-                _builder.encodeInt( (int)tmpMDEntriesVolume.getMdEntrySize() );
+                _builder.encodeInt( tmpMDEntriesVolume.getMdEntrySize() );
                 if ( _debug ) _dump.append( "\nField: " ).append( "MDEntryTypeVol" ).append( " : " );
                 final MDEntryType tMdEntryTypeBase = tmpMDEntriesVolume.getMdEntryType();
                 final byte tMdEntryType = ( tMdEntryTypeBase == null ) ? Constants.UNSET_BYTE : transformMDEntryType( tMdEntryTypeBase );
@@ -290,7 +292,7 @@ public final class CMESimpleBinaryEncoder implements com.rr.core.codec.binary.sb
 
     public final void encodeMDSecurityStatus( final SecurityStatus msg ) {
         final int startRootBlockIdx = _builder.getCurrentIndex();
-        final int now = _tzCalculator.getNowUTC();
+        final long now = _tzCalculator.getNowAsInternalTime();
         if ( _debug ) {
             _dump.append( "  encodeMap=" ).append( "MDSecurityStatus" ).append( "  rootBlockLen=" ).append( "29" ).append( "  eventType=" ).append( "SecurityStatus" ).append( " : " );
         ((SBEEncodeBuilderImpl)_builder).setNextBlockLen( (short)29 );
@@ -306,7 +308,7 @@ public final class CMESimpleBinaryEncoder implements com.rr.core.codec.binary.sb
         if ( _debug ) _dump.append( "\nField: " ).append( "Asset" ).append( " : " );
         _builder.encodeFiller( 6 );    // Asset
         if ( _debug ) _dump.append( "\nField: " ).append( "SecurityID" ).append( " : " );
-        _builder.encodeInt( (int)msg.getSecurityID() );
+        _builder.encodeStringAsInt( msg.getSecurityID() );
         if ( _debug ) _dump.append( "\nField: " ).append( "SecurityTradingStatus" ).append( " : " );
         final SecurityTradingStatus tSecurityTradingStatusBase = msg.getSecurityTradingStatus();
         final ViewString tSecurityTradingStatus = transformSecurityTradingStatus( msg.getSecurityTradingStatus() );
@@ -324,7 +326,7 @@ public final class CMESimpleBinaryEncoder implements com.rr.core.codec.binary.sb
 
     public final void encodeMDSnapshotRefresh( final MDSnapshotFullRefresh msg ) {
         final int startRootBlockIdx = _builder.getCurrentIndex();
-        final int now = _tzCalculator.getNowUTC();
+        final long now = _tzCalculator.getNowAsInternalTime();
         if ( _debug ) {
             _dump.append( "  encodeMap=" ).append( "MDSnapshotRefresh" ).append( "  rootBlockLen=" ).append( "14" ).append( "  eventType=" ).append( "MDSnapshotFullRefresh" ).append( " : " );
         ((SBEEncodeBuilderImpl)_builder).setNextBlockLen( (short)14 );
@@ -332,7 +334,7 @@ public final class CMESimpleBinaryEncoder implements com.rr.core.codec.binary.sb
         }
 
         if ( _debug ) _dump.append( "\nField: " ).append( "sendingTime" ).append( " : " );
-        _builder.encodeTimestampUTC( (int)msg.getSendingTime() );
+        _builder.encodeFiller( 8 );    // sendingTime
         if ( _debug ) _dump.append( "\nField: " ).append( "TimeBracket" ).append( " : " );
         _builder.encodeInt( Constants.UNSET_INT );    // TimeBracket
         if ( _debug ) _dump.append( "\nField: " ).append( "MatchEventStartIndicator" ).append( " : " );
@@ -358,7 +360,7 @@ public final class CMESimpleBinaryEncoder implements com.rr.core.codec.binary.sb
                 if ( _debug ) _dump.append( "\nField: " ).append( "MDEntryPx" ).append( " : " );
                 _builder.encodeDecimal( tmpMDEntriesSnap.getMdEntryPx() );
                 if ( _debug ) _dump.append( "\nField: " ).append( "MDEntrySize" ).append( " : " );
-                _builder.encodeInt( (int)tmpMDEntriesSnap.getMdEntrySize() );
+                _builder.encodeInt( tmpMDEntriesSnap.getMdEntrySize() );
                 if ( _debug ) _dump.append( "\nField: " ).append( "NumberOfOrders" ).append( " : " );
                 _builder.encodeInt( Constants.UNSET_INT );    // NumberOfOrders
                 if ( _debug ) _dump.append( "\nField: " ).append( "MDPriceLevel" ).append( " : " );
@@ -375,7 +377,7 @@ public final class CMESimpleBinaryEncoder implements com.rr.core.codec.binary.sb
 
     public final void encodeMDIncrementalRefreshStats( final MDIncRefresh msg ) {
         final int startRootBlockIdx = _builder.getCurrentIndex();
-        final int now = _tzCalculator.getNowUTC();
+        final long now = _tzCalculator.getNowAsInternalTime();
         if ( _debug ) {
             _dump.append( "  encodeMap=" ).append( "MDIncrementalRefreshStats" ).append( "  rootBlockLen=" ).append( "14" ).append( "  eventType=" ).append( "MDIncRefresh" ).append( " : " );
         ((SBEEncodeBuilderImpl)_builder).setNextBlockLen( (short)14 );
@@ -383,7 +385,7 @@ public final class CMESimpleBinaryEncoder implements com.rr.core.codec.binary.sb
         }
 
         if ( _debug ) _dump.append( "\nField: " ).append( "sendingTime" ).append( " : " );
-        _builder.encodeTimestampUTC( (int)msg.getSendingTime() );
+        _builder.encodeFiller( 8 );    // sendingTime
         if ( _debug ) _dump.append( "\nField: " ).append( "TimeBracket" ).append( " : " );
         _builder.encodeInt( Constants.UNSET_INT );    // TimeBracket
         if ( _debug ) _dump.append( "\nField: " ).append( "MatchEventStartIndicator" ).append( " : " );
@@ -406,13 +408,13 @@ public final class CMESimpleBinaryEncoder implements com.rr.core.codec.binary.sb
                 if ( _debug ) _dump.append( "\nField: " ).append( "MDEntryType" ).append( " : " );
                 _builder.encodeByte( transformMDEntryType( tmpMDEntriesStats.getMdEntryType() ) );
                 if ( _debug ) _dump.append( "\nField: " ).append( "SecurityID" ).append( " : " );
-                _builder.encodeInt( (int)tmpMDEntriesStats.getSecurityID() );
+                _builder.encodeStringAsInt( tmpMDEntriesStats.getSecurityID() );
                 if ( _debug ) _dump.append( "\nField: " ).append( "RtpSeq" ).append( " : " );
-                _builder.encodeInt( (int)tmpMDEntriesStats.getRepeatSeq() );
+                _builder.encodeInt( tmpMDEntriesStats.getRepeatSeq() );
                 if ( _debug ) _dump.append( "\nField: " ).append( "MDEntryPx" ).append( " : " );
                 _builder.encodeDecimal( tmpMDEntriesStats.getMdEntryPx() );
                 if ( _debug ) _dump.append( "\nField: " ).append( "MDEntrySize" ).append( " : " );
-                _builder.encodeInt( (int)tmpMDEntriesStats.getMdEntrySize() );
+                _builder.encodeInt( tmpMDEntriesStats.getMdEntrySize() );
                 if ( _debug ) _dump.append( "\nField: " ).append( "fillerEntry" ).append( " : " );
                 _builder.encodeFiller( 27 );
 
@@ -429,7 +431,7 @@ public final class CMESimpleBinaryEncoder implements com.rr.core.codec.binary.sb
 
     public final void encodeMDIncrementalRefreshImplied( final MDIncRefresh msg ) {
         final int startRootBlockIdx = _builder.getCurrentIndex();
-        final int now = _tzCalculator.getNowUTC();
+        final long now = _tzCalculator.getNowAsInternalTime();
         if ( _debug ) {
             _dump.append( "  encodeMap=" ).append( "MDIncrementalRefreshImplied" ).append( "  rootBlockLen=" ).append( "14" ).append( "  eventType=" ).append( "MDIncRefresh" ).append( " : " );
         ((SBEEncodeBuilderImpl)_builder).setNextBlockLen( (short)14 );
@@ -437,7 +439,7 @@ public final class CMESimpleBinaryEncoder implements com.rr.core.codec.binary.sb
         }
 
         if ( _debug ) _dump.append( "\nField: " ).append( "sendingTime" ).append( " : " );
-        _builder.encodeTimestampUTC( (int)msg.getSendingTime() );
+        _builder.encodeFiller( 8 );    // sendingTime
         if ( _debug ) _dump.append( "\nField: " ).append( "TimeBracket" ).append( " : " );
         _builder.encodeInt( Constants.UNSET_INT );    // TimeBracket
         if ( _debug ) _dump.append( "\nField: " ).append( "MatchEventStartIndicator" ).append( " : " );
@@ -460,13 +462,13 @@ public final class CMESimpleBinaryEncoder implements com.rr.core.codec.binary.sb
                 if ( _debug ) _dump.append( "\nField: " ).append( "MDEntryType" ).append( " : " );
                 _builder.encodeByte( transformMDEntryType( tmpMDEntriesImplied.getMdEntryType() ) );
                 if ( _debug ) _dump.append( "\nField: " ).append( "SecurityID" ).append( " : " );
-                _builder.encodeInt( (int)tmpMDEntriesImplied.getSecurityID() );
+                _builder.encodeStringAsInt( tmpMDEntriesImplied.getSecurityID() );
                 if ( _debug ) _dump.append( "\nField: " ).append( "RtpSeq" ).append( " : " );
-                _builder.encodeInt( (int)tmpMDEntriesImplied.getRepeatSeq() );
+                _builder.encodeInt( tmpMDEntriesImplied.getRepeatSeq() );
                 if ( _debug ) _dump.append( "\nField: " ).append( "MDEntryPx" ).append( " : " );
                 _builder.encodeDecimal( tmpMDEntriesImplied.getMdEntryPx() );
                 if ( _debug ) _dump.append( "\nField: " ).append( "MDEntrySize" ).append( " : " );
-                _builder.encodeInt( (int)tmpMDEntriesImplied.getMdEntrySize() );
+                _builder.encodeInt( tmpMDEntriesImplied.getMdEntrySize() );
                 if ( _debug ) _dump.append( "\nField: " ).append( "MDPriceLevel" ).append( " : " );
                 _builder.encodeByte( (byte)tmpMDEntriesImplied.getMdPriceLevel() );
 
@@ -483,7 +485,7 @@ public final class CMESimpleBinaryEncoder implements com.rr.core.codec.binary.sb
 
     public final void encodeMDInstrumentDefinition( final SecurityDefinition msg ) {
         final int startRootBlockIdx = _builder.getCurrentIndex();
-        final int now = _tzCalculator.getNowUTC();
+        final long now = _tzCalculator.getNowAsInternalTime();
         if ( _debug ) {
             _dump.append( "  encodeMap=" ).append( "MDInstrumentDefinition" ).append( "  rootBlockLen=" ).append( "246" ).append( "  eventType=" ).append( "SecurityDefinition" ).append( " : " );
         ((SBEEncodeBuilderImpl)_builder).setNextBlockLen( (short)246 );
@@ -497,7 +499,7 @@ public final class CMESimpleBinaryEncoder implements com.rr.core.codec.binary.sb
         final byte tSecurityUpdateActionBytes = ( tSecurityUpdateAction != null ) ? tSecurityUpdateAction.getVal() : 0x00;
         _builder.encodeByte( tSecurityUpdateActionBytes );
         if ( _debug ) _dump.append( "\nField: " ).append( "LastUpdateTime" ).append( " : " );
-        _builder.encodeTimestampUTC( (int)msg.getLastUpdateTime() );
+        _builder.encodeFiller( 8 );    // LastUpdateTime
         if ( _debug ) _dump.append( "\nField: " ).append( "ApplID" ).append( " : " );
         _builder.encodeZStringFixedWidth( msg.getApplID(), 5 );
         if ( _debug ) _dump.append( "\nField: " ).append( "MarketSegmentID" ).append( " : " );
@@ -505,7 +507,7 @@ public final class CMESimpleBinaryEncoder implements com.rr.core.codec.binary.sb
         if ( _debug ) _dump.append( "\nField: " ).append( "Symbol" ).append( " : " );
         _builder.encodeZStringFixedWidth( msg.getSymbol(), 20 );
         if ( _debug ) _dump.append( "\nField: " ).append( "SecurityID" ).append( " : " );
-        _builder.encodeInt( (int)msg.getSecurityID() );
+        _builder.encodeStringAsInt( msg.getSecurityID() );
         if ( _debug ) _dump.append( "\nField: " ).append( "MaturityMonthYear" ).append( " : " );
         _builder.encodeUShort( (short)msg.getMaturityMonthYear() );
         if ( _debug ) _dump.append( "\nField: " ).append( "SecurityGroup" ).append( " : " );
@@ -523,9 +525,11 @@ public final class CMESimpleBinaryEncoder implements com.rr.core.codec.binary.sb
         if ( _debug ) _dump.append( "\nField: " ).append( "UserDefinedInstrument" ).append( " : " );
         _builder.encodeByte( Constants.UNSET_BYTE );    // UserDefinedInstrument
         if ( _debug ) _dump.append( "\nField: " ).append( "UnderlyingProdcut" ).append( " : " );
-        _builder.encodeString( msg.getUnderlyingProduct(), 1 );
+        _builder.encodeByte( Constants.UNSET_BYTE );    // UnderlyingProdcut
         if ( _debug ) _dump.append( "\nField: " ).append( "SecurityExchange" ).append( " : " );
-        _builder.encodeZStringFixedWidth( msg.getSecurityExchange(), 4 );
+        final ExchangeCode tSecurityExchange = msg.getSecurityExchange();
+        final byte[] tSecurityExchangeBytes = ( tSecurityExchange != null ) ? tSecurityExchange.getVal() : null;
+        _builder.encodeZStringFixedWidth( tSecurityExchangeBytes, 0, 4 );
         if ( _debug ) _dump.append( "\nField: " ).append( "SecurityTradingStatus" ).append( " : " );
         final SecurityTradingStatus tSecurityTradingStatusBase = msg.getSecurityTradingStatus();
         final ViewString tSecurityTradingStatus = transformSecurityTradingStatus( msg.getSecurityTradingStatus() );
@@ -595,7 +599,7 @@ public final class CMESimpleBinaryEncoder implements com.rr.core.codec.binary.sb
         if ( _debug ) _dump.append( "\nField: " ).append( "SettlPriceType" ).append( " : " );
         _builder.encodeByte( Constants.UNSET_BYTE );    // SettlPriceType
         if ( _debug ) _dump.append( "\nField: " ).append( "OpenInterestQty" ).append( " : " );
-        _builder.encodeInt( (int)msg.getOpenInterestQty() );
+        _builder.encodeInt( msg.getOpenInterestQty() );
         if ( _debug ) _dump.append( "\nField: " ).append( "ClearedVolume" ).append( " : " );
         _builder.encodeInt( Constants.UNSET_INT );    // ClearedVolume
         if ( _debug ) _dump.append( "\nField: " ).append( "NoUnderlyings" ).append( " : " );
@@ -624,7 +628,7 @@ public final class CMESimpleBinaryEncoder implements com.rr.core.codec.binary.sb
             for( int i=0 ; i < counterLegsGrp ; ++i ) { 
                 final int startBlockIdx = _builder.getCurrentIndex();
                 if ( _debug ) _dump.append( "\nField: " ).append( "LegSecurityID" ).append( " : " );
-                _builder.encodeInt( (int)tmpLegsGrp.getLegSecurityID() );
+                _builder.encodeStringAsInt( tmpLegsGrp.getLegSecurityID() );
                 if ( _debug ) _dump.append( "\nField: " ).append( "LegSide" ).append( " : " );
                 final Side tLegSideBase = tmpLegsGrp.getLegSide();
                 final byte tLegSide = ( tLegSideBase == null ) ? Constants.UNSET_BYTE : transformSide( tLegSideBase );
@@ -667,14 +671,14 @@ public final class CMESimpleBinaryEncoder implements com.rr.core.codec.binary.sb
         if ( _debug ) _dump.append( "\nField: " ).append( "EventsGrp" ).append( " : " );
 
         {
-            SecDefEventsImpl tmpEventsGrp = (SecDefEventsImpl)msg.getEvents();
+            SecDefEventImpl tmpEventsGrp = (SecDefEventImpl)msg.getEvents();
             int counterEventsGrp = msg.getNoEvents();
             for( int i=0 ; i < counterEventsGrp ; ++i ) { 
                 final int startBlockIdx = _builder.getCurrentIndex();
                 if ( _debug ) _dump.append( "\nField: " ).append( "EventType" ).append( " : " );
-                _builder.encodeByte( (byte)tmpEventsGrp.getEventType() );
+                _builder.encodeByte( tmpEventsGrp.getEventType().getVal() );
                 if ( _debug ) _dump.append( "\nField: " ).append( "EventTime" ).append( " : " );
-                _builder.encodeTimestampUTC( (int)tmpEventsGrp.getEventTime() );
+                _builder.encodeTimestampUTC( tmpEventsGrp.getEventTime() );
 
                 final int endBlockIdx = _builder.getCurrentIndex();
                 final int bytesToSkip = 9 - (endBlockIdx - startBlockIdx);
@@ -696,12 +700,14 @@ public final class CMESimpleBinaryEncoder implements com.rr.core.codec.binary.sb
     }
 
     @Override
-    public final void setTimeZoneCalculator( final TimeZoneCalculator calc ) {
+    public final void setTimeUtils( final TimeUtils calc ) {
         _tzCalculator = calc;
-        _builder.setTimeZoneCalculator( calc );
+        _builder.setTimeUtils( calc );
     }
 
-    private static final Map<SecurityTradingStatus, ViewString> _securityTradingStatusMap = new HashMap<SecurityTradingStatus, ViewString>( 28 );
+
+    @Override public String getComponentId() { return _id; }
+    private static final Map<SecurityTradingStatus, ViewString> _securityTradingStatusMap = new HashMap<>( 28 );
     private static final ViewString _securityTradingStatusDefault = new ViewString( "SecurityTradingStatus.Unknown" );
 
     static {
@@ -732,6 +738,37 @@ public final class CMESimpleBinaryEncoder implements com.rr.core.codec.binary.sb
             break;
         }
         throw new RuntimeEncodingException( " unsupported encoding on Side for value " + val );
+    }
+
+    private static final Map<ProductComplex, ViewString> _productComplexMap = new HashMap<>( 68 );
+    private static final ViewString _productComplexDefault = new ViewString( "null" );
+
+    static {
+         _productComplexMap.put( ProductComplex.getVal( "1".getBytes() ), StringFactory.hexToViewString( "0x01" ) );
+         _productComplexMap.put( ProductComplex.getVal( "2".getBytes() ), StringFactory.hexToViewString( "0x02" ) );
+         _productComplexMap.put( ProductComplex.getVal( "3".getBytes() ), StringFactory.hexToViewString( "0x03" ) );
+         _productComplexMap.put( ProductComplex.getVal( "4".getBytes() ), StringFactory.hexToViewString( "0x04" ) );
+         _productComplexMap.put( ProductComplex.getVal( "5".getBytes() ), StringFactory.hexToViewString( "0x05" ) );
+         _productComplexMap.put( ProductComplex.getVal( "6".getBytes() ), StringFactory.hexToViewString( "0x06" ) );
+         _productComplexMap.put( ProductComplex.getVal( "7".getBytes() ), StringFactory.hexToViewString( "0x07" ) );
+         _productComplexMap.put( ProductComplex.getVal( "8".getBytes() ), StringFactory.hexToViewString( "0x08" ) );
+         _productComplexMap.put( ProductComplex.getVal( "9".getBytes() ), StringFactory.hexToViewString( "0x09" ) );
+         _productComplexMap.put( ProductComplex.getVal( "10".getBytes() ), StringFactory.hexToViewString( "0x0A" ) );
+         _productComplexMap.put( ProductComplex.getVal( "11".getBytes() ), StringFactory.hexToViewString( "0x0B" ) );
+         _productComplexMap.put( ProductComplex.getVal( "12".getBytes() ), StringFactory.hexToViewString( "0x0C" ) );
+         _productComplexMap.put( ProductComplex.getVal( "13".getBytes() ), StringFactory.hexToViewString( "0x0D" ) );
+         _productComplexMap.put( ProductComplex.getVal( "14".getBytes() ), StringFactory.hexToViewString( "0x0E" ) );
+         _productComplexMap.put( ProductComplex.getVal( "15".getBytes() ), StringFactory.hexToViewString( "0x0F" ) );
+         _productComplexMap.put( ProductComplex.getVal( "16".getBytes() ), StringFactory.hexToViewString( "0x10" ) );
+         _productComplexMap.put( ProductComplex.getVal( "17".getBytes() ), StringFactory.hexToViewString( "0x11" ) );
+    }
+
+    private ViewString transformProductComplex( ProductComplex intVal ) {
+        ViewString extVal = _productComplexMap.get( intVal );
+        if ( extVal == null ) {
+            throw new RuntimeEncodingException( " unsupported encoding on ProductComplex for value " + intVal );
+        }
+        return extVal;
     }
 
     private byte transformMDUpdateAction( MDUpdateAction val ) {
@@ -792,4 +829,118 @@ public final class CMESimpleBinaryEncoder implements com.rr.core.codec.binary.sb
         throw new RuntimeEncodingException( " unsupported encoding on MDEntryType for value " + val );
     }
 
-    /**     * PostPend  Common Encoder File     *     * expected to contain methods used in hooks from model     */         @Override    public void setNanoStats( boolean nanoTiming ) {        _nanoStats = nanoTiming;    }    private       boolean         _nanoStats    =  true;             private       int             _idx          = 1;        private final ClientCancelRejectFactory _canRejFactory   = SuperpoolManager.instance().getFactory( ClientCancelRejectFactory.class, ClientCancelRejectImpl.class );    private final ClientRejectedFactory     _rejectedFactory = SuperpoolManager.instance().getFactory( ClientRejectedFactory.class,     ClientRejectedImpl.class );     public static final ZString ENCODE_REJ              = new ViewString( "ERJ" );    public static final ZString NONE                    = new ViewString( "NON" );    @Override    public Message unableToSend( Message msg, ZString errMsg ) {        switch( msg.getReusableType().getSubId() ) {        case EventIds.ID_NEWORDERSINGLE:            return rejectNewOrderSingle( (NewOrderSingle) msg, errMsg );        case EventIds.ID_NEWORDERACK:            break;        case EventIds.ID_TRADENEW:            break;        case EventIds.ID_CANCELREPLACEREQUEST:            return rejectCancelReplaceRequest( (CancelReplaceRequest) msg, errMsg );        case EventIds.ID_CANCELREQUEST:            return rejectCancelRequest( (CancelRequest) msg, errMsg );        }                return null;    }    private Message rejectNewOrderSingle( NewOrderSingle nos, ZString errMsg ) {        final ClientRejectedImpl reject = _rejectedFactory.get();        reject.setSrcEvent( nos );        reject.getExecIdForUpdate().copy( ENCODE_REJ ).append( nos.getClOrdId() ).append( ++_idx );        reject.getOrderIdForUpdate().setValue( NONE );        reject.setOrdRejReason( OrdRejReason.Other );        reject.getTextForUpdate().setValue( errMsg );        reject.setOrdStatus( OrdStatus.Rejected );        reject.setExecType( ExecType.Rejected );        reject.setCumQty( 0 );        reject.setAvgPx( 0.0 );        reject.setMessageHandler( nos.getMessageHandler() );        return reject;    }    private Message rejectCancelReplaceRequest( CancelReplaceRequest msg, ZString errMsg ) {        final ClientCancelRejectImpl reject = _canRejFactory.get();                reject.getClOrdIdForUpdate().    setValue( msg.getClOrdId() );        reject.getOrigClOrdIdForUpdate().setValue( msg.getOrigClOrdId() );        reject.getOrderIdForUpdate().    setValue( NONE );        reject.getTextForUpdate().       setValue( errMsg );        reject.setCxlRejResponseTo( CxlRejResponseTo.CancelReplace );        reject.setCxlRejReason(     CxlRejReason.Other );        reject.setOrdStatus(        OrdStatus.Unknown );        return reject;    }    private Message rejectCancelRequest( CancelRequest msg, ZString errMsg ) {        final ClientCancelRejectImpl reject = _canRejFactory.get();                reject.getClOrdIdForUpdate().    setValue( msg.getClOrdId() );        reject.getOrigClOrdIdForUpdate().setValue( msg.getOrigClOrdId() );        reject.getOrderIdForUpdate().    setValue( NONE );        reject.getTextForUpdate().       setValue( errMsg );        reject.setCxlRejResponseTo( CxlRejResponseTo.CancelRequest );        reject.setCxlRejReason(     CxlRejReason.Other );        reject.setOrdStatus(        OrdStatus.Unknown );        return reject;    }    private static final byte[] STATS       = "     [".getBytes();    private static final byte   STAT_DELIM  = ',';    private static final byte   STAT_END    = ']';    public void addStats( ReusableString outBuf, Message msg, long time ) { /* nothing */ }    public void logStats() { /* nothing */ }    public void logLastMsg() { /* nothing */ }    @Override    public void encodeStartPacket( final SBEPacketHeader h ) {        if ( _debug ) _dump.append( "\nField: " ).append( "packetSeqNum" ).append( " : " );        _builder.encodeUInt( h._packetSeqNum );        if ( _debug ) _dump.append( "\nField: " ).append( "sendTimeNanos" ).append( " : " );        _builder.encodeULong( h._sendTimeNanos );    }}
+    /**
+     * PostPend  Common Encoder File
+     *
+     * expected to contain methods used in hooks from model
+     */
+     
+    @Override
+    public void setNanoStats( boolean nanoTiming ) {
+        _nanoStats = nanoTiming;
+    }
+
+    private       boolean         _nanoStats    =  true;
+         
+    private       int             _idx          = 1;
+    
+    private final ClientCancelRejectFactory _canRejFactory   = SuperpoolManager.instance().getFactory( ClientCancelRejectFactory.class, ClientCancelRejectImpl.class );
+    private final ClientRejectedFactory     _rejectedFactory = SuperpoolManager.instance().getFactory( ClientRejectedFactory.class,     ClientRejectedImpl.class ); 
+
+    public static final ZString ENCODE_REJ              = new ViewString( "ERJ" );
+    public static final ZString NONE                    = new ViewString( "NON" );
+
+    @Override
+    public Event unableToSend( Event msg, ZString errMsg ) {
+        switch( msg.getReusableType().getSubId() ) {
+        case EventIds.ID_NEWORDERSINGLE:
+            return rejectNewOrderSingle( (NewOrderSingle) msg, errMsg );
+        case EventIds.ID_NEWORDERACK:
+            break;
+        case EventIds.ID_TRADENEW:
+            break;
+        case EventIds.ID_CANCELREPLACEREQUEST:
+            return rejectCancelReplaceRequest( (CancelReplaceRequest) msg, errMsg );
+        case EventIds.ID_CANCELREQUEST:
+            return rejectCancelRequest( (CancelRequest) msg, errMsg );
+        }
+        
+        return null;
+    }
+
+    private Event rejectNewOrderSingle( NewOrderSingle nos, ZString errMsg ) {
+        final ClientRejectedImpl reject = _rejectedFactory.get();
+
+        reject.setSrcEvent( nos );
+        reject.getExecIdForUpdate().copy( ENCODE_REJ ).append( nos.getClOrdId() ).append( ++_idx );
+        reject.getOrderIdForUpdate().setValue( NONE );
+        reject.setOrdRejReason( OrdRejReason.Other );
+        reject.getTextForUpdate().setValue( errMsg );
+        reject.setOrdStatus( OrdStatus.Rejected );
+        reject.setExecType( ExecType.Rejected );
+
+        reject.setCumQty( 0 );
+        reject.setAvgPx( 0.0 );
+
+        reject.setEventHandler( nos.getEventHandler() );
+        return reject;
+    }
+
+    private Event rejectCancelReplaceRequest( CancelReplaceRequest msg, ZString errMsg ) {
+        final ClientCancelRejectImpl reject = _canRejFactory.get();
+        
+        reject.getClOrdIdForUpdate().    setValue( msg.getClOrdId() );
+        reject.getOrigClOrdIdForUpdate().setValue( msg.getOrigClOrdId() );
+        reject.getOrderIdForUpdate().    setValue( NONE );
+        reject.getTextForUpdate().       setValue( errMsg );
+
+        reject.setCxlRejResponseTo( CxlRejResponseTo.CancelReplace );
+        reject.setCxlRejReason(     CxlRejReason.Other );
+        reject.setOrdStatus(        OrdStatus.Unknown );
+
+        return reject;
+    }
+
+    private Event rejectCancelRequest( CancelRequest msg, ZString errMsg ) {
+        final ClientCancelRejectImpl reject = _canRejFactory.get();
+        
+        reject.getClOrdIdForUpdate().    setValue( msg.getClOrdId() );
+        reject.getOrigClOrdIdForUpdate().setValue( msg.getOrigClOrdId() );
+        reject.getOrderIdForUpdate().    setValue( NONE );
+        reject.getTextForUpdate().       setValue( errMsg );
+
+        reject.setCxlRejResponseTo( CxlRejResponseTo.CancelRequest );
+        reject.setCxlRejReason(     CxlRejReason.Other );
+        reject.setOrdStatus(        OrdStatus.Unknown );
+
+        return reject;
+    }
+
+    private static final byte[] STATS       = "     [".getBytes();
+    private static final byte   STAT_DELIM  = ',';
+    private static final byte   STAT_END    = ']';
+
+
+
+    @Override
+    public void addStats( ReusableString outBuf, Event msg, long time ) { /* nothing */ }
+
+    @Override
+    public void logStats() { /* nothing */ }
+
+
+    @Override
+    public void logLastMsg() { /* nothing */ }
+
+    @Override
+    public void encodeStartPacket( final SBEPacketHeader h ) {
+        if ( _debug ) _dump.append( "\nField: " ).append( "packetSeqNum" ).append( " : " );
+        _builder.encodeUInt( h._packetSeqNum );
+
+        if ( _debug ) _dump.append( "\nField: " ).append( "sendTimeNanos" ).append( " : " );
+        _builder.encodeULong( h._sendTimeNanos );
+    }
+
+
+
+}

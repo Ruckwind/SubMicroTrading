@@ -1,0 +1,588 @@
+<!--suppress ALL -->
+
+
+@SECTION CME_CONSTANTS START
+        <!-- CME SBE constants -->
+            <DefaultSize id="CME_SBE_APPLID_LENGTH"           val="5"/>
+            <DefaultSize id="CME_SBE_ASSET_LENGTH"            val="6"/>
+            <DefaultSize id="CME_SBE_CFICODE_LENGTH"          val="6"/>
+            <DefaultSize id="CME_SBE_MDFEEDTYPE_LENGTH"       val="3"/>
+            <DefaultSize id="CME_SBE_QUOTEREQID_LENGTH"       val="23"/>
+            <DefaultSize id="CME_SBE_SECURITYEXCHANGE_LENGTH" val="4"/>
+            <DefaultSize id="CME_SBE_SECURITYGROUP_LENGTH"    val="6"/>
+            <DefaultSize id="CME_SBE_SECURITYSUBTYPE_LENGTH"  val="5"/>
+            <DefaultSize id="CME_SBE_SECURITYTYPE_LENGTH"     val="6"/>
+            <DefaultSize id="CME_SBE_CURRENCY_LENGTH"   val="3"/>
+            <DefaultSize id="CME_SBE_SYMBOL_LENGTH"           val="20"/>
+            <DefaultSize id="CME_SBE_UNITOFMEASURE_LENGTH"    val="30"/>
+@SECTION CME_CONSTANTS END
+
+@SECTION CME_MODEL START
+            <Model id="CMESBE" modelVersionNumber="1.0">
+
+                <!--
+                RESTRICTIONS
+
+                    a) variable length strings not implemented, the issue is SBE allows 1 or 2 byte length specifier and would need add a new type for 2byte length var
+
+                -->
+
+                <Attribute name="BinaryVersion" value="1"/>
+                <Attribute name="MessageTypeAscii" value="N"/>
+
+                <Dictionary>
+                    <!-- certain tags are special and have specific optimised codec code eg fixVersion.msgType -->
+                    <!--  type should be external facing not internal type mapping -->
+                    <!--  for name try and use the internal event field name so it can be auto matched to the event -->
+                    <!-- valid types zstr(fixed len str)|str(with len as max)|ch|price|sByte|sShort|sInt|sLong|bool|timestampLocal|timestampUTC|timeLocal|timeUTC -->
+
+                    <Field id="AggressorSide"           type="sByte"/>
+                    <Field id="ApplID"                  type="zstr" len="CME_SBE_APPLID_LENGTH"/>
+                    <Field id="Asset"                   type="zstr" len="CME_SBE_ASSET_LENGTH"/>
+                    <Field id="CFICode"                 type="zstr" len="CME_SBE_CFICODE_LENGTH"/>
+                    <Field id="ClearedVolume"           type="sInt"/>
+                    <Field id="ContractMultiplier"      type="uByte"/>
+                    <Field id="ContractMultiplierUnit"  type="uByte"/>
+                    <Field id="Currency"                type="zstr" len="CME_SBE_CURRENCY_LENGTH"/>
+                    <Field id="DecayQty"                type="sInt"   comment="DecayQty"/>
+                    <Field id="DecayStartDate"          type="uShort"   comment="DecayStartDate"/>
+                    <Field id="DisplayFactor"           type="price"   comment="Contains the multiplier to convert the CME Globex display price to the conventional price"/>
+                    <Field id="EventType"               type="sByte"/>
+                    <Field id="EventTime"               type="timestampUTC"/>
+                    <Field id="FlowScheduleType"        type="uByte"   comment="FlowScheduleType"/>
+                    <Field id="HaltReason"              type="sByte"/>
+                    <Field id="HighLimitPrice"          type="price"   comment="HighLimitPrice"/>
+                    <Field id="InstAttribType"          type="sByte"   comment="InstAttribType"/>
+                    <Field id="InstAttribValue"         type="uInt"/>
+                    <Field id="LastUpdateTime"          type="timestampUTC"   comment="Timestamp when instrument was last added, modified or deleted"/>
+                    <Field id="LegSecurityID"           type="sInt"    comment="Unique Instrument ID"/>
+                    <Field id="LegSide"                 type="ch"/>
+                    <Field id="LegRatioQty"             type="sByte"   comment="Ratio of quantity for the leg"/>
+                    <Field id="LegPrice"                type="price"   comment="Security ID Source"/>
+                    <Field id="LegOptionDelta"          type="price"   comment="Security ID Source"/>
+                    <Field id="LotType"                 type="ch"    comment="LotType"/>
+                    <Field id="LowLimitPrice"           type="price"   comment="LowLimitPrice"/>
+                    <Field id="MainFraction"            type="uByte"   comment="MainFraction"/>
+                    <Field id="MarketDepth"             type="sByte"   comment="MarketDepth"/>
+                    <Field id="MarketSegmentID"         type="uByte"   comment="Identifies market segment"/>
+                    <Field id="MatchAlgorithm"          type="ch"/>
+                    <Field id="MatchEventStartIndicator" type="sByte"/>
+                    <Field id="MaturityMonthYear"       type="uShort"   comment="Calendar date of contract maturity"/>
+                    <Field id="MaxPriceVariation"       type="price"   comment="MaxPriceVariation"/>
+                    <Field id="MaxTradeVol"             type="sInt"   comment="The maximum trading volume for a security"/>
+                    <Field id="MDEntryPx"               type="price"/>
+                    <Field id="MDEntrySize"             type="sInt"/>
+                    <Field id="MDEntryType"             type="ch"/>
+                    <Field id="MDEntryTypeTrade"        type="ch"     comment="Implied value of Trade"/>
+                    <Field id="MDEntryTypeVol"          type="ch"     comment="Implied value of CME specific value 'e' should be maped to TradeVol (B)"/>
+                    <Field id="MDFeedType"              type="zstr" len="CME_SBE_MDFEEDTYPE_LENGTH"/>
+                    <Field id="MDPriceLevel"            type="sByte"/>
+                    <Field id="MDUpdateAction"          type="sByte"/>
+                    <Field id="MinCabPrice"             type="price"   comment="Defines cabinet price for outright options products"/>
+                    <Field id="MinLotSize"              type="uLong"   comment="MinLotSize"/>
+                    <Field id="MinPriceIncrement"       type="price"   comment="Minimum constant tick for the instrument"/>
+                    <Field id="MinPriceIncrementAmount" type="price"   comment="Monetary value equivalent to the minimum price fluctuation"/>
+                    <Field id="MinTradeVol"             type="sInt"   comment="The minimum trading volume for a security"/>
+                    <Field id="msgType"                 type="uShort"       comment="templateID"/>
+                    <Field id="msgLen"                  type="uInt"         comment="total message length"/>
+                    <Field id="noMDEntries"             type="uByte"/>
+                    <Field id="NoUnderlyings"           type="uByte"   comment="Underlyings"/>
+                    <Field id="NoLegs"                  type="uByte"   comment="Legs"/>
+                    <Field id="NoMdFeedTypes"           type="uByte"   comment="MdFeedTypesGrp"/>
+                    <Field id="NoEvents"                type="uByte"   comment="EventsGrp"/>
+                    <Field id="NoInstAttrib"            type="uByte"   comment="InstAttribGrp"/>
+                    <Field id="NoLotTypeRules"          type="uByte"   comment="LotTypeRulesGrp"/>
+                    <Field id="NumberOfOrders"          type="sInt"/>
+                    <Field id="OpenCloseSettlFlag"      type="sByte"/>
+                    <Field id="OpenInterestQty"         type="sInt"   comment="OpenInterestQty"/>
+                    <Field id="OriginalContractSize"    type="sInt"   comment="OriginalContractSize"/>
+                    <Field id="PriceDisplayFormat"      type="uByte"   comment="PriceDisplayFormat"/>
+                    <Field id="PriceRatio"              type="price"   comment="Used for price calculation in spread and leg pricing"/>
+                    <Field id="QouteReqId"              type="zstr" len="CME_SBE_QUOTEREQID_LENGTH"/>
+                    <Field id="QouteType"               type="sByte"/>
+                    <Field id="RtpSeq"                  type="sInt"/>
+                    <Field id="SecurityExchange"        type="zstr" len="CME_SBE_SECURITYEXCHANGE_LENGTH"/>
+                    <Field id="SecurityGroup"           type="zstr" len="CME_SBE_SECURITYGROUP_LENGTH"/>
+                    <Field id="SecurityID"              type="sInt"/>
+                    <Field id="SecuritySubType"         type="zstr" len="CME_SBE_SECURITYSUBTYPE_LENGTH"/>
+                    <Field id="SecurityTradingEvent"    type="sByte"/>
+                    <Field id="SecurityTradingStatus"   type="sByte"/>
+                    <Field id="SecurityType"            type="zstr" len="CME_SBE_SECURITYTYPE_LENGTH"/>
+                    <Field id="SecurityUpdateAction"    type="ch"/>
+                    <Field id="SettlCurrency"           type="zstr" len="CME_SBE_CURRENCY_LENGTH"/>
+                    <Field id="SettlPriceType"          type="sByte"/>
+                    <Field id="Side"                    type="sByte"/>
+                    <Field id="StrikeCurrency"          type="zstr" len="CME_SBE_CURRENCY_LENGTH"/>
+                    <Field id="StrikePrice"             type="price"   comment="Strike price for an option"/>
+                    <Field id="SubFraction"             type="uByte"   comment="SubFraction"/>
+                    <Field id="Symbol"                  type="zstr" len="CME_SBE_SYMBOL_LENGTH"/>
+                    <Field id="TickRule"                type="uByte"   comment="TickRule"/>
+                    <Field id="TimeBracket"             type="sInt"/>
+                    <Field id="TotNumReports"           type="uByte"   comment="Number of reports in loop"/>
+                    <Field id="TradeID"                 type="sInt"/>
+                    <Field id="sendingTime"             type="timestampUTC"/> <!-- uLong -->
+                    <Field id="TradeDate"               type="uShort"/>
+                    <Field id="TradingReferencePrice"   type="price"   comment="TradingReferencePrice"/>
+                    <Field id="UnderlyingProdcut"       type="sByte"/>
+                    <Field id="UnderlyingSecurityID"    type="sInt"    comment="Unique Instrument ID"/>
+                    <Field id="UnderlyingSymbol"        type="zstr" len="CME_SBE_SYMBOL_LENGTH"  comment="Underlying Instrument Symbol"/>
+                    <Field id="UnitOfMeasureQty"        type="price"   comment="UnitOfMeasureQty"/>
+                    <Field id="UnitOfMeasure"           type="zstr" len="CME_SBE_UNITOFMEASURE_LENGTH"/>
+                    <Field id="UserDefinedInstrument"   type="ch"/>
+                </Dictionary>
+
+                <StandardHeader>
+                    <!-- these special header fields are deemed not mandatory in the sense that they dont need to be populated by events -->
+                    <Field id="msgLen"            mand="N"/>
+                    <Field id="msgType"           mand="N"/>
+                </StandardHeader>
+
+                <StandardTrailer>
+                </StandardTrailer>
+
+                <SubMessage id="MDEntriesReal" blockLength="27">
+                    <Field id="MDUpdateAction"      mand="Y"  comment="Update Action"/>
+                    <Field id="MDEntryType"         mand="Y"  comment="Entry Type Enum"/>
+                    <Field id="SecurityID"          mand="Y"  comment="Unique Instrument ID"/>
+                    <Field id="RtpSeq"              mand="Y"  comment="Instrument Sequence"/>
+                    <Field id="MDEntryPx"           mand="Y"  comment="Price of MD Entry"/>
+                    <Field id="MDEntrySize"         mand="Y"  comment="Quantity of MD Entry"/>
+                    <Field id="NumberOfOrders"      mand="Y"  comment="Number of Orders at Price Level"/>
+                    <Field id="MDPriceLevel"        mand="Y"  comment="Price Level"/>
+                </SubMessage>
+
+                <Message id="MDIncrementalRefreshReal" msgType="1" comment="Test message" blockLength="14">
+                    <Field id="sendingTime"                 mand="Y"/>
+                    <Field id="TimeBracket"                 mand="N"/>
+                    <Field id="MatchEventStartIndicator"    mand="N"/>
+                    <Field id="noMDEntries"                 mand="Y"/>
+                    <Field id="MDEntriesReal"               blockLength="27" counter="noMDEntries"/>
+                </Message>
+
+                <SubMessage id="MDEntriesTrade" blockLength="30">
+                    <Field id="MDUpdateAction"      mand="Y"  comment="Update Action"/>
+                    <Field id="SecurityID"          mand="Y"  comment="Unique Instrument ID"/>
+                    <Field id="RtpSeq"              mand="Y"  comment="Instrument Sequence"/>
+                    <Field id="MDEntryPx"           mand="Y"  comment="Price of MD Entry"/>
+                    <Field id="MDEntrySize"         mand="Y"  comment="Quantity of MD Entry"/>
+                    <Field id="TradeID"             mand="Y"  comment="Unique ID per Instrument and Trading Date"/>
+                    <Field id="NumberOfOrders"      mand="Y"  comment="Number of Orders at Price Level"/>
+                    <Field id="AggressorSide"       mand="Y"  comment="Side that is the aggressor of a trade"/>
+
+                    <Field id="MDEntryTypeTrade"    mand="N"  comment="Constant ie implied value of Trade"/>
+                </SubMessage>
+
+                <Message id="MDIncrementalRefreshTrade" msgType="2"  comment="Test message" blockLength="14">
+                    <Field id="sendingTime"                 mand="Y"/>
+                    <Field id="TimeBracket"                 mand="N"/>
+                    <Field id="MatchEventStartIndicator"    mand="N"/>
+                    <Field id="noMDEntries"                 mand="Y"/>
+                    <Field id="MDEntriesTrade"              blockLength="30" counter="noMDEntries"/>
+                </Message>
+
+                <SubMessage id="MDEntriesVolume"        blockLength="13">
+                    <Field id="MDUpdateAction"      mand="Y"  comment="Update Action"/>
+                    <Field id="SecurityID"          mand="Y"  comment="Unique Instrument ID"/>
+                    <Field id="RtpSeq"              mand="Y"  comment="Instrument Sequence"/>
+                    <Field id="MDEntrySize"         mand="Y"  comment="Quantity of MD Entry"/>
+
+                    <Field id="MDEntryTypeVol"      mand="N"  comment="Constant ie implied value of TradeVol"/>
+                </SubMessage>
+
+                <Message id="MDIncrementalRefreshVolume" msgType="3"     comment="Test message" blockLength="14">
+                    <Field id="sendingTime"                 mand="Y"/>
+                    <Field id="TimeBracket"                 mand="N"/>
+                    <Field id="MatchEventStartIndicator"    mand="N"/>
+                    <Field id="noMDEntries"                 mand="Y"/>
+
+                    <Field id="MDEntriesVolume"             blockLength="13" counter="noMDEntries"/>
+                </Message>
+
+                <Message id="MDSecurityStatus" msgType="4"   comment="Test message" blockLength="29">
+                    <Field id="TimeBracket"             mand="N"/>
+                    <Field id="TradeDate"               mand="Y"  comment="Indicates the date of trade session in YYYYMMDD"/>
+                    <Field id="SecurityGroup"           mand="N"  comment="if this tag is present 35=f message is sent for instrument group"/>
+                    <Field id="Asset"                   mand="N"  comment="Product Code"/>
+                    <Field id="SecurityID"              mand="Y"/>
+                    <Field id="SecurityTradingStatus"   mand="Y"  comment="Security Trading Status"/>
+                    <Field id="HaltReason"              mand="N"  comment="Halt Reason"/>
+                    <Field id="SecurityTradingEvent"    mand="N"  comment="Security Trading Event"/>
+                </Message>
+
+                <SubMessage id="MDEntriesSnap"      blockLength="53">
+                    <Field id="MDEntryType"         mand="Y"  comment="Entry Type Enum"/>
+                    <Field id="SecurityID"          mand="Y"  comment="Unique Instrument ID"/>
+                    <Field id="RtpSeq"              mand="Y"  comment="Instrument Sequence"/>
+                    <Field id="MDEntryPx"           mand="Y"  comment="Price of MD Entry"/>
+                    <Field id="MDEntrySize"         mand="Y"  comment="Quantity of MD Entry"/>
+                    <Field id="NumberOfOrders"      mand="Y"  comment="Number of Orders at Price Level"/>
+                    <Field id="MDPriceLevel"        mand="Y"  comment="Price Level"/>
+                    <Field id="fillerEntry"         len="27"  comment="skip OpenCloseSettlFlag(1) + TradingReferenceDate(2) + HighLimitPrice(8) + LowLimitPrice(8) + MaxPriceVariation(8) "/>
+                </SubMessage>
+
+                <Message id="MDSnapshotRefresh" msgType="5"  comment="Test message" blockLength="14">
+                    <Field id="sendingTime"                 mand="Y"/>
+                    <Field id="TimeBracket"                 mand="N"/>
+                    <Field id="MatchEventStartIndicator"    mand="N"/>
+                    <Field id="noMDEntries"                 mand="Y"/>
+
+                    <Field id="MDEntriesSnap"               counter="noMDEntries"/>
+                </Message>
+
+                <SubMessage id="MDEntriesStats"     blockLength="49">
+                    <Field id="MDUpdateAction"      mand="Y"  comment="Update Action"/>
+                    <Field id="MDEntryType"         mand="Y"  comment="Entry Type Enum"/>
+                    <Field id="SecurityID"          mand="Y"  comment="Unique Instrument ID"/>
+                    <Field id="RtpSeq"              mand="Y"  comment="Instrument Sequence"/>
+                    <Field id="MDEntryPx"           mand="Y"  comment="Price of MD Entry"/>
+                    <Field id="MDEntrySize"         mand="Y"  comment="Quantity of MD Entry"/>
+                    <Field id="fillerEntry"         len="27"   comment="skip OpenCloseSettlFlag(1) + TradingReferenceDate(2) + HighLimitPrice(8) + LowLimitPrice(8) + MaxPriceVariation(8) "/>
+                </SubMessage>
+
+                <Message id="MDIncrementalRefreshStats" msgType="7" mand="Y"  comment="Test message" blockLength="14">
+                    <Field id="sendingTime"                 mand="Y"/>
+                    <Field id="TimeBracket"                 mand="N"/>
+                    <Field id="MatchEventStartIndicator"    mand="N"/>
+                    <Field id="noMDEntries"                 mand="Y"/>
+
+                    <Field id="MDEntriesStats"                   blockLength="49" counter="noMDEntries"/>
+                </Message>
+
+                <SubMessage id="MDEntriesImplied"   blockLength="23">
+                    <Field id="MDUpdateAction"      mand="Y"  comment="Update Action"/>
+                    <Field id="MDEntryType"         mand="Y"  comment="Entry Type Enum"/>
+                    <Field id="SecurityID"          mand="Y"  comment="Unique Instrument ID"/>
+                    <Field id="RtpSeq"              mand="Y"  comment="Instrument Sequence"/>
+                    <Field id="MDEntryPx"           mand="Y"  comment="Price of MD Entry"/>
+                    <Field id="MDEntrySize"         mand="Y"  comment="Quantity of MD Entry"/>
+                    <Field id="MDPriceLevel"        mand="Y"  comment="Price Level"/>
+                </SubMessage>
+
+                <Message id="MDIncrementalRefreshImplied" msgType="8" mand="Y"  comment="Test message" blockLength="14">
+                    <Field id="sendingTime"                 mand="Y"/>
+                    <Field id="TimeBracket"                 mand="N"/>
+                    <Field id="MatchEventStartIndicator"    mand="N"/>
+                    <Field id="noMDEntries"                 mand="Y"/>
+
+                    <Field id="MDEntriesImplied"                comment="MD Entry Group" blockLength="23" counter="noMDEntries"/>
+                </Message>
+
+                <SubMessage id="UnderlyingsGrp"         blockLength="24" >
+                    <Field id="UnderlyingSymbol"        mand="N"  comment="Underlying Instrument Symbol"/>
+                    <Field id="UnderlyingSecurityID"    mand="N"  comment="Unique Instrument ID"/>
+                </SubMessage>
+
+                <SubMessage id="LegsGrp"                blockLength="22">
+                    <Field id="LegSecurityID"           mand="Y"  comment="Unique Instrument ID"/>
+                    <Field id="LegSide"                 mand="Y"  comment="Leg Side"/>
+                    <Field id="LegRatioQty"             mand="Y"  comment="Ratio of quantity for the leg" />
+                    <Field id="LegPrice"                mand="Y"  comment="Security ID Source"/>
+                    <Field id="LegOptionDelta"          mand="Y"  comment="Security ID Source"/>
+                </SubMessage>
+
+                <SubMessage id="MdFeedTypesGrp"         blockLength="4">
+                    <Field id="MDFeedType"              mand="Y"  comment="MDFeedType"/>
+                    <Field id="MarketDepth"             mand="Y"  comment="MarketDepth" />
+                </SubMessage>
+
+                <SubMessage id="EventsGrp"              blockLength="9">
+                    <Field id="EventType"               mand="Y"  comment="EventType" offset="0"/>
+                    <Field id="EventTime"               mand="Y"  comment="EventTime" offset="1" fixUsage="UTCTimestamp"/>
+                </SubMessage>
+
+                <SubMessage id="InstAttribGrp"          blockLength="5">
+                    <Field id="InstAttribType"          mand="Y"  comment="InstAttribType"/>
+                    <Field id="InstAttribValue"         mand="Y"  comment="InstAttribValue"/>
+                </SubMessage>
+
+                <SubMessage id="LotTypeRulesGrp"        blockLength="9">
+                    <Field id="LotType"                 mand="Y"  comment="LotType"/>
+                    <Field id="MinLotSize"              mand="Y"  comment="MinLotSize"/>
+                </SubMessage>
+
+                <Message id="MDInstrumentDefinition" msgType="9" mand="Y"  comment="Test message" blockLength="246">
+                    <Field id="TotNumReports"           mand="N"  comment="Number of reports in loop"/>
+                    <Field id="SecurityUpdateAction"    mand="N"  comment="New/Modified/Deleted"/>
+                    <Field id="LastUpdateTime"          mand="N"  comment="Timestamp when instrument was last added, modified or deleted"/>
+                    <Field id="ApplID"                  mand="N"  comment="Channel ID associated with this instrument"/>
+                    <Field id="MarketSegmentID"         mand="N"  comment="Identifies market segment"/>
+                    <Field id="Symbol"                  mand="N"  comment="Instrument name or symbol"/>
+                    <Field id="SecurityID"              mand="N"  comment="Unique Instrument ID"/>
+                    <Field id="MaturityMonthYear"       mand="N"  comment="Calendar date of contract maturity"/>
+                    <Field id="SecurityGroup"           mand="N"  comment="Security group code"/>
+                    <Field id="Asset"                   mand="N"  comment="Underlying asset code"/>
+                    <Field id="SecurityType"            mand="N"  comment="Security Type"/>
+                    <Field id="CFICode"                 mand="N"  comment="ISO standard instrument categorization code"/>
+                    <Field id="SecuritySubType"         mand="N"  comment="Strategy type"/>
+                    <Field id="UserDefinedInstrument"   mand="N"  comment="UDS instrument"/>
+                    <Field id="UnderlyingProdcut"       mand="N"  comment="Product complex"/>
+                    <Field id="SecurityExchange"        mand="N"  comment="Exchange used to identify a security"/>
+                    <Field id="SecurityTradingStatus"   mand="N"  comment="Security Trading Status"/>
+                    <Field id="StrikePrice"             mand="N"  comment="Strike price for an option"/>
+                    <Field id="StrikeCurrency"          mand="N"  comment="Currency in which the strike price is denominated"/>
+                    <Field id="Currency"                mand="N"  comment="Identifies currency used for price"/>
+                    <Field id="SettlCurrency"           mand="N"  comment="Identifies currency used for settle price"/>
+                    <Field id="MinCabPrice"             mand="N"  comment="Defines cabinet price for outright options products"/>
+                    <Field id="PriceRatio"              mand="N"  comment="Used for price calculation in spread and leg pricing"/>
+                    <Field id="MatchAlgorithm"          mand="N"  comment="Match Algorithm"/>
+                    <Field id="MinTradeVol"             mand="N"  comment="The minimum trading volume for a security"/>
+                    <Field id="MaxTradeVol"             mand="N"  comment="The maximum trading volume for a security"/>
+                    <Field id="MinPriceIncrement"       mand="N"  comment="Minimum constant tick for the instrument"/>
+                    <Field id="MinPriceIncrementAmount" mand="N"  comment="Monetary value equivalent to the minimum price fluctuation"/>
+                    <Field id="DisplayFactor"           mand="N"  comment="Contains the multiplier to convert the CME Globex display price to the conventional price"/>
+                    <Field id="TickRule"                mand="N"  comment="TickRule"/>
+                    <Field id="MainFraction"            mand="N"  comment="MainFraction"/>
+                    <Field id="SubFraction"             mand="N"  comment="SubFraction"/>
+                    <Field id="PriceDisplayFormat"      mand="N"  comment="PriceDisplayFormat"/>
+                    <Field id="ContractMultiplierUnit"  mand="N"  comment="Contract Multiplier Unit"/>
+                    <Field id="FlowScheduleType"        mand="N"  comment="FlowScheduleType"/>
+                    <Field id="ContractMultiplier"      mand="N"  comment="FlowScheduleType"/>
+                    <Field id="UnitOfMeasure"           mand="N"  comment="Unit of Measure"/>
+                    <Field id="UnitOfMeasureQty"        mand="N"  comment="UnitOfMeasureQty"/>
+                    <Field id="DecayQty"                mand="N"  comment="DecayQty"/>
+                    <Field id="DecayStartDate"          mand="N"  comment="DecayStartDate"/>
+                    <Field id="OriginalContractSize"    mand="N"  comment="OriginalContractSize"/>
+                    <Field id="HighLimitPrice"          mand="N"  comment="HighLimitPrice"/>
+                    <Field id="LowLimitPrice"           mand="N"  comment="LowLimitPrice"/>
+                    <Field id="MaxPriceVariation"       mand="N"  comment="MaxPriceVariation"/>
+                    <Field id="TradingReferencePrice"   mand="N"  comment="TradingReferencePrice"/>
+                    <Field id="SettlPriceType"          mand="N"  comment="Type of reference price"/>
+                    <Field id="OpenInterestQty"         mand="N"  comment="OpenInterestQty"/>
+                    <Field id="ClearedVolume"           mand="N"  comment="ClearedVolume"/>
+                    <Field id="NoUnderlyings"           mand="N"  comment="Underlyings"/>
+                    <Field id="NoLegs"                  mand="N"  comment="Legs"/>
+                    <Field id="NoMdFeedTypes"           mand="N"  comment="MdFeedTypesGrp"/>
+                    <Field id="NoEvents"                mand="N"  comment="EventsGrp"/>
+                    <Field id="NoInstAttrib"            mand="N"  comment="InstAttribGrp"/>
+                    <Field id="NoLotTypeRules"          mand="N"  comment="LotTypeRulesGrp"/>
+
+                    <Field id="UnderlyingsGrp"          blockLength="24" counter="NoUnderlyings"/>
+                    <Field id="LegsGrp"                 blockLength="22" counter="NoLegs"/>
+                    <Field id="MdFeedTypesGrp"          blockLength="4"  counter="NoMdFeedTypes"/>
+                    <Field id="EventsGrp"               blockLength="9"  counter="NoEvents"/>
+                    <Field id="InstAttribGrp"           blockLength="5"  counter="NoInstAttrib"/>
+                    <Field id="LotTypeRulesGrp"         blockLength="9"  counter="NoLotTypeRules"/>
+                </Message>
+
+            </Model>
+@SECTION CME_MODEL END
+
+@SECTION CME_SBE_CODEC START
+            <BinaryCodec id="CMESimpleBinary"
+                         model="CMESBE"
+                         decodeInclude="./sbe/cme/CMESimpleBinaryDecoder.include"
+                         encodeInclude="./sbe/cme/CMESimpleBinaryEncoder.include"
+                         decodeGenerator="com.rr.model.generator.sbe.cme.CMEDecoderGenerator"
+                         encodeGenerator="com.rr.model.generator.sbe.cme.CMEEncoderGenerator">
+
+                <TypeTransform typeId="MDEntryType" transform="map" nonMatchedEncode="reject" nonMatchedDecode="MDEntryType.Unknown" external="binary">
+                    <Map internal="0" external="0x00"   comment="Bid"/>
+                    <Map internal="1" external="0x01"   comment="Offer"/>
+                    <Map internal="2" external="0x02"   comment="Trade"/>
+                    <Map internal="4" external="0x04"   comment="Opening Price"/>
+                    <Map internal="6" external="0x06"   comment="Settlement Price"/>
+                    <Map internal="7" external="0x07"   comment="Trading Session High Price"/>
+                    <Map internal="8" external="0x08"   comment="Trading Session Low Price"/>
+                    <Map internal="B" external="0x42"   comment="Trade Volume"/>
+                    <Map internal="C" external="0x43"   comment="Open Interest"/>
+                    <Map internal="E" external="0x45"   comment="Implied Bid"/>
+                    <Map internal="F" external="0x46"   comment="Implied Offer"/>
+                    <Map internal="J" external="0x4A"   comment="Empty Book"/>
+                    <Map internal="N" external="0x4E"   comment="Session High Bid"/>
+                    <Map internal="O" external="0x4F"   comment="Session Low Offer"/>
+                    <Map internal="W" external="0x57"   comment="Fixing Price"/>
+                    <Map internal="B" external="0x65"   comment="Event Summary"/>
+                </TypeTransform>
+
+                <TypeTransform typeId="MDUpdateAction" transform="map" nonMatchedEncode="reject" nonMatchedDecode="MDUpdateAction.Unknown" external="binary">
+                    <Map internal="0" external="0x00" comment="New"/>
+                    <Map internal="1" external="0x01" comment="Change"/>
+                    <Map internal="2" external="0x02" comment="Delete"/>
+                    <Map internal="3" external="0x03" comment="Delete Thru"/>
+                    <Map internal="4" external="0x04" comment="Delete From"/>
+                    <Map internal="5" external="0x05" comment="Overlay"/>
+                </TypeTransform>
+
+                <TypeTransform typeId="SecurityTradingStatus" transform="map" nonMatchedEncode="SecurityTradingStatus.Unknown" nonMatchedDecode="SecurityTradingStatus.Unknown" external="binary">
+                    <Map internal="2"  external="0x02" comment="Trading halt"/>
+                    <Map internal="4"  external="0x04" comment="Close"/>
+                    <Map internal="15" external="0x0E" comment="New Price Indication"/>
+                    <Map internal="17" external="0x11" comment="Ready to trade(start of session)"/>
+                    <Map internal="18" external="0x12" comment="Not available for trading"/>
+                    <Map internal="20" external="0x14" comment="Invalid"/>
+                    <Map internal="21" external="0x15" comment="Pre Open"/>
+                    <Map internal="4"  external="0x1A" comment="Post Close"/>
+
+                    <!-- allow 103 - no change to throw exception -->
+                </TypeTransform>
+
+                <TypeTransform typeId="Side" transform="map" nonMatchedEncode="reject" nonMatchedDecode="reject" external="binary">
+                    <Map internal="1" external="0x01" comment="Buy"/>
+                    <Map internal="2" external="0x02" comment="Sell"/>
+                </TypeTransform>
+
+                <TypeTransform typeId="ProductComplex" transform="map" nonMatchedEncode="reject" nonMatchedDecode="reject" external="binary">
+                    <Map internal="1"  external="0x01" comment="Agency"/>
+                    <Map internal="2"  external="0x02" comment="Commodity"/>
+                    <Map internal="3"  external="0x03" comment="Corporate"/>
+                    <Map internal="4"  external="0x04" comment="Currency"/>
+                    <Map internal="5"  external="0x05" comment="Equity"/>
+                    <Map internal="6"  external="0x06" comment="Government"/>
+                    <Map internal="7"  external="0x07" comment="Index"/>
+                    <Map internal="8"  external="0x08" comment="Loan"/>
+                    <Map internal="9"  external="0x09" comment="MoneyMarket"/>
+                    <Map internal="10" external="0x0A" comment="Mortgage"/>
+                    <Map internal="11" external="0x0B" comment="Municipal"/>
+                    <Map internal="12" external="0x0C" comment="Other"/>
+                    <Map internal="13" external="0x0D" comment="Financing"/>
+                    <Map internal="14" external="0x0E" comment="InterestRate"/>
+                    <Map internal="15" external="0x0F" comment="FXCash"/>
+                    <Map internal="16" external="0x10" comment="Energy"/>
+                    <Map internal="17" external="0x11" comment="Metals"/>
+                </TypeTransform>
+
+                <MessageMap id="CommonSBE" messageId="" ignore="true">
+                    <Map field="AggressorSide"              eventAttr=""/>
+                    <Map field="Asset"                      eventAttr=""/>
+                    <Map field="HaltReason"                 eventAttr="haltReason"/>
+                    <Map field="MDEntryPx"                  eventAttr="mdEntryPx"/>
+                    <Map field="MDEntrySize"                eventAttr="mdEntrySize"/>
+                    <Map field="MDEntryType"                eventAttr="mdEntryType"/>
+                    <Map field="MDPriceLevel"               eventAttr="mdPriceLevel"/>
+                    <Map field="MDUpdateAction"             eventAttr="mdUpdateAction"/>
+                    <Map field="noMDEntries"                eventAttr="noMDEntries"/>
+                    <Map field="NumberOfOrders"             eventAttr="numberOfOrders"/>
+                    <Map field="RtpSeq"                     eventAttr="repeatSeq"/>
+                    <Map field="SecurityID"                 eventAttr="securityID"/>
+                    <Map field="SecurityTradingStatus"      eventAttr="SecurityTradingStatus"/>
+                    <Map field="SecurityTradingEvent"       eventAttr="SecurityTradingEvent"/>
+                    <Map field="sendingTime"                eventAttr="sendingTime"/>
+                    <Map field="TradeDate"                  eventAttr="TradeDate"/>
+                    <Map field="TradeID"                    eventAttr=""/>
+                </MessageMap>
+
+                <MessageMap id="MDEntriesReal"      messageId="MDEntriesReal" eventId="MDEntry" extends="CommonSBE"/>
+
+                <MessageMap id="MDIncrementalRefreshReal"   messageId="MDIncrementalRefreshReal" eventId="MDIncRefresh"  extends="CommonSBE">
+                    <Map field="MDEntriesReal"      eventAttr="MDEntries"/>
+                </MessageMap>
+
+                <MessageMap id="MDEntriesTrade"     messageId="MDEntriesTrade" eventId="MDEntry" extends="CommonSBE">
+                    <Map field="MDEntryTypeTrade" eventAttr="mdEntryType">
+                        <Hook type="decode" code="tmpMDEntriesTrade.setMdEntryType( MDEntryType.Trade )"/>
+                    </Map>
+                </MessageMap>
+
+                <MessageMap id="MDIncrementalRefreshTrade"  messageId="MDIncrementalRefreshTrade" eventId="MDIncRefresh"  extends="CommonSBE">
+                    <Map field="MDEntriesTrade"      eventAttr="MDEntries"/>
+                </MessageMap>
+
+                <MessageMap id="MDEntriesVolume"    messageId="MDEntriesVolume" eventId="MDEntry" extends="CommonSBE">
+                    <Map field="MDEntryTypeVol" eventAttr="mdEntryType">
+                        <Hook type="decode" code="tmpMDEntriesVolume.setMdEntryType( MDEntryType.TradeVolume )"/>
+                    </Map>
+                </MessageMap>
+                <MessageMap id="MDIncrementalRefreshVolume" messageId="MDIncrementalRefreshVolume" eventId="MDIncRefresh"  extends="CommonSBE">
+                    <Map field="MDEntriesVolume"     eventAttr="MDEntries"/>
+                </MessageMap>
+
+                <MessageMap id="MDSecurityStatus" messageId="MDSecurityStatus" eventId="SecurityStatus"  comment="Test message" blockLength="29"  extends="CommonSBE"/>
+
+                <MessageMap id="MDEntriesSnap"      messageId="MDEntriesSnap" eventId="MDSnapEntry" extends="CommonSBE"/>
+                <MessageMap id="MDSnapshotRefresh" messageId="MDSnapshotRefresh" eventId="MDSnapshotFullRefresh"  extends="CommonSBE">
+                    <Map field="MDEntriesSnap"       eventAttr="MDEntries"/>
+                </MessageMap>
+
+                <MessageMap id="MDEntriesStats"     messageId="MDEntriesStats" eventId="MDEntry" extends="CommonSBE"/>
+                <MessageMap id="MDIncrementalRefreshStats" messageId="MDIncrementalRefreshStats" eventId="MDIncRefresh"  extends="CommonSBE">
+                    <Map field="MDEntriesStats"      eventAttr="MDEntries"/>
+                </MessageMap>
+
+                <MessageMap id="MDEntriesImplied"   messageId="MDEntriesImplied" eventId="MDEntry" extends="CommonSBE"/>
+                <MessageMap id="MDIncrementalRefreshImplied" messageId="MDIncrementalRefreshImplied" eventId="MDIncRefresh"  extends="CommonSBE">
+                    <Map field="MDEntriesImplied"     eventAttr="MDEntries"/>
+                </MessageMap>
+
+                <MessageMap id="LegsGrp"                messageId="LegsGrp"             eventId="SecDefLeg">
+                    <Map field="LegSecurityID"          eventAttr="legSecurityID"/>
+                    <Map field="LegSide"                eventAttr="legSide"/>
+                    <Map field="LegRatioQty"            eventAttr="legRatioQty" />
+                    <Map field="LegPrice"               eventAttr=""/>
+                    <Map field="LegOptionDelta"         eventAttr=""/>
+                </MessageMap>
+
+                <MessageMap id="MdFeedTypesGrp"         messageId="MdFeedTypesGrp"      eventId="SDFeedType"    extends="CommonSBE">
+                    <Map field="MDFeedType"             eventAttr="feedType"/>
+                    <Map field="MarketDepth"            eventAttr="marketDepth"/>
+                </MessageMap>
+
+                <MessageMap id="EventsGrp"              messageId="EventsGrp"           eventId="SecDefEvent"  extends="CommonSBE">
+                    <Map field="EventType"              eventAttr="eventType"/>
+                    <Map field="EventTime"              eventAttr="eventTime"/>
+                </MessageMap>
+
+                <MessageMap id="MDInstrumentDefinition" messageId="MDInstrumentDefinition" eventId="SecurityDefinition" extends="CommonSBE">
+                    <Map field="TotNumReports"           eventAttr="totNumReports"/>
+                    <Map field="SecurityUpdateAction"    eventAttr="securityUpdateAction"/>
+                    <Map field="LastUpdateTime"          eventAttr="lastUpdateTime"/>
+                    <Map field="ApplID"                  eventAttr="applID"/>
+                    <Map field="MarketSegmentID"         eventAttr=""/>
+                    <Map field="Symbol"                  eventAttr="symbol"/>
+                    <Map field="SecurityID"              eventAttr="securityID"/>
+                    <Map field="SecurityType"            eventAttr="securityType"/>
+                    <Map field="MaturityMonthYear"       eventAttr="maturityMonthYear"/>
+                    <Map field="SecurityGroup"           eventAttr="securityGroup"/>
+                    <Map field="CFICode"                 eventAttr="CFICode"/>
+                    <Map field="UnderlyingProduct"       eventAttr="underlyingProduct"/>
+                    <Map field="SecurityExchange"        eventAttr="securityExchange"/>
+                    <Map field="SecurityTradingStatus"   eventAttr="SecurityTradingStatus"/>
+                    <Map field="StrikePrice"             eventAttr="strikePrice"/>
+                    <Map field="StrikeCurrency"          eventAttr="strikeCurrency"/>
+                    <Map field="Currency"                eventAttr="currency"/>
+                    <Map field="SettlCurrency"           eventAttr="settlCurrency"/>
+                    <Map field="MinCabPrice"             eventAttr=""/>
+                    <Map field="PriceRatio"              eventAttr="priceRatio"/>
+                    <Map field="MatchAlgorithm"          eventAttr=""/>
+                    <Map field="MinTradeVol"             eventAttr="minTradeVol"/>
+                    <Map field="MaxTradeVol"             eventAttr="maxTradeVol"/>
+                    <Map field="MinPriceIncrement"       eventAttr="minPriceIncrement"/>
+                    <Map field="MinPriceIncrementAmount" eventAttr="minPriceIncrementAmount"/>
+                    <Map field="DisplayFactor"           eventAttr="displayFactor"/>
+                    <Map field="TickRule"                eventAttr=""/>
+                    <Map field="MainFraction"            eventAttr=""/>
+                    <Map field="SubFraction"             eventAttr=""/>
+                    <Map field="PriceDisplayFormat"      eventAttr=""/>
+                    <Map field="ContractMultiplierUnit"  eventAttr="contractMultiplierType"/>
+                    <Map field="FlowScheduleType"        eventAttr=""/>
+                    <Map field="ContractMultiplier"      eventAttr="contractMultiplier"/>
+                    <Map field="UnitOfMeasure"           eventAttr=""/>
+                    <Map field="UnitOfMeasureQty"        eventAttr=""/>
+                    <Map field="DecayQty"                eventAttr=""/>
+                    <Map field="DecayStartDate"          eventAttr=""/>
+                    <Map field="OriginalContractSize"    eventAttr=""/>
+                    <Map field="HighLimitPrice"          eventAttr="highLimitPx"/>
+                    <Map field="LowLimitPrice"           eventAttr="lowLimitPx"/>
+                    <Map field="MaxPriceVariation"       eventAttr=""/>
+                    <Map field="TradingReferencePrice"   eventAttr="tradingReferencePrice"/>
+                    <Map field="SettlPriceType"          eventAttr=""/>
+                    <Map field="OpenInterestQty"         eventAttr="openInterestQty"/>
+                    <Map field="ClearedVolume"           eventAttr=""/>
+
+                    <Map field="NoLegs"                 eventAttr="noLegs"/>
+                    <Map field="NoMdFeedTypes"          eventAttr="noSDFeedTypes"/>
+                    <Map field="NoEvents"               eventAttr="noEvents"/>
+
+                    <Map field="UnderlyingsGrp"         eventAttr=""/>
+                    <Map field="LegsGrp"                eventAttr="legs"/>
+                    <Map field="MdFeedTypesGrp"         eventAttr="SDFeedTypes"/>
+                    <Map field="EventsGrp"              eventAttr="events"/>
+                    <Map field="InstAttribGrp"          eventAttr=""/>
+                    <Map field="LotTypeRulesGrp"        eventAttr=""/>
+
+                    <Hook type="postDecode" code="msg.setExchangeLongId( StringUtils.parseLong( msg.getSecurityID() ) )"/>
+
+                </MessageMap>
+
+            </BinaryCodec>
+
+@SECTION CME_SBE_CODEC END

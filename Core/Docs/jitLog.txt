@@ -1,0 +1,287 @@
+
+
+
+
+TACKLE THIS FIRST
+
+ 87100  25%  b   com.rr.core.session.InternalThreadedDispatcher::doProcessConnectedEvents @ 3 (46 bytes)
+  87127 907   b   com.rr.om.processor.EventProcessorImpl::flush (49 bytes)
+  87334 908   b   com.rr.om.processor.EventProcessorImpl::handleNewOrderAck (42 bytes)
+  87374 909   b   com.rr.core.collections.ConcLinkedMsgQueueSingle::add (65 bytes)
+Inlining intrinsic _compareAndSwapObject at bci:10 in com.rr.core.java.JavaSpecific::compareAndSwapObject (14 bytes)
+Inlining intrinsic _compareAndSwapObject at bci:10 in com.rr.core.java.JavaSpecific::compareAndSwapObject (14 bytes)
+  87392 910   b   com.rr.core.log.AsyncAppender::handle (12 bytes)
+Inlining intrinsic _compareAndSwapObject at bci:10 in com.rr.core.java.JavaSpecific::compareAndSwapObject (14 bytes)
+Inlining intrinsic _compareAndSwapObject at bci:10 in com.rr.core.java.JavaSpecific::compareAndSwapObject (14 bytes)
+  87393 911   b   com.rr.core.collections.ConcLinkedMsgQueueSingle::add (9 bytes)
+Inlining intrinsic _compareAndSwapObject at bci:10 in com.rr.core.java.JavaSpecific::compareAndSwapObject (14 bytes)
+Inlining intrinsic _compareAndSwapObject at bci:10 in com.rr.core.java.JavaSpecific::compareAndSwapObject (14 bytes)
+  87755 912   b   com.rr.core.log.LogEventLarge::length (22 bytes)
+  87756 913   b   com.rr.core.log.LogEventLarge::encode (201 bytes)
+  87822 914   b   com.rr.core.log.LogDelegator::infoLarge (33 bytes)
+Inlining intrinsic _currentThread at bci:0 in java.lang.ThreadLocal::get (34 bytes)
+Inlining intrinsic _compareAndSwapObject at bci:10 in com.rr.core.java.JavaSpecific::compareAndSwapObject (14 bytes)
+  87823 915   b   com.rr.core.log.LogDelegator::populateEvent (53 bytes)
+Inlining intrinsic _compareAndSwapObject at bci:10 in com.rr.core.java.JavaSpecific::compareAndSwapObject (14 bytes)
+  87844 916   b   com.rr.om.session.fixsocket.LoggedOnFixState::handle (385 bytes)
+  87848 917   b   com.rr.core.session.AbstractSession::dispatchInbound (18 bytes)
+  88102  26% !b   com.rr.core.dispatch.ThreadedDispatcher$Dispatcher::connectedHandler @ 15 (103 bytes)
+  88856 918   b   com.rr.om.order.OrderImpl::setState (34 bytes)
+  89028 919  !b   com.rr.om.processor.EventProcessorImpl::handleNow (367 bytes)
+  89210 920  !b   com.rr.core.pool.SuperPool::returnChain (286 bytes)
+
+-------------------------------
+
+  93353 964   b   com.rr.core.instrument.DummyInstrumentLocator::getInstrument (12 bytes)
+  94069  27% !b   com.rr.core.session.InternalThreadedDispatcher::connectedEventProcessing @ 19 (105 bytes)
+
+
+
+
+  78542 887   b   com.rr.om.exchange.ExchangeSim::processNewOrder (21 bytes)
+  78542 888   b   com.rr.om.warmup.sim.WarmupExchangeSimAdapter::handle (57 bytes)
+
+  78509 885   b   com.rr.core.session.AbstractSession::handle (11 bytes)
+  78512 886   b   com.rr.core.instrument.DummyInstrumentLocator::getInstrument (12 bytes)
+  76553 883   b   com.rr.core.collections.ConcLinkedMsgQueueSingle::add (65 bytes)
+  78547 889   b   com.rr.core.collections.ConcLinkedMsgQueueSingle::next (11 bytes)
+  76927 884   b   com.rr.core.session.SessionThreadedDispatcher::dispatch (12 bytes)
+
+
+DATE : 20110616
+===============
+
+EXCHANGE
+
+ 112836 895   b   com.rr.core.collections.ConcLinkedMsgQueueSingle::add (65 bytes)
+ 112647 894   b   com.rr.om.warmup.sim.WarmupExchangeSimAdapter::handle (57 bytes)
+ 113444 896  !b   com.rr.om.warmup.sim.WarmupExchangeSimAdapter::handleNow (139 bytes)
+ 113670 897   b   com.rr.core.instrument.DummyInstrumentLocator::getInstrument (12 bytes)
+ 113698 898   b   com.rr.om.exchange.ExchangeSim::processNewOrder (21 bytes)
+ 113699  24% !b   com.rr.core.dispatch.ThreadedDispatcher$Dispatcher::connectedHandler @ 15 (103 bytes)
+ 113699  25% !b   com.rr.core.session.InternalThreadedDispatcher::connectedEventProcessing @ 19 (105 bytes)
+
+
+DATE : 20110615 late
+===============
+
+Exchange
+
+1250   b   java.lang.Class::clearCachesOnClassRedefinition (70 bytes)
+1251   b   com.rr.core.session.SessionThreadedDispatcher::dispatch (12 bytes)
+Inlining intrinsic _compareAndSwapObject at bci:10 in com.rr.core.java.JavaSpecific::compareAndSwapObject (14 bytes)
+1252   b   com.rr.core.instrument.DummyInstrumentLocator::getInstrument (12 bytes)
+1253   b   com.rr.om.warmup.sim.WarmupExchangeSimAdapter::handle (57 bytes)
+Inlining intrinsic _compareAndSwapObject at bci:10 in com.rr.core.java.JavaSpecific::compareAndSwapObject (14 bytes)
+ 24% !b   com.rr.core.session.InternalThreadedDispatcher::connectedEventProcessing @ 19 (105 bytes)
+ 25% !b   com.rr.core.dispatch.ThreadedDispatcher$Dispatcher::run @ 35 (203 bytes)
+
+
+Server
+
+474   made zombie  java.lang.Throwable::getOurStackTrace (49 bytes)
+950   made zombie  java.util.concurrent.ConcurrentHashMap$HashIterator::hasNext (13 bytes)
+981   b   com.rr.om.session.fixsocket.LoggedOnFixState::acceptMessage (128 bytes)
+ 18%  made zombie  com.rr.core.dispatch.ThreadedDispatcher$Dispatcher::run @ -2 (203 bytes)
+ 19%  made zombie  com.rr.core.session.InternalThreadedDispatcher::connectedEventProcessing @ -2 (105 bytes)
+762   made not entrant  com.rr.core.instrument.DummyInstrumentLocator::getInstrument (12 bytes)
+982   b   com.rr.om.processor.EventProcessorImpl::flush (49 bytes)
+Inlining intrinsic _compareAndSwapObject at bci:10 in com.rr.core.java.JavaSpecific::compareAndSwapObject (14 bytes)
+983   b   com.rr.core.collections.ConcLinkedMsgQueueSingle::add (9 bytes)
+984   b   com.rr.core.log.AsyncAppender::handle (12 bytes)
+Inlining intrinsic _compareAndSwapObject at bci:10 in com.rr.core.java.JavaSpecific::compareAndSwapObject (14 bytes)
+Inlining intrinsic _compareAndSwapObject at bci:10 in com.rr.core.java.JavaSpecific::compareAndSwapObject (14 bytes)
+985   b   com.rr.core.log.LogDelegator::infoLarge (33 bytes)
+Inlining intrinsic _currentThread at bci:0 in java.lang.ThreadLocal::get (34 bytes)
+Inlining intrinsic _compareAndSwapObject at bci:10 in com.rr.core.java.JavaSpecific::compareAndSwapObject (14 bytes)
+986   b   com.rr.core.log.LogEventLarge::length (22 bytes)
+987   b   com.rr.core.log.LogEventLarge::encode (201 bytes)
+ 25% !b   com.rr.core.dispatch.ThreadedDispatcher$Dispatcher::run @ 35 (203 bytes)
+988  !b   com.rr.core.pool.SuperPool::returnChain (286 bytes)
+989   b   com.rr.core.instrument.DummyInstrumentLocator::getInstrument (12 bytes)
+489   made zombie  com.rr.core.log.LogDelegator::infoLarge (33 bytes)
+ 22%  made zombie  java.lang.ref.Finalizer$FinalizerThread::run @ -2 (21 bytes)
+975   made zombie  java.lang.ref.Finalizer::runFinalizer (59 bytes)
+969   made zombie  java.lang.ref.ReferenceQueue::reallyPoll (69 bytes)
+ 26% !b   com.rr.core.session.InternalThreadedDispatcher::connectedEventProcessing @ 19 (105 bytes)
+977   made zombie  java.lang.ref.Finalizer::remove (94 bytes)
+974   made zombie  java.lang.ref.Finalizer::access$100 (5 bytes)
+ 21%  made zombie  java.lang.ref.Reference$ReferenceHandler::run @ -2 (108 bytes)
+990  !b   com.rr.om.processor.states.PendingNewState::handleNewOrderSingle (231 bytes)
+Inlining intrinsic _getClass at bci:131 in com.rr.om.processor.states.PendingNewState::handleNewOrderSingle (231 bytes)
+ 27% !b   com.rr.core.persister.memmap.MemMapPageManager$BackgroundAllocator::run @ 11 (201 bytes)
+Inlining intrinsic _arraycopy at bci:48 in java.util.ArrayList::remove (70 bytes)
+
+
+
+
+
+DATE : 20110615
+===============
+
+removed -Xcomp so compilation is now much more aggressive 
+
+EXCHANGE
+
+ 18% !b   com.rr.core.log.AsyncAppender::dispatchLoop @ 70 (467 bytes)
+Inlining intrinsic _currentTimeMillis at bci:83 in com.rr.core.log.AsyncAppender::dispatchLoop (467 bytes)
+Inlining intrinsic _currentTimeMillis at bci:22 in com.rr.core.log.BaseLogEvent::<init> (36 bytes)
+616   made not entrant  com.rr.core.session.AbstractSession::handle (11 bytes)
+617   made not entrant  com.rr.core.session.SessionThreadedDispatcher::dispatch (12 bytes)
+571   made not entrant  com.rr.core.instrument.DummyInstrumentLocator::getInstrument (12 bytes)
+786   made not entrant  com.rr.om.warmup.sim.WarmupExchangeSimAdapter::handle (57 bytes)
+888   b   com.rr.core.session.AbstractSession::handle (11 bytes)
+889   b   com.rr.core.session.SessionThreadedDispatcher::dispatch (12 bytes)
+890   b   com.rr.om.warmup.sim.WarmupExchangeSimAdapter::handle (57 bytes)
+ 19% !b   com.rr.core.session.InternalThreadedDispatcher::connectedEventProcessing @ 19 (105 bytes)
+ 20% !b   com.rr.core.dispatch.ThreadedDispatcher$Dispatcher::run @ 35 (203 bytes)
+891   b   com.rr.core.instrument.DummyInstrumentLocator::getInstrument (12 bytes)
+
+
+
+SERVER
+
+848   b   com.rr.om.session.state.AbstractStatefulSocketSession::processNextInbound (100 bytes)
+ 18% !b   com.rr.core.persister.memmap.MemMapPageManager$BackgroundAllocator::run @ 11 (201 bytes)
+Inlining intrinsic _arraycopy at bci:48 in java.util.ArrayList::remove (70 bytes)
+634   made not entrant  com.rr.core.session.AbstractSession::handle (11 bytes)
+635   made not entrant  com.rr.core.session.SessionThreadedDispatcher::dispatch (12 bytes)
+639   made not entrant  com.rr.core.instrument.DummyInstrumentLocator::getInstrument (12 bytes)
+849   b   com.rr.om.processor.EventProcessorImpl::flush (49 bytes)
+Inlining intrinsic _compareAndSwapObject at bci:10 in com.rr.core.java.JavaSpecific::compareAndSwapObject (14 bytes)
+Inlining intrinsic _compareAndSwapObject at bci:10 in com.rr.core.java.JavaSpecific::compareAndSwapObject (14 bytes)
+850   b   com.rr.core.collections.ConcLinkedMsgQueueSingle::casSetNextEntry (23 bytes)
+Inlining intrinsic _compareAndSwapObject at bci:10 in com.rr.core.java.JavaSpecific::compareAndSwapObject (14 bytes)
+851   b   com.rr.core.log.FileAppender::doLog (114 bytes)
+Inlining intrinsic _putByte_raw at bci:12 in java.nio.DirectByteBuffer::put (17 bytes)
+488   made zombie  com.rr.core.session.socket.AbstractSocketSession::initialChannelRead (121 bytes)
+852   b   com.rr.core.log.BaseLogEvent::encode (130 bytes)
+492   made zombie  com.rr.om.session.state.AbstractStatefulSocketSession::processNextInbound (100 bytes)
+Inlining intrinsic _putByte_raw at bci:12 in java.nio.DirectByteBuffer::put (17 bytes)
+Inlining intrinsic _putByte_raw at bci:12 in java.nio.DirectByteBuffer::put (17 bytes)
+Inlining intrinsic _putByte_raw at bci:12 in java.nio.DirectByteBuffer::put (17 bytes)
+Inlining intrinsic _putByte_raw at bci:12 in java.nio.DirectByteBuffer::put (17 bytes)
+Inlining intrinsic _putByte_raw at bci:12 in java.nio.DirectByteBuffer::put (17 bytes)
+Inlining intrinsic _putByte_raw at bci:12 in java.nio.DirectByteBuffer::put (17 bytes)
+Inlining intrinsic _putByte_raw at bci:12 in java.nio.DirectByteBuffer::put (17 bytes)
+Inlining intrinsic _putByte_raw at bci:12 in java.nio.DirectByteBuffer::put (17 bytes)
+Inlining intrinsic _putByte_raw at bci:12 in java.nio.DirectByteBuffer::put (17 bytes)
+Inlining intrinsic _putByte_raw at bci:12 in java.nio.DirectByteBuffer::put (17 bytes)
+Inlining intrinsic _putByte_raw at bci:12 in java.nio.DirectByteBuffer::put (17 bytes)
+Inlining intrinsic _putByte_raw at bci:12 in java.nio.DirectByteBuffer::put (17 bytes)
+Inlining intrinsic _copyMemory at bci:42 in java.nio.Bits::copyFromArray (70 bytes)
+Inlining intrinsic _copyMemory at bci:42 in java.nio.Bits::copyFromArray (70 bytes)
+853   b   com.rr.core.lang.TimeZoneCalculator::utcTimeToLocal (281 bytes)
+Inlining intrinsic _putByte_raw at bci:12 in java.nio.DirectByteBuffer::put (17 bytes)
+Inlining intrinsic _putByte_raw at bci:12 in java.nio.DirectByteBuffer::put (17 bytes)
+Inlining intrinsic _putByte_raw at bci:12 in java.nio.DirectByteBuffer::put (17 bytes)
+Inlining intrinsic _putByte_raw at bci:12 in java.nio.DirectByteBuffer::put (17 bytes)
+Inlining intrinsic _putByte_raw at bci:12 in java.nio.DirectByteBuffer::put (17 bytes)
+Inlining intrinsic _putByte_raw at bci:12 in java.nio.DirectByteBuffer::put (17 bytes)
+Inlining intrinsic _putByte_raw at bci:12 in java.nio.DirectByteBuffer::put (17 bytes)
+Inlining intrinsic _putByte_raw at bci:12 in java.nio.DirectByteBuffer::put (17 bytes)
+Inlining intrinsic _putByte_raw at bci:12 in java.nio.DirectByteBuffer::put (17 bytes)
+Inlining intrinsic _putByte_raw at bci:12 in java.nio.DirectByteBuffer::put (17 bytes)
+Inlining intrinsic _putByte_raw at bci:12 in java.nio.DirectByteBuffer::put (17 bytes)
+Inlining intrinsic _putByte_raw at bci:12 in java.nio.DirectByteBuffer::put (17 bytes)
+569   made zombie  com.rr.om.processor.EventProcessorImpl::flush (49 bytes)
+581   made zombie  com.rr.core.collections.ConcLinkedMsgQueueSingle::casSetNextEntry (23 bytes)
+620   made zombie  com.rr.om.session.fixsocket.LoggedOnFixState::acceptMessage (128 bytes)
+598   made zombie  com.rr.om.session.state.AbstractStatefulSocketSession::processReadMessage (102 bytes)
+854   b   com.rr.core.log.AsyncAppender::handle (12 bytes)
+Inlining intrinsic _compareAndSwapObject at bci:10 in com.rr.core.java.JavaSpecific::compareAndSwapObject (14 bytes)
+Inlining intrinsic _compareAndSwapObject at bci:10 in com.rr.core.java.JavaSpecific::compareAndSwapObject (14 bytes)
+855   b   com.rr.core.collections.ConcLinkedMsgQueueSingle::add (9 bytes)
+Inlining intrinsic _compareAndSwapObject at bci:10 in com.rr.core.java.JavaSpecific::compareAndSwapObject (14 bytes)
+Inlining intrinsic _compareAndSwapObject at bci:10 in com.rr.core.java.JavaSpecific::compareAndSwapObject (14 bytes)
+622   made zombie  com.rr.core.session.AbstractSession::dispatchInbound (18 bytes)
+618   made zombie  com.rr.om.session.fixsocket.LoggedOnFixState::handle (385 bytes)
+683   made zombie  com.rr.om.order.OrderImpl::setState (34 bytes)
+ 15%  made zombie  com.rr.core.dispatch.ThreadedDispatcher$Dispatcher::run @ -2 (203 bytes)
+778   made zombie  com.rr.om.processor.states.PendingNewState::handleNewOrderSingle (231 bytes)
+ 16%  made zombie  com.rr.model.generated.internal.type.OrdRejReason::<clinit> @ -2 (510 bytes)
+830   made zombie  java.util.concurrent.ConcurrentHashMap$HashIterator::hasNext (13 bytes)
+856   b   com.rr.core.log.BaseLogEvent::attachQueue (6 bytes)
+857   b   com.rr.core.log.BaseLogEvent::detachQueue (6 bytes)
+858   b   com.rr.om.session.state.AbstractStatefulSocketSession::processReadMessage (102 bytes)
+Inlining intrinsic _nanoTime at bci:11 in com.rr.om.session.state.AbstractStatefulSocketSession::processReadMessage (102 bytes)
+Inlining intrinsic _arraycopy at bci:18 in com.rr.om.session.state.AbstractStatefulSocketSession::shiftInBufferLeft (22 bytes)
+Inlining intrinsic _currentTimeMillis at bci:1 in com.rr.om.session.state.SessionController::handle (18 bytes)
+859   b   com.rr.om.session.fixsocket.LoggedOnFixState::handle (385 bytes)
+860   b   com.rr.om.session.fixsocket.LoggedOnFixState::acceptMessage (128 bytes)
+861   b   com.rr.core.log.LogEventLarge::length (22 bytes)
+862   b   com.rr.core.log.LogEventLarge::encode (201 bytes)
+863   b   com.rr.core.log.LogDelegator::populateEvent (53 bytes)
+864   b   com.rr.core.log.BaseLogEvent::set (24 bytes)
+Inlining intrinsic _currentTimeMillis at bci:1 in com.rr.core.log.BaseLogEvent::set (24 bytes)
+Inlining intrinsic _currentTimeMillis at bci:1 in com.rr.core.log.BaseLogEvent::set (24 bytes)
+865   b   com.rr.core.log.LogDelegator::infoLarge (33 bytes)
+Inlining intrinsic _currentThread at bci:0 in java.lang.ThreadLocal::get (34 bytes)
+Inlining intrinsic _currentTimeMillis at bci:1 in com.rr.core.log.BaseLogEvent::set (24 bytes)
+Inlining intrinsic _compareAndSwapObject at bci:10 in com.rr.core.java.JavaSpecific::compareAndSwapObject (14 bytes)
+Inlining intrinsic _compareAndSwapObject at bci:10 in com.rr.core.java.JavaSpecific::compareAndSwapObject (14 bytes)
+ 19% !b   com.rr.core.dispatch.ThreadedDispatcher$Dispatcher::run @ 35 (203 bytes)
+Inlining intrinsic _min at bci:11 in java.util.Arrays::copyOf (19 bytes)
+Inlining intrinsic _arraycopy at bci:14 in java.util.Arrays::copyOf (19 bytes)
+866   b   com.rr.core.instrument.DummyInstrumentLocator::getInstrument (12 bytes)
+867  !b   com.rr.om.processor.states.PendingNewState::handleNewOrderSingle (231 bytes)
+Inlining intrinsic _getClass at bci:131 in com.rr.om.processor.states.PendingNewState::handleNewOrderSingle (231 bytes)
+868  !b   com.rr.core.pool.SuperPool::returnChain (286 bytes)
+854   made not entrant  com.rr.core.log.AsyncAppender::handle (12 bytes)
+855   made not entrant  com.rr.core.collections.ConcLinkedMsgQueueSingle::add (9 bytes)
+
+
+
+
+
+
+
+
+DATE : 20110607
+===============
+
+standard client
+
+5730   b   com.rr.core.tasks.TaskQueue::rescheduleMin (16 bytes)
+5731   b   com.rr.core.tasks.TaskQueue::fixDown (108 bytes)
+5681   made zombie  com.rr.om.warmup.units.WarmupRouters::warmRoundRobinRouter (63 bytes)
+5686   made zombie  com.rr.om.main.SimClientMain::recoverAndConnect (136 bytes)
+5732  !b   com.rr.core.tasks.Scheduler$SingleCallbackTask::run (39 bytes)
+5733   b   com.rr.om.session.state.SessionController$HeartbeatActor::event (80 bytes)
+5734   b   com.rr.om.session.state.SessionController::isLoggedOut (15 bytes)
+5735 s b   com.rr.core.tasks.Scheduler::cancelIndividual (43 bytes)
+5736   b   com.rr.om.session.state.SessionController$MissingHeartbeatActor::event (29 bytes)
+
+
+
+Multi exchange
+5829   b   com.rr.om.session.state.SessionController::checkMissingHeartbeat (131 bytes)
+
+
+5830   b   com.rr.om.exchange.ExchangeSim::registerOrderInMap (27 bytes)
+5831   b   com.rr.om.order.OrderVersion::setBaseOrderRequest (6 bytes)
+5832   b   com.rr.om.exchange.ExchangeSim::calcOrdStatus (33 bytes)
+5833   b   com.rr.om.exchange.ExchangeSim::apply (152 bytes)
+5834  !b   sun.reflect.GeneratedConstructorAccessor2::newInstance (49 bytes)
+5835   b   com.rr.core.log.LogEventLarge::length (22 bytes)
+5836   b   com.rr.core.log.LogEventLarge::encode (201 bytes)
+
+
+
+
+
+Multi SMT
+5978   b   com.rr.core.tasks.TaskQueue::removeMin (38 bytes)
+
+5979   b   com.rr.core.log.LogEventLarge::length (22 bytes)
+5980   b   com.rr.core.log.LogEventLarge::encode (201 bytes)
+4814   made zombie  com.rr.core.session.socket.AbstractSocketSession::bindServerInterface (167 bytes)
+4994   made zombie  com.rr.core.session.socket.AbstractSocketSession::getSockAddress (393 bytes)
+5012   made zombie  com.rr.core.session.socket.AbstractSocketSession::bindClientInterface (214 bytes)
+5939   made zombie  java.net.NetworkInterface::<clinit> (17 bytes)
+5938   made zombie  com.rr.core.session.socket.AbstractSocketSession::bindClientInterface (214 bytes)
+5982   b   com.rr.core.session.socket.AbstractSocketSession::disconnectCleanup (9 bytes)
+5981   b   com.rr.core.session.MultiSessionThreadedDispatcher::disconnectedFlushAll (37 bytes)
+ThreadUtils.setPriority() thread SocketConnector-client1, priority Other, javaPriority=5, cpumask=63
+5983  !b   com.rr.core.session.socket.AbstractSocketSession::bindServerInterface (167 bytes)
+

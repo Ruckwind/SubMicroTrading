@@ -1,12 +1,9 @@
-/*******************************************************************************
- * Copyright (c) 2015 Low Latency Trading Limited  :  Author Richard Rose
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at	http://www.apache.org/licenses/LICENSE-2.0
- * Unless required by applicable law or agreed to in writing,  software distributed under the License 
- * is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and limitations under the License.
- *******************************************************************************/
 package com.rr.model.generated.internal.type;
+
+/*
+Copyright 2015 Low Latency Trading Limited
+Author Richard Rose
+*/
 
 
 /**
@@ -15,14 +12,14 @@ package com.rr.model.generated.internal.type;
 
 import java.util.Map;
 import java.util.HashMap;
-import com.rr.core.lang.ViewString;
-import com.rr.core.lang.ViewString;
+import com.rr.core.lang.*;
+import com.rr.core.utils.*;
 import com.rr.model.internal.type.*;
 import com.rr.core.model.*;
 import com.rr.core.codec.RuntimeDecodingException;
 import com.rr.model.generated.internal.type.TypeIds;
 
-@SuppressWarnings( "unused" )
+@SuppressWarnings( { "unused", "override"  })
 
 public enum CxlRejReason implements MultiByteLookup {
 
@@ -52,8 +49,7 @@ public enum CxlRejReason implements MultiByteLookup {
         _val = val.getBytes();
         _id = id;
     }
-    private static final ViewString _lookup = new ViewString();
-    private static Map<ViewString,CxlRejReason> _map = new HashMap<ViewString,CxlRejReason>();
+    private static Map<ViewString,CxlRejReason> _map = new HashMap<>();
 
     static {
         for ( CxlRejReason en : CxlRejReason.values() ) {
@@ -61,13 +57,6 @@ public enum CxlRejReason implements MultiByteLookup {
             ViewString zVal = new ViewString( val );
             _map.put( zVal, en );
         }
-    }
-
-    public static CxlRejReason getVal( final byte[] buf, final int offset, final int len ) {
-        _lookup.setValue( buf, offset, len );
-        CxlRejReason val = _map.get( _lookup );
-        if ( val == null ) throw new RuntimeDecodingException( "Unsupported value of " + _lookup + " for CxlRejReason" );
-        return val;
     }
 
     public static CxlRejReason getVal( final ViewString key ) {

@@ -1,0 +1,654 @@
+
+
+A1) TickToTrade (no openOnLoad) , T1 logging every tickIn and every NOS out 
+    BATCH_MD_SIZE=1, TOTAL_MD_EVENTS=1000000, BATCH_MD_DELAY_MICROS=500
+
+    TickToTrade (usecs)     recs=100197, min=99, ave=0, max=, 5p=19, 50p=20, 90p=22, 95p=23, 99p=30
+    MAX RATE per second 1619
+    
+A2) TickToTrade (openOnLoad) , T1 logging every tickIn and every NOS out 
+    BATCH_MD_SIZE=1, TOTAL_MD_EVENTS=1000000, BATCH_MD_DELAY_MICROS=500
+ 
+    TickToTrade (usecs)     recs=100197, min=99, ave=0, max=, 5p=13, 50p=14, 90p=16, 95p=17, 99p=22
+    MAX RATE per second 1619
+    
+A3) TickToTrade (openOnLoad) , T1 doesnt log tick in but does log NOS out
+    BATCH_MD_SIZE=1, TOTAL_MD_EVENTS=1000000, BATCH_MD_DELAY_MICROS=500
+
+    TickToTrade (usecs)     recs=100197, min=99, ave=0, max=, 5p=13, 50p=13, 90p=15, 95p=16, 99p=20
+    MAX RATE per second 1619
+    InternalTickToTrade (usecs)     recs=100197, min=2, ave=2.69923, max=423, 5p=2, 50p=2, 90p=3, 95p=4, 99p=7
+    
+A4) TickToTrade (openOnLoad) , T1 doesnt log tick in but does log NOS out
+
+    t1.tickToTradeRatio=10, BATCH_MD_SIZE=25, TOTAL_MD_EVENTS=10000000, BATCH_MD_DELAY_MICROS=500
+    (GC in tick generator)
+    
+    TickToTrade (usecs)             recs=196665, min=12, ave=241558, max=5982494, 5p=12, 50p=14, 90p=18, 95p=2401443, 99p=5418484
+    MAX TICK RATE per second 40499
+    InternalTickToTrade (usecs)     recs=198505, min=2, ave=661491, max=363364391, 5p=2, 50p=2, 90p=4, 95p=1843687, 99p=4982716
+
+A5) TickToTrade (openOnLoad) , T1 doesnt log tick in but does log NOS out
+
+    t1.tickToTradeRatio=10, BATCH_MD_SIZE=1000, TOTAL_MD_EVENTS=5000000, BATCH_MD_DELAY_MICROS=500
+    
+    TickToTrade (usecs)             recs=90215,  min=11, ave=84801.1, max=1485043, 5p=12, 50p=13, 90p=16, 95p=1269174, 99p=1441424
+    MAX RATE per second 324049
+    InternalTickToTrade (usecs)     recs=102168, min=1, ave=162129, max=3637575, 5p=2, 50p=2, 90p=927229, 95p=1167222, 99p=1359673
+    
+B) added WarmupCMEFastFixSocketSession, recycle exchange events, added nanoTS to clOrdId so dont need all ticks
+    
+B1) TickToTrade (no openOnLoad) , T1 no in logging, log every NOS out    
+    BATCH_MD_SIZE=250, TOTAL_MD_EVENTS=10000000, BATCH_MD_DELAY_MICROS=500, tickToTradeRatio=10
+
+InternalTickToTrade (usecs)     recs=1001997, min=2, ave=2.89678, max=281, 5p=2, 50p=3, 90p=3, 95p=4, 99p=6
+TickToTrade (usecs)     recs=1001996, min=12, ave=14.0894, max=1649, 5p=13, 50p=14, 90p=15, 95p=16, 99p=19
+
+B2) TickToTrade (no openOnLoad) , T1 no in logging, log every NOS out    
+    t1.tickToTradeRatio=10, BATCH_MD_SIZE=1000000, TOTAL_MD_EVENTS=10000000, BATCH_MD_DELAY_MICROS=1000
+
+InternalTickToTrade (usecs)     recs=1001997, min=2, ave=3.37834, max=1908, 5p=2, 50p=3, 90p=3, 95p=4, 99p=6
+TickToTrade (usecs)     recs=1001997, min=12, ave=14.6322, max=1919, 5p=13, 50p=14, 90p=15, 95p=16, 99p=19
+
+
+B3)  t1.tickToTradeRatio=10, BATCH_MD_SIZE=10, TOTAL_MD_EVENTS=1000000, BATCH_MD_DELAY_MICROS=500
+
+InternalTickToTrade (usecs)     recs=100197, min=2, ave=3.13809, max=317, 5p=2, 50p=3, 90p=4, 95p=4, 99p=7
+TickToTrade (usecs)     recs=100197, min=12, ave=14.4792, max=329, 5p=13, 50p=14, 90p=15, 95p=16, 99p=20
+
+B4)  t1.tickToTradeRatio=10, BATCH_MD_SIZE=100, TOTAL_MD_EVENTS=1000000, BATCH_MD_DELAY_MICROS=500
+
+InternalTickToTrade (usecs)     recs=100197, min=2, ave=2.8402, max=98, 5p=2, 50p=3, 90p=3, 95p=4, 99p=6
+TickToTrade (usecs)     recs=100197, min=12, ave=14.0698, max=222, 5p=13, 50p=14, 90p=15, 95p=15, 99p=19
+
+C)  tcpreplay -i eth2 /home/smt/data/playback-files_cme.ab.channel7-3Apr2012/cme.ab.channel7-3Apr2012.8.30am.pcap
+
+InternalTickToTrade (usecs)     recs=84092, min=2, ave=24894.5, max=57416290, 5p=2, 50p=3, 90p=4, 95p=5, 99p=8
+(problem on server afetr 2 hours causing big lag)
+
+D1) log out events, t1.tickToTradeRatio=10, BATCH_MD_SIZE=10, TOTAL_MD_EVENTS=1000000, BATCH_MD_DELAY_MICROS=500
+InternalTickToTrade (usecs)     recs=100197, min=2, ave=2.98609, max=280, 5p=2, 50p=3, 90p=3, 95p=4, 99p=6
+
+D2) MCAST_WARMUP=100000, log out events, t1.tickToTradeRatio=10, BATCH_MD_SIZE=10, TOTAL_MD_EVENTS=1000000, BATCH_MD_DELAY_MICROS=500
+InternalTickToTrade (usecs)     recs=100197, min=2, ave=3.17472, max=125, 5p=2, 50p=3, 90p=4, 95p=4, 99p=6
+TickToTrade (usecs)     recs=100197, min=12, ave=14.1781, max=1213, 5p=13, 50p=14, 90p=15, 95p=16, 99p=19
+
+D3)NO openOnload for SIMULATORS ! (forgot)
+t1.tickToTradeRatio=10, BATCH_MD_SIZE=1000, TOTAL_MD_EVENTS=10000000, BATCH_MD_DELAY_MICROS=500, MCAST_WARMUP=100000
+InternalTickToTrade (usecs)     recs=1001997, min=2, ave=3.12073, max=787, 5p=2, 50p=3, 90p=4, 95p=4, 99p=6
+TickToTrade (usecs)     recs=1001997, min=14, ave=55.0462, max=858, 5p=25, 50p=56, 90p=82, 95p=86, 99p=90
+
+D4)openOnload for all
+t1.tickToTradeRatio=10, BATCH_MD_SIZE=1000, TOTAL_MD_EVENTS=10000000, BATCH_MD_DELAY_MICROS=500, MCAST_WARMUP=100000
+InternalTickToTrade (usecs)     recs=1001997, min=2, ave=2.96933, max=216, 5p=2, 50p=3, 90p=3, 95p=4, 99p=6
+TickToTrade (usecs)     recs=1001997, min=11, ave=13.8358, max=549, 5p=12, 50p=14, 90p=15, 95p=15, 99p=19
+
+D5) -Xcomp (no tiered comp)
+InternalTickToTrade (usecs)     recs=1001997, min=3, ave=3.91865, max=159, 5p=3, 50p=4, 90p=4, 95p=5, 99p=8
+TickToTrade (usecs)     recs=1001997, min=12, ave=18.1337, max=18509, 5p=13, 50p=15, 90p=16, 95p=17, 99p=22
+
+D6) Upgrade from JDK1.6.27  to 1.7.45... back to TieredCompilation
+InternalTickToTrade (usecs)     recs=1001997, min=1, ave=1.18133e+06, max=5572991, 5p=2, 50p=89502, 90p=4092520, 95p=4558238, 99p=5145069
+TickToTrade (usecs)     recs=1001997, min=11, ave=1.18114e+06, max=5492561, 5p=12, 50p=142715, 90p=4043193, 95p=4497653, 99p=5070781
+
+D6) Upgrade from JDK1.6.27  to 1.7.10 ... back to TieredCompilation
+InternalTickToTrade (usecs)     recs=1001997, min=2, ave=571962, max=3574870, 5p=2, 50p=3, 90p=2385173, 95p=2890567, 99p=3317757
+
+D6) Upgrade from JDK1.6.27  to 1.7.10 ... back to TieredCompilation ... REDLPLOY   ... so only BATCH of 10 !!
+InternalTickToTrade (usecs)     recs=100197, min=2, ave=3.11066, max=114, 5p=2, 50p=3, 90p=4, 95p=4, 99p=6
+TickToTrade (usecs)     recs=100197, min=12, ave=8353.97, max=1186109, 5p=13, 50p=14, 90p=15, 95p=17, 99p=469979
+
+D7) JDK1.7.0.4, openOnload all, t1.tickToTradeRatio=10, BATCH_MD_SIZE=1000, TOTAL_MD_EVENTS=10000000, BATCH_MD_DELAY_MICROS=500, MCAST_WARMUP=100000
+InternalTickToTrade (usecs)     recs=1001997, min=1, ave=360157, max=2501065, 5p=2, 50p=3, 90p=1380758, 95p=1817399, 99p=2324566
+TickToTrade (usecs)     recs=1001997, min=11, ave=371513, max=2492022, 5p=12, 50p=14, 90p=1411207, 95p=1824448, 99p=2317764
+
+D8) back to jdk1.6.0.27
+InternalTickToTrade (usecs)     recs=1001997, min=2, ave=200107, max=1970482, 5p=2, 50p=3, 90p=904970, 95p=1135468, 99p=1624941
+
+D9) reboot
+InternalTickToTrade (usecs)     recs=1001997, min=2, ave=3.03915, max=462, 5p=2, 50p=3, 90p=4, 95p=4, 99p=6
+TickToTrade (usecs)     recs=1001997, min=12, ave=13.9764, max=464, 5p=13, 50p=14, 90p=15, 95p=16, 99p=19
+
+t1.tickToTradeRatio=10
+BATCH_MD_SIZE=1000
+TOTAL_MD_EVENTS=10000000
+BATCH_MD_DELAY_MICROS=500
+MCAST_WARMUP=100000
+
+D10) t1.tickToTradeRatio=10, BATCH_MD_SIZE=10, TOTAL_MD_EVENTS=1000000, BATCH_MD_DELAY_MICROS=500, MCAST_WARMUP=10000
+186874 [main] INFO com.rr.om.main.SimCMEFastFixGenerator  - Sent 1000000 rate=7575
+InternalTickToTrade (usecs)     recs=100197, min=2, ave=2.9227, max=912, 5p=2, 50p=3, 90p=3, 95p=4, 99p=6
+TickToTrade (usecs)     recs=100197, min=11, ave=13.8355, max=902, 5p=12, 50p=14, 90p=15, 95p=15, 99p=18
+
+D11) t1.tickToTradeRatio=10, BATCH_MD_SIZE=1000, TOTAL_MD_EVENTS=10000000, BATCH_MD_DELAY_MICROS=500, MCAST_WARMUP=100000
+282764 [main] INFO com.rr.om.main.SimCMEFastFixGenerator  - Sent 10000000 rate=232558
+InternalTickToTrade (usecs)     recs=1001997, min=2, ave=2.80721, max=914, 5p=2, 50p=3, 90p=3, 95p=4, 99p=6
+TickToTrade (usecs)     recs=1001997, min=11, ave=13.6793, max=906, 5p=12, 50p=13, 90p=15, 95p=15, 99p=18
+
+D12) -XX:-UseCounterDecay, t1.tickToTradeRatio=10, BATCH_MD_SIZE=1000, TOTAL_MD_EVENTS=10000000, BATCH_MD_DELAY_MICROS=500, MCAST_WARMUP=100000
+286608 [main] INFO com.rr.om.main.SimCMEFastFixGenerator  - Sent 10000000 rate=227272
+InternalTickToTrade (usecs)     recs=1001997, min=1, ave=2.69113, max=183, 5p=2, 50p=3, 90p=3, 95p=4, 99p=5
+TickToTrade (usecs)     recs=1001997, min=11, ave=13.6039, max=1447, 5p=12, 50p=13, 90p=14, 95p=15, 99p=18
+
+(note before started clientGen was 7minute delay ! ... check impact of that)
+
+D13) t1.tickToTradeRatio=10, BATCH_MD_SIZE=1000, TOTAL_MD_EVENTS=10000000, BATCH_MD_DELAY_MICROS=500, MCAST_WARMUP=100000 (removed disabing of decayTimers)
+278660 [main] INFO com.rr.om.warmup.sim.SimCMEFastFixSender  - SimCMEFastFixSender Sent 0, msgs=10000000, msgRate=250000, ticks=16200000, tickRate=405000
+InternalTickToTrade (usecs)     recs=1001997, min=1, ave=2.66759, max=267, 5p=2, 50p=3, 90p=3, 95p=4, 99p=5
+TickToTrade (usecs)     recs=1001997, min=11, ave=13.5314, max=282, 5p=12, 50p=13, 90p=14, 95p=15, 99p=18
+
+D13) t1.tickToTradeRatio=10, BATCH_MD_SIZE=5000, TOTAL_MD_EVENTS=10000000, BATCH_MD_DELAY_MICROS=500, MCAST_WARMUP=100000 
+InternalTickToTrade (usecs)     recs=1001997, min=2, ave=2.89442, max=823, 5p=2, 50p=3, 90p=3, 95p=4, 99p=6
+268383 [main] INFO com.rr.om.warmup.sim.SimCMEFastFixSender  - SimCMEFastFixSender Sent 0, msgs=10000000, msgRate=333333, ticks=16200000, tickRate=540000
+TickToTrade (usecs)     recs=1001997, min=11, ave=13.764, max=893, 5p=12, 50p=14, 90p=15, 95p=15, 99p=18
+
+D14) repeat D13 but wait five mins after exchange connection before run
+TickToTrade (usecs)     recs=1001997, min=11, ave=13.7566, max=616, 5p=12, 50p=14, 90p=15, 95p=15, 99p=18
+InternalTickToTrade (usecs)     recs=1001997, min=2, ave=2.85626, max=161, 5p=2, 50p=3, 90p=3, 95p=4, 99p=6
+
+D15) -XX:MaxInlineSize=150 
+InternalTickToTrade (usecs)     recs=1001997, min=2, ave=3.00691, max=2123, 5p=2, 50p=3, 90p=3, 95p=4, 99p=6
+.. note MAX hit
+
+D16) -Xcomp  -XX:-UseOnStackReplacement -XX:-UseCounterDecay
+InternalTickToTrade (usecs)     recs=1001997, min=3, ave=3.98615, max=652, 5p=3, 50p=4, 90p=5, 95p=5, 99p=8
+
+D17) -XX:PerMethodRecompilationCutoff=4
+268774 [main] INFO com.rr.om.warmup.sim.SimCMEFastFixSender  - SimCMEFastFixSender Sent 0, msgs=10000000, msgRate=333333, ticks=16200000, tickRate=540000
+InternalTickToTrade (usecs)     recs=1001997, min=1, ave=2.73814, max=145, 5p=2, 50p=3, 90p=3, 95p=4, 99p=5
+TickToTrade (usecs)     recs=1001997, min=11, ave=13.6892, max=427, 5p=12, 50p=14, 90p=15, 95p=15, 99p=18
+
+D18) -XX:+AggressiveOpts
+267205 [main] INFO com.rr.om.warmup.sim.SimCMEFastFixSender  - SimCMEFastFixSender Sent 0, msgs=10000000, msgRate=344827, ticks=16200000, tickRate=558620
+InternalTickToTrade (usecs)     recs=1001997, min=1, ave=2.81567, max=1180, 5p=2, 50p=3, 90p=3, 95p=4, 99p=6
+TickToTrade (usecs)     recs=1001997, min=11, ave=13.781, max=1167, 5p=12, 50p=14, 90p=15, 95p=15, 99p=18
+
+==============================================================================================================
+
+Following tests using IvyBridge non overclocked (HT off, cstates off)
+Using Centos6.4 and hwloc1.7.2 and latest openOnload / SFC (on trade server)
+
+E1) t1.tickToTradeRatio=10,  BATCH_MD_SIZE=10, TOTAL_MD_EVENTS=1000000, BATCH_MD_DELAY_MICROS=500, MCAST_WARMUP=10000
+ 
+178139 [main] INFO com.rr.om.warmup.sim.SimCMEFastFixSender  - SimCMEFastFixSender Sent 0, msgs=1000000, msgRate=7092, ticks=1620000, tickRate=11489
+InternalTickToTrade (usecs)     recs=100197, min=2, ave=30.6502, max=40069, 5p=3, 50p=11, 90p=12, 95p=13, 99p=16
+TickToTrade (usecs)     recs=100197, min=10, ave=135.139, max=136754, 5p=12, 50p=20, 90p=22, 95p=24, 99p=27
+
+E2) disable tickless OS ... nohz=off
+180855 [main] INFO com.rr.om.warmup.sim.SimCMEFastFixSender  - SimCMEFastFixSender Sent 0, msgs=1000000, msgRate=6849, ticks=1620000, tickRate=11095
+InternalTickToTrade (usecs)     recs=100197, min=2, ave=20.5808, max=48142, 5p=2, 50p=2, 90p=4, 95p=5, 99p=6
+TickToTrade (usecs)     recs=100197, min=9, ave=29.7489, max=47025, 5p=11, 50p=12, 90p=14, 95p=15, 99p=17
+
+E3) Using quadCore and multiSesssionT1, 2 control threads
+TickToTrade (usecs)     recs=99907, min=9, ave=32.9742, max=55941, 5p=10, 50p=11, 90p=13, 95p=14, 99p=17
+
+E6) removed  #-XX:PerMethodRecompilationCutoff=4  ... added disabling of DECAY cache flushing -XX:-UseCodeCacheFlushing
+removed event logging
+TickToTrade (usecs)     recs=99901, min=9, ave=37.8319, max=51033, 5p=10, 50p=11, 90p=13, 95p=14, 99p=17
+ 
+ 
+E7) installed tuned and set to  latency-performance, -XX:-UseCodeCacheFlushing 
+InternalTickToTrade (usecs)     recs=1001997, min=1, ave=9995.4, max=836740, 5p=2, 50p=2, 90p=4, 95p=5, 99p=487857
+TickToTrade (usecs)     recs=1001997, min=8, ave=9770.44, max=817170, 5p=10, 50p=11, 90p=13, 95p=15, 99p=476446
+
+E8) turn off another set of linux services
+blk-availability  certmonger  mcelogd  portreserve  postfix  rpcbind  rsyslog  sysstat
+
+
+E9) 
+cat /sys/devices/system/cpu/cpuidle/current_driver
+http://stackoverflow.com/questions/12111954/context-switches-much-slower-in-new-linux-kernels
+intel_idle.max_cstate=0 processor.max_cstate=0 idle=poll
+OR
+intel_idle.max_cstate=0 processor.max_cstate=0 idle=mwait
+
+InternalTickToTrade (usecs)     recs=200400, min=1, ave=900.814, max=263659, 5p=2, 50p=2, 90p=3, 95p=5, 99p=7
+TickToTrade (usecs)     recs=200400, min=9, ave=888.981, max=257497, 5p=10, 50p=11, 90p=13, 95p=14, 99p=18
+168835 [main] INFO com.rr.om.warmup.sim.SimCMEFastFixSender  - SimCMEFastFixSender 9980000, msgs=10000000, msgRate=250000, ticks=16200000, tickRate=405000
+
+E10) tcpreplay --multiplier=8 --preload-pcap -T gtod -i eth2 /home/smt/data/playback-files_cme.ab.channel7-3Apr2012/cme.ab.channel7-3Apr2012.8.30am.pcap
+InternalTickToTrade (usecs)     recs=62651, min=1, ave=3.22507, max=3892, 5p=2, 50p=2, 90p=4, 95p=5, 99p=7
+
+E11) add to /etc/sysctl.conf      kernel.sched_rt_runtime_us=-1
+
+E12)
+kernel.sched_rt_runtime_us=-1
+kernel.sched_rt_period_us=-1
+nohz=off intel_idle.max_cstate=0 processor.max_cstate=0 idle=poll 
+
+InternalTickToTrade (usecs)     recs=1001997, min=1, ave=2206.85, max=350231, 5p=2, 50p=2, 90p=4, 95p=5, 99p=81804
+
+
+E13) (E12)+ use concurrent linked queue
+InternalTickToTrade (usecs)     recs=1001997, min=1, ave=8190.36, max=686745, 5p=2, 50p=2, 90p=4, 95p=5, 99p=337392
+
+E14) (E13)+  -Xcomp no recompile
+
+# rpm -q kernel
+kernel-2.6.32-358.el6.x86_64
+
+
+======================================
+CENTOS 5.10  .... overclock profile 3 ... 4.6Ghz
+
+F1) t1.tickToTradeRatio=10, BATCH_MD_SIZE=1000, TOTAL_MD_EVENTS=10000000, BATCH_MD_DELAY_MICROS=500, MCAST_WARMUP=100000
+
+284946 [main] INFO com.rr.om.warmup.sim.SimCMEFastFixSender  - SimCMEFastFixSender 9980000, msgs=10000000, msgRate=227272, ticks=16200000, tickRate=368181
+InternalTickToTrade (usecs)     recs=1001997, min=1, ave=2.3604, max=123, 5p=2, 50p=2, 90p=3, 95p=3, 99p=5
+TickToTrade (usecs)     recs=1001997, min=9, ave=10.9218, max=1211, 5p=10, 50p=11, 90p=12, 95p=13, 99p=15
+
+F2) tcpreplay x8
+InternalTickToTrade (usecs)     recs=206514, min=1, ave=2.96473, max=40, 5p=2, 50p=3, 90p=4, 95p=5, 99p=6
+
+F3) tcpreplay MAX
+InternalTickToTrade (usecs)     recs=206573, min=1, ave=2.80459, max=277, 5p=2, 50p=2, 90p=4, 95p=5, 99p=7
+
+F4) tcpreplay x100
+tcpreplay --multiplier=100 --preload-pcap -T gtod -i eth2 /home/smt/data/playback-files_cme.ab.channel7-3Apr2012/cme.ab.channel7-3Apr2012.8.30am.pcap
+InternalTickToTrade (usecs)     recs=206701, min=1, ave=2.46689, max=329, 5p=2, 50p=2, 90p=3, 95p=4, 99p=6
+
+F5) use systestT1.sh, tcpreplay x100 
+InternalTickToTrade (usecs)     recs=142850, min=2, ave=3.31433, max=2015, 5p=3, 50p=3, 90p=4, 95p=4, 99p=7
+
+======================================
+CENTOS 5.10  .... overclock profile 1 ... 4.6Ghz
+
+G1) profile #1
+
+InternalTickToTrade (usecs)     recs=618479, min=2, ave=6401.06, max=499601, 5p=3, 50p=3, 90p=5, 95p=9, 99p=222942
+
+======================================
+CENTOS 5.10  .... back to overclock profile 3 ... 4.6Ghz
+
+H1) huge pages
+
+300911 [main] INFO com.rr.om.warmup.sim.SimCMEFastFixSender  - SimCMEFastFixSender 6145000, msgs=10000000, msgRate=196078, ticks=11090000, tickRate=217450
+InternalTickToTrade (usecs)     recs=618434, min=2, ave=3.5901, max=244, 5p=3, 50p=3, 90p=4, 95p=5, 99p=8
+TickToTrade (usecs)     recs=618434, min=10, ave=16.014, max=15675, 5p=11, 50p=12, 90p=14, 95p=16, 99p=20
+
+
+===================================
+
+J1) put tieredComp back on on T1
+InternalTickToTrade (usecs)     recs=1001911, min=1, ave=2.23846, max=119, 5p=2, 50p=2, 90p=3, 95p=3, 99p=5
+TickToTrade (usecs)     recs=1001911, min=9, ave=14.5444, max=19179, 5p=9, 50p=11, 90p=12, 95p=13, 99p=17
+
+J2) put tieredComp back on on sims
+283148 [main] INFO com.rr.om.warmup.sim.SimCMEFastFixSender  - SimCMEFastFixSender 9980000, msgs=10000000, msgRate=238095, ticks=16200000, tickRate=385714
+InternalTickToTrade (usecs)     recs=1001373, min=1, ave=2.39214, max=5763, 5p=2, 50p=2, 90p=3, 95p=3, 99p=5
+TickToTrade (usecs)     recs=1001373, min=9, ave=12.8938, max=9526, 5p=10, 50p=11, 90p=12, 95p=13, 99p=15
+
+
+=======================
+
+onload_stackdump lots
+
+
+k1)     
+
+ethtool -C eth2 rx-usecs-irq 0     
+ethtool -C eth3 rx-usecs-irq 0     
+
+kernal : intel_idle.max_cstate=0 idle=poll transparent_hugepage=never
+
+InternalTickToTrade (usecs)     recs=691323, min=2, ave=4730.36, max=568663, 5p=3, 50p=3, 90p=4, 95p=5, 99p=200608
+grep -i gap T1Main_20131113_2152_1.log  = 318
+
+22:05:58.752 [info]  exchange1 Slow consumer delayed write : 14438 micros
+22:06:01.396 [info]  exchange1 Slow consumer delayed write : 156738 micros
+22:06:02.459 [info]  exchange1 Slow consumer delayed write : 568682 micros
+
+
+k2) 
+
+ethtool -C eth2 rx-usecs-irq 4
+ethtool -C eth3 rx-usecs-irq 4
+
+kernal : intel_idle.max_cstate=0 idle=poll transparent_hugepage=never
+
+InternalTickToTrade (usecs)     recs=1001857, min=2, ave=3.51771, max=5626, 5p=2, 50p=3, 90p=4, 95p=4, 99p=8
+TickToTrade (usecs)     recs=1001857, min=10, ave=15.3699, max=16079, 5p=11, 50p=12, 90p=13, 95p=14, 99p=19
+
+k3) same as (k2) but put tiered comp back on
+
+InternalTickToTrade (usecs)     recs=653222, min=1, ave=3459.87, max=214673, 5p=2, 50p=2, 90p=3, 95p=5, 99p=130166
+
+T1Main_20131113_2233_1.log:22:49:10.849 [info]  exchange1 Slow consumer delayed write : 157633 micros
+T1Main_20131113_2233_1.log:22:49:20.825 [info]  exchange1 Slow consumer delayed write : 214687 micros
+T1Main_20131113_2233_1.log:22:49:24.541 [info]  exchange1 Slow consumer delayed write : 208381 micros
+T1Main_20131113_2233_1.log:22:49:26.311 [info]  exchange1 Slow consumer delayed write : 142780 micros
+T1Main_20131113_2233_1.log:22:49:36.011 [info]  exchange1 Slow consumer delayed write : 125 micros
+T1Main_20131113_2233_1.log:22:49:36.401 [info]  exchange1 Slow consumer delayed write : 156630 micros
+
+====================
+
+L1)  tcpreplay * 100 
+
+ethtool -C eth2 rx-usecs-irq 60
+ethtool -A eth2 rx off tx off
+
+ethtool -C eth2 rx-usecs-irq 60
+ethtool -A eth3 rx off tx off
+
+InternalTickToTrade (usecs)     recs=206514, min=1, ave=2.30874, max=963, 5p=2, 50p=2, 90p=3, 95p=3, 99p=5
+
+L2) rerun L1 .... no changes
+InternalTickToTrade (usecs)     recs=206377, min=1, ave=939.415, max=622076, 5p=2, 50p=2, 90p=3, 95p=4, 99p=7
+logs/T1Main_20131117_1430_1.log:14:39:59.628 [info]  exchange1 Slow consumer delayed write : 49744 micros
+logs/T1Main_20131117_1430_1.log:14:40:38.683 [info]  exchange1 Slow consumer delayed write : 72283 micros
+logs/T1Main_20131117_1430_1.log:14:41:32.619 [info]  exchange1 Slow consumer delayed write : 117864 micros
+logs/T1Main_20131117_1430_1.log:14:41:53.331 [info]  exchange1 Slow consumer delayed write : 144004 micros
+
+L3) rerun
+InternalTickToTrade (usecs)     recs=206514, min=1, ave=2.68306, max=12749, 5p=2, 50p=2, 90p=3, 95p=4, 99p=6
+
+L4) rerun
+InternalTickToTrade (usecs)     recs=206514, min=1, ave=1825.73, max=561301, 5p=2, 50p=2, 90p=3, 95p=4, 99p=47203
+
+======================
+
+M1)
+net.ipv4.tcp_window_scaling = 0
+net.core.rmem_default=8388608
+net.core.rmem_max=8388608
+net.core.wmem_default=8388608
+net.core.wmem_max=8388608
+net.core.optmem_max = 8388608
+net.ipv4.tcp_mem=8388608 8388608 8388608
+net.ipv4.tcp_rmem=8388608 8388608 8388608
+net.ipv4.tcp_wmem=8388608 8388608 8388608
+net.ipv4.tcp_timestamps=0
+net.ipv4.tcp_low_latency=1
+
+InternalTickToTrade (usecs)     recs=206514, min=1, ave=465.116, max=419397, 5p=2, 50p=2, 90p=3, 95p=4, 99p=7
+InternalTickToTrade (usecs)     recs=206514, min=1, ave=900.638, max=880170, 5p=2, 50p=2, 90p=3, 95p=3, 99p=6
+
+no slow consumer messages
+
+
+
+============================
+
+N1) replaced System.nanoTime with jniNanoTime using rtsc, tcprelay * 100
+InternalTickToTrade (usecs)     recs=206514, min=1, ave=1.61956, max=4599, 5p=1, 50p=1, 90p=2, 95p=3, 99p=5
+
+N2) 
+InternalTickToTrade (usecs)     recs=571285, min=1, ave=8118.11, max=428395, 5p=1, 50p=1, 90p=3, 95p=6, 99p=280916
+slow consumer in cmeExchange
+massive gaps
+
+N3) removed large buffers
+comment this out #ethtool -A eth2 rx off tx off
+echo 0 > /sys/class/net/eth2/device/lro
+echo 0 > /sys/class/net/eth3/device/lro
+    
+
+InternalTickToTrade (usecs)     recs=1001997, min=1, ave=1.43063, max=284, 5p=1, 50p=1, 90p=2, 95p=3, 99p=4
+267069 [main] INFO com.rr.om.warmup.sim.SimCMEFastFixSender  - SimCMEFastFixSender 9980000, msgs=10000000, msgRate=333333, ticks=16200000, tickRate=540000
+
+
+N4) move the exchange processor and IN thread to CPU0 so TSC for tick to trade can work
+
+
+=====================
+P1) tcpreplay * 1  
+InternalTickToTrade (usecs)     recs=118876, min=1, ave=5.79275, max=64284, 5p=1, 50p=2, 90p=3, 95p=4, 99p=6
+
+P2) -Xcomp ...
+
+P3) -XX:+BackgroundCompilation -XX:CompileThreshold=1000 -XX:+TieredCompilation 
+InternalTickToTrade (usecs)     recs=85339, min=1, ave=2.49711, max=5755, 5p=1, 50p=2, 90p=3, 95p=4, 99p=6
+
+P4) tcpreplay *100
+InternalTickToTrade (usecs)     recs=206245, min=1, ave=1.93675, max=4973, 5p=1, 50p=1, 90p=2, 95p=3, 99p=4
+
+P5) ethtool -C eth2&3 rx-usecs-irq 10000,  tcpreplay *1
+InternalTickToTrade (usecs)     recs=206514, min=1, ave=1217.17, max=899607, 5p=1, 50p=1, 90p=2, 95p=3, 99p=7
+
+P6) tcpreplay *100   on sim server only
+net.ipv4.tcp_mem=8388608 8388608 8388608
+net.ipv4.tcp_rmem=8388608 8388608 8388608
+net.ipv4.tcp_wmem=8388608 8388608 8388608
+
+InternalTickToTrade (usecs)     recs=206562, min=1, ave=2431.9, max=728291, 5p=1, 50p=2, 90p=2, 95p=3, 99p=11
+
+
+P7) on sim  server change the ring buffers for conc linked queues
+InternalTickToTrade (usecs)     recs=205914, min=1, ave=161.496, max=333437, 5p=1, 50p=2, 90p=2, 95p=3, 99p=5
+
+P8) back to ringbuf, remove tcp window params ... should be same as P4
+[smt@T1SERVER dist]$ ./scripts/checkInternalT1.sh logs/T1Main_20131123_1309_1.log
+InternalTickToTrade (usecs)     recs=206206, min=1, ave=764.726, max=444520, 5p=1, 50p=2, 90p=2, 95p=3, 99p=8
+
+reboot sim server .... didnt 
+P9a) InternalTickToTrade (usecs)     recs=206416, min=1, ave=1.54808, max=3296, 5p=1, 50p=1, 90p=2, 95p=3, 99p=4
+P9b) InternalTickToTrade (usecs)     recs=206307, min=1, ave=3.76812, max=16183, 5p=1, 50p=2, 90p=2, 95p=3, 99p=5
+P9c) InternalTickToTrade (usecs)     recs=206297, min=1, ave=1.77942, max=2055, 5p=1, 50p=2, 90p=2, 95p=3, 99p=4
+P9d) InternalTickToTrade (usecs)     recs=197521, min=1, ave=1054.93, max=379030, 5p=1, 50p=2, 90p=2, 95p=3, 99p=11
+.... lots of slow exchange consumers
+P9e) InternalTickToTrade (usecs)     recs=206502, min=1, ave=1.65705, max=4445, 5p=1, 50p=1, 90p=2, 95p=3, 99p=4
+P9f) InternalTickToTrade (usecs)     recs=205258, min=1, ave=427.666, max=345534, 5p=1, 50p=1, 90p=2, 95p=3, 99p=5
+
+
+P10a) tcpReplay * 8
+number of gaps 162
+InternalTickToTrade (usecs)     recs=206598, min=1, ave=2.7583, max=32615, 5p=1, 50p=2, 90p=3, 95p=4, 99p=5
+
+P10b) gaps 127
+InternalTickToTrade (usecs)     recs=206525, min=1, ave=2.82909, max=9914, 5p=1, 50p=2, 90p=3, 95p=4, 99p=5
+
+P10c)
+InternalTickToTrade (usecs)     recs=206150, min=1, ave=4.61503, max=77125, 5p=1, 50p=2, 90p=3, 95p=3, 99p=5
+number of gaps 76
+
+P11) tcpreplay x1
+number of gaps 65
+InternalTickToTrade (usecs)     recs=205997, min=1, ave=2.66703, max=9118, 5p=1, 50p=2, 90p=4, 95p=4, 99p=6
+
+P12) DUMMY PERSISTERS, tcpReplay x100
+number of gaps 67
+InternalTickToTrade (usecs)     recs=206448, min=1, ave=1.21326, max=271, 5p=1, 50p=1, 90p=2, 95p=2, 99p=4
+
+P12b) use persisters, but delete OM persistence and allow replay from exchange sim
+
+P13) Disable persister in exchange sim, tcp replay * 100
+large latency still
+
+P14) upgrade openonload on sim server, tcpreplay x100
+large latency still
+
+P15) set SIM server with 8MB bufferMap, tcpreplay x100
+number of gaps 103
+a) InternalTickToTrade (usecs)     recs=206420, min=1, ave=1.9651, max=4543, 5p=1, 50p=2, 90p=2, 95p=3, 99p=5
+b) InternalTickToTrade (usecs)     recs=206238, min=1, ave=1.6688, max=5946, 5p=1, 50p=1, 90p=2, 95p=3, 99p=4
+--> some jit
+
+P16) disable persistence on T1, tcpreplay x100
+number of gaps 149
+InternalTickToTrade (usecs)     recs=204439, min=1, ave=1.58844, max=275, 5p=1, 50p=1, 90p=2, 95p=3, 99p=4
+
+P17) clear T1 persist but not SIM, tcpreplay x100
+number of gaps 75
+InternalTickToTrade (usecs)     recs=206228, min=1, ave=1.60744, max=846, 5p=1, 50p=1, 90p=2, 95p=2, 99p=4
+
+P18) disable persistence on SIM, tcpreplay x8
+a) number of gaps 107, InternalTickToTrade (usecs)     recs=174613, min=1, ave=7.42901, max=149818, 5p=2, 50p=2, 90p=3, 95p=3, 99p=4
+b) number of gaps 104, InternalTickToTrade (usecs)     recs=206514, min=1, ave=1.79121, max=237, 5p=1, 50p=2, 90p=3, 95p=3, 99p=4
+
+P19) change session warmup to use configured codecId   tcpreplay  x8 
+a)                     InternalTickToTrade (usecs)     recs=206514, min=1, ave=1.73205, max=96, 5p=1, 50p=2, 90p=3, 95p=3, 99p=4
+b) number of gaps 67,  InternalTickToTrade (usecs)     recs=206514, min=1, ave=1.83092, max=485, 5p=1, 50p=2, 90p=3, 95p=3, 99p=4
+c) number of gaps 121, InternalTickToTrade (usecs)     recs=206514, min=1, ave=1.56188, max=101, 5p=1, 50p=1, 90p=3, 95p=3, 99p=4
+
+d) added to hotspot file
+exclude com/rr/core/log/FileAppender blockWriteToDisk
+exclude sun/nio/ch/FileChannelImpl write
+exclude com/rr/core/log/FileAppender flush
+exclude sun/nio/ch/FileChannelImpl force
+
+number of gaps 105, InternalTickToTrade (usecs)     recs=206060, min=1, ave=10.5077, max=134163, 5p=1, 50p=2, 90p=3, 95p=3, 99p=4
+glitch occcurred after 2993 seconds .. or 2999 seconds in simCME
+20:35:05.407 [Warn]  exchange1 Slow consumer delayed write : 145467 micros , numWrites=1
+
+e) number of gaps 124,  InternalTickToTrade (usecs)     recs=206514, min=1, ave=1.75365, max=117, 5p=1, 50p=2, 90p=3, 95p=3, 99p=4
+
+P20) disable more stuff, tcpReplay x100
+net.ipv4.tcp_mem=8388608 8388608 8388608
+net.ipv4.tcp_rmem=8388608 8388608 8388608
+net.ipv4.tcp_wmem=8388608 8388608 8388608
+net.ipv4.tcp_syncookies=0
+net.ipv4.tcp_sack=0
+net.ipv4.tcp_dsack=0
+net.ipv4.tcp_timestamps=0
+net.ipv4.tcp_window_scaling=0
+
+number of gaps 166,  InternalTickToTrade (usecs)     recs=206768, min=1, ave=1.43985, max=178, 5p=1, 50p=1, 90p=2, 95p=2, 99p=4
+
+P21) same tcp params, tcpReplay x8
+number of gaps 104, InternalTickToTrade (usecs)     recs=206514, min=1, ave=1.7053, max=124, 5p=1, 50p=2, 90p=3, 95p=3, 99p=4
+
+P22) tcpReplay x1
+number of gaps 176, InternalTickToTrade (usecs)     recs=206514, min=1, ave=2.39426, max=82, 5p=1, 50p=2, 90p=3, 95p=4, 99p=5
+
+
+P23) tcpReplay x100
+number of gaps 147, InternalTickToTrade (usecs)     recs=206590, min=1, ave=1.26776, max=221, 5p=1, 50p=1, 90p=2, 95p=2, 99p=4
+
+==> note RDTSC has errors and is causing outliers
+
+P24)tcpreplay x1
+number of gaps 74, InternalTickToTrade (usecs)     recs=206514, min=1, ave=2.05491, max=111, 5p=1, 50p=2, 90p=3, 95p=4, 99p=4
+
+==================
+SIM SERVER DIED AFTER KICK !
+
+Q1) using new multiT1Exchange and multiT1client
+InternalTickToTrade (usecs)     recs=985618, min=1, ave=3.62163, max=255584, 5p=1, 50p=2, 90p=6, 95p=7, 99p=8
+
+GC
+
+842554 [ShutdownManager] WARN com.rr.core.pool.SuperPool  - SuperPool LogEventLarge GREW more than 25% initialChains=5000, extraChains=11752, chainSize=100, recycledChains=197928, runtimeChainSize=100, unexpectedNodeAlloc=153471
+842554 [ShutdownManager] WARN com.rr.core.pool.SuperPool  - SuperPool ReusableString GREW more than 25% initialChains=130000, extraChains=630889, chainSize=100, recycledChains=0, runtimeChainSize=50, unexpectedNodeAlloc=0
+
+Q2) using standard CMEExchange and Client
+
+number of gaps 662, InternalTickToTrade (usecs)     recs=1000556, min=1, ave=1.20379, max=205, 5p=1, 50p=1, 90p=2, 95p=2, 99p=4
+
+Q3) use System.nanoTime for real T1, RDTSC for internal
+
+TickToTrade (usecs)     recs=540793, min=8, ave=811.106, max=6408817, 5p=9, 50p=10, 90p=11, 95p=12, 99p=14
+number of gaps 465, InternalTickToTrade (usecs)     recs=540793, min=1, ave=88.2405, max=58395, 5p=1, 50p=1, 90p=2, 95p=2, 99p=4
+
+
+Q4) System.nanoTime again
+TickToTrade (usecs)     recs=1001861, min=8, ave=10.9667, max=6611, 5p=9, 50p=11, 90p=11, 95p=12, 99p=14
+number of gaps 125, InternalTickToTrade (usecs)     recs=1001861, min=1, ave=2.08564, max=134, 5p=1, 50p=2, 90p=3, 95p=3, 99p=4
+
+
+=======================
+
+PING1) ping pong time, round trip (NO OPENONLOAD), tcpPingClient / tcpPingServer 100K, msgLen=180
+
+ sendnanos : entries=100000, med=2000, ave=2243, min=1000, max=92000, p99=3000, p95=3000, p90=3000, p80=3000, p70=2000, p50=2000
+
+ logStats() entries=100000, med=14, ave=14, min=12, max=3563, p99=16, p95=15, p90=15, p80=14, p70=14, p50=14
+
+PING2) ping pong time, round trip (OPENONLOAD), tcpPingClient / tcpPingServer 100K, msgLen=180
+
+ sendnanos : entries=100000, med=1000, ave=1124, min=0, max=115000, p99=2000, p95=2000, p90=2000, p80=1000, p70=1000, p50=1000
+
+ logStats() entries=100000, med=8, ave=8, min=7, max=443, p99=10, p95=9, p90=9, p80=9, p70=8, p50=8
+
+PING3) same as PING2 but change QOS from 8 to 0
+ logStats() entries=100000, med=8, ave=8, min=7, max=424, p99=10, p95=9, p90=9, p80=8, p70=8, p50=8
+
+PING4) same as PING2 but swap client and server
+
+server is redhat 5.5, X5680s
+PINGB1) delay=100,    entries=10000, med=8, ave=8, min=7, max=27,  p99=11, p95=9,  p90=8, p80=8, p70=8, p50=8
+PINGB2) delay=1000,   entries=10000, med=8, ave=7, min=7, max=10,  p99=9,  p95=8,  p90=8, p80=8, p70=8, p50=8
+PINGB3) delay=10000,  entries=10000, med=9, ave=8, min=7, max=31,  p99=10, p95=10, p90=9, p80=9, p70=9, p50=9
+PINGB4) delay=100000, entries=10000, med=8, ave=8, min=7, max=15,  p99=11, p95=9,  p90=9, p80=9, p70=8, p50=8
+
+server is now redhat 5.10 6core
+PINGC1) delay=100,    entries=10000, med=8, ave=7, min=7, max=12, p99=9,  p95=8,  p90=8, p80=8, p70=8, p50=8
+PINGC2) delay=1000,   entries=10000, med=8, ave=8, min=7, max=13, p99=10, p95=9,  p90=9, p80=9, p70=9, p50=8
+PINGC3) delay=10000,  entries=10000, med=9, ave=8, min=7, max=13, p99=10, p95=10, p90=9, p80=9, p70=9, p50=9
+PINGC4) delay=100000, entries=10000, med=9, ave=9, min=8, max=20, p99=11, p95=10, p90=10, p80=10, p70=9, p50=9
+
+
+====================
+
+R1) use multiExchange, BATCH_MD_SIZE=1000
+TickToTrade (usecs)     recs=1001988, min=9, ave=11.349, max=1798, 5p=10, 50p=11, 90p=12, 95p=13, 99p=14
+InternalTickToTrade (usecs)     recs=1001988, min=1, ave=2.16721, max=165, 5p=2, 50p=2, 90p=3, 95p=3, 99p=4
+
+R2) BATCH_MD_SIZE=10000
+TickToTrade (usecs)     recs=1001997, min=9, ave=11.3166, max=907, 5p=10, 50p=11, 90p=12, 95p=13, 99p=15
+number of gaps 125
+InternalTickToTrade (usecs)     recs=1001997, min=1, ave=2.02063, max=270, 5p=1, 50p=2, 90p=2, 95p=3, 99p=4
+MAX RATE per second 35858
+as tick to trade is x10 ... rate is 358K/dec
+
+R3) tcpReplayx8, tickTradeRation=25
+number of gaps 96
+InternalTickToTrade (usecs)     recs=82413, min=1, ave=2.7807, max=38, 5p=2, 50p=3, 90p=4, 95p=4, 99p=5
+
+S1) triple control thread
+TickToTrade (usecs)     recs=818442, min=9, ave=20.7105, max=2991, 5p=11, 50p=12, 90p=13, 95p=14, 99p=17
+InternalTickToTrade (usecs)     recs=817053, min=1, ave=2.53912, max=69, 5p=2, 50p=2, 90p=3, 95p=3, 99p=5
+
+
+============================
+
+T1) dummy tick every 16ms
+InternalTickToTrade (usecs)     recs=2342592, min=2, ave=244.748, max=87328, 5p=2, 50p=3, 90p=4, 95p=4, 99p=5
+
+T2) dummy tick every 16ms ... exclude dummy ticks
+InternalTickToTrade (usecs)     recs=617185, min=2, ave=2.56837, max=240, 5p=2, 50p=3, 90p=3, 95p=3, 99p=5, 99.9p=7
+TickToTrade (usecs)     recs=617185, min=9, ave=552.907, max=6916077, 5p=10, 50p=11, 90p=12, 95p=12, 99p=14
+
+
+
+
+
+
+disabling TSO as well as LRO
+ethtool -K interface tso off
+
+net.sfxge.eth2.ipv4lro=0
+net.sfxge.eth3.ipv4lro=0
+
+net.sfxge.eth2.moderation=0
+net.sfxge.eth3.moderation=0
+
+
+
+===================================
+
+
+intel_idle.max_cstate=0 
+processor.max_cstate=1
+hpet=disable
+acpi=off
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+

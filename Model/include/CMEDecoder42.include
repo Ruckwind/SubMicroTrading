@@ -1,0 +1,98 @@
+
+@INCLUDE BaseFixDecoder.include
+
+    private final ViewString _securityDesc = new ViewString();
+
+    private ExchangeInstrument lookupInst( final BaseOrderRequest nos, boolean throwOnMissing ) {
+        final SecurityIDSource src = nos.getSecurityIDSource();
+
+        ExchangeInstrument instr;
+        if ( _securityDescStart > 0 && nos.getSecurityExchange() != ExchangeCode.UNKNOWN ) {
+            _securityDesc.setValue( _fixMsg, _securityDescStart, _securityDescLen );
+
+            instr = _instrumentLocator.getExchInst( _securityDesc, SecurityIDSource.SecurityDesc, nos.getSecurityExchange() );
+
+        } else {
+            instr = _instrumentLocator.getExchInst( nos.getSecurityId(), src,  nos.getSecurityExchange() );
+        }
+
+        if ( instr == null && throwOnMissing ) {
+            throwDecodeException( "Instrument not found" );
+        }
+
+        return instr;
+    }
+
+    private void preExecMessageDetermination() {
+        if ( _execTransType == null ) return;
+        
+        switch( _execTransType.getID() ) {
+        case TypeIds.EXECTRANSTYPE_NEW:
+            if ( _execType == ExecType.PartialFill || _execType == ExecType.Fill ){
+                _execType = ExecType.Trade;
+                return;
+            }
+            break;
+        case TypeIds.EXECTRANSTYPE_CANCEL:
+            _execType = ExecType.TradeCancel;
+            break;
+        case TypeIds.EXECTRANSTYPE_CORRECT:
+            _execType = ExecType.TradeCorrect;
+            break;
+        case TypeIds.EXECTRANSTYPE_STATUS:
+            _execType = ExecType.OrderStatus;
+            break;
+        case TypeIds.EXECTRANSTYPE_UNKNOWN:
+            throwDecodeException( "ExecRpt missing valid ExecTransType " );
+            break;
+        }
+    }
+
+    private OrderCapacity decodeRule47A( byte b ) {
+        if ( b == 'P' ) {
+            return OrderCapacity.Principal;
+        } else if ( b == 'A' ){
+            return OrderCapacity.AgentForOtherMember;
+        }
+        return OrderCapacity.Principal;
+    }
+
+/*
+ * HANDCODED DECODER METHDOS
+ */
+    private void setTradeExecId( MarketTradeNewWrite msg ) {
+        if ( _execIdLen > 0 ) {
+            final int tradeNumIdx = StringUtils.lastIndexOf( _fixMsg, _execIdStart, _execIdLen, (byte)'T' );
+
+            if ( tradeNumIdx > 0 ) {
+                msg.setExecId( _fixMsg, _execIdStart+tradeNumIdx, _execIdLen-tradeNumIdx );
+            } else {
+                msg.setExecId( _fixMsg, _execIdStart, _execIdLen );
+            }
+        }
+    }
+    
+    private void setTradeExecId( MarketTradeCorrectWrite msg ) {
+        if ( _execIdLen > 0 ) {
+            final int tradeNumIdx = StringUtils.lastIndexOf( _fixMsg, _execIdStart, _execIdLen, (byte)'T' );
+            
+            if ( tradeNumIdx > 0 ) {
+                msg.setExecId( _fixMsg, _execIdStart+tradeNumIdx, _execIdLen-tradeNumIdx );
+            }
+            else
+                msg.setExecId( _fixMsg, _execIdStart, _execIdLen );
+        }
+    }
+
+    private void setTradeExecId( MarketTradeCancelWrite msg ) {
+        if ( _execIdLen > 0 ) {
+            final int tradeNumIdx = StringUtils.lastIndexOf( _fixMsg, _execIdStart, _execIdLen, (byte)'T' );
+            
+            if ( tradeNumIdx > 0 ) {
+                msg.setExecId( _fixMsg, _execIdStart+tradeNumIdx, _execIdLen-tradeNumIdx );
+            }
+            else
+                msg.setExecId( _fixMsg, _execIdStart, _execIdLen );
+        }
+    }
+    

@@ -1,0 +1,15 @@
+/**
+ * HAND GENERATED TRANSFORMS
+ */
+
+    private void encodeInstrument( final com.rr.core.model.Instrument instrument ) {
+        if ( instrument == null ) throw new RuntimeEncodingException( "Missing instrument, unable to encode" );
+
+        _builder.encodeByte( FixDictionaryDC44.SecurityIDSource, SecurityIDSource.ExchangeSymbol.getVal() );                // tag22
+        _builder.encodeString( FixDictionaryDC44.SecurityID, instrument.getExchangeSymbol() );                              // tag48
+        _builder.encodeBytes( FixDictionaryDC44.SecurityExchange, ((ExchangeInstrument)instrument).getExchange().getExchangeCode() .getVal() );    // tag207
+    }
+
+
+@INCLUDE StandardEncoder44.include
+    

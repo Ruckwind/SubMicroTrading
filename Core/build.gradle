@@ -1,0 +1,33 @@
+dependencies {
+    api files('exlib/jars/jmxtools.jar')
+    api files('exlib/jars/log4j-1.2.16.jar')
+    api files('exlib/jars/xercesImpl.jar')
+    api files('exlib/jars/xml-apis.jar')
+    api files('exlib/jars/javax.mail.jar')
+    api files('exlib/jars/disruptor-4.0.0.jar')
+    api files('exlib/testJars/junit-4.11.jar')
+
+    api group: "com.twilio.sdk", name: "twilio", version: "8.30.0"
+    api group: "com.zaxxer", name: "HikariCP", version: "3.1.0"
+    api group: "com.sun.mail", name: "javax.mail", version: "1.6.2"
+}
+
+sourceSets {
+    main {
+        resources.srcDirs += file('src/main/resources/refdata')
+    }
+    other {
+        java {
+            compileClasspath += main.output + test.output
+            runtimeClasspath += main.output + test.output
+        }
+
+        java.srcDir file('src/other/java')
+        resources.srcDir file('src/other/resources')
+
+        compileClasspath += sourceSets.test.compileClasspath
+        runtimeClasspath += sourceSets.test.runtimeClasspath
+    }
+}
+
+

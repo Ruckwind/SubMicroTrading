@@ -1,0 +1,70 @@
+plugins {
+    id 'idea'
+    id 'java-library'
+}
+
+subprojects {
+    repositories {
+        mavenCentral()
+    }
+
+    apply plugin: 'idea'
+    apply plugin: 'java'
+    apply plugin: 'java-library'
+
+    dependencies {
+        testImplementation files('../Core/exlib/testJars/junit-4.11.jar')
+        testImplementation files('../Core/exlib/testJars/hamcrest-core-1.3.jar')
+        testImplementation files('../Core/exlib/testJars/mockito-core-2.18.3.jar')
+    }
+
+    sourceSets {
+        test {
+            compileClasspath += main.output
+            runtimeClasspath += main.output
+        }
+
+
+        test {
+            java {
+                compileClasspath += main.output
+                runtimeClasspath += main.output
+            }
+        }
+    }
+
+    test {
+        dependsOn 'clean'
+
+        reports.html.required = true
+
+        maxHeapSize = "8G"
+
+        afterTest { desc, result ->
+            def duration = (result.endTime - result.startTime) / 1000.0
+            if (result.resultType.name() == "FAILURE" || duration > 5) {
+                logger.quiet "[${duration}s] Ran test ${desc.className} / ${desc.name}  : ${result.resultType}"
+            } else {
+                logger.quiet "               Ran test ${desc.className} / ${desc.name}"
+            }
+        }
+    }
+
+    tasks.withType(JavaCompile) {
+        sourceCompatibility = '1.8'
+        options.compilerArgs << '-XDignore.symbol.file' << '-Xlint:unchecked'
+        options.fork = true
+        options.encoding = 'ISO-8859-1'
+    }
+
+    processResources {
+        duplicatesStrategy = DuplicatesStrategy.WARN
+    }
+}
+
+task testReport(type: TestReport) {
+    testResults.from file("${layout.buildDirectory}/reports/allTests")
+    reportOn subprojects*.test
+}
+
+

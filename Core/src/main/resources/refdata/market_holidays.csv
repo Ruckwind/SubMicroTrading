@@ -1,0 +1,465 @@
+# Manually updated from CBOE website. Future 2 years holidays file:
+date,holiday_name,market,open_time,close_time,mic
+2023-01-02,New Year's Day OBS,Dublin,,,XDUB
+2023-01-02,New Year's Day OBS,London,,,XLON
+2023-01-02,Berchtoldstag,Zurich,,,XSWX
+2023-01-02,New Year's Holiday,Bucharest,,,XBSE
+2023-01-02,New Year's Holiday,Ljubljana,,,XLJU
+2023-01-02,New Year's Holiday,Valletta,,,XMAL
+2023-01-02,New Year's Day OBS,Sofia,,,XBUL
+2023-01-02,New Year's Day OBS,Johannesburg,,,XJSE
+2023-01-05,Half day,Stockholm,08:00,11:55,XSTO
+2023-01-06,Epiphany,Helsinki,,,XHEL
+2023-01-06,Epiphany,Stockholm,,,XSTO
+2023-01-06,Epiphany,Warsaw,,,XWAR
+2023-01-06,Epiphany,Athens,,,XATH
+2023-01-06,Epiphany,Bratislava,,,XBRA
+2023-01-06,Epiphany,Nicosia,,,XCYS
+2023-01-24,Anniversary of Romanian Principalities Union,Bucharest,,,XBSE
+2023-02-08,Slovenian Culture Day,Ljubljana,,,XLJU
+2023-02-10,Feast of St. Paul's Shipwreck,Valletta,,,XMAL
+2023-02-16,Independence Day,Vilnius,,,XLIT
+2023-02-24,Independence Day,Tallinn,,,XTAL
+2023-02-27,Shrove Monday (Orthodox),Athens,,,XATH
+2023-02-27,Shrove Monday (Orthodox),Nicosia,,,XCYS
+2023-03-03,National Day,Sofia,,,XBUL
+2023-03-15,Anniversary of 1848 Revolution,Budapest,,,XBUD
+2023-03-21,Human Rights Day,Johannesburg,,,XJSE
+2023-03-31,Freedom Day,Valletta,,,XMAL
+2023-04-05,Half day,Oslo,08:00,12:00,XOSL
+2023-04-06,Holy Thursday,Copenhagen,,,XCSE
+2023-04-06,Holy Thursday,Oslo,,,XOSL
+2023-04-06,Maundy Thursday,Reykjavik,,,XICE
+2023-04-06,Half day,Stockholm,08:00,11:55,XSTO
+2023-04-07,Good Friday,all,,,BATE
+2023-04-07,Good Friday,Amsterdam,,,XAMS
+2023-04-07,Good Friday,Brussels,,,XBRU
+2023-04-07,Good Friday,Copenhagen,,,XCSE
+2023-04-07,Good Friday,Frankfurt,,,XETR
+2023-04-07,Good Friday,Madrid,,,XMCE
+2023-04-07,Good Friday,Helsinki,,,XHEL
+2023-04-07,Good Friday,Dublin,,,XDUB
+2023-04-07,Good Friday,London,,,XLON
+2023-04-07,Good Friday,Milan,,,MTAA
+2023-04-07,Good Friday,Oslo,,,XOSL
+2023-04-07,Good Friday,Paris,,,XPAR
+2023-04-07,Good Friday,Reykjavik,,,XICE
+2023-04-07,Good Friday,Stockholm,,,XSTO
+2023-04-07,Good Friday,Lisbon,,,XLIS
+2023-04-07,Good Friday,Vienna,,,XWBO
+2023-04-07,Good Friday,Warsaw,,,XWAR
+2023-04-07,Good Friday,Zurich,,,XSWX
+2023-04-07,Good Friday,Athens,,,XATH
+2023-04-07,Good Friday,Bratislava,,,XBRA
+2023-04-07,Good Friday,Budapest,,,XBUD
+2023-04-07,Good Friday,Nicosia,,,XCYS
+2023-04-07,Good Friday,Ljubljana,,,XLJU
+2023-04-07,Good Friday,Luxembourg,,,XLUX
+2023-04-07,Good Friday,Valletta,,,XMAL
+2023-04-07,Good Friday,Prague,,,XPRA
+2023-04-07,Good Friday,Riga,,,XRIS
+2023-04-07,Good Friday,Sofia,,,XBUL
+2023-04-07,Good Friday,Tallinn,,,XTAL
+2023-04-07,Good Friday,Vilnius,,,XLIT
+2023-04-07,Good Friday,Johannesburg,,,XJSE
+2023-04-10,Easter Monday,all,,,BATE
+2023-04-10,Easter Monday,Amsterdam,,,XAMS
+2023-04-10,Easter Monday,Brussels,,,XBRU
+2023-04-10,Easter Monday,Copenhagen,,,XCSE
+2023-04-10,Easter Monday,Frankfurt,,,XETR
+2023-04-10,Easter Monday,Madrid,,,XMCE
+2023-04-10,Easter Monday,Helsinki,,,XHEL
+2023-04-10,Easter Monday,Dublin,,,XDUB
+2023-04-10,Easter Monday,London,,,XLON
+2023-04-10,Easter Monday,Milan,,,MTAA
+2023-04-10,Easter Monday,Oslo,,,XOSL
+2023-04-10,Easter Monday,Paris,,,XPAR
+2023-04-10,Easter Monday,Reykjavik,,,XICE
+2023-04-10,Easter Monday,Stockholm,,,XSTO
+2023-04-10,Easter Monday,Lisbon,,,XLIS
+2023-04-10,Easter Monday,Vienna,,,XWBO
+2023-04-10,Easter Monday,Warsaw,,,XWAR
+2023-04-10,Easter Monday,Zurich,,,XSWX
+2023-04-10,Easter Monday,Athens,,,XATH
+2023-04-10,Easter Monday,Bratislava,,,XBRA
+2023-04-10,Easter Monday,Budapest,,,XBUD
+2023-04-10,Easter Monday,Nicosia,,,XCYS
+2023-04-10,Easter Monday,Ljubljana,,,XLJU
+2023-04-10,Easter Monday,Luxembourg,,,XLUX
+2023-04-10,Easter Monday,Valletta,,,XMAL
+2023-04-10,Easter Monday,Prague,,,XPRA
+2023-04-10,Easter Monday,Riga,,,XRIS
+2023-04-10,Easter Monday,Sofia,,,XBUL
+2023-04-10,Easter Monday,Tallinn,,,XTAL
+2023-04-10,Easter Monday,Vilnius,,,XLIT
+2023-04-10,Family Day (Easter Monday),Johannesburg,,,XJSE
+2023-04-14,Good Friday (Orthodox),Athens,,,XATH
+2023-04-14,Good Friday (Orthodox),Bucharest,,,XBSE
+2023-04-14,Good Friday (Orthodox),Nicosia,,,XCYS
+2023-04-14,Good Friday (Orthodox),Sofia,,,XBUL
+2023-04-17,Easter Monday (Orthodox),Athens,,,XATH
+2023-04-17,Easter Monday (Orthodox),Bucharest,,,XBSE
+2023-04-17,Easter Monday (Orthodox),Nicosia,,,XCYS
+2023-04-17,Easter Monday (Orthodox),Sofia,,,XBUL
+2023-04-18,Easter Tuesday (Orthodox),Nicosia,,,XCYS
+2023-04-20,First Day of Summer OBS,Reykjavik,,,XICE
+2023-04-20,Half day,Istanbul,08:00,10:30,XIST
+2023-04-21,Ramadan (Shaker) Bairam 1*,Istanbul,,,XIST
+2023-04-27,Resistance Day,Ljubljana,,,XLJU
+2023-04-27,Freedom Day,Johannesburg,,,XJSE
+2023-05-01,Labour Day,Amsterdam,,,XAMS
+2023-05-01,Labour Day,Brussels,,,XBRU
+2023-05-01,Labour Day,Frankfurt,,,XETR
+2023-05-01,Labour Day,Madrid,,,XMCE
+2023-05-01,Labour Day,Helsinki,,,XHEL
+2023-05-01,Labour Day,Dublin,,,XDUB
+2023-05-01,Early May Bank Holiday,London,,,XLON
+2023-05-01,Labour Day,Milan,,,MTAA
+2023-05-01,Labour Day,Oslo,,,XOSL
+2023-05-01,Labour Day,Paris,,,XPAR
+2023-05-01,Labour Day,Reykjavik,,,XICE
+2023-05-01,Labour Day,Stockholm,,,XSTO
+2023-05-01,Labour Day,Lisbon,,,XLIS
+2023-05-01,Labour Day,Vienna,,,XWBO
+2023-05-01,State Holiday/Labour Day,Warsaw,,,XWAR
+2023-05-01,Labour Day,Zurich,,,XSWX
+2023-05-01,Labour Day,Athens,,,XATH
+2023-05-01,Labour Day,Bucharest,,,XBSE
+2023-05-01,Labour Day,Bratislava,,,XBRA
+2023-05-01,Labour Day,Budapest,,,XBUD
+2023-05-01,Labour Day,Nicosia,,,XCYS
+2023-05-01,Labour Day,Ljubljana,,,XLJU
+2023-05-01,Labour Day,Luxembourg,,,XLUX
+2023-05-01,Labour Day,Valletta,,,XMAL
+2023-05-01,Labour Day,Prague,,,XPRA
+2023-05-01,Labour Day,Riga,,,XRIS
+2023-05-01,Labour Day,Sofia,,,XBUL
+2023-05-01,May Day,Tallinn,,,XTAL
+2023-05-01,Labour and Solidarity Day,Istanbul,,,XIST
+2023-05-01,Labour Day,Vilnius,,,XLIT
+2023-05-01,Workers' Day,Johannesburg,,,XJSE
+2023-05-02,Labour Day Holiday,Ljubljana,,,XLJU
+2023-05-03,Constitution Day,Warsaw,,,XWAR
+2023-05-04,Restoration of Independence Day,Riga,,,XRIS
+2023-05-05,General Prayer Day,Copenhagen,,,XCSE
+2023-05-08,Coronation of King Charles III,London,,,XLON
+2023-05-08,V-E Day,Bratislava,,,XBRA
+2023-05-08,Anniversary of Liberation,Prague,,,XPRA
+2023-05-08,St. George Day OBS,Sofia,,,XBUL
+2023-05-17,Constitution Day,Oslo,,,XOSL
+2023-05-17,Half day,Stockholm,08:00,11:55,XSTO
+2023-05-18,Ascension Day,Copenhagen,,,XCSE
+2023-05-18,Ascension Day,Helsinki,,,XHEL
+2023-05-18,Ascension Day,Oslo,,,XOSL
+2023-05-18,Ascension Day,Reykjavik,,,XICE
+2023-05-18,Ascension Day,Stockholm,,,XSTO
+2023-05-18,Ascension Day,Zurich,,,XSWX
+2023-05-18,Ascension Day,Riga,,,XRIS
+2023-05-18,Ascension Day,Tallinn,,,XTAL
+2023-05-18,Ascension Day,Vilnius,,,XLIT
+2023-05-19,Day After Ascension,Copenhagen,,,XCSE
+2023-05-19,Youth and Sports Day,Istanbul,,,XIST
+2023-05-24,Day of Bulgarian Culture and Slavonic Script,Sofia,,,XBUL
+2023-05-29,Whitmonday,Copenhagen,,,XCSE
+2023-05-29,Late May Bank Holiday,London,,,XLON
+2023-05-29,Whitmonday,Oslo,,,XOSL
+2023-05-29,Whitmonday,Reykjavik,,,XICE
+2023-05-29,Whitmonday,Zurich,,,XSWX
+2023-05-29,Whitmonday,Budapest,,,XBUD
+2023-06-01,Children's Day,Bucharest,,,XBSE
+2023-06-05,Constitution Day,Copenhagen,,,XCSE
+2023-06-05,Whitmonday (Orthodox),Athens,,,XATH
+2023-06-05,Pentecost Monday (Orthodox),Bucharest,,,XBSE
+2023-06-05,Pentecost (Orthodox),Nicosia,,,XCYS
+2023-06-06,National Day,Stockholm,,,XSTO
+2023-06-07,Commemoration of 1919 Uprising,Valletta,,,XMAL
+2023-06-08,Corpus Christi,Warsaw,,,XWAR
+2023-06-16,Youth Day,Johannesburg,,,XJSE
+2023-06-23,Midsummer Eve OBS,Helsinki,,,XHEL
+2023-06-23,Midsummer Eve OBS,Stockholm,,,XSTO
+2023-06-23,Midsummer Eve,Riga,,,XRIS
+2023-06-23,Victory Day/Midsummer's Eve,Tallinn,,,XTAL
+2023-06-27,Half day,Istanbul,08:00,10:30,XIST
+2023-06-28,Kurban Bairam 1*,Istanbul,,,XIST
+2023-06-29,Sts. Peter & Paul Day,Valletta,,,XMAL
+2023-06-29,Kurban Bairam 2*,Istanbul,,,XIST
+2023-06-30,Kurban Bairam 3*,Istanbul,,,XIST
+2023-07-05,Sts. Cyril and Methodius Day,Bratislava,,,XBRA
+2023-07-05,Day of Cyril and Metodej,Prague,,,XPRA
+2023-07-06,Burning at the Stake of John Hus,Prague,,,XPRA
+2023-07-06,Day of Statehood,Vilnius,,,XLIT
+2023-07-10,Public Holiday 1,Riga,,,XRIS
+2023-08-01,National Day,Zurich,,,XSWX
+2023-08-07,Bank Holiday,Reykjavik,,,XICE
+2023-08-09,National Women's Day,Johannesburg,,,XJSE
+2023-08-15,Assumption Day,Milan,,,MTAA
+2023-08-15,Assumption Day,Warsaw,,,XWAR
+2023-08-15,Assumption Day,Athens,,,XATH
+2023-08-15,Assumption Day,Bucharest,,,XBSE
+2023-08-15,Assumption Day,Nicosia,,,XCYS
+2023-08-15,Assumption Day,Ljubljana,,,XLJU
+2023-08-15,Assumption Day,Valletta,,,XMAL
+2023-08-15,Assumption Day,Vilnius,,,XLIT
+2023-08-28,Summer Bank Holiday,London,,,XLON
+2023-08-29,Anniversary of Slovak National Uprising,Bratislava,,,XBRA
+2023-08-30,Victory Day,Istanbul,,,XIST
+2023-09-01,Constitution Day,Bratislava,,,XBRA
+2023-09-06,Unification Day,Sofia,,,XBUL
+2023-09-08,Our Lady of Victory Day,Valletta,,,XMAL
+2023-09-15,Our Lady of Sorrows,Bratislava,,,XBRA
+2023-09-21,Independence Day,Valletta,,,XMAL
+2023-09-22,Independence Day,Sofia,,,XBUL
+2023-09-25,Heritage Day OBS,Johannesburg,,,XJSE
+2023-09-28,Czech Statehood Day,Prague,,,XPRA
+2023-10-23,Anniversary of 1956 Revolution,Budapest,,,XBUD
+2023-10-26,National Holiday,Vienna,,,XWBO
+2023-10-31,Reformation Day,Ljubljana,,,XLJU
+2023-11-01,All Saints' Day,Warsaw,,,XWAR
+2023-11-01,All Saints' Day,Bratislava,,,XBRA
+2023-11-01,All Saints' Day,Budapest,,,XBUD
+2023-11-01,All Saints' Day,Ljubljana,,,XLJU
+2023-11-01,All Saints' Day,Vilnius,,,XLIT
+2023-11-02,All Souls' Day,Vilnius,,,XLIT
+2023-11-03,Half day,Stockholm,08:00,11:55,XSTO
+2023-11-17,Freedom and Democracy Day,Bratislava,,,XBRA
+2023-11-17,Freedom and Democracy Day,Prague,,,XPRA
+2023-11-20,Independence Day OBS,Riga,,,XRIS
+2023-11-30,St. Andrew's Day,Bucharest,,,XBSE
+2023-12-01,National Holiday,Bucharest,,,XBSE
+2023-12-06,Independence Day,Helsinki,,,XHEL
+2023-12-08,Immaculate Conception,Valletta,,,XMAL
+2023-12-13,Republic Day,Valletta,,,XMAL
+2023-12-15,Public Holiday,Johannesburg,,,XJSE
+2023-12-22,Half day,Dublin,08:00,12:28,XDUB
+2023-12-22,Half day,London,08:00,12:30,XLON
+2023-12-22,Half day,Johannesburg,08:00,09:50,XJSE
+2023-12-25,Christmas,all,,,BATE
+2023-12-26,Boxing Day,all,,,BATE
+2023-12-27,Christmas Eve OBS,Sofia,,,XBUL
+2023-12-29,Half day,Frankfurt,08:00,13:00,XETR
+2023-12-29,Half day,Dublin,08:00,12:28,XDUB
+2023-12-29,Half day,London,08:00,12:30,XLON
+2023-12-29,Half day,Vienna,08:00,13:15,XWBO
+2023-12-29,Half day,Johannesburg,08:00,09:50,XJSE
+2024-01-01,New Year's Day,all,,,BATE
+2024-01-02,Berchtoldstag,Zurich,,,XSWX
+2024-01-02,New Year's Holiday,Bucharest,,,XBSE
+2024-01-02,New Year's Holiday,Ljubljana,,,XLJU
+2024-01-02,New Year's Holiday,Valletta,,,XMAL
+2024-01-05,Half day,Stockholm,08:00,11:55,XSTO
+2024-01-24,Anniversary of Romanian Principalities Union,Bucharest,,,XBSE
+2024-02-08,Slovenian Culture Day,Ljubljana,,,XLJU
+2024-02-16,Independence Day,Vilnius,,,XLIT
+2024-03-04,National Day OBS,Sofia,,,XBUL
+2024-03-11,Restoration of Lithuania's Statehood,Vilnius,,,XLIT
+2024-03-15,Anniversary of 1848 Revolution,Budapest,,,XBUD
+2024-03-18,Shrove Monday (Orthodox),Athens,,,XATH
+2024-03-18,Shrove Monday (Orthodox),Nicosia,,,XCYS
+2024-03-19,St. Joseph's Day,Valletta,,,XMAL
+2024-03-21,Human Rights Day,Johannesburg,,,XJSE
+2024-03-25,National Holiday,Athens,,,XATH
+2024-03-25,Greek Independence Day,Nicosia,,,XCYS
+2024-03-27,Half day,Oslo,08:00,12:00,XOSL
+2024-03-28,Holy Thursday,Copenhagen,,,XCSE
+2024-03-28,Holy Thursday,Oslo,,,XOSL
+2024-03-28,Maundy Thursday,Reykjavik,,,XICE
+2024-03-28,Half day,Stockholm,08:00,11:55,XSTO
+2024-03-29,Good Friday,all,,,BATE
+2024-04-01,Easter Monday,all,,,BATE
+2024-04-09,Half day,Istanbul,08:00,10:30,XIST
+2024-04-10,Ramadan (Shaker) Bairam 1*,Istanbul,,,XIST
+2024-04-11,Ramadan (Shaker) Bairam 2*,Istanbul,,,XIST
+2024-04-12,Ramadan (Shaker) Bairam 3*,Istanbul,,,XIST
+2024-04-23,National Sovereignty and Children's Day,Istanbul,,,XIST
+2024-04-25,First Day of Summer OBS,Reykjavik,,,XICE
+2024-04-30,Half day,Stockholm,08:00,11:55,XSTO
+2024-05-01,Labour Day,Amsterdam,,,XAMS
+2024-05-01,Labour Day,Brussels,,,XBRU
+2024-05-01,Labour Day,Frankfurt,,,XETR
+2024-05-01,Labour Day,Madrid,,,XMCE
+2024-05-01,Labour Day,Helsinki,,,XHEL
+2024-05-01,Labour Day,Dublin,,,XDUB
+2024-05-01,Labour Day,Milan,,,MTAA
+2024-05-01,Labour Day,Oslo,,,XOSL
+2024-05-01,Labour Day,Paris,,,XPAR
+2024-05-01,Labour Day,Reykjavik,,,XICE
+2024-05-01,Labour Day,Stockholm,,,XSTO
+2024-05-01,Labour Day,Lisbon,,,XLIS
+2024-05-01,Labour Day,Vienna,,,XWBO
+2024-05-01,State Holiday/Labour Day,Warsaw,,,XWAR
+2024-05-01,Labour Day,Zurich,,,XSWX
+2024-05-01,Labour Day,Athens,,,XATH
+2024-05-01,Labour Day,Bucharest,,,XBSE
+2024-05-01,Labour Day,Bratislava,,,XBRA
+2024-05-01,Labour Day,Budapest,,,XBUD
+2024-05-01,Labour Day,Nicosia,,,XCYS
+2024-05-01,Labour Day,Ljubljana,,,XLJU
+2024-05-01,Labour Day,Luxembourg,,,XLUX
+2024-05-01,Labour Day,Valletta,,,XMAL
+2024-05-01,Labour Day,Prague,,,XPRA
+2024-05-01,Labour Day,Riga,,,XRIS
+2024-05-01,Labour Day,Sofia,,,XBUL
+2024-05-01,May Day,Tallinn,,,XTAL
+2024-05-01,Labour and Solidarity Day,Istanbul,,,XIST
+2024-05-01,Labour Day,Vilnius,,,XLIT
+2024-05-01,Workers' Day,Johannesburg,,,XJSE
+2024-05-02,Labour Day Holiday,Ljubljana,,,XLJU
+2024-05-03,Constitution Day,Warsaw,,,XWAR
+2024-05-03,Good Friday (Orthodox),Athens,,,XATH
+2024-05-03,Good Friday (Orthodox),Bucharest,,,XBSE
+2024-05-03,Good Friday (Orthodox),Nicosia,,,XCYS
+2024-05-03,Good Friday (Orthodox),Sofia,,,XBUL
+2024-05-06,May Bank Holiday,Dublin,,,XDUB
+2024-05-06,Early May Bank Holiday,London,,,XLON
+2024-05-06,Easter Monday (Orthodox),Athens,,,XATH
+2024-05-06,Easter Monday (Orthodox),Bucharest,,,XBSE
+2024-05-06,Easter Monday (Orthodox),Nicosia,,,XCYS
+2024-05-06,Restoration of Independence Day OBS,Riga,,,XRIS
+2024-05-06,Easter Monday (Orthodox),Sofia,,,XBUL
+2024-05-07,Easter Tuesday (Orthodox),Nicosia,,,XCYS
+2024-05-08,Half day,Stockholm,08:00,11:55,XSTO
+2024-05-08,V-E Day,Bratislava,,,XBRA
+2024-05-08,Anniversary of Liberation,Prague,,,XPRA
+2024-05-09,Ascension Day,Copenhagen,,,XCSE
+2024-05-09,Ascension Day,Helsinki,,,XHEL
+2024-05-09,Ascension Day,Oslo,,,XOSL
+2024-05-09,Ascension Day,Reykjavik,,,XICE
+2024-05-09,Ascension Day,Stockholm,,,XSTO
+2024-05-09,Ascension Day,Zurich,,,XSWX
+2024-05-09,Ascension Day,Riga,,,XRIS
+2024-05-09,Ascension Day,Tallinn,,,XTAL
+2024-05-09,Ascension Day,Vilnius,,,XLIT
+2024-05-10,Day After Ascension,Copenhagen,,,XCSE
+2024-05-17,Constitution Day,Oslo,,,XOSL
+2024-05-20,Whitmonday,Copenhagen,,,XCSE
+2024-05-20,Whitmonday,Oslo,,,XOSL
+2024-05-20,Whitmonday,Reykjavik,,,XICE
+2024-05-20,Whitmonday,Zurich,,,XSWX
+2024-05-20,Whitmonday,Budapest,,,XBUD
+2024-05-24,Day of Bulgarian Culture and Slavonic Script,Sofia,,,XBUL
+2024-05-27,Late May Bank Holiday,London,,,XLON
+2024-05-30,Corpus Christi,Warsaw,,,XWAR
+2024-06-05,Constitution Day,Copenhagen,,,XCSE
+2024-06-06,National Day,Stockholm,,,XSTO
+2024-06-07,Commemoration of 1919 Uprising,Valletta,,,XMAL
+2024-06-17,National Day,Reykjavik,,,XICE
+2024-06-17,Kurban Bairam 2*,Istanbul,,,XIST
+2024-06-17,Youth Day OBS,Johannesburg,,,XJSE
+2024-06-18,Kurban Bairam 3*,Istanbul,,,XIST
+2024-06-19,Kurban Bairam 4*,Istanbul,,,XIST
+2024-06-21,Midsummer Eve OBS,Helsinki,,,XHEL
+2024-06-21,Midsummer Eve OBS,Stockholm,,,XSTO
+2024-06-24,Whitmonday (Orthodox),Athens,,,XATH
+2024-06-24,Pentecost Monday (Orthodox),Bucharest,,,XBSE
+2024-06-24,Pentecost (Orthodox),Nicosia,,,XCYS
+2024-06-24,St. John's Day,Riga,,,XRIS
+2024-06-24,St. John's Day/Midsummer's Day,Tallinn,,,XTAL
+2024-06-24,Jonines (St. John Day),Vilnius,,,XLIT
+2024-06-25,National Day,Ljubljana,,,XLJU
+2024-07-05,Sts. Cyril and Methodius Day,Bratislava,,,XBRA
+2024-07-05,Day of Cyril and Metodej,Prague,,,XPRA
+2024-07-15,Democracy and National Unity Day,Istanbul,,,XIST
+2024-08-01,National Day,Zurich,,,XSWX
+2024-08-05,Bank Holiday,Reykjavik,,,XICE
+2024-08-09,National Women's Day,Johannesburg,,,XJSE
+2024-08-15,Assumption Day,Milan,,,MTAA
+2024-08-15,Assumption Day,Warsaw,,,XWAR
+2024-08-15,Assumption Day,Athens,,,XATH
+2024-08-15,Assumption Day,Bucharest,,,XBSE
+2024-08-15,Assumption Day,Nicosia,,,XCYS
+2024-08-15,Assumption Day,Ljubljana,,,XLJU
+2024-08-15,Assumption Day,Valletta,,,XMAL
+2024-08-15,Assumption Day,Vilnius,,,XLIT
+2024-08-19,Bridge Holiday 1,Budapest,,,XBUD
+2024-08-20,St. Stephen's Day,Budapest,,,XBUD
+2024-08-20,Restoration of Independence,Tallinn,,,XTAL
+2024-08-26,Summer Bank Holiday,London,,,XLON
+2024-08-29,Anniversary of Slovak National Uprising,Bratislava,,,XBRA
+2024-08-30,Victory Day,Istanbul,,,XIST
+2024-09-06,Unification Day,Sofia,,,XBUL
+2024-09-23,Independence Day OBS,Sofia,,,XBUL
+2024-09-24,Heritage Day,Johannesburg,,,XJSE
+2024-10-01,Cyprus Independence Day,Nicosia,,,XCYS
+2024-10-23,Anniversary of 1956 Revolution,Budapest,,,XBUD
+2024-10-28,National Day,Athens,,,XATH
+2024-10-28,Greek National Day,Nicosia,,,XCYS
+2024-10-28,National Day,Prague,,,XPRA
+2024-10-28,Half day,Istanbul,08:00,10:30,XIST
+2024-10-29,Republic Day,Istanbul,,,XIST
+2024-10-31,Reformation Day,Ljubljana,,,XLJU
+2024-11-01,Half day,Stockholm,08:00,11:55,XSTO
+2024-11-01,All Saints' Day,Warsaw,,,XWAR
+2024-11-01,All Saints' Day,Bratislava,,,XBRA
+2024-11-01,All Saints' Day,Budapest,,,XBUD
+2024-11-01,All Saints' Day,Ljubljana,,,XLJU
+2024-11-01,All Saints' Day,Vilnius,,,XLIT
+2024-11-11,Day of Independence,Warsaw,,,XWAR
+2024-11-18,Independence Day,Riga,,,XRIS
+2024-12-06,Independence Day,Helsinki,,,XHEL
+2024-12-13,Republic Day,Valletta,,,XMAL
+2024-12-16,Day of Reconciliation,Johannesburg,,,XJSE
+2024-12-24,Half day,all,08:00,12:40,BATE
+2024-12-24,Half day,Amsterdam,08:00,12:55,XAMS
+2024-12-24,Half day,Brussels,08:00,12:55,XBRU
+2024-12-24,Christmas Eve,Copenhagen,,,XCSE
+2024-12-24,Christmas Eve,Frankfurt,,,XETR
+2024-12-24,Half day,Madrid,08:00,12:55,XMCE
+2024-12-24,Christmas Eve,Helsinki,,,XHEL
+2024-12-24,Half day,Dublin,08:00,12:28,XDUB
+2024-12-24,Half day,London,08:00,12:40,XLON
+2024-12-24,Christmas Eve,Milan,,,MTAA
+2024-12-24,Christmas Eve,Oslo,,,XOSL
+2024-12-24,Half day,Paris,08:00,12:55,XPAR
+2024-12-24,Christmas Eve,Reykjavik,,,XICE
+2024-12-24,Christmas Eve,Stockholm,,,XSTO
+2024-12-24,Half day,Lisbon,08:00,12:55,XLIS
+2024-12-24,Christmas Eve,Vienna,,,XWBO
+2024-12-24,Christmas Eve,Warsaw,,,XWAR
+2024-12-24,Christmas Eve,Zurich,,,XSWX
+2024-12-24,Christmas Eve,Athens,,,XATH
+2024-12-24,Christmas Eve,Bratislava,,,XBRA
+2024-12-24,Christmas Eve,Budapest,,,XBUD
+2024-12-24,Christmas Eve,Nicosia,,,XCYS
+2024-12-24,Christmas Holiday,Ljubljana,,,XLJU
+2024-12-24,Half day,Luxembourg,08:00,12:55,XLUX
+2024-12-24,Christmas Eve Holiday,Valletta,,,XMAL
+2024-12-24,Christmas Eve,Prague,,,XPRA
+2024-12-24,Christmas Eve,Riga,,,XRIS
+2024-12-24,Christmas Eve,Sofia,,,XBUL
+2024-12-24,Christmas Eve,Tallinn,,,XTAL
+2024-12-24,Christmas Eve,Vilnius,,,XLIT
+2024-12-24,Half day,Johannesburg,08:00,09:50,XJSE
+2024-12-25,Christmas,all,,,BATE
+2024-12-26,Boxing Day,all,,,BATE
+2024-12-27,Bridge Holiday 2,Budapest,,,XBUD
+2024-12-30,Half day,Frankfurt,08:00,13:00,XETR
+2024-12-30,Half day,Vienna,08:00,13:15,XWBO
+2024-12-31,Half day,all,08:00,12:40,BATE
+2024-12-31,Half day,Amsterdam,08:00,12:55,XAMS
+2024-12-31,Half day,Brussels,08:00,12:55,XBRU
+2024-12-31,New Year's Eve,Copenhagen,,,XCSE
+2024-12-31,New Year's Eve,Frankfurt,,,XETR
+2024-12-31,Half day,Madrid,08:00,12:55,XMCE
+2024-12-31,New Year's Eve,Helsinki,,,XHEL
+2024-12-31,Half day,Dublin,08:00,12:28,XDUB
+2024-12-31,Half day,London,08:00,12:40,XLON
+2024-12-31,New Year's Eve,Milan,,,MTAA
+2024-12-31,New Year's Eve,Oslo,,,XOSL
+2024-12-31,Half day,Paris,08:00,12:55,XPAR
+2024-12-31,New Year's Eve,Reykjavik,,,XICE
+2024-12-31,New Year's Eve,Stockholm,,,XSTO
+2024-12-31,Half day,Lisbon,08:00,12:55,XLIS
+2024-12-31,New Year's Eve,Vienna,,,XWBO
+2024-12-31,New Year's Eve,Warsaw,,,XWAR
+2024-12-31,New Year's Eve,Zurich,,,XSWX
+2024-12-31,Half day,Athens,08:00,13:20,XATH
+2024-12-31,New Year's Eve,Budapest,,,XBUD
+2024-12-31,Half day,Nicosia,08:00,13:00,XCYS
+2024-12-31,New Year's Eve,Ljubljana,,,XLJU
+2024-12-31,Half day,Luxembourg,08:00,12:55,XLUX
+2024-12-31,New Year's Eve,Valletta,,,XMAL
+2024-12-31,New Year's Eve,Prague,,,XPRA
+2024-12-31,New Year's Eve,Riga,,,XRIS
+2024-12-31,New Year's Eve,Tallinn,,,XTAL
+2024-12-31,New Year's Eve,Vilnius,,,XLIT
+2024-12-31,Half day,Johannesburg,08:00,09:50,XJSE
